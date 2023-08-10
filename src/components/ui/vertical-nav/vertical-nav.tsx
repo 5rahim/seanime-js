@@ -4,6 +4,7 @@ import React, { Fragment } from "react"
 import { cn, ComponentWithAnatomy, defineStyleAnatomy } from "../core"
 import { cva } from "class-variance-authority"
 import { Disclosure } from "@headlessui/react"
+import Link from "next/link";
 
 /* -------------------------------------------------------------------------------------------------
  * Anatomy
@@ -81,7 +82,7 @@ export const VerticalNav = React.forwardRef<HTMLDivElement, VerticalNavProps>((p
             {...rest}
         >
             {items.map((item, idx) => !item.content ? (
-                <a
+                <Link
                     key={item.name}
                     href={item.href ?? "#"}
                     className={cn(
@@ -102,7 +103,7 @@ export const VerticalNav = React.forwardRef<HTMLDivElement, VerticalNavProps>((p
                     />}
                     <span>{item.name}</span>
                     {item.addon}
-                </a>
+                </Link>
             ) : (
                 <Disclosure as={Fragment} key={item.name}>
                     {({ open }) => (

@@ -40,7 +40,7 @@ export const TitleBar: React.FC<TitleBarProps> = React.forwardRef<HTMLDivElement
         <div data-tauri-drag-region
              className="h-10 bg-transparent select-none flex justify-between fixed top-0 left-0 right-0 z-50">
             <div className={"h-10 inline-flex items-center px-4 font-bold"}>
-                <p>Seanime</p>
+                {/*<p>Seanime</p>*/}
             </div>
             <div>
                 <div className={cn(titleBarButtonStyles())} id="titlebar-minimize">
