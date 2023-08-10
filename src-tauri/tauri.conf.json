@@ -18,6 +18,17 @@
         "execute": true,
         "sidecar": true,
         "open": true
+      },
+      "window": {
+        "all": false,
+        "close": true,
+        "hide": true,
+        "show": true,
+        "maximize": true,
+        "minimize": true,
+        "unmaximize": true,
+        "unminimize": true,
+        "startDragging": true
       }
     },
     "bundle": {
@@ -61,9 +72,10 @@
     },
     "windows": [
       {
+        "decorations": false,
         "fullscreen": false,
-        "width": 1920,
-        "height": 1080,
+        "width": 1200,
+        "height": 800,
         "resizable": true,
         "title": "Seanime"
       }
