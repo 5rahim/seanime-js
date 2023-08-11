@@ -41,3 +41,5 @@ export default async function RootLayout(
         </html>
     )
 }
+
+export const runtime = "nodejs"

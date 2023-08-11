@@ -7,7 +7,7 @@ import { atomWithStorage } from "jotai/utils"
 import { focusAtom } from "jotai-optics"
 import { useImmerAtom } from "jotai-immer"
 import { useCallback } from "react"
-import { directoryExists } from "@/app/_actions/local-directory"
+import { directoryExists } from "@/lib/local-directory/utils"
 // import { exists } from "@tauri-apps/api/fs"
 
 export const settingsSchema = createTypesafeFormSchema(({ z }) => z.object({

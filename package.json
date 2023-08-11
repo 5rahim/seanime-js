@@ -80,5 +80,10 @@
     "@types/dinero.js": "^1.9.0",
     "@types/google.maps": "^3.53.6",
     "@types/lodash": "^4.14.197"
+  },
+  "overrides": {
+    "mpc-hc-control": {
+      "follow-redirects": "~1.14.8"
+    }
   }
 }

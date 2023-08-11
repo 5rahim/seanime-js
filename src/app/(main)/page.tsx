@@ -6,6 +6,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { AppLayoutStack } from "@/components/ui/app-layout"
+import { startMpc, testMPC } from "@/lib/mpc-hc/controls"
 
 export default function Home() {
 
@@ -40,7 +41,8 @@ export default function Home() {
     return (
         <main>
             Hello
-
+            <Button onClick={async () => startMpc()}>Start MPC-HC</Button>
+            <Button onClick={async () => await testMPC()}>MPC-HC</Button>
         </main>
     )
 }
