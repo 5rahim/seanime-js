@@ -1,6 +1,6 @@
 import { atomWithStorage } from "jotai/utils"
 import { useAtomValue, useSetAtom } from "jotai/react"
-import { createTypesafeFormSchema } from "@/components/ui/typesafe-form";
+import { createTypesafeFormSchema } from "@/components/ui/typesafe-form"
 
 /* -------------------------------------------------------------------------------------------------
  * Schema
@@ -18,7 +18,15 @@ export const aniListTokenAtom = atomWithStorage<string | undefined>('sea-anilist
 
 export function useAuthed() {
     const token = useAtomValue(aniListTokenAtom)
-    return !!token
+
+    // useEffect(() => {
+    //     console.log(token)
+    // }, [token])
+
+    return {
+        isAuthed: !!token,
+        token: token,
+    }
 }
 
 export function useAnilistLogin() {

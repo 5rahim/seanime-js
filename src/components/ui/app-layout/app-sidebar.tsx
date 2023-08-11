@@ -29,7 +29,7 @@ const useAppSidebarContext = () => {
 export const AppSidebarAnatomy = defineStyleAnatomy({
     sidebar: cva([
         "UI-AppSidebar__sidebar",
-        "flex flex-grow flex-col overflow-y-auto border-r border-[--border]"
+        "flex flex-grow flex-col border-r border-[--border]",
     ])
 })
 

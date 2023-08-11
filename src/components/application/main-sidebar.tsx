@@ -1,17 +1,17 @@
-'use client'
-import React from 'react'
-import { VerticalNav } from "@/components/ui/vertical-nav";
-import { AppSidebar } from "@/components/ui/app-layout";
-import { RiHome2Line } from "@react-icons/all-files/ri/RiHome2Line";
-import { Avatar } from "@/components/ui/avatar";
-import { loginSchema, useAnilistLogin, useAuthed } from "@/atoms/auth";
-import { ANILIST_OAUTH_URL } from "@/lib/anilist/config";
-import { FiLogIn } from "@react-icons/all-files/fi/FiLogIn";
-import { useDisclosure } from "@/hooks/use-disclosure";
-import { Modal } from "@/components/ui/modal";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Field, TypesafeForm } from "@/components/ui/typesafe-form";
+"use client"
+import React from "react"
+import { VerticalNav } from "@/components/ui/vertical-nav"
+import { AppSidebar } from "@/components/ui/app-layout"
+import { RiHome2Line } from "@react-icons/all-files/ri/RiHome2Line"
+import { Avatar } from "@/components/ui/avatar"
+import { loginSchema, useAnilistLogin, useAuthed } from "@/atoms/auth"
+import { ANILIST_OAUTH_URL } from "@/lib/anilist/config"
+import { FiLogIn } from "@react-icons/all-files/fi/FiLogIn"
+import { useDisclosure } from "@/hooks/use-disclosure"
+import { Modal } from "@/components/ui/modal"
+import { Button } from "@/components/ui/button"
+import { Field, TypesafeForm } from "@/components/ui/typesafe-form"
+import { DropdownMenu, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 
 interface MainSidebarProps {
     children?: React.ReactNode
@@ -21,7 +21,7 @@ export const MainSidebar: React.FC<MainSidebarProps> = (props) => {
 
     const { children, ...rest } = props
 
-    const isAuthed = useAuthed()
+    const { isAuthed } = useAuthed()
     const { authenticate } = useAnilistLogin()
 
     const loginModal = useDisclosure(false)
@@ -35,7 +35,7 @@ export const MainSidebar: React.FC<MainSidebarProps> = (props) => {
                         <img src="/android-chrome-192x192.png" alt="logo" className={"w-10 h-10"}/>
                     </div>
                     <VerticalNav items={[
-                        { icon: RiHome2Line, name: "Test", href: "/" }
+                        { icon: RiHome2Line, name: "Test", href: "/" },
                     ]}/>
                 </div>
                 <div>
@@ -43,13 +43,19 @@ export const MainSidebar: React.FC<MainSidebarProps> = (props) => {
                         <div>
                             <VerticalNav items={[
                                 {
-                                    icon: FiLogIn, name: "Test", onClick: () => loginModal.open()
-                                }
+                                    icon: FiLogIn, name: "Test", onClick: () => loginModal.open(),
+                                },
                             ]}/>
                         </div>
                     )}
                     {isAuthed && <div className={"flex w-full justify-center"}>
-                        <Avatar size={"sm"}/>
+                        <DropdownMenu trigger={<div className={"pt-1"}>
+                            <Avatar size={"sm"} className={"cursor-pointer"}/>
+                        </div>}>
+                            <DropdownMenuItem onClick={() => authenticate(undefined)}>
+                                Sign out
+                            </DropdownMenuItem>
+                        </DropdownMenu>
                     </div>}
                 </div>
             </AppSidebar>

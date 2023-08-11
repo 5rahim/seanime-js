@@ -1,19 +1,26 @@
-import { AppLayout, AppSidebar, AppSidebarProvider } from '@/components/ui/app-layout'
-import { VerticalNav } from '@/components/ui/vertical-nav'
-import React from "react";
-import { BiHome } from "@react-icons/all-files/bi/BiHome";
-import { MainSidebar } from "@/components/application/main-sidebar";
+"use client"
+import { AppLayout, AppSidebarProvider } from "@/components/ui/app-layout"
+import React from "react"
+import { MainSidebar } from "@/components/application/main-sidebar"
+import { useAtomValue } from "jotai/react"
+import { userAtom } from "@/atoms/user"
+import { LoadingOverlay } from "@/components/ui/loading-spinner"
 
-export const MainLayout = (children?: { children: React.ReactNode }) => {
+export const MainLayout = ({ children }: { children: React.ReactNode }) => {
+
+    const user = useAtomValue(userAtom)
+
+    if (user === undefined) return <LoadingOverlay/>
+
     return (
         <AppSidebarProvider>
             <AppLayout withSidebar sidebarSize="slim">
                 <AppLayout.Sidebar>
-                    <MainSidebar />
+                    <MainSidebar/>
                 </AppLayout.Sidebar>
                 <AppLayout>
                     <AppLayout.Content>
-
+                        {children}
                     </AppLayout.Content>
                 </AppLayout>
             </AppLayout>

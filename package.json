@@ -10,10 +10,12 @@
     "start": "next start",
     "lint": "next lint",
     "tauri": "tauri",
-    "tauri:dev": "tauri dev"
+    "tauri:dev": "tauri dev",
+    "codegen": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.16.2",
+    "@graphql-codegen/cli": "^5.0.0",
     "@headlessui/react": "^1.7.16",
     "@headlessui/tailwindcss": "^0.2.0",
     "@hookform/resolvers": "^3.2.0",
@@ -26,6 +28,7 @@
     "@react-icons/all-files": "^4.1.0",
     "@tailwindcss/forms": "^0.5.4",
     "@tailwindcss/typography": "^0.5.9",
+    "@tanstack/react-query": "^4.32.6",
     "@tauri-apps/api": "^1.4.0",
     "@types/node": "20.4.9",
     "@types/react": "18.2.20",
@@ -41,6 +44,8 @@
     "concurrently": "^8.2.0",
     "date-fns": "^2.30.0",
     "dinero.js": "^1.9.1",
+    "graphql": "^16.7.1",
+    "graphql-request": "^6.1.0",
     "jotai": "^2.3.1",
     "libphonenumber-js": "^1.10.39",
     "lodash": "^4.17.21",
@@ -69,6 +74,8 @@
     "@tauri-apps/cli": "^1.4.0",
     "@types/dinero.js": "^1.9.0",
     "@types/google.maps": "^3.53.6",
-    "@types/lodash": "^4.14.197"
+    "@types/lodash": "^4.14.197",
+    "@graphql-codegen/cli": "5.0.0",
+    "@graphql-codegen/client-preset": "4.1.0"
   }
 }
