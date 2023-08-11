@@ -7,6 +7,7 @@ import { Provider as JotaiProvider } from "jotai/react"
 import { QueryClient } from "@tanstack/query-core"
 import { QueryClientProvider } from "@tanstack/react-query"
 import { AniListGraphQLClientProvider } from "@/lib/anilist/graphql-client"
+import { ToastProvider } from "@/components/ui/toast"
 
 interface ClientProvidersProps {
     children?: React.ReactNode
@@ -31,6 +32,7 @@ export const ClientProviders: React.FC<ClientProvidersProps> = ({ children, ...r
                     <QueryClientProvider client={queryClient}>
                         <UIProvider config={{ locale: "en", countryLocale: "en-US", country: "US" }}>
                             {children}
+                            <ToastProvider/>
                         </UIProvider>
                     </QueryClientProvider>
                 </AniListGraphQLClientProvider>

@@ -18,3 +18,33 @@ export const _Viewer = gql`
         }
     }
 `
+
+export const _AnimeCollection = gql`
+    query AnimeCollection ($userName: String) {
+        MediaListCollection(userName: $userName, type: ANIME) {
+            lists {
+                entries {
+                    score
+                    progress
+                    status
+                    notes
+                    repeat
+                    private
+                    startedAt {
+                        year
+                        month
+                        day
+                    }
+                    completedAt {
+                        year
+                        month
+                        day
+                    }
+                    media {
+                        ...shortMedia
+                    }
+                }
+            }
+        }
+    }
+`

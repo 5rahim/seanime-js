@@ -14,14 +14,10 @@ export const loginSchema = createTypesafeFormSchema(({ z }) => z.object({
  *
  * -----------------------------------------------------------------------------------------------*/
 
-export const aniListTokenAtom = atomWithStorage<string | undefined>('sea-anilist-token', undefined)
+export const aniListTokenAtom = atomWithStorage<string | undefined>("sea-anilist-token", undefined, undefined, { unstable_getOnInit: true })
 
 export function useAuthed() {
     const token = useAtomValue(aniListTokenAtom)
-
-    // useEffect(() => {
-    //     console.log(token)
-    // }, [token])
 
     return {
         isAuthed: !!token,

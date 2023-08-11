@@ -36,7 +36,6 @@ export function AniListGraphQLClientProvider({ children }: { children: React.Rea
         setGraphQLClient(getGraphQLClient(token))
     }, [token])
 
-
     return <__AniListGraphQLClientContext.Provider value={graphQLClient}>
         {children}
     </__AniListGraphQLClientContext.Provider>

@@ -2,6 +2,7 @@ import { atom } from "jotai"
 import { ViewerDocument, ViewerQuery } from "@/gql/graphql"
 import { aniListTokenAtom } from "@/atoms/auth"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
+import { useAtomValue } from "jotai/react"
 
 export type User = Required<ViewerQuery["Viewer"]>
 
@@ -23,3 +24,14 @@ export const getUserAtom = atom(null, async (get, set) => {
         set(aniListTokenAtom, undefined)
     }
 })
+
+
+export function useCurrentUser() {
+
+    const user = useAtomValue(userAtom)
+
+    return {
+        user,
+    }
+
+}

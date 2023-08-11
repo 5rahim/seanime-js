@@ -1,6 +1,8 @@
-import React, { useState } from "react";
-import { listen, Event } from "@tauri-apps/api/event";
-import { appWindow } from "@tauri-apps/api/window";
+"use client"
+
+import React, { useState } from "react"
+import { listen } from "@tauri-apps/api/event"
+import { appWindow } from "@tauri-apps/api/window"
 
 export const useWindowSize = () => {
 

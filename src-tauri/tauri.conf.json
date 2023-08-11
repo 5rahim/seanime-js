@@ -19,6 +19,9 @@
         "sidecar": true,
         "open": true
       },
+      "fs": {
+        "all": true
+      },
       "window": {
         "all": false,
         "close": true,

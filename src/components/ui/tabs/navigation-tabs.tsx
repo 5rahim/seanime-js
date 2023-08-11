@@ -1,6 +1,7 @@
 import React from "react"
 import { cn, ComponentWithAnatomy, defineStyleAnatomy } from "../core"
 import { cva } from "class-variance-authority"
+import Link from "next/link"
 
 /* -------------------------------------------------------------------------------------------------
  * Anatomy
@@ -13,11 +14,11 @@ export const NavigationTabsAnatomy = defineStyleAnatomy({
     ]),
     tab: cva([
         "UI-NavigationTabs__tab",
-        "group/navtabs inline-flex flex-none shrink-0 basis-auto items-center py-4 px-2 font-medium text-sm transition outline-none px-4 min-w-0 justify-center",
+        "group/navtabs inline-flex flex-none shrink-0 basis-auto items-center py-4 px-2 font-normal text-sm transition outline-none px-4 min-w-0 justify-center",
         "focus-visible:bg-[--highlight]",
         "text-[--muted]",
-        "hover:text-[--text-color]",
-        "data-[selected=true]:border-[--brand] data-[selected=true]:font-semibold data-[selected=true]:text-[--brand]"
+        "hover:text-[--text-color] hover:bg-[--highlight] rounded-md",
+        "data-[selected=true]:border-[--brand] data-[selected=true]:font-semibold data-[selected=true]:text-white",
     ]),
     icon: cva([
         "UI-NavigationTabs__icon",
@@ -57,7 +58,7 @@ export const NavigationTabs = React.forwardRef<HTMLElement, NavigationTabsProps>
             {...rest}
         >
             {items.map((tab) => (
-                <a
+                <Link
                     key={tab.name}
                     href={tab.href ?? "#"}
                     className={cn(
@@ -70,13 +71,13 @@ export const NavigationTabs = React.forwardRef<HTMLElement, NavigationTabsProps>
                     {tab.icon && <tab.icon
                         className={cn(
                             NavigationTabsAnatomy.icon(),
-                            iconClassName
+                            iconClassName,
                         )}
                         aria-hidden="true"
                         data-selected={tab.isCurrent}
                     />}
                     <span>{tab.name}</span>
-                </a>
+                </Link>
             ))}
         </nav>
     )

@@ -45,8 +45,8 @@ export const TitleBar: React.FC<TitleBarProps> = React.forwardRef<HTMLDivElement
 
     return (
         <div data-tauri-drag-region
-             className="h-10 bg-transparent select-none flex justify-between fixed top-0 left-0 right-0 z-50">
-            <div className={"h-10 inline-flex items-center px-4 font-bold"}>
+             className="h-[--titlebar-h] bg-transparent select-none flex justify-between fixed top-0 left-0 right-0 z-50">
+            <div className={"h-[--titlebar-h] inline-flex items-center px-4 font-bold"}>
                 {/*<p>Seanime</p>*/}
             </div>
             <div>
@@ -105,3 +105,5 @@ export const TitleBar: React.FC<TitleBarProps> = React.forwardRef<HTMLDivElement
 })
 
 TitleBar.displayName = "TitleBar"
+
+export default TitleBar

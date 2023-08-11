@@ -12,6 +12,9 @@ import { Modal } from "@/components/ui/modal"
 import { Button } from "@/components/ui/button"
 import { Field, TypesafeForm } from "@/components/ui/typesafe-form"
 import { DropdownMenu, DropdownMenuItem } from "@/components/ui/dropdown-menu"
+import { useCurrentUser } from "@/atoms/user"
+import { usePathname } from "next/navigation"
+import { FiSettings } from "@react-icons/all-files/fi/FiSettings"
 
 interface MainSidebarProps {
     children?: React.ReactNode
@@ -23,6 +26,8 @@ export const MainSidebar: React.FC<MainSidebarProps> = (props) => {
 
     const { isAuthed } = useAuthed()
     const { authenticate } = useAnilistLogin()
+    const { user } = useCurrentUser()
+    const pathname = usePathname()
 
     const loginModal = useDisclosure(false)
 
@@ -35,7 +40,7 @@ export const MainSidebar: React.FC<MainSidebarProps> = (props) => {
                         <img src="/android-chrome-192x192.png" alt="logo" className={"w-10 h-10"}/>
                     </div>
                     <VerticalNav items={[
-                        { icon: RiHome2Line, name: "Test", href: "/" },
+                        { icon: RiHome2Line, name: "Test", href: "/", isCurrent: pathname === "/" },
                     ]}/>
                 </div>
                 <div>
@@ -43,14 +48,21 @@ export const MainSidebar: React.FC<MainSidebarProps> = (props) => {
                         <div>
                             <VerticalNav items={[
                                 {
-                                    icon: FiLogIn, name: "Test", onClick: () => loginModal.open(),
+                                    icon: FiLogIn, name: "Login", onClick: () => loginModal.open(),
                                 },
                             ]}/>
                         </div>
                     )}
-                    {isAuthed && <div className={"flex w-full justify-center"}>
-                        <DropdownMenu trigger={<div className={"pt-1"}>
-                            <Avatar size={"sm"} className={"cursor-pointer"}/>
+                    {isAuthed && <div className={"flex w-full gap-2 flex-col"}>
+                        <div>
+                            <VerticalNav items={[
+                                {
+                                    icon: FiSettings, name: "Settings", href: "/settings",
+                                },
+                            ]}/>
+                        </div>
+                        <DropdownMenu trigger={<div className={"pt-1 w-full flex justify-center"}>
+                            <Avatar size={"sm"} className={"cursor-pointer"} src={user?.avatar?.medium || ""}/>
                         </div>}>
                             <DropdownMenuItem onClick={() => authenticate(undefined)}>
                                 Sign out

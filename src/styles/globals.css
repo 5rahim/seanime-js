@@ -6,6 +6,8 @@
     :root {
         --radius: 0.375rem;
 
+        --titlebar-h: theme("height.10");
+
         --brand: theme('colors.brand.500');
         --slate: theme('colors.slate.500');
         --gray: theme('colors.gray.500');
@@ -95,6 +97,27 @@ h5 {
     width: 30px;
     height: 30px;
 }
+
 .titlebar-button:hover {
     background: #5bbec3;
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: var(--background-color);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    @apply bg-gray-700 rounded-xl
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-600
 }

@@ -4,7 +4,7 @@ import React, { Fragment } from "react"
 import { cn, ComponentWithAnatomy, defineStyleAnatomy } from "../core"
 import { cva } from "class-variance-authority"
 import { Disclosure } from "@headlessui/react"
-import Link from "next/link";
+import Link from "next/link"
 
 /* -------------------------------------------------------------------------------------------------
  * Anatomy
@@ -21,7 +21,7 @@ export const VerticalNavAnatomy = defineStyleAnatomy({
         "hover:bg-[--highlight] hover:text-[--text-color]",
         "focus-visible:ring-2 ring-[--ring] outline-none",
         "text-[--muted]",
-        "data-[selected=true]:text-[--brand]"
+        "data-[selected=true]:bg-[--highlight]",
     ]),
     parentItem: cva([
         "UI-VerticalNav__parentItem",
@@ -35,7 +35,7 @@ export const VerticalNavAnatomy = defineStyleAnatomy({
         "UI-VerticalNav__icon",
         "flex-shrink-0 -ml-1 mr-3 h-6 w-6",
         "text-[--muted]",
-        "group-hover/vnav:text-[--text-color] data-[selected=true]:text-[--brand] data-[selected=true]:group-hover/vnav:text-[--brand]"
+        "group-hover/vnav:text-[--text-color] data-[selected=true]:text-white data-[selected=true]:group-hover/vnav:text-white",
     ]),
     subList: cva([
         "UI-VerticalNav__subList",

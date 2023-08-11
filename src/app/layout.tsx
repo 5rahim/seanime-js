@@ -1,12 +1,14 @@
 import "../styles/globals.css"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
-import { TitleBar } from "@/components/application/titlebar"
 import { ClientProviders } from "@/components/client-providers"
 import { MainLayout } from "@/components/application/main-layout"
+import { AtomPreloader } from "@/atoms/storage"
+import dynamic from "next/dynamic"
 import { Suspense } from "react"
 import { LoadingOverlay } from "@/components/ui/loading-spinner"
-import { AtomPreloader } from "@/atoms/storage"
+
+const TitleBar = dynamic(() => import("@/components/application/titlebar"), { ssr: false })
 
 const inter = Inter({ subsets: ["latin"] })
 
