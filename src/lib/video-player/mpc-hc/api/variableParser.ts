@@ -2,7 +2,7 @@ import { IPlayerVariables } from "./commands/commands"
 
 export function variableParser(variablePageHtml: string): IPlayerVariables {
     const reg = /\<p id="(\w+)"\>(.*)\<\/p\>/ig
-    const fields = {}
+    const fields: any = {}
 
     let result
     while ((result = reg.exec(variablePageHtml)) !== null) {

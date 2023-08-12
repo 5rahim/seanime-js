@@ -4,6 +4,7 @@ import { MpcCommands, MpcCommandsList } from "./commands/mpcCommands"
 import { Dictionary } from "./types"
 import { AbstractPlayerController, IPlayerVariables } from "./commands/commands"
 import { variableParser } from "./variableParser"
+import axios from "axios"
 
 export class MpcControl extends AbstractPlayerController {
     private host: string
@@ -24,11 +25,16 @@ export class MpcControl extends AbstractPlayerController {
      * @data - additional data provided in to api call
      */
     execute(commandId: MpcCommands, data?: Dictionary<any>): Promise<any> {
-        const url = new URL(this.apiHost + "/command.html")
-        url.searchParams.set("wm_command", JSON.stringify(_.merge({
-            wm_command: MpcCommandsList[commandId].value,
-        }, data)))
-        return fetch(url)
+        const url = this.apiHost + "/command.html"
+        try {
+            return axios.get(url, {
+                params: _.merge({
+                    wm_command: MpcCommandsList[commandId].value,
+                }, data),
+            })
+        } catch (e) {
+            return new Promise((resolve) => resolve(""))
+        }
     }
 
     /**
@@ -36,13 +42,17 @@ export class MpcControl extends AbstractPlayerController {
      */
     openFile(filePath: string): Promise<any> {
         const url = this.apiHost + "/browser.html?path=" + filePath
-        return fetch(url)
+        try {
+            return axios.get(url)
+        } catch (e) {
+            return new Promise((resolve) => resolve(""))
+        }
     }
 
     getVariables(): Promise<IPlayerVariables> {
         const url = this.apiHost + "/variables.html"
-        return fetch(url).then((res) => {
-            return variableParser(JSON.stringify(res.body))
+        return axios.get(url).then((res) => {
+            return variableParser(res.data)
         })
     }
 }

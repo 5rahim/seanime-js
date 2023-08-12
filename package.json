@@ -39,6 +39,7 @@
     "@zag-js/react": "^0.15.0",
     "anitomyscript": "^2.0.4",
     "autoprefixer": "10.4.14",
+    "axios": "^1.4.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "collect.js": "^4.36.1",

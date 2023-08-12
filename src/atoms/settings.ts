@@ -20,6 +20,9 @@ export const settingsSchema = createTypesafeFormSchema(({ z }) => z.object({
         }, { message: "Directory does not exist" }),
     }),
     player: z.object({
+        defaultPlayer: z.enum(["mpc-hc", "vlc"]),
+        "mpc-hc": z.string(),
+        "vlc": z.string(),
         audioLng: z.string(),
         subtitleLng: z.string(),
     }),
@@ -32,6 +35,9 @@ export const initialSettings: Settings = {
         localDirectory: null,
     },
     player: {
+        defaultPlayer: "mpc-hc",
+        "mpc-hc": "C:\\Program Files\\MPC-HC\\mpc-hc64.exe",
+        vlc: "C:\\Program Files\\VideoLAN\\VLC",
         audioLng: "jpn",
         subtitleLng: "eng",
     },

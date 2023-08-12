@@ -66,6 +66,7 @@ export abstract class AbstractPlayerController {
     }
 
     play(): Promise<void> {
+        this.onTop()
         return this.execute("PLAY")
     }
 
@@ -139,5 +140,9 @@ export abstract class AbstractPlayerController {
 
     prevSubtitles(): Promise<void> {
         return this.execute("PREV_SUBTITLE")
+    }
+
+    onTop(): Promise<void> {
+        return this.execute("ALWAYS_ON_TOP")
     }
 }
