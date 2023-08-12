@@ -22,28 +22,77 @@ export default function Page() {
                     toast.success("Settings changed")
                 }}
                 defaultValues={settings.player}
+                stackClassName={"space-y-5"}
             >
-                <Field.Combobox
-                    label={"Default video player"}
-                    name={"defaultPlayer"}
-                    options={[
-                        { value: "mpc-hc", label: "MPC-HC" },
-                        { value: "vlc", label: "VLC" },
-                    ]}
-                />
-                <Divider/>
+                {(f) => (
+                    <>
+                        <Field.Combobox
+                            label={"Default Video Player"}
+                            name={"defaultPlayer"}
+                            options={[
+                                { value: "mpc-hc", label: "MPC-HC" },
+                                { value: "vlc", label: "VLC" },
+                            ]}
+                        />
+                        <Divider/>
 
-                <Field.Text
-                    label={"MPC-HC Player"}
-                    name={"mpc-hc"}
-                />
+                        <div className={"flex gap-2"}>
+                            <Field.Text
+                                label={"MPC-HC Player"}
+                                name={"mpc-hc"}
+                            />
 
-                <Field.Text
-                    label={"VLC Player"}
-                    name={"vlc"}
-                />
+                            <Field.Text
+                                label={"VLC Player"}
+                                name={"vlc"}
+                            />
+                        </div>
 
-                <Field.Submit role={"save"}/>
+                        <Divider/>
+
+                        <Field.Text
+                            label={"Video Player Web Client Host"}
+                            name={"host"}
+                        />
+
+                        <Divider/>
+
+                        <h4>VLC</h4>
+
+                        <div className={"gap-2 flex flex-col lg:flex-row"}>
+                            <Field.Number
+                                label={"Port"}
+                                name={"vlcPort"}
+                                leftAddon={f.watch("host") + ":"}
+                                discrete
+                            />
+                            <Field.Text
+                                label={"Username"}
+                                name={"vlcUsername"}
+                            />
+                            <Field.Text
+                                label={"Password"}
+                                name={"vlcPassword"}
+                            />
+                        </div>
+
+                        <Divider/>
+
+                        <h4>MPC-HC</h4>
+
+                        <div className={"gap-2 flex flex-col lg:flex-row"}>
+                            <Field.Number
+                                label={"Port"}
+                                name={"mpcPort"}
+                                leftAddon={f.watch("host") + ":"}
+                                discrete
+                            />
+                        </div>
+
+
+                        <Field.Submit role={"save"}/>
+                    </>
+                )}
             </TypesafeForm>
         </div>
     )

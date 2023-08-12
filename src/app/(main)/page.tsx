@@ -6,7 +6,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { AppLayoutStack } from "@/components/ui/app-layout"
-import { VideoPlayer } from "@/lib/video-player/factory"
+import { VideoPlayer } from "@/lib/video-player"
 
 export default function Home() {
 

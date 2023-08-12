@@ -1,4 +1,4 @@
-import { IPlayerVariables } from "./commands/commands"
+import { IPlayerVariables } from "./commands"
 
 export function variableParser(variablePageHtml: string): IPlayerVariables {
     const reg = /\<p id="(\w+)"\>(.*)\<\/p\>/ig

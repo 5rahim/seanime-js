@@ -1,30 +1,37 @@
 import * as _ from "lodash"
-// import axios from "axios";
-import { MpcCommands, MpcCommandsList } from "./commands/mpcCommands"
-import { Dictionary } from "./types"
-import { AbstractPlayerController, IPlayerVariables } from "./commands/commands"
+import { MpcCommands, MpcCommandsList } from "./mpcCommands"
+import { AbstractPlayerController, IPlayerVariables } from "./commands"
 import { variableParser } from "./variableParser"
 import axios from "axios"
 
-export class MpcControl extends AbstractPlayerController {
-    private host: string
-    private port: number
-
+export class MpcApi extends AbstractPlayerController {
     constructor(host: string, port: number) {
         super()
-        this.host = host
-        this.port = port
+        this._host = host
+        this._port = port
+    }
+
+    private _host: string
+
+    set host(value: string) {
+        this._host = value
+    }
+
+    private _port: number
+
+    set port(value: number) {
+        this._port = value
     }
 
     get apiHost(): string {
-        return "http://" + this.host + ":" + this.port
+        return "http://" + this._host + ":" + this._port
     }
 
     /**
      * @commandId - any supported command from commands/mpcCommands.ts
      * @data - additional data provided in to api call
      */
-    execute(commandId: MpcCommands, data?: Dictionary<any>): Promise<any> {
+    execute(commandId: MpcCommands, data?: { [key: string]: any }): Promise<any> {
         const url = this.apiHost + "/command.html"
         try {
             return axios.get(url, {

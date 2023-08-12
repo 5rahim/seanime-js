@@ -57,7 +57,10 @@ export const MainSidebar: React.FC<MainSidebarProps> = (props) => {
                         <div>
                             <VerticalNav items={[
                                 {
-                                    icon: FiSettings, name: "Settings", href: "/settings",
+                                    icon: FiSettings,
+                                    name: "Settings",
+                                    href: "/settings",
+                                    isCurrent: pathname.includes("/settings"),
                                 },
                             ]}/>
                         </div>

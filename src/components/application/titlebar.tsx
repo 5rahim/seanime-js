@@ -1,10 +1,11 @@
 "use client"
 
-import React from "react"
+import React, { useEffect } from "react"
 import { appWindow } from "@tauri-apps/api/window"
 import { cva } from "class-variance-authority"
 import { cn } from "@/components/ui/core"
 import { useWindowSize } from "@/hooks/use-window-size"
+import toast from "react-hot-toast"
 
 /* -------------------------------------------------------------------------------------------------
  * TitleBar
@@ -33,6 +34,19 @@ export const TitleBar: React.FC<TitleBarProps> = React.forwardRef<HTMLDivElement
         document?.getElementById("titlebar-minimize")?.addEventListener("click", () => appWindow.minimize())
         document?.getElementById("titlebar-maximize")?.addEventListener("click", () => appWindow.toggleMaximize())
         document?.getElementById("titlebar-close")?.addEventListener("click", () => appWindow.close())
+    }, [])
+
+    useEffect(() => {
+        (async () => {
+            const unlistenProgress = await appWindow.listen(
+                "video-player-error",
+                ({ event, payload }) => {
+                    toast.error("Video player error")
+                },
+            )
+
+            return unlistenProgress()
+        })()
     }, [])
 
     // const hydrated = useDisclosure(false)

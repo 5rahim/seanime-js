@@ -8,7 +8,6 @@ import { focusAtom } from "jotai-optics"
 import { useImmerAtom } from "jotai-immer"
 import { useCallback } from "react"
 import { directoryExists } from "@/lib/local-directory/utils"
-// import { exists } from "@tauri-apps/api/fs"
 
 export const settingsSchema = createTypesafeFormSchema(({ z }) => z.object({
     library: z.object({
@@ -23,6 +22,12 @@ export const settingsSchema = createTypesafeFormSchema(({ z }) => z.object({
         defaultPlayer: z.enum(["mpc-hc", "vlc"]),
         "mpc-hc": z.string(),
         "vlc": z.string(),
+        host: z.string(),
+        mpcPort: z.number(),
+        vlcPort: z.number(),
+        vlcUsername: z.string(),
+        vlcPassword: z.string(),
+        pauseAfterOpening: z.boolean(),
         audioLng: z.string(),
         subtitleLng: z.string(),
     }),
@@ -32,12 +37,18 @@ export type Settings = InferType<typeof settingsSchema>
 
 export const initialSettings: Settings = {
     library: {
-        localDirectory: null,
+        localDirectory: "E\\:ANIME",
     },
     player: {
         defaultPlayer: "mpc-hc",
         "mpc-hc": "C:\\Program Files\\MPC-HC\\mpc-hc64.exe",
         vlc: "C:\\Program Files\\VideoLAN\\VLC\\vlc.exe",
+        host: "127.0.0.1",
+        mpcPort: 13579,
+        vlcPort: 8080,
+        vlcUsername: "",
+        vlcPassword: "seanime",
+        pauseAfterOpening: true,
         audioLng: "jpn",
         subtitleLng: "eng",
     },
@@ -59,8 +70,6 @@ export function useSettings() {
 
     const [settings, setSettings] = useImmerAtom(settingsAtoms)
 
-    // const setting =
-
     return {
         settings,
         updateSettings: useCallback(<K extends keyof Settings>(key: K, value: Partial<Settings[K]>) => {
@@ -73,5 +82,15 @@ export function useSettings() {
             }))
         }, []),
     }
+
+}
+
+/**
+ * Put at the root of the project
+ * When settings change -> do something
+ */
+export function useSettingsEffects() {
+
+    // const settings = useAtomValue(settingsAtoms)
 
 }

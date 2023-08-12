@@ -262,10 +262,23 @@ function equal(a: any, b: any) {
     return false
 }
 
-export class VLC extends EventEmitter {
+export class VlcApi extends EventEmitter {
+    private _autoUpdate = false
+
+    set authorization(value: string) {
+        this._authorization = value
+    }
+
+    set host(value: string) {
+        this._host = value
+    }
+
     private _host: string
     private _port: number
-    private _autoUpdate = true
+
+    set port(value: number) {
+        this._port = value
+    }
     private _changeEvents = true
     private _authorization: string
     private _tickLengthMs: number
@@ -622,26 +635,31 @@ export class VLC extends EventEmitter {
     }
 
     private _doTick(): void {
-        const now = getNano()
+        try {
+            const now = getNano()
 
-        if (now >= this._target) {
-            const delta = (now - this._prev) * nano2s
-            this._prev = now
-            this._target = now + this._tickLengthNano
+            if (now >= this._target) {
+                const delta = (now - this._prev) * nano2s
+                this._prev = now
+                this._target = now + this._tickLengthNano
 
-            this.emit("tick", delta)
-            this.updateAll().catch(err => this.emit("error", err))
-        }
+                this.emit("tick", delta)
+                this.updateAll()
+                    .catch(err => this.emit("error", err))
+            }
 
-        const remainingInTick = this._target - getNano()
+            const remainingInTick = this._target - getNano()
 
-        if (remainingInTick > this._longWaitNano) {
-            setTimeout(
-                this._doTick.bind(this),
-                Math.max(this._longWaitMs, this._tickLengthMs),
-            )
-        } else {
-            setImmediate(this._doTick.bind(this))
+            if (remainingInTick > this._longWaitNano) {
+                setTimeout(
+                    this._doTick.bind(this),
+                    Math.max(this._longWaitMs, this._tickLengthMs),
+                )
+            } else {
+                setImmediate(this._doTick.bind(this))
+            }
+        } catch (e) {
+
         }
     }
 

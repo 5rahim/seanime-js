@@ -1,6 +1,5 @@
 import { MpcCommands } from "./mpcCommands"
-import { Dictionary } from "../types"
-import { millisecondsToDuration } from "../utils/timeConvert"
+import { millisecondsToDuration } from "./utils/timeConvert"
 
 export interface IPlayerVariables {
     version: string;
@@ -28,7 +27,7 @@ export interface IPositionInfo {
 }
 
 export abstract class AbstractPlayerController {
-    abstract execute(commandId: MpcCommands, data?: Dictionary<any>): Promise<any>;
+    abstract execute(commandId: MpcCommands, data?: { [key: string]: any }): Promise<any>;
 
     abstract getVariables(): Promise<IPlayerVariables>;
 

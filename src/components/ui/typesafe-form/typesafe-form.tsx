@@ -11,7 +11,7 @@ import {
     useForm,
     UseFormProps,
     UseFormReturn,
-    WatchObserver
+    WatchObserver,
 } from "react-hook-form"
 import { z, ZodObject } from "zod"
 import { getZodDefaults } from "./zod-resolver"
@@ -46,7 +46,7 @@ export interface TypesafeFormProps<Schema extends z.ZodObject<z.ZodRawShape> = Z
     formRef?: React.RefObject<HTMLFormElement>
     children?: MaybeRenderProp<UseFormReturn<z.infer<Schema>>>
     /**
-     * @default w-full gap-3
+     * @default w-full space-y-3
      */
     stackClassName?: string
     mRef?: React.Ref<UseFormReturn<z.infer<Schema>>>
