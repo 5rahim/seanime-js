@@ -48,7 +48,7 @@ export const SubmitField = React.forwardRef<HTMLButtonElement, SubmitFieldProps>
             <Button
                 type="submit"
                 isLoading={formState.isSubmitting || isLoading || uploadHandler?.isLoading} // || ml.mutationLoading}
-                isDisabled={disableInvalid || isDisabled || disableSuccess}
+                isDisabled={disableInvalid || isDisabled || disableSuccess || !formState.isDirty}
                 ref={ref}
                 {...rest}
             >

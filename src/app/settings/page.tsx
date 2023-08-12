@@ -3,6 +3,7 @@
 import { useCurrentUser } from "@/atoms/user"
 import { settingsSchema, useSettings } from "@/atoms/settings"
 import { Field, TypesafeForm } from "@/components/ui/typesafe-form"
+import { toast } from "react-hot-toast"
 
 export default function Page() {
 
@@ -17,6 +18,7 @@ export default function Page() {
                     updateSettings("library", {
                         ...data,
                     })
+                    toast.success("Settings changed")
                 }}
                 defaultValues={settings.library}
             >
