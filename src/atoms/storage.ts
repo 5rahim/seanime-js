@@ -12,6 +12,10 @@ export const AtomPreloader = () => {
     const [, getUser] = useAtom(getUserAtom)
 
     useEffect(() => {
+
+    }, [])
+
+    useEffect(() => {
         getUser()
     }, [getUser])
 

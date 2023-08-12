@@ -32,7 +32,3 @@ export async function openVideoWithVlc(path: string, options?: { pauseOnOpen?: b
         }, 500)
     }
 }
-
-export function startMpc() {
-    require("child_process").exec(`"C:\\Program Files\\VideoLAN\\VLC"`)
-}

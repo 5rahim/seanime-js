@@ -37,7 +37,7 @@ export const initialSettings: Settings = {
     player: {
         defaultPlayer: "mpc-hc",
         "mpc-hc": "C:\\Program Files\\MPC-HC\\mpc-hc64.exe",
-        vlc: "C:\\Program Files\\VideoLAN\\VLC",
+        vlc: "C:\\Program Files\\VideoLAN\\VLC\\vlc.exe",
         audioLng: "jpn",
         subtitleLng: "eng",
     },

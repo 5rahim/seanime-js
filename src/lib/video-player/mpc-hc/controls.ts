@@ -16,7 +16,3 @@ export async function openVideoWithMpc(path: string, options?: { pauseOnOpen?: b
         }, 500)
     }
 }
-
-export function startMpc() {
-    require("child_process").exec(`"C:\\Program Files\\MPC-HC\\mpc-hc64.exe"`)
-}

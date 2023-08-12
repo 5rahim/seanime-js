@@ -41,9 +41,10 @@ export default function Home() {
     return (
         <main>
             Hello
-            <Button onClick={async () => VideoPlayer(settings).start()}>Start MPC-HC</Button>
+            <Button onClick={async () => VideoPlayer(settings).start()}>Start video player</Button>
             <Button
-                onClick={async () => await VideoPlayer(settings).openVideo("E:\\ANIME\\[EMBER] Kaguya-sama wa Kokurasetai - First Kiss wa Owaranai (Movie) [1080p] [HEVC WEBRip].mkv")}>MPC-HC</Button>
+                onClick={async () => await VideoPlayer(settings).openVideo("E:\\ANIME\\[EMBER] Kaguya-sama wa Kokurasetai - First Kiss wa Owaranai (Movie) [1080p] [HEVC WEBRip].mkv")}>Load
+                Kaguya-sama</Button>
         </main>
     )
 }
