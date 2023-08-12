@@ -1,30 +1,24 @@
 "use server"
 
 import fs from "fs/promises"
-import { PathLike } from "fs"
 import { Settings } from "@/atoms/settings"
 import { runCommand } from "@/lib/helpers/child-process"
 import { OsType } from "@tauri-apps/api/os"
+import { fileOrDirectoryExists } from "@/lib/helpers/file"
+import { PathLike } from "fs"
 
-export async function getDirectory(path: PathLike) {
-    try {
-        const dir = await fs.opendir(path)
-        return dir
-    } catch (e) {
-        return null
+export async function openDirectory(path: PathLike) {
+    if (path) {
+        try {
+            const dir = await fs.opendir(path, { recursive: true })
+            return dir
+        } catch (e) {
+            // return null
+        }
     }
 }
 
-export async function directoryExists(path: PathLike) {
-    try {
-        await fs.stat(path)
-        return true
-    } catch (e) {
-        return false
-    }
-}
-
-export async function openLocalDirectory(settings: Settings, osType: OsType) {
+export async function openLocalDirectoryInExplorer(settings: Settings, osType: OsType) {
     const path = settings.library.localDirectory
 
     let explorer
@@ -40,7 +34,7 @@ export async function openLocalDirectory(settings: Settings, osType: OsType) {
             break
     }
 
-    if (path && await directoryExists(path)) {
+    if (path && await fileOrDirectoryExists(path)) {
         await runCommand(`${explorer} "${path}"`)
     }
 }

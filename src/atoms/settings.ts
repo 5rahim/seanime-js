@@ -8,13 +8,14 @@ import { focusAtom } from "jotai-optics"
 import { useImmerAtom } from "jotai-immer"
 import { useCallback } from "react"
 
-import { directoryExists } from "@/lib/helpers/directory"
+
+import { fileOrDirectoryExists } from "@/lib/helpers/file"
 
 export const settingsSchema = createTypesafeFormSchema(({ z }) => z.object({
     library: z.object({
         localDirectory: z.string().nullable().refine(async (value) => {
             if (value) {
-                return await directoryExists(value)
+                return await fileOrDirectoryExists(value)
             }
             return false
         }, { message: "Directory does not exist" }),

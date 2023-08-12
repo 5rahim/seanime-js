@@ -1,7 +1,7 @@
 import { type TypedDocumentNode } from "@graphql-typed-document-node/core"
 import { print } from "graphql"
 import { Variables } from "graphql-request"
-import { getGraphQLClient } from "@/lib/anilist/graphql-client"
+import { getAniListGraphQLClient } from "@/lib/anilist/graphql-client"
 
 
 /**
@@ -18,7 +18,7 @@ export async function useAniListAsyncQuery<TResult, TVariables extends Variables
     token?: string,
 ): Promise<TResult> {
 
-    const res = await getGraphQLClient(token).rawRequest<TResult, TVariables>(print(document), variables)
+    const res = await getAniListGraphQLClient(token).rawRequest<TResult, TVariables>(print(document), variables)
 
     if (res.status !== 200) {
         throw new Error(`Failed to fetch: ${res.status}. Body: ${res.errors?.join(", ")}`)

@@ -4,7 +4,7 @@ import { Nullish } from "@/types/common"
 import React, { useEffect } from "react"
 import { useAuthed } from "@/atoms/auth"
 
-export const getGraphQLClient = (accessToken?: Nullish<string>, role?: string) => {
+export const getAniListGraphQLClient = (accessToken?: Nullish<string>, role?: string) => {
 
     return new GraphQLClient(ANILIST_API_ENDPOINT, {
         // @ts-ignore
@@ -30,10 +30,10 @@ export function AniListGraphQLClientProvider({ children }: { children: React.Rea
 
     const { token } = useAuthed()
 
-    const [graphQLClient, setGraphQLClient] = React.useState(getGraphQLClient(token))
+    const [graphQLClient, setGraphQLClient] = React.useState(getAniListGraphQLClient(token))
 
     useEffect(() => {
-        setGraphQLClient(getGraphQLClient(token))
+        setGraphQLClient(getAniListGraphQLClient(token))
     }, [token])
 
     return <__AniListGraphQLClientContext.Provider value={graphQLClient}>

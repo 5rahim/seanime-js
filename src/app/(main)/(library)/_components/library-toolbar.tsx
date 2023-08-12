@@ -3,7 +3,7 @@
 import React from "react"
 import { useSettings } from "@/atoms/settings"
 import { Button } from "@/components/ui/button"
-import { openLocalDirectory } from "@/lib/helpers/directory"
+import { openLocalDirectoryInExplorer } from "@/lib/helpers/directory"
 import { type } from "@tauri-apps/api/os"
 import toast from "react-hot-toast"
 import { BiFolder } from "@react-icons/all-files/bi/BiFolder"
@@ -19,8 +19,10 @@ export const LibraryToolbar: React.FC<LibraryToolbarProps> = (props) => {
 
     const handleOpenLocalDirectory = async () => {
         const tID = toast.loading("Opening")
-        await openLocalDirectory(settings, await type())
-        toast.remove(tID)
+        await openLocalDirectoryInExplorer(settings, await type())
+        setTimeout(() => {
+            toast.remove(tID)
+        }, 1000)
     }
 
     return (
