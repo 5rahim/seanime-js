@@ -43,7 +43,17 @@ export const MainSidebar: React.FC<MainSidebarProps> = (props) => {
                         { icon: RiHome2Line, name: "Test", href: "/", isCurrent: pathname === "/" },
                     ]}/>
                 </div>
-                <div>
+                <div className={"flex w-full gap-2 flex-col"}>
+                    <div>
+                        <VerticalNav items={[
+                            {
+                                icon: FiSettings,
+                                name: "Settings",
+                                href: "/settings",
+                                isCurrent: pathname.includes("/settings"),
+                            },
+                        ]}/>
+                    </div>
                     {!isAuthed && (
                         <div>
                             <VerticalNav items={[
@@ -54,16 +64,6 @@ export const MainSidebar: React.FC<MainSidebarProps> = (props) => {
                         </div>
                     )}
                     {isAuthed && <div className={"flex w-full gap-2 flex-col"}>
-                        <div>
-                            <VerticalNav items={[
-                                {
-                                    icon: FiSettings,
-                                    name: "Settings",
-                                    href: "/settings",
-                                    isCurrent: pathname.includes("/settings"),
-                                },
-                            ]}/>
-                        </div>
                         <DropdownMenu trigger={<div className={"pt-1 w-full flex justify-center"}>
                             <Avatar size={"sm"} className={"cursor-pointer"} src={user?.avatar?.medium || ""}/>
                         </div>}>

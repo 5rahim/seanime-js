@@ -1,6 +1,6 @@
 import { openVideoWithMpc } from "@/lib/video-player/mpc-hc/controls"
 import { openVideoWithVlc } from "@/lib/video-player/vlc/controls"
-import { runCommand } from "@/lib/child-process"
+import { runCommand } from "@/lib/helpers/child-process"
 import { Settings } from "@/atoms/settings"
 import toast from "react-hot-toast"
 

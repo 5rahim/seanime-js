@@ -7,7 +7,8 @@ import { atomWithStorage } from "jotai/utils"
 import { focusAtom } from "jotai-optics"
 import { useImmerAtom } from "jotai-immer"
 import { useCallback } from "react"
-import { directoryExists } from "@/lib/local-directory/utils"
+
+import { directoryExists } from "@/lib/helpers/directory"
 
 export const settingsSchema = createTypesafeFormSchema(({ z }) => z.object({
     library: z.object({

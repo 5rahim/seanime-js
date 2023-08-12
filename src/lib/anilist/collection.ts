@@ -2,6 +2,7 @@ import { useCurrentUser } from "@/atoms/user"
 import { AnimeCollectionDocument } from "@/gql/graphql"
 import { useAniListClientQuery } from "@/hooks/graphql-client-helpers"
 import { useMemo } from "react"
+import _ from "lodash"
 
 export function useAnilistCollection() {
 
@@ -15,11 +16,29 @@ export function useAnilistCollection() {
 
     const currentlyWatchingList = useMemo(() => collection.filter(n => !!n && n.status === "CURRENT"), [collection])
 
+    const completedList = useMemo(() => {
+        let arr = collection.filter(n => !!n && n.status === "COMPLETED")
+        // Sort by score
+        arr = _.sortBy(arr, entry => entry?.score).reverse()
+        return arr
+    }, [collection])
+
+    const planningList = useMemo(() => {
+        let arr = collection.filter(n => !!n && n.status === "PLANNING")
+        // Sort by name
+        arr = _.sortBy(arr, entry => entry?.media?.title?.userPreferred)
+        // Sort by airing -> Releasing first
+        arr = _.sortBy(arr, entry => entry?.media?.status !== "RELEASING")
+        return arr
+    }, [collection])
+
     return {
         isLoading,
         originalCollection: data?.MediaListCollection?.lists ?? [],
         collection,
         currentlyWatchingList,
+        completedList,
+        planningList,
     }
 
 }
