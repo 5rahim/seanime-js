@@ -43,10 +43,7 @@ export default function Home() {
                         <AnimeList
                             items={[
                                 ...currentlyWatchingList.map(entry => ({
-                                    id: entry?.media?.id,
-                                    title: entry?.media?.title?.userPreferred || "",
-                                    imageSrc: entry?.media?.coverImage?.large || "",
-                                    isAiring: entry?.media?.status === "RELEASING",
+                                    media: entry?.media,
                                     progress: { watched: entry?.progress ?? 0, total: entry?.media?.episodes },
                                     score: entry?.score,
                                 })),
@@ -57,10 +54,7 @@ export default function Home() {
                         <AnimeList
                             items={[
                                 ...completedList.map(entry => ({
-                                    id: entry?.media?.id,
-                                    title: entry?.media?.title?.userPreferred || "",
-                                    imageSrc: entry?.media?.coverImage?.large || "",
-                                    isAiring: entry?.media?.status === "RELEASING",
+                                    media: entry?.media,
                                     score: entry?.score,
                                 })),
                             ]}
@@ -70,10 +64,7 @@ export default function Home() {
                         <AnimeList
                             items={[
                                 ...planningList.map(entry => ({
-                                    id: entry?.media?.id,
-                                    title: entry?.media?.title?.userPreferred || "",
-                                    imageSrc: entry?.media?.coverImage?.large || "",
-                                    isAiring: entry?.media?.status === "RELEASING",
+                                    media: entry?.media,
                                 })),
                             ]}
                         />

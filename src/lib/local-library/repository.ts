@@ -69,6 +69,7 @@ export async function retrieveLocalFiles(settings: Settings) {
 
 /**
  * Recursively get the files as [LocalFile] type
+ * This method modifies the `files` argument
  * @param directoryPath
  * @param files
  * @param allowedTypes

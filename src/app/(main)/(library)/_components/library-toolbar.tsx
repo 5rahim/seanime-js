@@ -7,6 +7,7 @@ import { openLocalDirectoryInExplorer } from "@/lib/helpers/directory"
 import { type } from "@tauri-apps/api/os"
 import toast from "react-hot-toast"
 import { BiFolder } from "@react-icons/all-files/bi/BiFolder"
+import { retrieveLocalFiles } from "@/lib/local-library/repository"
 
 interface LibraryToolbarProps {
     children?: React.ReactNode
@@ -25,11 +26,22 @@ export const LibraryToolbar: React.FC<LibraryToolbarProps> = (props) => {
         }, 1000)
     }
 
+    const handleScanLibrary = async () => {
+        const tID = toast.loading("Scanning")
+        const res = (await retrieveLocalFiles(settings))
+        console.log(res)
+        toast.remove(tID)
+    }
+
     return (
         <div className={"p-4"}>
-            <div className={"p-2 border border-[--border] rounded-lg flex w-full "}>
-                <Button onClick={handleOpenLocalDirectory} intent={"gray-outline"} leftIcon={<BiFolder/>}>Open
-                    folder</Button>
+            <div className={"p-2 border border-[--border] rounded-lg flex w-full gap-2"}>
+                <Button onClick={handleScanLibrary} intent={"primary"} leftIcon={<BiFolder/>}>
+                    Scan library
+                </Button>
+                <Button onClick={handleOpenLocalDirectory} intent={"gray-outline"} leftIcon={<BiFolder/>}>
+                    Open folder
+                </Button>
             </div>
         </div>
     )

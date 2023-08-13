@@ -7,7 +7,7 @@ import { useEffect } from "react"
 import { settingsAtoms } from "@/atoms/settings"
 
 export const AtomPreloader = () => {
-    useAtomValue(aniListTokenAtom)
+    const token = useAtomValue(aniListTokenAtom)
     useAtomValue(settingsAtoms)
     const [, getUser] = useAtom(getUserAtom)
 
@@ -17,7 +17,7 @@ export const AtomPreloader = () => {
 
     useEffect(() => {
         getUser()
-    }, [getUser])
+    }, [getUser, token])
 
     return null
 }
