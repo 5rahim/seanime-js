@@ -18,7 +18,7 @@ export const settingsSchema = createTypesafeFormSchema(({ z }) => z.object({
                 return await fileOrDirectoryExists(value)
             }
             return false
-        }, { message: "Directory does not exist" }),
+        }, { message: "Directory does not exist" }).transform(value => value?.replaceAll("/", "\\")),
     }),
     player: z.object({
         defaultPlayer: z.enum(["mpc-hc", "vlc"]),

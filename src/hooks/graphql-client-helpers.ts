@@ -13,7 +13,8 @@ import { print } from "graphql"
 import { useEffect } from "react"
 import { toast } from "react-hot-toast"
 import { Variables } from "graphql-request"
-import { useAniListGraphQLClient } from "@/lib/anilist/graphql-client"
+
+import { useAniListGraphQLClient } from "@/lib/anilist/provider"
 
 /**
  * @example

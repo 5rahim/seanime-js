@@ -3,7 +3,6 @@ import { print } from "graphql"
 import { Variables } from "graphql-request"
 import { getAniListGraphQLClient } from "@/lib/anilist/graphql-client"
 
-
 /**
  * @example
  * const res = useServerQuery(GetStores)

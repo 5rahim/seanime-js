@@ -2,6 +2,7 @@
 import React, { useEffect } from "react"
 import { retrieveLocalFiles } from "@/lib/local-library/repository"
 import { useSettings } from "@/atoms/settings"
+import toast from "react-hot-toast"
 
 interface LocalLibraryProps {
     children?: React.ReactNode
@@ -15,7 +16,11 @@ export const LocalLibrary: React.FC<LocalLibraryProps> = (props) => {
 
     useEffect(() => {
         (async () => {
-            console.log(await retrieveLocalFiles(settings))
+            const tID = toast.loading("Fetching")
+            const res = (await retrieveLocalFiles(settings))
+            console.log(res)
+            toast.remove(tID)
+
         })()
     }, [])
 

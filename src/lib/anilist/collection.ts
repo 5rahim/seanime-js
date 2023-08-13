@@ -3,6 +3,7 @@ import { AnimeCollectionDocument } from "@/gql/graphql"
 import { useAniListClientQuery } from "@/hooks/graphql-client-helpers"
 import { useMemo } from "react"
 import _ from "lodash"
+import { AnilistMedia } from "@/lib/anilist/fragment"
 
 export function useAnilistCollection() {
 
@@ -14,10 +15,16 @@ export function useAnilistCollection() {
     // [{ entries: [] }, { entries: [] }] => [{}, {}]
     const collection = useMemo(() => data?.MediaListCollection?.lists?.map(n => n?.entries).flat() ?? [], [data])
 
+    const allUserMedia = useMemo(() => {
+        return collection.filter(entry => !!entry).map(entry => entry!.media) as AnilistMedia[]
+    }, [collection])
+
     const currentlyWatchingList = useMemo(() => collection.filter(n => !!n && n.status === "CURRENT"), [collection])
 
     const completedList = useMemo(() => {
         let arr = collection.filter(n => !!n && n.status === "COMPLETED")
+        // Sort by name
+        arr = _.sortBy(arr, entry => entry?.media?.title?.userPreferred).reverse()
         // Sort by score
         arr = _.sortBy(arr, entry => entry?.score).reverse()
         return arr
@@ -39,6 +46,7 @@ export function useAnilistCollection() {
         currentlyWatchingList,
         completedList,
         planningList,
+        allUserMedia,
     }
 
 }
