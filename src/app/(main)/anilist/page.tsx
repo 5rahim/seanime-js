@@ -38,7 +38,7 @@ export default function Home() {
                         Planning
                     </TabPanels.Tab>
                 </TabPanels.Nav>
-                <TabPanels.Container className="pt-4">
+                <TabPanels.Container className="pt-8">
                     <TabPanels.Panel>
                         <AnimeList
                             items={[

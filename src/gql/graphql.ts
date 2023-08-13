@@ -1,6 +1,5 @@
 /* eslint-disable */
 import { TypedDocumentNode as DocumentNode } from "@graphql-typed-document-node/core"
-
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -4577,6 +4576,7 @@ export type ShortMediaFragment = {
     idMal?: number | null,
     siteUrl?: string | null,
     status?: MediaStatus | null,
+    season?: MediaSeason | null,
     bannerImage?: string | null,
     genres?: Array<string | null> | null,
     isAdult?: boolean | null,
@@ -4605,7 +4605,7 @@ export type ShortMediaFragment = {
         url?: string | null,
         site?: string | null
     } | null> | null,
-    nextAiringEpisode?: { airingAt: number, episode: number } | null,
+    nextAiringEpisode?: { airingAt: number, episode: number, timeUntilAiring: number } | null,
     studios?: { nodes?: Array<{ name: string } | null> | null } | null,
     startDate?: { year?: number | null, month?: number | null, day?: number | null } | null
 };
@@ -4649,6 +4649,7 @@ export type AnimeCollectionQuery = {
                     idMal?: number | null,
                     siteUrl?: string | null,
                     status?: MediaStatus | null,
+                    season?: MediaSeason | null,
                     bannerImage?: string | null,
                     genres?: Array<string | null> | null,
                     isAdult?: boolean | null,
@@ -4677,7 +4678,7 @@ export type AnimeCollectionQuery = {
                         url?: string | null,
                         site?: string | null
                     } | null> | null,
-                    nextAiringEpisode?: { airingAt: number, episode: number } | null,
+                    nextAiringEpisode?: { airingAt: number, episode: number, timeUntilAiring: number } | null,
                     studios?: { nodes?: Array<{ name: string } | null> | null } | null,
                     startDate?: { year?: number | null, month?: number | null, day?: number | null } | null
                 } | null
@@ -4893,7 +4894,7 @@ export const ShortMediaFragmentDoc = {
                     "name": { "kind": "Name", "value": "version" },
                     "value": { "kind": "IntValue", "value": "2" },
                 }],
-            }, {
+            }, { "kind": "Field", "name": { "kind": "Name", "value": "season" } }, {
                 "kind": "Field",
                 "name": { "kind": "Name", "value": "title" },
                 "selectionSet": {
@@ -4956,11 +4957,19 @@ export const ShortMediaFragmentDoc = {
                     "selections": [{
                         "kind": "Field",
                         "name": { "kind": "Name", "value": "airingAt" },
-                    }, { "kind": "Field", "name": { "kind": "Name", "value": "episode" } }],
+                    }, { "kind": "Field", "name": { "kind": "Name", "value": "episode" } }, {
+                        "kind": "Field",
+                        "name": { "kind": "Name", "value": "timeUntilAiring" },
+                    }],
                 },
             }, { "kind": "Field", "name": { "kind": "Name", "value": "format" } }, {
                 "kind": "Field",
                 "name": { "kind": "Name", "value": "description" },
+                "arguments": [{
+                    "kind": "Argument",
+                    "name": { "kind": "Name", "value": "asHtml" },
+                    "value": { "kind": "BooleanValue", "value": false },
+                }],
             }, { "kind": "Field", "name": { "kind": "Name", "value": "source" } }, {
                 "kind": "Field",
                 "name": { "kind": "Name", "value": "studios" },
@@ -5147,7 +5156,7 @@ export const AnimeCollectionDocument = {
                     "name": { "kind": "Name", "value": "version" },
                     "value": { "kind": "IntValue", "value": "2" },
                 }],
-            }, {
+            }, { "kind": "Field", "name": { "kind": "Name", "value": "season" } }, {
                 "kind": "Field",
                 "name": { "kind": "Name", "value": "title" },
                 "selectionSet": {
@@ -5210,11 +5219,19 @@ export const AnimeCollectionDocument = {
                     "selections": [{
                         "kind": "Field",
                         "name": { "kind": "Name", "value": "airingAt" },
-                    }, { "kind": "Field", "name": { "kind": "Name", "value": "episode" } }],
+                    }, { "kind": "Field", "name": { "kind": "Name", "value": "episode" } }, {
+                        "kind": "Field",
+                        "name": { "kind": "Name", "value": "timeUntilAiring" },
+                    }],
                 },
             }, { "kind": "Field", "name": { "kind": "Name", "value": "format" } }, {
                 "kind": "Field",
                 "name": { "kind": "Name", "value": "description" },
+                "arguments": [{
+                    "kind": "Argument",
+                    "name": { "kind": "Name", "value": "asHtml" },
+                    "value": { "kind": "BooleanValue", "value": false },
+                }],
             }, { "kind": "Field", "name": { "kind": "Name", "value": "source" } }, {
                 "kind": "Field",
                 "name": { "kind": "Name", "value": "studios" },

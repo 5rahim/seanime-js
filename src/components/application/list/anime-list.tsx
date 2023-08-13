@@ -10,6 +10,10 @@ import { BiStar } from "@react-icons/all-files/bi/BiStar"
 import { AnilistMedia } from "@/lib/anilist/fragment"
 import { Nullish } from "@/types/common"
 import { BiCalendarAlt } from "@react-icons/all-files/bi/BiCalendarAlt"
+import { IconButton } from "@/components/ui/button"
+import { BiCalendarEdit } from "@react-icons/all-files/bi/BiCalendarEdit"
+import { addSeconds, formatDistanceToNow } from "date-fns"
+import _ from "lodash"
 
 export type AnimeListItem = {
     // id: string | null | undefined,
@@ -46,12 +50,78 @@ export const AnimeList: React.FC<AnimeListProps> = (props) => {
                 return (
                     <div
                         key={item.media.id!}
-                        className={"h-full col-span-1 group/anime-list-item cursor-pointer relative flex flex-col place-content-stretch"}
+                        className={"h-full col-span-1 group/anime-list-item relative flex flex-col place-content-stretch focus-visible:outline-0"}
+
                     >
+
+                        {/*ACTION POPUP*/}
+                        <div className={cn(
+                            "absolute z-20 bg-gray-900 opacity-0 scale-70 border border-[--border]",
+                            "group-hover/anime-list-item:opacity-100 group-hover/anime-list-item:scale-100",
+                            "group-focus-visible/anime-list-item:opacity-100 group-focus-visible/anime-list-item:scale-100",
+                            "focus-visible:opacity-100 focus-visible:scale-100",
+                            "h-[105%] w-[100%] -top-[5%] rounded-md transition ease-in-out",
+                            "focus-visible:ring-2 ring-brand-400 focus-visible:outline-0",
+                        )} tabIndex={0}>
+                            <div className={"p-2 h-full w-full flex flex-col justify-between"}>
+                                {/*METADATA SECTION*/}
+                                <div className={"space-y-2"}>
+                                    <div className={"aspect-[4/2] relative rounded-md overflow-hidden"}>
+                                        {!!item.media.bannerImage ? <Image
+                                            src={item.media.bannerImage || ""}
+                                            alt={""}
+                                            fill
+                                            quality={100}
+                                            sizes="20rem"
+                                            className="object-cover object-center transition"
+                                        /> : <div
+                                            className={"h-full block absolute w-full bg-gradient-to-t from-gray-800 to-transparent"}></div>}
+                                    </div>
+                                    <div>
+                                        <Tooltip trigger={
+                                            <p className={"text-center font-medium text-sm min-[2000px]:text-lg px-4 truncate text-ellipsis"}>{item.media.title?.userPreferred}</p>
+                                        }>{item.media.title?.userPreferred}</Tooltip>
+                                    </div>
+                                    <div>
+                                        <p className={"text-sm text-[--muted] inline-flex gap-1 items-center"}>
+                                            <BiCalendarAlt/> {new Intl.DateTimeFormat("en-US", {
+                                            year: "numeric",
+                                            month: "short",
+                                        }).format(new Date(item.media.startDate?.year || 0, item.media.startDate?.month || 0))} - {_.capitalize(item.media.season ?? "")}
+                                        </p>
+                                    </div>
+                                    {!!item.media.nextAiringEpisode && (
+                                        <div className={"flex gap-1 items-center justify-center"}>
+                                            <p className={"text-xs min-[2000px]:text-md"}>Next episode:</p>
+                                            <Tooltip
+                                                tooltipClassName={"bg-gray-200 text-gray-800 font-semibold mb-1"}
+                                                trigger={
+                                                    <p className={"text-justify font-normal text-xs min-[2000px]:text-md"}>
+                                                        <Badge
+                                                            size={"sm"}>{item.media.nextAiringEpisode?.episode}</Badge>
+                                                    </p>
+                                                }>{formatDistanceToNow(addSeconds(new Date(), item.media.nextAiringEpisode?.timeUntilAiring), { addSuffix: true })}{}</Tooltip>
+                                        </div>
+                                    )}
+                                </div>
+                                <div>
+                                    <Tooltip trigger={<IconButton icon={<BiCalendarEdit/>} size={"sm"}
+                                                                  intent={"gray-subtle"}/>}>
+                                        Change watch dates
+                                    </Tooltip>
+                                </div>
+                            </div>
+                        </div>
+
                         <div
                             className="aspect-[6/7] flex-none rounded-md border border-[--border] object-cover object-center relative overflow-hidden"
                         >
 
+                            {/*BOTTOM GRADIENT*/}
+                            <div
+                                className={"z-[5] absolute bottom-0 w-full h-[50%] bg-gradient-to-t from-black to-transparent"}/>
+
+                            {/*RELEASED BADGE*/}
                             {item.media.status === "RELEASING" && <div className={"absolute z-10 right-1 top-1"}>
                                 <Tooltip
                                     trigger={<Badge intent={"primary-solid"} size={"lg"}><RiSignalTowerLine/></Badge>}>
@@ -59,6 +129,7 @@ export const AnimeList: React.FC<AnimeListProps> = (props) => {
                                 </Tooltip>
                             </div>}
 
+                            {/*NOT YET RELEASED BADGE*/}
                             {item.media.status === "NOT_YET_RELEASED" && <div className={"absolute z-10 right-1 top-1"}>
                                 <Tooltip
                                     trigger={<Badge intent={"warning-solid"} size={"lg"}><RiSignalTowerLine/></Badge>}>
@@ -73,6 +144,7 @@ export const AnimeList: React.FC<AnimeListProps> = (props) => {
                                 </Tooltip>
                             </div>}
 
+                            {/*SCORE BADGE*/}
                             {item.score !== undefined && <div className={"absolute z-10 right-1 bottom-1"}>
                                 <div className={cn(
                                     "backdrop-blur-lg inline-flex items-center justify-center gap-1 w-12 h-7 rounded-full font-bold bg-opacity-70 drop-shadow-sm shadow-lg",
@@ -82,6 +154,7 @@ export const AnimeList: React.FC<AnimeListProps> = (props) => {
                                 </div>
                             </div>}
 
+                            {/*PROGRESS BADGE*/}
                             {item.progress && <div className={"absolute z-10 left-1 bottom-1"}>
                                 <Badge intent={"gray-solid"}
                                        className={"bg-gray-800 border dark:border-[--border] border-[--border]"}
@@ -94,7 +167,7 @@ export const AnimeList: React.FC<AnimeListProps> = (props) => {
                                 fill
                                 quality={100}
                                 sizes="20rem"
-                                className="object-cover object-center group-hover/anime-list-item:scale-105 transition"
+                                className="object-cover object-center group-hover/anime-list-item:scale-125 transition"
                             />
                         </div>
                         <div className={"pt-2 space-y-2 flex flex-col justify-between h-full"}>
@@ -113,9 +186,8 @@ export const AnimeList: React.FC<AnimeListProps> = (props) => {
                                 </div>
                                 <div>
                                     <p className={"text-sm text-[--muted] inline-flex gap-1 items-center"}>
-                                        <BiCalendarAlt/> {new Intl.DateTimeFormat("en-US", {
+                                        <BiCalendarAlt/>{_.capitalize(item.media.season ?? "")} {new Intl.DateTimeFormat("en-US", {
                                         year: "numeric",
-                                        month: "short",
                                     }).format(new Date(item.media.startDate?.year || 0, item.media.startDate?.month || 0))}
                                     </p>
                                 </div>

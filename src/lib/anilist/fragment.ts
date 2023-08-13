@@ -86,6 +86,7 @@ export const _shortMediaFragment = gql`
         idMal
         siteUrl
         status(version: 2)
+        season
         title {
             userPreferred
             romaji
@@ -117,9 +118,10 @@ export const _shortMediaFragment = gql`
         nextAiringEpisode {
             airingAt
             episode
+            timeUntilAiring
         }
         format
-        description
+        description(asHtml: false)
         source
         studios(isMain: true) {
             nodes {
