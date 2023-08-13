@@ -40,6 +40,7 @@
     "@zag-js/react": "^0.15.0",
     "autoprefixer": "10.4.14",
     "axios": "^1.4.0",
+    "anitomyscript": "github:ThaUnknown/anitomyscript#42290c4b3f256893be08a4e89051f448ff5e9d00",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "collect.js": "^4.36.1",
@@ -81,7 +82,8 @@
     "@tauri-apps/cli": "^1.4.0",
     "@types/dinero.js": "^1.9.0",
     "@types/google.maps": "^3.53.6",
-    "@types/lodash": "^4.14.197"
+    "@types/lodash": "^4.14.197",
+    "@types/string-similarity": "^4.0.0"
   },
   "overrides": {
     "mpc-hc-control": {

@@ -9,10 +9,10 @@ import {
     LocalFile,
     LocalFileWithMedia,
 } from "@/lib/local-library/local-file"
+import { AnilistMedia } from "@/lib/anilist/fragment"
+import { Nullish } from "@/types/common"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
 import { AnimeCollectionDocument } from "@/gql/graphql"
-import { Nullish } from "@/types/common"
-import { AnilistMedia } from "@/lib/anilist/fragment"
 
 
 export async function retrieveLocalFilesAsLibraryEntries() {
@@ -23,13 +23,14 @@ export async function getAnimeTitlesFromLocalFiles() {
 
 }
 
+
 /**
  * Recursively get the files from the local directory
  * This method is an implementation of [retrieveLocalFiles]
  * - This method transforms the files from [LocalFile] to [LocalFileWithMedia]
  * @param settings
  */
-export async function retrieveLocalFilesWithMedia(settings: Settings, userName: Nullish<string>) {
+export async function _toLocalFilesWithMedia(settings: Settings, userName: Nullish<string>) {
     const currentPath = settings.library.localDirectory
 
     if (currentPath && userName) {
@@ -46,6 +47,7 @@ export async function retrieveLocalFilesWithMedia(settings: Settings, userName: 
             const created = await createLocalFileWithMedia(localFiles[i], allUserMedia)
             if (created) localFilesWithMedia.push(created)
         }
+        return localFilesWithMedia
 
     }
     return undefined

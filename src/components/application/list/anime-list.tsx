@@ -65,8 +65,8 @@ export const AnimeList: React.FC<AnimeListProps> = (props) => {
                         )} tabIndex={0}>
                             <div className={"p-2 h-full w-full flex flex-col justify-between"}>
                                 {/*METADATA SECTION*/}
-                                <div className={"space-y-2"}>
-                                    <div className={"aspect-[4/2] relative rounded-md overflow-hidden"}>
+                                <div className={"space-y-1"}>
+                                    <div className={"aspect-[4/2] relative rounded-md overflow-hidden mb-2"}>
                                         {!!item.media.bannerImage ? <Image
                                             src={item.media.bannerImage || ""}
                                             alt={""}
@@ -83,7 +83,7 @@ export const AnimeList: React.FC<AnimeListProps> = (props) => {
                                         }>{item.media.title?.userPreferred}</Tooltip>
                                     </div>
                                     <div>
-                                        <p className={"text-sm text-[--muted] inline-flex gap-1 items-center"}>
+                                        <p className={"justify-center text-sm text-[--muted] flex w-full gap-1 items-center"}>
                                             <BiCalendarAlt/> {new Intl.DateTimeFormat("en-US", {
                                             year: "numeric",
                                             month: "short",
@@ -103,10 +103,26 @@ export const AnimeList: React.FC<AnimeListProps> = (props) => {
                                                 }>{formatDistanceToNow(addSeconds(new Date(), item.media.nextAiringEpisode?.timeUntilAiring), { addSuffix: true })}{}</Tooltip>
                                         </div>
                                     )}
+
+                                    {/*PLAY BUTTON*/}
+                                    {/*TODO: Check if episode in library, if not show add button*/}
+                                    {/*<div>*/}
+                                    {/*    <div className={"py-1"}>*/}
+                                    {/*        <Button leftIcon={<BiPlay />} intent={"white"} size={"sm"} className={"w-full"}>Watch</Button>*/}
+                                    {/*    </div>*/}
+                                    {/*    <div className={"py-1"}>*/}
+                                    {/*        /!*This button will add the anime into the local library*!/*/}
+                                    {/*        <Button leftIcon={<BiBookmarkPlus />} intent={"warning-subtle"} size={"sm"} className={"w-full"}>Add to library</Button>*/}
+                                    {/*    </div>*/}
+                                    {/*</div>*/}
+
                                 </div>
                                 <div>
-                                    <Tooltip trigger={<IconButton icon={<BiCalendarEdit/>} size={"sm"}
-                                                                  intent={"gray-subtle"}/>}>
+                                    <Tooltip trigger={<IconButton
+                                        icon={<BiCalendarEdit/>}
+                                        size={"sm"}
+                                        intent={"gray-subtle"}/>}
+                                    >
                                         Change watch dates
                                     </Tooltip>
                                 </div>
