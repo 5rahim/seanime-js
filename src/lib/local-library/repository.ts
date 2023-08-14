@@ -12,7 +12,7 @@ import {
 import { AnilistMedia } from "@/lib/anilist/fragment"
 import { Nullish } from "@/types/common"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
-import { AnimeCollectionDocument } from "@/gql/graphql"
+import { AnimeCollectionDocument, ShowcaseMediaFragment } from "@/gql/graphql"
 
 
 export async function retrieveLocalFilesAsLibraryEntries() {
@@ -40,11 +40,27 @@ export async function _toLocalFilesWithMedia(settings: Settings, userName: Nulli
         const localFiles: LocalFile[] = []
         await getAllFilesRecursively(settings, currentPath, localFiles)
 
+        // const uniqueAnimeTitles = _.uniq(localFiles.flatMap(file => [file.parsedInfo?.title, ...file.parsedFolders.map(f2 => f2.title)]).filter(v => !!v))
+
+        // console.log(uniqueAnimeTitles)
+
         const allUserMedia = data.MediaListCollection?.lists?.map(n => n?.entries).flat().filter(entry => !!entry).map(entry => entry!.media) as AnilistMedia[] | undefined
+
+        // Get sequels, prequels... from each media as [ShowcaseMediaFragment]
+        let relatedMedia = ((
+            allUserMedia?.filter(media => !!media)
+                .flatMap(media => media.relations?.edges?.filter(edge => edge?.relationType === "PREQUEL" || edge?.relationType === "SEQUEL" || edge?.relationType === "SPIN_OFF" || edge?.relationType === "SIDE_STORY").flatMap(edge => edge?.node)
+                    ?? [])
+        ) ?? []) as ShowcaseMediaFragment[]
+
+        // let relatedMedia = (allUserMedia?.flatMap(media => media.relations?.nodes)?.filter(media => !!media) ?? []) as ShowcaseMediaFragment[]
+
+        // console.log(relatedMedia.filter(n => n.title?.romaji?.toLowerCase().includes("one piece")))
+        // console.log(allUserMedia?.filter(n => !n.title?.romaji?.includes("durara")))
 
         const localFilesWithMedia: LocalFileWithMedia[] = []
         for (let i = 0; i < localFiles.length; i++) {
-            const created = await createLocalFileWithMedia(localFiles[i], allUserMedia)
+            const created = await createLocalFileWithMedia(localFiles[i], allUserMedia, relatedMedia)
             if (created) localFilesWithMedia.push(created)
         }
         return localFilesWithMedia

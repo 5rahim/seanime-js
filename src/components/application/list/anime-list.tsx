@@ -14,6 +14,7 @@ import { IconButton } from "@/components/ui/button"
 import { BiCalendarEdit } from "@react-icons/all-files/bi/BiCalendarEdit"
 import { addSeconds, formatDistanceToNow } from "date-fns"
 import _ from "lodash"
+import { BiDownload } from "@react-icons/all-files/bi/BiDownload"
 
 export type AnimeListItem = {
     // id: string | null | undefined,
@@ -82,14 +83,16 @@ export const AnimeList: React.FC<AnimeListProps> = (props) => {
                                             <p className={"text-center font-medium text-sm min-[2000px]:text-lg px-4 truncate text-ellipsis"}>{item.media.title?.userPreferred}</p>
                                         }>{item.media.title?.userPreferred}</Tooltip>
                                     </div>
-                                    <div>
-                                        <p className={"justify-center text-sm text-[--muted] flex w-full gap-1 items-center"}>
-                                            <BiCalendarAlt/> {new Intl.DateTimeFormat("en-US", {
-                                            year: "numeric",
-                                            month: "short",
-                                        }).format(new Date(item.media.startDate?.year || 0, item.media.startDate?.month || 0))} - {_.capitalize(item.media.season ?? "")}
-                                        </p>
-                                    </div>
+                                    {!!item.media.season ? <div>
+                                            <p className={"justify-center text-sm text-[--muted] flex w-full gap-1 items-center"}>
+                                                <BiCalendarAlt/> {new Intl.DateTimeFormat("en-US", {
+                                                year: "numeric",
+                                                month: "short",
+                                            }).format(new Date(item.media.startDate?.year || 0, item.media.startDate?.month || 0))} - {_.capitalize(item.media.season ?? "")}
+                                            </p>
+                                        </div> :
+                                        <p className={"justify-center text-sm text-[--muted] flex w-full gap-1 items-center"}>Not
+                                            yet released</p>}
                                     {!!item.media.nextAiringEpisode && (
                                         <div className={"flex gap-1 items-center justify-center"}>
                                             <p className={"text-xs min-[2000px]:text-md"}>Next episode:</p>
@@ -117,7 +120,7 @@ export const AnimeList: React.FC<AnimeListProps> = (props) => {
                                     {/*</div>*/}
 
                                 </div>
-                                <div>
+                                <div className={"flex gap-1"}>
                                     <Tooltip trigger={<IconButton
                                         icon={<BiCalendarEdit/>}
                                         size={"sm"}
@@ -125,6 +128,17 @@ export const AnimeList: React.FC<AnimeListProps> = (props) => {
                                     >
                                         Change watch dates
                                     </Tooltip>
+                                    <Tooltip trigger={<IconButton
+                                        icon={<BiStar/>}
+                                        size={"sm"}
+                                        intent={"gray-subtle"}/>}
+                                    >
+                                        Change score
+                                    </Tooltip>
+                                    <IconButton
+                                        icon={<BiDownload/>}
+                                        size={"sm"}
+                                        intent={"warning-subtle"}/>
                                 </div>
                             </div>
                         </div>
@@ -137,7 +151,7 @@ export const AnimeList: React.FC<AnimeListProps> = (props) => {
                             <div
                                 className={"z-[5] absolute bottom-0 w-full h-[50%] bg-gradient-to-t from-black to-transparent"}/>
 
-                            {/*RELEASED BADGE*/}
+                            {/*RELEASING BADGE*/}
                             {item.media.status === "RELEASING" && <div className={"absolute z-10 right-1 top-1"}>
                                 <Tooltip
                                     trigger={<Badge intent={"primary-solid"} size={"lg"}><RiSignalTowerLine/></Badge>}>

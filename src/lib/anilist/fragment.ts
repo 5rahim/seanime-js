@@ -1,7 +1,8 @@
 import gql from "graphql-tag"
-import { ShortMediaFragment } from "@/gql/graphql"
+import { ShortMediaFragment, ShowcaseMediaFragment } from "@/gql/graphql"
 
 export type AnilistMedia = ShortMediaFragment
+export type AnilistSimpleMedia = ShowcaseMediaFragment
 
 export const _mediaFragment = gql`
     fragment media on Media {
@@ -128,11 +129,55 @@ export const _shortMediaFragment = gql`
                 name
             }
         }
+        relations {
+            edges {
+                relationType(version: 2)
+                node {
+                    ...showcaseMedia
+                }
+            }
+        }
         countryOfOrigin
         startDate {
             year
             month
             day
+        }
+    }
+`
+
+
+export const _shortMediaWithoutRelationsFragment = gql`
+    fragment showcaseMedia on Media {
+        id
+        idMal
+        siteUrl
+        status(version: 2)
+        season
+        title {
+            userPreferred
+            romaji
+            english
+            native
+        }
+        coverImage {
+            extraLarge
+            large
+            medium
+            color
+        }
+        bannerImage
+        episodes
+        synonyms
+        startDate {
+            year
+            month
+            day
+        }
+        nextAiringEpisode {
+            airingAt
+            timeUntilAiring
+            episode
         }
     }
 `
