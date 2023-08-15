@@ -68,8 +68,6 @@ export default abstract class Parser {
                                 break
                             }
                         }
-                        //console.debug(`${key} > process > previous value = ${previous || "(none)"}`)
-                        //console.debug(`${key} > process > current value = ${result[key]}`)
                         //Put matching regex in queue for removal
                         removes.push(...matches.regexs)
                     }
@@ -173,6 +171,7 @@ export default abstract class Parser {
                 }
                 //Re-reverse string
                 value = [...value].reverse().join("")
+
                 //Post-processor name refiners
                 {
                     //If audio is not defined or doesn't include multi but post processor test is positive
@@ -181,24 +180,58 @@ export default abstract class Parser {
                         //console.debug(`audio > post-process > current value = ${result.audio}`)
                         value = Parser.clean({ value, removes: [regexs.processors.post.audio.possible_multi_audio] })
                     }
-                    //If episode is not definned, we may be able to find it
+                    //If episode is not defined, we may be able to find it
                     if ((!result.episode) && (regexs.processors.post.serie.possible_episode.test(value))) {
                         result.episode = value.match(regexs.processors.post.serie.possible_episode)?.groups?.episode
                         //console.debug(`episode > post-process > current value = ${result.episode}`)
                         value = Parser.clean({ value, removes: [regexs.processors.post.serie.possible_episode] })
                     }
-                    if (!result.episode) { // If episode is not defined but title contains "01x02" or "1x2"
-                        const matches = value.match(/\b[(\[)]?S?(?<a>0?\d+)\s?x\s?E?(?<b>0?\d+)[)\]]?\b/)
+                    if (!result.episode) { // If episode is not defined but title contains "1_5" -> Episode 1
+                        const matches = value.match(/\b[(\[)]?(?<a>0?\d+)_(?<b>0?\d+)[)\]]?\b/)
+                        const a = matches?.groups?.a
+                        if (a) {
+                            if ((Number(a)) || ((regexs.processors.post.serie.leading_zero.test(a)))) {
+                                result["episode"] = Number(a).toString()
+                                value = Parser.clean({
+                                    value,
+                                    removes: [/\b[(\[)]?(?<a>0?\d+)_(?<b>0?\d+)[)\]]?\b/],
+                                })
+                            }
+                        }
+                    }
+                    if (!result.episode) { // If episode is not defined but title contains "S1_5" or "S1_E5" -> Season 1, Episode 5
+                        const matches = value.match(/[-._ ][Ss](?<a>\d+)_E?(?<b>\d+)/)
                         const a = matches?.groups?.a
                         const b = matches?.groups?.b
-                        if (a && b) { // eg: 01 03
+                        if (a && b) {
                             if ((Number(a)) || ((regexs.processors.post.serie.leading_zero.test(a)))) {
                                 if ((Number(b)) || ((regexs.processors.post.serie.leading_zero.test(b)))) {
-                                    result["season"] = Number(a).toString()
+                                    if (!result.season) {
+                                        result["season"] = Number(a).toString()
+                                    }
                                     result["episode"] = Number(b).toString()
                                     value = Parser.clean({
                                         value,
-                                        removes: [/\b[(\[)]?S?(?<a>0?\d+)\s?x\s?E?(?<b>0?\d+)[)\]]?\b/],
+                                        removes: [/[-._ ][Ss](?<a>\d+)_E?(?<b>\d+)/],
+                                    })
+                                }
+                            }
+                        }
+                    }
+                    if (!result.episode) { // If episode is not defined but title contains "01x02" or "1x2" -> Season 1, Episode 2
+                        const matches = value.match(/\b[(\[)]?S?(?<a>0?\d+)xE?(?<b>0?\d+)[)\]]?\b/)
+                        const a = matches?.groups?.a
+                        const b = matches?.groups?.b
+                        if (a && b) {
+                            if ((Number(a)) || ((regexs.processors.post.serie.leading_zero.test(a)))) {
+                                if ((Number(b)) || ((regexs.processors.post.serie.leading_zero.test(b)))) {
+                                    if (!result.season) {
+                                        result["season"] = Number(a).toString()
+                                    }
+                                    result["episode"] = Number(b).toString()
+                                    value = Parser.clean({
+                                        value,
+                                        removes: [/\b[(\[)]?S?(?<a>0?\d+)xE?(?<b>0?\d+)[)\]]?\b/],
                                     })
                                 }
                             }
@@ -275,7 +308,7 @@ export default abstract class Parser {
                         // else
                         if (regexs.processors.post.serie.single.test(value)) {// eg: 5
                             value = Number(value).toString()
-                        } else {
+                        } else if (regexs.processors.post.serie.versioned.test(value)) { // eg: 5 2
                             const [a, b] = value.trim().split(/\s+/)
                             if (a && b) { // eg: 01 03
                                 if ((Number(a)) || ((regexs.processors.post.serie.leading_zero.test(a)))) {
@@ -363,9 +396,8 @@ export default abstract class Parser {
 
             { key: "none", collection: regexs.serie.episode.range.extract, get: "value", clean: true, mode: "skip" },
             { key: "episode", collection: regexs.serie.episode.single.extract, get: "value" },
-            // { key: "episode", collection: regexs.serie.episode.range.keep, get: "value", clean: false, mode: "skip" },
+            //////////////////////// { key: "episode", collection: regexs.serie.episode.range.keep, get: "value", clean: false, mode: "skip" },
             { key: "episode", collection: regexs.serie.episode.single.keep, get: "value", clean: false, mode: "skip" },
-            // { key: "episode", collection: regexs.serie.episode.version.keep, get: "value", clean: false, mode: "skip" }, //
             { key: "meta", collection: regexs.meta.data },
             { cleaners: regexs.cleaners.misc },
         )

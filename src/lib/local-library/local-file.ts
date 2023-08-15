@@ -153,10 +153,10 @@ export const createLocalFileWithMedia = async (file: LocalFile, allUserMedia: An
  * -    This sequence: Parent folder season -> File season
  * -        example: `Vinland Saga \ Season 2 \ Vinland Saga S02E01.mkv`    -> 2
  * -        example: `Vinland Saga \ Vinland Saga S02E01.mkv`               -> 2
- * - Find variations of the title containing the seasons for comparison
+ * -    Find variations of the title containing the seasons for comparison
  * -    example: `Vinland Saga \ Season 2 \ Episode 1.mkv`                  -> ["Vinland Saga Season 2", ...]
  * -    example: `Vinland Saga \ S02E01.mkv`                                -> ["Vinland Saga Season 2", ...]
- * -    example: `Vinland Saga \ S01E01.mkv`                                -> ["Vinland Saga", ...]
+ * -    example: `Vinland Saga \ S01E01.mkv`                                -> ["Vinland Saga", "Vinland Saga Season 1", ...]
  * - Find similar title from Dice's coefficient
  * - Find similar title from Levenshtein's algorithm
  * - Find similar title from MAL's elastic search
@@ -175,7 +175,7 @@ async function findBestCorrespondingMedia(allMedia: AnilistMedia[], parsed: Anim
 
 
     function debug(...value: any[]) {
-        // if (parsed.original.toLowerCase().includes("e01")) console.log(...value)
+        if (parsed.original.toLowerCase().includes("evangelion")) console.log(...value)
     }
 
     let folderParsed: AnimeFileInfo | undefined
@@ -218,31 +218,33 @@ async function findBestCorrespondingMedia(allMedia: AnilistMedia[], parsed: Anim
     // eg: ANIME S02 \ ANIME 25.mp4 -> ["ANIME Season 2", "ANIME S2"]
     // eg: ANIME \ ANIME S02E01.mp4 -> ["ANIME Season 2", "ANIME S2"]
     // eg: ANIME \ ANIME 25.mp4 -> undefined
-    const titlesWithSeason = (
-        (seasonAsNumber && seasonAsNumber !== 1)
-        || (folderSeasonAsNumber && folderSeasonAsNumber !== 1)
-    ) ? [
-        `${_title} Season ${seasonAsNumber || folderSeasonAsNumber}`,
-        `${_title} Part ${seasonAsNumber || folderSeasonAsNumber}`,
-        `${_title} Cour ${seasonAsNumber || folderSeasonAsNumber}`,
-        `${_title} Part ${romanize(seasonAsNumber || folderSeasonAsNumber!)}`,
-        `${_title} S${seasonAsNumber || folderSeasonAsNumber}`,
-        `${_title} ${ordinalize(parsed.season || folderParsed?.season!)} Season`,
-    ].filter(Boolean) : undefined
-    const titlesWithSeasonOne = (
-        (seasonAsNumber && seasonAsNumber === 1)
-        || (folderSeasonAsNumber && folderSeasonAsNumber === 1)
-    ) ? [
-        _title,
-        `${_title} Season ${seasonAsNumber || folderSeasonAsNumber}`,
-        `${_title} Part ${seasonAsNumber || folderSeasonAsNumber}`,
-        `${_title} Cour ${seasonAsNumber || folderSeasonAsNumber}`,
-        `${_title} Part ${romanize(seasonAsNumber || folderSeasonAsNumber!)}`,
-        `${_title} S${seasonAsNumber || folderSeasonAsNumber}`,
-        `${_title} ${ordinalize(parsed.season || folderParsed?.season!)} Season`,
-    ].filter(Boolean) : undefined
-    // If we did not manage to parse a season either in the parent folder or the file title, just use the original title
-    let titleVariations = titlesWithSeason || titlesWithSeasonOne || [_title]
+    let titleVariations = [
+        (!seasonAsNumber && !folderSeasonAsNumber && _folderTitle) ? _folderTitle : undefined,
+        (!seasonAsNumber && !folderSeasonAsNumber && parsed.title) ? parsed.title : undefined,
+        (parsed.title && _folderTitle && (!parsed.title.toLowerCase().includes(_folderTitle.toLowerCase())) && (!seasonAsNumber && !folderSeasonAsNumber)) ? `${_folderTitle} ${parsed.title}` : undefined,
+
+        (_folderTitle && ((seasonAsNumber && seasonAsNumber <= 1) || (folderSeasonAsNumber && folderSeasonAsNumber <= 1))) ? _folderTitle : undefined,
+        (parsed.title && ((seasonAsNumber && seasonAsNumber <= 1) || (folderSeasonAsNumber && folderSeasonAsNumber <= 1))) ? parsed.title : undefined,
+
+        (_folderTitle && (!parsed.title.toLowerCase().includes(_folderTitle.toLowerCase())) && (seasonAsNumber || folderSeasonAsNumber)) ? `${_folderTitle} Season ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
+        (_folderTitle && (!parsed.title.toLowerCase().includes(_folderTitle.toLowerCase())) && (seasonAsNumber || folderSeasonAsNumber)) ? `${_folderTitle} Part ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
+        (_folderTitle && (!parsed.title.toLowerCase().includes(_folderTitle.toLowerCase())) && (seasonAsNumber || folderSeasonAsNumber)) ? `${_folderTitle} Cour ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
+        (_folderTitle && (!parsed.title.toLowerCase().includes(_folderTitle.toLowerCase())) && (seasonAsNumber || folderSeasonAsNumber)) ? `${_folderTitle} Part ${romanize(seasonAsNumber || folderSeasonAsNumber!)}` : undefined,
+        (_folderTitle && (!parsed.title.toLowerCase().includes(_folderTitle.toLowerCase())) && (seasonAsNumber || folderSeasonAsNumber)) ? `${_folderTitle} S${seasonAsNumber || folderSeasonAsNumber}` : undefined,
+        (_folderTitle && (!parsed.title.toLowerCase().includes(_folderTitle.toLowerCase())) && (seasonAsNumber || folderSeasonAsNumber)) ? `${_folderTitle} ${ordinalize(parsed.season || folderParsed?.season!)} Season` : undefined,
+        (parsed.title && (seasonAsNumber || folderSeasonAsNumber)) ? `${parsed.title} Season ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
+        (parsed.title && (seasonAsNumber || folderSeasonAsNumber)) ? `${parsed.title} Part ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
+        (parsed.title && (seasonAsNumber || folderSeasonAsNumber)) ? `${parsed.title} Cour ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
+        (parsed.title && (seasonAsNumber || folderSeasonAsNumber)) ? `${parsed.title} Part ${romanize(seasonAsNumber || folderSeasonAsNumber!)}` : undefined,
+        (parsed.title && (seasonAsNumber || folderSeasonAsNumber)) ? `${parsed.title} S${seasonAsNumber || folderSeasonAsNumber}` : undefined,
+        (parsed.title && (seasonAsNumber || folderSeasonAsNumber)) ? `${parsed.title} ${ordinalize(parsed.season || folderParsed?.season!)} Season` : undefined,
+        (parsed.title && _folderTitle && (!parsed.title.toLowerCase().includes(_folderTitle.toLowerCase())) && (seasonAsNumber || folderSeasonAsNumber)) ? `${_folderTitle} ${parsed.title} Season ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
+        (parsed.title && _folderTitle && (!parsed.title.toLowerCase().includes(_folderTitle.toLowerCase())) && (seasonAsNumber || folderSeasonAsNumber)) ? `${_folderTitle} ${parsed.title} Part ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
+        (parsed.title && _folderTitle && (!parsed.title.toLowerCase().includes(_folderTitle.toLowerCase())) && (seasonAsNumber || folderSeasonAsNumber)) ? `${_folderTitle} ${parsed.title} Cour ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
+        (parsed.title && _folderTitle && (!parsed.title.toLowerCase().includes(_folderTitle.toLowerCase())) && (seasonAsNumber || folderSeasonAsNumber)) ? `${_folderTitle} ${parsed.title} Part ${romanize(seasonAsNumber || folderSeasonAsNumber!)}` : undefined,
+        (parsed.title && _folderTitle && (!parsed.title.toLowerCase().includes(_folderTitle.toLowerCase())) && (seasonAsNumber || folderSeasonAsNumber)) ? `${_folderTitle} ${parsed.title} S${seasonAsNumber || folderSeasonAsNumber}` : undefined,
+        (parsed.title && _folderTitle && (!parsed.title.toLowerCase().includes(_folderTitle.toLowerCase())) && (seasonAsNumber || folderSeasonAsNumber)) ? `${_folderTitle} ${parsed.title} ${ordinalize(parsed.season || folderParsed?.season!)} Season` : undefined,
+    ].filter(Boolean)
 
     // Handle movie
     titleVariations = titleVariations.map(value => value.toLowerCase())
@@ -251,7 +253,7 @@ async function findBestCorrespondingMedia(allMedia: AnilistMedia[], parsed: Anim
      * Using string-similarity
      */
 
-    let similarTitleMatching = titleVariations.filter(Boolean).map((tValue) => {
+    let similarTitleMatching = titleVariations?.filter(Boolean).map((tValue) => {
         const engResult = similarity.findBestMatch(tValue, mediaEngTitles.map(value => value.toLowerCase()))
         const romResult = similarity.findBestMatch(tValue, mediaRomTitles.map(value => value.toLowerCase()))
         const preferredResult = similarity.findBestMatch(tValue, mediaPreferredTitles.map(value => value.toLowerCase()))
@@ -259,7 +261,7 @@ async function findBestCorrespondingMedia(allMedia: AnilistMedia[], parsed: Anim
             return prev.bestMatch.rating >= curr.bestMatch.rating ? prev : curr // Higher rating
         })
         return { titleVale: tValue, bestResult }
-    })
+    }) ?? []
     similarTitleMatching = _.sortBy(similarTitleMatching, n => n.bestResult.bestMatch.rating).reverse()
 
     const bestResult = similarTitleMatching?.[0]?.bestResult
@@ -309,52 +311,63 @@ async function findBestCorrespondingMedia(allMedia: AnilistMedia[], parsed: Anim
 
     let differentFoundMedia = [correspondingMediaFromMAL, correspondingMediaUsingSimilarity, correspondingMediaFromDistance].filter(Boolean)
 
+
     debug("-----------------------------------------------------")
 
     const best_userPreferred = eliminateLeastSimilarElement(differentFoundMedia.map(n => n.title?.userPreferred?.toLowerCase()).filter(Boolean))
     const best_english = eliminateLeastSimilarElement(differentFoundMedia.map(n => n.title?.english?.toLowerCase()).filter(Boolean))
     const best_romaji = eliminateLeastSimilarElement(differentFoundMedia.map(n => n.title?.romaji?.toLowerCase()).filter(Boolean))
 
+    debug(titleVariations)
+    debug("-------------------")
+
     debug(differentFoundMedia.map(n => n.title?.userPreferred?.toLowerCase()).filter(Boolean))
     debug(differentFoundMedia.map(n => n.title?.english?.toLowerCase()).filter(Boolean))
     debug(differentFoundMedia.map(n => n.title?.romaji?.toLowerCase()).filter(Boolean))
 
-    debug("---------------")
+    debug("------------------------------------------------------")
 
-    debug(best_userPreferred)
-    debug(best_english)
-    debug(best_romaji)
+    // debug(best_userPreferred)
+    // debug(best_english)
+    // debug(best_romaji)
 
-    const best = titleVariations.map(title => {
-        const matchingUserPreferred = similarity.findBestMatch(title.toLowerCase(), best_userPreferred)
-        const matchingEnglish = similarity.findBestMatch(title.toLowerCase(), best_english)
-        const matchingRomaji = similarity.findBestMatch(title.toLowerCase(), best_romaji)
+    let bestArr = titleVariations.filter(Boolean).map(title => {
+        const matchingUserPreferred = best_userPreferred.length > 0 ? similarity.findBestMatch(title.toLowerCase(), best_userPreferred) : undefined
+        const matchingEnglish = best_english.length > 0 ? similarity.findBestMatch(title.toLowerCase(), best_english) : undefined
+        const matchingRomaji = best_romaji.length > 0 ? similarity.findBestMatch(title.toLowerCase(), best_romaji) : undefined
 
-        return [matchingUserPreferred, matchingEnglish, matchingRomaji].reduce((prev, val) => {
+        if ([matchingUserPreferred, matchingEnglish, matchingRomaji].filter(Boolean).length === 0) return undefined
+
+        return [matchingUserPreferred, matchingEnglish, matchingRomaji].filter(Boolean).reduce((prev, val) => {
             return val.bestMatch.rating >= prev.bestMatch.rating ? val : prev
         })
-    }).reduce((prev, val) => {
+    }).filter(Boolean)
+
+    let best = bestArr.length > 0 ? bestArr.reduce((prev, val) => {
         return val.bestMatch.rating >= prev.bestMatch.rating ? val : prev
-    })
+    }) : undefined
 
     let rating: number = 0
+    let bestMedia: AnilistSimpleMedia | undefined
 
-    const bestMedia = allMedia.find(media => {
-        // Sometimes torrents are released by episode number and not grouped by season
-        // So remove preceding seasons
-        if (!seasonAsNumber && media.episodes && episodeAsNumber) {
-            if (episodeAsNumber >= media.episodes) return false
-        }
-        if (media.title?.userPreferred?.toLowerCase() === best.bestMatch.target.toLowerCase()
-            || media.title?.english?.toLowerCase() === best.bestMatch.target.toLowerCase()
-            || media.title?.romaji?.toLowerCase() === best.bestMatch.target.toLowerCase()) {
-            // console.log(titleVariations, media.title?.romaji?.toLowerCase(), best.bestMatch.rating)
-            rating = best.bestMatch.rating
-            return true
-        } else {
-            return false
-        }
-    })
+    if (best) {
+        bestMedia = allMedia.find(media => {
+            // Sometimes torrents are released by episode number and not grouped by season
+            // So remove preceding seasons
+            if (!seasonAsNumber && media.episodes && episodeAsNumber) {
+                if (episodeAsNumber > media.episodes) return false
+            }
+            if (media.title?.userPreferred?.toLowerCase() === best!.bestMatch.target.toLowerCase()
+                || media.title?.english?.toLowerCase() === best!.bestMatch.target.toLowerCase()
+                || media.title?.romaji?.toLowerCase() === best!.bestMatch.target.toLowerCase()) {
+                // console.log(titleVariations, media.title?.romaji?.toLowerCase(), best!.bestMatch.rating)
+                rating = best!.bestMatch.rating
+                return true
+            } else {
+                return false
+            }
+        })
+    }
 
     // debug(titleVariations, bestMedia?.title)
 
@@ -369,7 +382,7 @@ function getDistanceFromTitle(media: AnilistSimpleMedia, values: string[]) {
         const titles = Object.values(media.title).filter(v => !!v).flatMap(title => values.map(unit => lavenshtein(title!.toLowerCase(), unit!.toLowerCase())))
         const synonyms = media.synonyms?.filter(v => !!v).flatMap(title => values.map(unit => lavenshtein(title!.toLowerCase(), unit!.toLowerCase()) + 2))
         const distances = [...titles, ...(synonyms || [])]
-        const min = distances.reduce((prev, curr) => prev < curr ? prev : curr)
+        const min = distances.length > 0 ? distances.reduce((prev, curr) => prev < curr ? prev : curr) : 999999999999999
         return {
             media,
             distance: min,
@@ -397,6 +410,10 @@ function romanize(num: number) {
 
 
 function eliminateLeastSimilarElement(arr: string[]): string[] {
+
+    if (arr.length === 1) return arr
+    if (arr.length === 2) return arr
+
     let leastSimilarIndex = -1
     let leastSimilarScore = Number.MAX_VALUE
 

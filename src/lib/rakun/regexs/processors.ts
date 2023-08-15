@@ -23,6 +23,7 @@ export default {
             //Isolated characters (including dash)
             isolated: [
                 /[-_.+,]\s[-_.+,]/g,
+                /[-_.+,][-_.+,]/g,
                 /[\[(]\s[-_.+,]\s[\])]/g,
                 /[-_.+,]\s*$/g,
             ],
@@ -37,6 +38,7 @@ export default {
         resolution: {
             //Maybe it was impossible to determine whether it was a resolution or not (these are applied after episode post-processing to avoid confusion with episode number)
             possible_resolution: [
+                /(?<_1080p>\b4K\b|[-_. ]4K$)/,
                 /(?<_1080p>\b1080\b|[-_. ]1080$)/,
                 /(?<_720p>\b720\b|[-_. ]720$)/,
                 /(?<_576p>\b576\b|[-_. ]576$)/,
@@ -52,7 +54,7 @@ export default {
             //Maybe it was impossible to match episode number previously (1 is not enough, 4 may be date)
             possible_episode: /\s+(?<episode>\d{2,3})\s*$/,
 
-            version: /^\s*(?<a>\d+)\s+(?<b>\d+)\s*$/,
+            versioned: /^(?<a>\d+)\s+(?<b>\d+)$/, // Episode was versioned `01v2` and only `01 2` is `left
             //Episode range
             // range: /^\s*(?<a>\d+)\s+(?<b>\d+)\s*$/,
             //Single episode

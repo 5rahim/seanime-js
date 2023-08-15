@@ -25,6 +25,8 @@ export default {
                 /#(?<episode>\d+)(?: |$)/,
                 /\s(?<episode>0\d+)'(?: |$)/, // 01'
                 /\s(?<episode>\d+)'(?: |$)/, // 1234'
+                /\s(?<episode>\d+)[.v](\d{0,2})(?: |$)/, // ` 01v2` `01v2 `
+                /(?<=[a-zA-Z])\s(?<episode>\d+)\s(?=[a-zA-Z])/, // KEEP `Mieruko-chan [10] She sees`
             ],
             keep: [
                 /\bS\d+E(?<episode>\d+)\b/,
@@ -32,9 +34,9 @@ export default {
                 /\bE(?<episode>\d{2,3})\b/,
                 /\b(?<episode>0\d+)\b/,
                 /\s(?<episode>0\d+)$/,
-                /- \b(?<episode>\d+)(?= |$)\b/, // `This - 01 - [02]`, `Not this - 01 Text here`
-                /\s(?<episode>0\d+)[.v](?<version>\d{0,2})?(?: |$)/,
-                /\s(?<episode>\d{1,3})[.v](?<version>\d{0,2})?(?: |$)/,
+                /- \b(?<episode>\d+)(?= |$)\b/, // KEEP `This - 01 - [02]`, NOT `Not this - 01 Text here`
+                // /\s(?<episode>0\d+)[.v](?<version>\d{0,2})?(?: |$)/,
+                // /\s(?<episode>\d{1,3})[.v](?<version>\d{0,2})?(?: |$)/,
             ],
         },
         // Version
@@ -108,8 +110,9 @@ export default {
                 /\b(?<season>10)th [Ss]eason\b/,
                 /\b[\(\[)]?[Ss]eason (?<season>\d+)[\)\]]?\b/,
                 /\b[\(\[)]?[Ss]aison (?<season>\d+)[\)\]]?\b/,
+
                 /[-._ ]S(?<season>\d+)(?=E\d)/,
-                /\bS(?<season>\d+)\b/,
+                /\b[Ss](?<season>\d+)\b/,
             ],
             keep: [],
         },

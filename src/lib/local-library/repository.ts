@@ -3,17 +3,13 @@ import { Settings } from "@/atoms/settings"
 import path from "path"
 import fs from "fs/promises"
 import { Dirent } from "fs"
-import {
-    createLocalFile,
-    createLocalFileWithMedia,
-    LocalFile,
-    LocalFileWithMedia,
-} from "@/lib/local-library/local-file"
+import { createLocalFile, createLocalFileWithMedia, LocalFile } from "@/lib/local-library/local-file"
 import { AnilistMedia } from "@/lib/anilist/fragment"
 import { Nullish } from "@/types/common"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
 import { AnimeCollectionDocument, ShowcaseMediaFragment } from "@/gql/graphql"
 import { fileSnapshot } from "@/lib/local-library/mock"
+import { PromiseBatch } from "@/lib/helpers/batch"
 
 
 export async function retrieveLocalFilesAsLibraryEntries(settings: Settings, userName: Nullish<string>) {
@@ -58,9 +54,9 @@ export async function _toLocalFilesWithMedia(settings: Settings, userName: Nulli
         const data = await useAniListAsyncQuery(AnimeCollectionDocument, { userName })
 
         const localFiles: LocalFile[] = []
-        // FIXME Mocking
-        // await getAllFilesRecursively(settings, currentPath, localFiles)
-        await mock_getAllFilesRecursively(settings, currentPath, localFiles)
+        // TODO FIXME Mocking
+        await getAllFilesRecursively(settings, currentPath, localFiles)
+        // await mock_getAllFilesRecursively(settings, currentPath, localFiles)
 
         // const uniqueAnimeTitles = _.uniq(localFiles.flatMap(file => [file.parsedInfo?.title, ...file.parsedFolders.map(f2 => f2.title)]).filter(v => !!v))
         // console.log(uniqueAnimeTitles)
@@ -79,12 +75,14 @@ export async function _toLocalFilesWithMedia(settings: Settings, userName: Nulli
         // console.log(relatedMedia.filter(n => n.title?.romaji?.toLowerCase()?.includes("kimi no todoke")))
         // console.log(allUserMedia?.filter(n => n.title?.romaji?.toLowerCase()?.includes("mononogatari")).flatMap(a => a.relations?.edges?.map(b => b?.node)))
 
-        const localFilesWithMedia: LocalFileWithMedia[] = []
-        for (let i = 0; i < localFiles.length; i++) {
-            const created = await createLocalFileWithMedia(localFiles[i], allUserMedia, relatedMedia)
-            if (created) localFilesWithMedia.push(created)
-        }
-        return localFilesWithMedia
+        // const localFilesWithMedia: LocalFileWithMedia[] = []
+        // for (let i = 0; i < localFiles.length; i++) {
+        //     const created = await createLocalFileWithMedia(localFiles[i], allUserMedia, relatedMedia)
+        //     if (created) localFilesWithMedia.push(created)
+        // }
+        // return localFilesWithMedia
+
+        return await PromiseBatch(createLocalFileWithMedia, localFiles, allUserMedia, relatedMedia, 10)
 
     }
     return undefined
