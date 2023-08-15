@@ -148,20 +148,13 @@ export const createLocalFileWithMedia = async (file: LocalFile, allUserMedia: An
  * This method employs 3 comparison algorithms: Dice's coefficient (string-similarity), Levenshtein's algorithm, and MAL's elastic search algorithm
  * - Get the media titles from 3 possibles values (userPreferred, english, and romaji)
  * - Parse the title that will be used for comparison
- * -    This sequence: Root folder title -> Parent folder title -> File title
  * - Parse a season
- * -    This sequence: Parent folder season -> File season
- * -        example: `Vinland Saga \ Season 2 \ Vinland Saga S02E01.mkv`    -> 2
- * -        example: `Vinland Saga \ Vinland Saga S02E01.mkv`               -> 2
- * -    Find variations of the title containing the seasons for comparison
- * -    example: `Vinland Saga \ Season 2 \ Episode 1.mkv`                  -> ["Vinland Saga Season 2", ...]
- * -    example: `Vinland Saga \ S02E01.mkv`                                -> ["Vinland Saga Season 2", ...]
- * -    example: `Vinland Saga \ S01E01.mkv`                                -> ["Vinland Saga", "Vinland Saga Season 1", ...]
- * - Find similar title from Dice's coefficient
- * - Find similar title from Levenshtein's algorithm
+ * - Find variations of the title containing the seasons for comparison
+ * - Find similar title in watch list from Dice's coefficient
+ * - Find similar title in watch list from Levenshtein's algorithm
  * - Find similar title from MAL's elastic search
  * - From these 3 best matches, eliminate the least similar one using Dice's coefficient
- * - From these 2 best matches, find the most similar to the title variations using Dice's coefficient
+ * - From these 2 best matches, find the most similar to the title using Dice's coefficient
  * - Compare the best match titles (===) to a media
  *
  * /!\ IMPORTANT
@@ -175,7 +168,7 @@ async function findBestCorrespondingMedia(allMedia: AnilistMedia[], parsed: Anim
 
 
     function debug(...value: any[]) {
-        if (parsed.original.toLowerCase().includes("evangelion")) console.log(...value)
+        // if (parsed.original.toLowerCase().includes("evangelion")) console.log(...value)
     }
 
     let folderParsed: AnimeFileInfo | undefined
@@ -226,24 +219,26 @@ async function findBestCorrespondingMedia(allMedia: AnilistMedia[], parsed: Anim
         (_folderTitle && ((seasonAsNumber && seasonAsNumber <= 1) || (folderSeasonAsNumber && folderSeasonAsNumber <= 1))) ? _folderTitle : undefined,
         (parsed.title && ((seasonAsNumber && seasonAsNumber <= 1) || (folderSeasonAsNumber && folderSeasonAsNumber <= 1))) ? parsed.title : undefined,
 
-        (_folderTitle && (!parsed.title.toLowerCase().includes(_folderTitle.toLowerCase())) && (seasonAsNumber || folderSeasonAsNumber)) ? `${_folderTitle} Season ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
-        (_folderTitle && (!parsed.title.toLowerCase().includes(_folderTitle.toLowerCase())) && (seasonAsNumber || folderSeasonAsNumber)) ? `${_folderTitle} Part ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
-        (_folderTitle && (!parsed.title.toLowerCase().includes(_folderTitle.toLowerCase())) && (seasonAsNumber || folderSeasonAsNumber)) ? `${_folderTitle} Cour ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
-        (_folderTitle && (!parsed.title.toLowerCase().includes(_folderTitle.toLowerCase())) && (seasonAsNumber || folderSeasonAsNumber)) ? `${_folderTitle} Part ${romanize(seasonAsNumber || folderSeasonAsNumber!)}` : undefined,
-        (_folderTitle && (!parsed.title.toLowerCase().includes(_folderTitle.toLowerCase())) && (seasonAsNumber || folderSeasonAsNumber)) ? `${_folderTitle} S${seasonAsNumber || folderSeasonAsNumber}` : undefined,
-        (_folderTitle && (!parsed.title.toLowerCase().includes(_folderTitle.toLowerCase())) && (seasonAsNumber || folderSeasonAsNumber)) ? `${_folderTitle} ${ordinalize(parsed.season || folderParsed?.season!)} Season` : undefined,
+        // (There is a folder title BUT no file Title) OR (there is a folder title and that title is not in the file title)  -> Use folder title
+        (_folderTitle && !parsed.title) || (_folderTitle && (!parsed.title.toLowerCase().includes(_folderTitle.toLowerCase())) && (seasonAsNumber || folderSeasonAsNumber)) ? `${_folderTitle} Season ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
+        (_folderTitle && !parsed.title) || (_folderTitle && (!parsed.title.toLowerCase().includes(_folderTitle.toLowerCase())) && (seasonAsNumber || folderSeasonAsNumber)) ? `${_folderTitle} Part ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
+        (_folderTitle && !parsed.title) || (_folderTitle && (!parsed.title.toLowerCase().includes(_folderTitle.toLowerCase())) && (seasonAsNumber || folderSeasonAsNumber)) ? `${_folderTitle} Cour ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
+        (_folderTitle && !parsed.title) || (_folderTitle && (!parsed.title.toLowerCase().includes(_folderTitle.toLowerCase())) && (seasonAsNumber || folderSeasonAsNumber)) ? `${_folderTitle} Part ${romanize(seasonAsNumber || folderSeasonAsNumber!)}` : undefined,
+        (_folderTitle && !parsed.title) || (_folderTitle && (!parsed.title.toLowerCase().includes(_folderTitle.toLowerCase())) && (seasonAsNumber || folderSeasonAsNumber)) ? `${_folderTitle} S${seasonAsNumber || folderSeasonAsNumber}` : undefined,
+        (_folderTitle && !parsed.title) || (_folderTitle && (!parsed.title.toLowerCase().includes(_folderTitle.toLowerCase())) && (seasonAsNumber || folderSeasonAsNumber)) ? `${_folderTitle} ${ordinalize(String(seasonAsNumber || folderSeasonAsNumber))} Season` : undefined,
         (parsed.title && (seasonAsNumber || folderSeasonAsNumber)) ? `${parsed.title} Season ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
         (parsed.title && (seasonAsNumber || folderSeasonAsNumber)) ? `${parsed.title} Part ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
         (parsed.title && (seasonAsNumber || folderSeasonAsNumber)) ? `${parsed.title} Cour ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
         (parsed.title && (seasonAsNumber || folderSeasonAsNumber)) ? `${parsed.title} Part ${romanize(seasonAsNumber || folderSeasonAsNumber!)}` : undefined,
         (parsed.title && (seasonAsNumber || folderSeasonAsNumber)) ? `${parsed.title} S${seasonAsNumber || folderSeasonAsNumber}` : undefined,
-        (parsed.title && (seasonAsNumber || folderSeasonAsNumber)) ? `${parsed.title} ${ordinalize(parsed.season || folderParsed?.season!)} Season` : undefined,
+        (parsed.title && (seasonAsNumber || folderSeasonAsNumber)) ? `${parsed.title} ${ordinalize(String(seasonAsNumber || folderSeasonAsNumber))} Season` : undefined,
+        // (There is a folder AND a file title) BUT (the folder title is not in the file title) -> Combine the two
         (parsed.title && _folderTitle && (!parsed.title.toLowerCase().includes(_folderTitle.toLowerCase())) && (seasonAsNumber || folderSeasonAsNumber)) ? `${_folderTitle} ${parsed.title} Season ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
         (parsed.title && _folderTitle && (!parsed.title.toLowerCase().includes(_folderTitle.toLowerCase())) && (seasonAsNumber || folderSeasonAsNumber)) ? `${_folderTitle} ${parsed.title} Part ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
         (parsed.title && _folderTitle && (!parsed.title.toLowerCase().includes(_folderTitle.toLowerCase())) && (seasonAsNumber || folderSeasonAsNumber)) ? `${_folderTitle} ${parsed.title} Cour ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
         (parsed.title && _folderTitle && (!parsed.title.toLowerCase().includes(_folderTitle.toLowerCase())) && (seasonAsNumber || folderSeasonAsNumber)) ? `${_folderTitle} ${parsed.title} Part ${romanize(seasonAsNumber || folderSeasonAsNumber!)}` : undefined,
         (parsed.title && _folderTitle && (!parsed.title.toLowerCase().includes(_folderTitle.toLowerCase())) && (seasonAsNumber || folderSeasonAsNumber)) ? `${_folderTitle} ${parsed.title} S${seasonAsNumber || folderSeasonAsNumber}` : undefined,
-        (parsed.title && _folderTitle && (!parsed.title.toLowerCase().includes(_folderTitle.toLowerCase())) && (seasonAsNumber || folderSeasonAsNumber)) ? `${_folderTitle} ${parsed.title} ${ordinalize(parsed.season || folderParsed?.season!)} Season` : undefined,
+        (parsed.title && _folderTitle && (!parsed.title.toLowerCase().includes(_folderTitle.toLowerCase())) && (seasonAsNumber || folderSeasonAsNumber)) ? `${_folderTitle} ${parsed.title} ${ordinalize(String(seasonAsNumber || folderSeasonAsNumber))} Season` : undefined,
     ].filter(Boolean)
 
     // Handle movie
@@ -354,7 +349,7 @@ async function findBestCorrespondingMedia(allMedia: AnilistMedia[], parsed: Anim
         bestMedia = allMedia.find(media => {
             // Sometimes torrents are released by episode number and not grouped by season
             // So remove preceding seasons
-            if (!seasonAsNumber && media.episodes && episodeAsNumber) {
+            if (!(seasonAsNumber || folderSeasonAsNumber) && media.episodes && episodeAsNumber) {
                 if (episodeAsNumber > media.episodes) return false
             }
             if (media.title?.userPreferred?.toLowerCase() === best!.bestMatch.target.toLowerCase()

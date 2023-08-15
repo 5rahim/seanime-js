@@ -3,7 +3,12 @@ import { Settings } from "@/atoms/settings"
 import path from "path"
 import fs from "fs/promises"
 import { Dirent } from "fs"
-import { createLocalFile, createLocalFileWithMedia, LocalFile } from "@/lib/local-library/local-file"
+import {
+    createLocalFile,
+    createLocalFileWithMedia,
+    LocalFile,
+    LocalFileWithMedia,
+} from "@/lib/local-library/local-file"
 import { AnilistMedia } from "@/lib/anilist/fragment"
 import { Nullish } from "@/types/common"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
@@ -66,11 +71,15 @@ export async function _toLocalFilesWithMedia(settings: Settings, userName: Nulli
         // Get sequels, prequels... from each media as [ShowcaseMediaFragment]
         let relatedMedia = ((
             allUserMedia?.filter(media => !!media)
-                .flatMap(media => media.relations?.edges?.filter(edge => edge?.relationType === "PREQUEL" || edge?.relationType === "SEQUEL" || edge?.relationType === "SPIN_OFF" || edge?.relationType === "SIDE_STORY").flatMap(edge => edge?.node)
+                .flatMap(media => media.relations?.edges?.filter(edge => edge?.relationType === "PREQUEL"
+                        || edge?.relationType === "SEQUEL"
+                        || edge?.relationType === "SPIN_OFF"
+                        || edge?.relationType === "SIDE_STORY"
+                        || edge?.relationType === "ALTERNATIVE"
+                        || edge?.relationType === "PARENT",
+                    ).flatMap(edge => edge?.node).filter(Boolean)
                     ?? [])
         ) ?? []) as ShowcaseMediaFragment[]
-
-        // let relatedMedia = (allUserMedia?.flatMap(media => media.relations?.nodes)?.filter(media => !!media) ?? []) as ShowcaseMediaFragment[]
 
         // console.log(relatedMedia.filter(n => n.title?.romaji?.toLowerCase()?.includes("kimi no todoke")))
         // console.log(allUserMedia?.filter(n => n.title?.romaji?.toLowerCase()?.includes("mononogatari")).flatMap(a => a.relations?.edges?.map(b => b?.node)))
@@ -82,7 +91,7 @@ export async function _toLocalFilesWithMedia(settings: Settings, userName: Nulli
         // }
         // return localFilesWithMedia
 
-        return await PromiseBatch(createLocalFileWithMedia, localFiles, allUserMedia, relatedMedia, 10)
+        return (await PromiseBatch(createLocalFileWithMedia, localFiles, allUserMedia, relatedMedia, 10)) as LocalFileWithMedia[]
 
     }
     return undefined
