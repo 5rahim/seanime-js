@@ -7,7 +7,7 @@ import { openLocalDirectoryInExplorer } from "@/lib/helpers/directory"
 import { type } from "@tauri-apps/api/os"
 import toast from "react-hot-toast"
 import { BiFolder } from "@react-icons/all-files/bi/BiFolder"
-import { _toLocalFilesWithMedia, retrieveLocalFiles } from "@/lib/local-library/repository"
+import { _toLocalFilesWithMedia, mock_testParsing, retrieveLocalFiles } from "@/lib/local-library/repository"
 import { useStoredLocalFiles } from "@/atoms/library"
 import { IoReload } from "@react-icons/all-files/io5/IoReload"
 import { useCurrentUser } from "@/atoms/user"
@@ -65,6 +65,16 @@ export const LibraryToolbar: React.FC<LibraryToolbarProps> = (props) => {
                 <Button onClick={handleOpenLocalDirectory} intent={"gray-outline"} leftIcon={<BiFolder/>}>
                     Open folder
                 </Button>
+                <Button
+                    onClick={async () => {
+                        console.log((await mock_testParsing(settings)))
+                    }}
+                >Mock</Button>
+                {/*<Button onClick={() => {*/}
+                {/*    console.log(snapshot2.map(n => _.omit(n, "parsedInfo", "parsedFolders")))*/}
+                {/*}} intent={"gray-outline"} leftIcon={<BiFolder/>}>*/}
+                {/*    Open folder*/}
+                {/*</Button>*/}
                 {/*<Button onClick={refetchCollection} intent={"gray-outline"}>*/}
                 {/*    Refetch Anilist Collection*/}
                 {/*</Button>*/}

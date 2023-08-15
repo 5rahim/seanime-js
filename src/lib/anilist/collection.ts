@@ -30,6 +30,15 @@ export function useAnilistCollection() {
         return arr
     }, [collection])
 
+    const pausedList = useMemo(() => {
+        let arr = collection.filter(n => !!n && n.status === "PAUSED")
+        // Sort by name
+        arr = _.sortBy(arr, entry => entry?.media?.title?.userPreferred).reverse()
+        // Sort by score
+        arr = _.sortBy(arr, entry => entry?.score).reverse()
+        return arr
+    }, [collection])
+
     const planningList = useMemo(() => {
         let arr = collection.filter(n => !!n && n.status === "PLANNING")
         // Sort by name
@@ -46,6 +55,7 @@ export function useAnilistCollection() {
         currentlyWatchingList,
         completedList,
         planningList,
+        pausedList,
         allUserMedia,
     }
 

@@ -12,7 +12,7 @@ export default function Home() {
 
     const { settings } = useSettings()
 
-    const { currentlyWatchingList, completedList, planningList, isLoading } = useAnilistCollection()
+    const { currentlyWatchingList, completedList, planningList, pausedList, isLoading } = useAnilistCollection()
 
     if (isLoading) return <LoadingSpinner/>
 
@@ -35,6 +35,9 @@ export default function Home() {
                         Completed
                     </TabPanels.Tab>
                     <TabPanels.Tab>
+                        Paused
+                    </TabPanels.Tab>
+                    <TabPanels.Tab>
                         Planning
                     </TabPanels.Tab>
                 </TabPanels.Nav>
@@ -55,6 +58,17 @@ export default function Home() {
                             items={[
                                 ...completedList.map(entry => ({
                                     media: entry?.media,
+                                    score: entry?.score,
+                                })),
+                            ]}
+                        />
+                    </TabPanels.Panel>
+                    <TabPanels.Panel>
+                        <AnimeList
+                            items={[
+                                ...pausedList.map(entry => ({
+                                    media: entry?.media,
+                                    progress: { watched: entry?.progress ?? 0, total: entry?.media?.episodes },
                                     score: entry?.score,
                                 })),
                             ]}

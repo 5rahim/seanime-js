@@ -6,6 +6,14 @@ import { useAtom } from "jotai/react"
  * Library Entries
  * -----------------------------------------------------------------------------------------------*/
 
+/**
+ * Store the library entries upon scan
+ */
+
+/**
+ * TODO: For each entry with no media, use MAL to return a bunch of suggestions using a parsed title from sharedPath OR one file
+ */
+
 /* -------------------------------------------------------------------------------------------------
  * Local files
  * -----------------------------------------------------------------------------------------------*/

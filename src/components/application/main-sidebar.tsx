@@ -15,6 +15,7 @@ import { DropdownMenu, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import { useCurrentUser } from "@/atoms/user"
 import { usePathname } from "next/navigation"
 import { FiSettings } from "@react-icons/all-files/fi/FiSettings"
+import { FiSearch } from "@react-icons/all-files/fi/FiSearch"
 
 interface MainSidebarProps {
     children?: React.ReactNode
@@ -40,7 +41,8 @@ export const MainSidebar: React.FC<MainSidebarProps> = (props) => {
                         <img src="/android-chrome-192x192.png" alt="logo" className={"w-10 h-10"}/>
                     </div>
                     <VerticalNav items={[
-                        { icon: RiHome2Line, name: "Test", href: "/", isCurrent: pathname === "/" },
+                        { icon: RiHome2Line, name: "Home", href: "/", isCurrent: pathname === "/" },
+                        { icon: FiSearch, name: "Search", href: "/", isCurrent: pathname === "/search" },
                     ]}/>
                 </div>
                 <div className={"flex w-full gap-2 flex-col"}>

@@ -1,19 +1,21 @@
 import { LocalFile } from "@/lib/local-library/local-file"
-import { AnilistMedia } from "@/lib/anilist/fragment"
+import { AnilistSimpleMedia } from "@/lib/anilist/fragment"
 
 export type LibraryEntry = {
-    entries: Array<LocalFile>
-    media: AnilistMedia
+    files: Array<LocalFile>
+    media: AnilistSimpleMedia | undefined
+    sharedPath: string
+    hasMedia: boolean
 }
 
 /**
- * [LibraryEntry] represents a file on the host machine.
- * - Use [path] to identity the file
+ * A [LibraryEntry] represents a single [AnilistSimpleMedia] and its associated local files.
  */
-
-export const createLibraryEntry = (props: Pick<LibraryEntry, "entries" | "media">) => {
+export const createLibraryEntry = (props: Pick<LibraryEntry, "files" | "media" | "sharedPath">): LibraryEntry => {
     return {
-        entries: props.entries,
+        files: props.files,
         media: props.media,
+        sharedPath: props.sharedPath,
+        hasMedia: !!props.media,
     }
 }
