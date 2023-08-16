@@ -7,7 +7,7 @@ import {
     createPolymorphicComponent,
     defineStyleAnatomy,
     getChildDisplayName,
-    useMediaQuery
+    useMediaQuery,
 } from "../core"
 import { cva, VariantProps } from "class-variance-authority"
 import { Menu, Transition } from "@headlessui/react"
@@ -27,7 +27,7 @@ export const DropdownMenuAnatomy = defineStyleAnatomy({
     dropdown: cva([
         "UI-DropdownMenu__dropdown",
         "bg-[--paper] border border-[--border] p-1",
-        "absolute z-20 mt-2 w-56 rounded-[--radius] shadow-md focus:outline-none space-y-1",
+        "absolute z-[100] mt-2 w-56 rounded-[--radius] shadow-md focus:outline-none space-y-1",
     ], {
         variants: {
             top: { true: "", right: "" },

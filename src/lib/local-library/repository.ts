@@ -1,3 +1,6 @@
+/* -------------------------------------------------------------------------------------------------
+ * Repository actions
+ * -----------------------------------------------------------------------------------------------*/
 "use server"
 import { Settings } from "@/atoms/settings"
 import path from "path"
@@ -13,60 +16,81 @@ import { AnilistMedia } from "@/lib/anilist/fragment"
 import { Nullish } from "@/types/common"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
 import { AnimeCollectionDocument, ShowcaseMediaFragment } from "@/gql/graphql"
-import { fileSnapshot } from "@/lib/local-library/mock"
 import { PromiseBatch } from "@/lib/helpers/batch"
+import _ from "lodash"
+import { createLibraryEntry, LibraryEntry } from "@/lib/local-library/library-entry"
+import { logger } from "@/lib/helpers/debug"
 
 
 export async function retrieveLocalFilesAsLibraryEntries(settings: Settings, userName: Nullish<string>) {
-    const localFilesWithMedia = await _toLocalFilesWithMedia(settings, userName)
+    logger("repository/retrieveLocalFilesAsLibraryEntries").info("Start library entry creation")
 
-    if (localFilesWithMedia) {
-        // 1. Group the local files with the same media
-        // 2. If some files under that media have different paths -> Remove the media from the files whose PATH is the least accurate
-        //      example: For "Vinland Saga"
-        //               {{Vinland Saga \ Vinland Saga}} \ Vinland Saga 01.mkv
-        //               {{Vinland Saga \ Vinland Saga xx}} \ Vinland Saga xx 01.mkv <- Least accurate
-        // 3. If some files do not have a media, group them by same parent folder and create a flagged entry
-        //      example: Mega box \ Season 1 \ Mega box 01.mkv  \\\
-        //                                                          -> Same group because `Mega box \ Season 1`===`Mega box \ Season 1`
-        //      example: Mega box \ Season 1 \ Mega box 02.mkv  ///
-    }
-}
+    const files = await retrieveHydratedLocalFiles(settings, userName)
+    // const files = filesWithMediaSnapshot as LocalFileWithMedia[]
 
-export async function mock_testParsing(settings: Settings, filter?: string) {
-    const currentPath = settings.library.localDirectory
-    if (currentPath) {
-        const localFiles: LocalFile[] = []
-        await mock_getAllFilesRecursively(settings, currentPath, localFiles)
-        if (!filter) return localFiles
-        return localFiles.filter(n => n.parsedFolders.some(folder => folder.original.toLowerCase().includes(filter)))
-        // return localFiles.filter(n => n.name.toLowerCase().includes(filter.toLowerCase()))
+    if (files && files.length > 0) {
+
+        // TODO Combine these with rejected files
+        const localFilesWithNoMedia: LocalFileWithMedia[] = files.filter(n => !n.media)
+        let entries: LibraryEntry[] = []
+        let rejectedFiles: LocalFileWithMedia[] = []
+
+        const localFilesWithMedia = files.filter(n => !!n.media)
+        const allMedia = _.uniqBy(files.map(n => n.media), n => n?.id)
+
+        const groupedByMediaId = _.groupBy(localFilesWithMedia, n => n.media!.id)
+
+        Object.keys(groupedByMediaId).map(async mediaId => {
+            const mediaIdAsNumber = Number(mediaId)
+            if (!isNaN(mediaIdAsNumber)) {
+                const currentMedia = allMedia.find(media => media?.id === mediaIdAsNumber)
+                const lFiles = localFilesWithMedia.filter(f => f.media?.id === mediaIdAsNumber)
+
+                if (currentMedia) {
+                    const { rejectedFiles: rejected, ...newEntry } = createLibraryEntry({
+                        media: currentMedia,
+                        files: lFiles,
+                    })
+                    rejectedFiles = [...rejectedFiles, ...rejected] // Return rejected files
+                    entries = [...entries, newEntry] // Return new entry
+                }
+
+            }
+        })
+
+        // Remove media from localFilesWithNoMedia and rejectedFiles
+        const filesWithNoMatch: LocalFile[] = [...localFilesWithNoMedia, ...rejectedFiles].map(obj => _.omit(obj, "media"))
+
+        // TODO Group rejected files by common ancestor path
+        // They will be used in popup for user to 1. Add to watch list
+        logger("repository/retrieveLocalFilesAsLibraryEntries").success("Library entry creation successful")
+        return {
+            entries,
+            filesWithNoMatch,
+        }
     }
+
     return undefined
 }
 
 /**
  * Recursively get the files from the local directory
- * This method is an implementation of [retrieveLocalFiles]
- * - This method transforms the files from [LocalFile] to [LocalFileWithMedia]
+ * This method hydrates each file retrieved using [retrieveLocalFiles] with its associated [AnilistSimpleMedia]
  * @param settings
  */
-export async function _toLocalFilesWithMedia(settings: Settings, userName: Nullish<string>) {
+export async function retrieveHydratedLocalFiles(settings: Settings, userName: Nullish<string>) {
     const currentPath = settings.library.localDirectory
 
     if (currentPath && userName) {
 
+        logger("repository/retrieveHydratedLocalFiles").info("Fetching user media list")
         const data = await useAniListAsyncQuery(AnimeCollectionDocument, { userName })
 
         const localFiles: LocalFile[] = []
-        // TODO FIXME Mocking
         await getAllFilesRecursively(settings, currentPath, localFiles)
-        // await mock_getAllFilesRecursively(settings, currentPath, localFiles)
 
-        // const uniqueAnimeTitles = _.uniq(localFiles.flatMap(file => [file.parsedInfo?.title, ...file.parsedFolders.map(f2 => f2.title)]).filter(v => !!v))
-        // console.log(uniqueAnimeTitles)
-
-        const allUserMedia = data.MediaListCollection?.lists?.map(n => n?.entries).flat().filter(entry => !!entry).map(entry => entry!.media) as AnilistMedia[] | undefined
+        let allUserMedia = data.MediaListCollection?.lists?.map(n => n?.entries).flat().filter(entry => !!entry).map(entry => entry!.media) as AnilistMedia[] | undefined
+        logger("repository/retrieveHydratedLocalFiles").info("Formatting related media")
 
         // Get sequels, prequels... from each media as [ShowcaseMediaFragment]
         let relatedMedia = ((
@@ -81,9 +105,7 @@ export async function _toLocalFilesWithMedia(settings: Settings, userName: Nulli
                     ?? [])
         ) ?? []) as ShowcaseMediaFragment[]
 
-        // console.log(relatedMedia.filter(n => n.title?.romaji?.toLowerCase()?.includes("kimi no todoke")))
-        // console.log(allUserMedia?.filter(n => n.title?.romaji?.toLowerCase()?.includes("mononogatari")).flatMap(a => a.relations?.edges?.map(b => b?.node)))
-
+        // \/ Used before using PromiseBatch
         // const localFilesWithMedia: LocalFileWithMedia[] = []
         // for (let i = 0; i < localFiles.length; i++) {
         //     const created = await createLocalFileWithMedia(localFiles[i], allUserMedia, relatedMedia)
@@ -91,7 +113,13 @@ export async function _toLocalFilesWithMedia(settings: Settings, userName: Nulli
         // }
         // return localFilesWithMedia
 
-        return (await PromiseBatch(createLocalFileWithMedia, localFiles, allUserMedia, relatedMedia, 10)) as LocalFileWithMedia[]
+        allUserMedia = allUserMedia?.map(media => _.omit(media, "streamingEpisodes", "relations", "studio", "description", "format", "source", "isAdult", "genres", "trailer", "countryOfOrigin", "studios"))
+
+        logger("repository/retrieveHydratedLocalFiles").info("Hydrating local files")
+        const res = (await PromiseBatch(createLocalFileWithMedia, localFiles, allUserMedia, relatedMedia, 100)) as LocalFileWithMedia[]
+        logger("repository/retrieveHydratedLocalFiles").success("Finished hydrating")
+
+        return res
 
     }
     return undefined
@@ -105,6 +133,7 @@ export async function _toLocalFilesWithMedia(settings: Settings, userName: Nulli
 export async function retrieveLocalFiles(settings: Settings) {
     const currentPath = settings.library.localDirectory
 
+    logger("local-library/repository").info("Retrieving local files")
     if (currentPath) {
         const files: LocalFile[] = []
         await getAllFilesRecursively(settings, currentPath, files)
@@ -113,21 +142,6 @@ export async function retrieveLocalFiles(settings: Settings) {
     }
     return undefined
 }
-
-async function mock_getAllFilesRecursively(
-    settings: Settings,
-    directoryPath: string,
-    files: LocalFile[],
-    allowedTypes: string[] = ["mkv", "mp4"],
-): Promise<void> {
-    for (const item of fileSnapshot) {
-        files.push(await createLocalFile(settings, {
-            name: item.name,
-            path: item.path,
-        }))
-    }
-}
-
 
 /**
  * Recursively get the files as [LocalFile] type
@@ -144,6 +158,7 @@ async function getAllFilesRecursively(
 ): Promise<void> {
     const items: Dirent[] = await fs.readdir(directoryPath, { withFileTypes: true })
 
+    logger("repository/getAllFilesRecursively").info("Getting all files recursively")
     for (const item of items) {
         const itemPath = path.join(directoryPath, item.name)
         const stats = await fs.stat(itemPath)

@@ -4,7 +4,6 @@
 
 import { createTypesafeFormSchema, InferType } from "@/components/ui/typesafe-form"
 import { atomWithStorage } from "jotai/utils"
-import { focusAtom } from "jotai-optics"
 import { useImmerAtom } from "jotai-immer"
 import { useCallback } from "react"
 
@@ -61,8 +60,6 @@ export const initialSettings: Settings = {
  * -----------------------------------------------------------------------------------------------*/
 
 export const settingsAtoms = atomWithStorage<Settings>("sea-settings", initialSettings)
-
-export const librarySettingsAtom = focusAtom(settingsAtoms, optic => optic.prop("library"))
 
 /* -------------------------------------------------------------------------------------------------
  * Hooks

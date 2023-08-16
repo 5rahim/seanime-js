@@ -36,7 +36,7 @@ Make sure the parent folders have the Anime title if the files do not.
             └── Episode title - S01E05.mkv
 ```
 
-### Movies
+### Finding a movie title
 
 Make sure all movies are located in the root library folder
 
@@ -56,7 +56,7 @@ Or
         └── Another movie.mkv
 ```
 
-## Anime title
+## Finding an anime title
 
 - Seanime will try to locate an Anime using the title
 - The matching algorithm will use a combination of titles from:
@@ -166,7 +166,7 @@ Root folder
 ---> However, since the Folder's title is prioritized the episode title might not affect the matching process
 ```
 
-## Season
+## Finding a season
 
 Seanime will first try to locate the episode number in the file's name
 
@@ -188,7 +188,7 @@ Seanime will first try to locate the episode number in the file's name
             └── ...
 ```
 
-## Episode
+## Finding an episode number
 
 Seanime will search the file title for the episode number
 
@@ -221,3 +221,19 @@ Seanime will search the file title for the episode number
 │   │   │   └── ...
 │   │   └── ...
 ```
+
+### Automatic Classification
+
+As explained previously, Seanime will try to match your episode files to AniList entries using
+multiple techniques.
+
+You may discover that some episodes or seasons are not detected, if this is the case:
+
+- Make sure that you added the season to your watch list
+    - Seanime will try to match with sequels or prequels that are not on your watch list but may not find earlier or
+      later seasons
+    - For example, let's say your have the 1st, 2nd and 3rd Season in your files but only have the 1st season added in
+      your watch list, Seanime will not be able to match to the 3rd season
+- If you still don't see the episodes, rename their parent folder so that it accurately matches the title on AniList.
+- Seanime may unmatch some episodes if it detects an anime title in the folder's name and that title differs too much
+  from the actual anime.

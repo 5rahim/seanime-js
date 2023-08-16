@@ -7,22 +7,26 @@ import { openLocalDirectoryInExplorer } from "@/lib/helpers/directory"
 import { type } from "@tauri-apps/api/os"
 import toast from "react-hot-toast"
 import { BiFolder } from "@react-icons/all-files/bi/BiFolder"
-import { _toLocalFilesWithMedia, mock_testParsing, retrieveLocalFiles } from "@/lib/local-library/repository"
-import { useStoredLocalFiles } from "@/atoms/library"
-import { IoReload } from "@react-icons/all-files/io5/IoReload"
+import { retrieveLocalFilesAsLibraryEntries } from "@/lib/local-library/repository"
+import { useLibraryEntries, useStoredLocalFiles, useStoredLocalFilesWithNoMatch } from "@/atoms/library"
 import { useCurrentUser } from "@/atoms/user"
+import { mock_getUniqueAnimeTitles } from "@/lib/local-library/experimental_unique-titles"
+import { useStoredAnilistCollection } from "@/atoms/anilist-collection"
+import { FcFinePrint } from "@react-icons/all-files/fc/FcFinePrint"
+import { FcHighPriority } from "@react-icons/all-files/fc/FcHighPriority"
+import { useDisclosure } from "@/hooks/use-disclosure"
+import { ClassificationRecommendationHub } from "@/app/(main)/(library)/_components/classification-recommendation-hub"
 
-interface LibraryToolbarProps {
-    children?: React.ReactNode
-}
+export function LibraryToolbar() {
 
-export const LibraryToolbar: React.FC<LibraryToolbarProps> = (props) => {
-
-    const { children, ...rest } = props
     const { settings } = useSettings()
     const { user } = useCurrentUser()
-    const { localFiles, storeLocalFiles } = useStoredLocalFiles()
-    // const { refetchCollection, allUserMedia } = useStoredAnilistCollection()
+    const { storeLocalFiles } = useStoredLocalFiles()
+    const { storeLibraryEntries } = useLibraryEntries()
+    const { storeFilesWithNoMatch, files } = useStoredLocalFilesWithNoMatch()
+    const { refetchCollection } = useStoredAnilistCollection()
+
+    const matchingRecommendationDisclosure = useDisclosure(false)
 
     const handleOpenLocalDirectory = async () => {
         const tID = toast.loading("Opening")
@@ -32,54 +36,46 @@ export const LibraryToolbar: React.FC<LibraryToolbarProps> = (props) => {
         }, 1000)
     }
 
-    // Scan and store local files
-    const handleScanLibrary = async () => {
-        const tID = toast.loading("Scanning")
-        const res = (await retrieveLocalFiles(settings))
-        if (res) {
-            storeLocalFiles(res)
-            toast.success("Library scanned")
-        }
-        console.log(res)
-        toast.remove(tID)
-    }
-
     // Create/update local library entries from scanned local files
     const handleRefreshEntries = async () => {
         const tID = toast.loading("Loading")
         // TODO: Invoke [handleScanLibrary]
-        const res = (await _toLocalFilesWithMedia(settings, user?.name))
-        console.log(res)
+        const result = await retrieveLocalFilesAsLibraryEntries(settings, user?.name)
+        if (result) {
+            storeLibraryEntries(result.entries)
+            storeFilesWithNoMatch(result.filesWithNoMatch)
+        }
         toast.remove(tID)
     }
 
     return (
-        <div className={"p-4"}>
-            <div className={"p-2 border border-[--border] rounded-lg flex w-full gap-2"}>
-                <Button onClick={handleRefreshEntries} intent={"success"} leftIcon={<IoReload/>}>
-                    Refresh entries
-                </Button>
-                <Button onClick={handleScanLibrary} intent={"primary"} leftIcon={<BiFolder/>}>
-                    Scan library
-                </Button>
-                <Button onClick={handleOpenLocalDirectory} intent={"gray-outline"} leftIcon={<BiFolder/>}>
-                    Open folder
-                </Button>
-                <Button
-                    onClick={async () => {
-                        console.log((await mock_testParsing(settings)))
-                    }}
-                >Mock</Button>
-                {/*<Button onClick={() => {*/}
-                {/*    console.log(snapshot2.map(n => _.omit(n, "parsedInfo", "parsedFolders")))*/}
-                {/*}} intent={"gray-outline"} leftIcon={<BiFolder/>}>*/}
-                {/*    Open folder*/}
-                {/*</Button>*/}
-                {/*<Button onClick={refetchCollection} intent={"gray-outline"}>*/}
-                {/*    Refetch Anilist Collection*/}
-                {/*</Button>*/}
+        <>
+            <div className={"p-4"}>
+                <div className={"p-2 border border-[--border] rounded-lg flex w-full gap-2"}>
+                    {/*TODO Show confirm modal*/}
+                    <Button onClick={handleRefreshEntries} intent={"primary-subtle"} leftIcon={<FcFinePrint/>}>
+                        Refresh entries
+                    </Button>
+                    <Button onClick={matchingRecommendationDisclosure.open} intent={"alert-subtle"}
+                            leftIcon={<FcHighPriority/>}>
+                        Resolve unmatched ({files.length})
+                    </Button>
+                    <Button onClick={handleOpenLocalDirectory} intent={"gray-basic"} leftIcon={<BiFolder/>}>
+                        Open folder
+                    </Button>
+                    <Button
+                        onClick={async () => {
+                            console.log((await mock_getUniqueAnimeTitles(settings, user?.name)))
+                        }}
+                        intent={"gray-basic"}
+                    >Mock</Button>
+                </div>
             </div>
-        </div>
+            <ClassificationRecommendationHub
+                isOpen={matchingRecommendationDisclosure.isOpen}
+                close={matchingRecommendationDisclosure.close}
+            />
+        </>
     )
 
 }

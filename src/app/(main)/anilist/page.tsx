@@ -2,17 +2,17 @@
 
 import React from "react"
 import { useSettings } from "@/atoms/settings"
-import { useAnilistCollection } from "@/lib/anilist/collection"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { AnimeList } from "@/components/application/list/anime-list"
 import { TabPanels } from "@/components/ui/tabs"
 import { cn } from "@/components/ui/core"
+import { useStoredAnilistCollection } from "@/atoms/anilist-collection"
 
 export default function Home() {
 
     const { settings } = useSettings()
 
-    const { currentlyWatchingList, completedList, planningList, pausedList, isLoading } = useAnilistCollection()
+    const { currentlyWatchingList, completedList, planningList, pausedList, isLoading } = useStoredAnilistCollection()
 
     if (isLoading) return <LoadingSpinner/>
 

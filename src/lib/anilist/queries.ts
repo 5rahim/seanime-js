@@ -48,3 +48,17 @@ export const _AnimeCollection = gql`
         }
     }
 `
+
+export const _SimpleAnimeCollection = gql`
+    query SimpleAnimeCollection ($userName: String) {
+        MediaListCollection(userName: $userName, type: ANIME) {
+            lists {
+                entries {
+                    media {
+                        ...showcaseMedia
+                    }
+                }
+            }
+        }
+    }
+`

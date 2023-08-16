@@ -7,35 +7,44 @@ import { useAtom, useAtomValue } from "jotai/react"
 import { useMemo } from "react"
 import { AnilistMedia } from "@/lib/anilist/fragment"
 import _ from "lodash"
+import { logger } from "@/lib/helpers/debug"
+import { atomWithStorage } from "jotai/utils"
 
 export type AnilistCollection = AnimeCollectionQuery["MediaListCollection"]
 
 /**
  * We will store the fetched Anilist Collection
  */
-export const anilistCollectionAtom = atom<AnimeCollectionQuery["MediaListCollection"]>(undefined)
+export const anilistCollectionAtom = atomWithStorage<AnimeCollectionQuery["MediaListCollection"]>("sea-anilist-user-list", undefined)
 
-export const getAnilistCollection = atom(null, async (get, set, payload) => {
+const isLoadingAtom = atom<boolean>(false)
+
+export const getAnilistCollectionAtom = atom(null, async (get, set) => {
     try {
         const token = get(aniListTokenAtom)
         const user = get(userAtom)
-        if (token) {
-            const res = await useAniListAsyncQuery(AnimeCollectionDocument, { userName: user?.name }, token)
+        if (token && user?.name) {
+            set(isLoadingAtom, true)
+            logger("atom/anilist-collection").info("Fetching AniList collection")
+            const res = await useAniListAsyncQuery(AnimeCollectionDocument, { userName: user.name }, token)
             if (res.MediaListCollection) {
                 set(anilistCollectionAtom, res.MediaListCollection)
             }
+            set(isLoadingAtom, false)
         } else {
-            set(anilistCollectionAtom, undefined)
+            // set(anilistCollectionAtom, undefined)
         }
     } catch (e) {
+        logger("atom/anilist-collection").error("Error fetching AniList collection")
         set(anilistCollectionAtom, undefined)
     }
 })
 
 export const useStoredAnilistCollection = () => {
 
-    const data = useAtomValue(anilistCollectionAtom)
-    const [, refetch] = useAtom(getAnilistCollection)
+    const [data, setData] = useAtom(anilistCollectionAtom)
+    const isLoading = useAtomValue(isLoadingAtom)
+    const [, refetch] = useAtom(getAnilistCollectionAtom)
 
     const collection = useMemo(() => data?.lists?.map(n => n?.entries).flat() ?? [], [data])
 
@@ -63,12 +72,27 @@ export const useStoredAnilistCollection = () => {
         return arr
     }, [collection])
 
+    const pausedList = useMemo(() => {
+        let arr = collection.filter(n => !!n && n.status === "PAUSED")
+        // Sort by name
+        arr = _.sortBy(arr, entry => entry?.media?.title?.userPreferred).reverse()
+        // Sort by score
+        arr = _.sortBy(arr, entry => entry?.score).reverse()
+        return arr
+    }, [collection])
+
     return {
-        refetchCollection: refetch,
+        isLoading,
+        collection,
+        refetchCollection: () => {
+            // refetch()
+            setData(undefined)
+        },
         allUserMedia,
         currentlyWatchingList,
         completedList,
         planningList,
+        pausedList,
     }
 
 }
