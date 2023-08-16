@@ -23,7 +23,12 @@ export function LibraryToolbar() {
     const { user } = useCurrentUser()
     const { storeLocalFiles } = useStoredLocalFiles()
     const { storeLibraryEntries } = useLibraryEntries()
-    const { storeFilesWithNoMatch, files } = useStoredLocalFilesWithNoMatch()
+    const {
+        storeFilesWithNoMatch,
+        files,
+        getRecommendations,
+        recommendationMatchingIsLoading,
+    } = useStoredLocalFilesWithNoMatch()
     const { refetchCollection } = useStoredAnilistCollection()
 
     const matchingRecommendationDisclosure = useDisclosure(false)
@@ -52,23 +57,35 @@ export function LibraryToolbar() {
         <>
             <div className={"p-4"}>
                 <div className={"p-2 border border-[--border] rounded-lg flex w-full gap-2"}>
+
                     {/*TODO Show confirm modal*/}
                     <Button onClick={handleRefreshEntries} intent={"primary-subtle"} leftIcon={<FcFinePrint/>}>
                         Refresh entries
                     </Button>
-                    <Button onClick={matchingRecommendationDisclosure.open} intent={"alert-subtle"}
-                            leftIcon={<FcHighPriority/>}>
+
+                    <Button
+                        onClick={async () => {
+                            await getRecommendations()
+                            matchingRecommendationDisclosure.open()
+                        }}
+                        intent={"alert-subtle"}
+                        leftIcon={<FcHighPriority/>}
+                        isDisabled={recommendationMatchingIsLoading}
+                    >
                         Resolve unmatched ({files.length})
                     </Button>
+
                     <Button onClick={handleOpenLocalDirectory} intent={"gray-basic"} leftIcon={<BiFolder/>}>
                         Open folder
                     </Button>
+
                     <Button
                         onClick={async () => {
                             console.log((await mock_getUniqueAnimeTitles(settings, user?.name)))
                         }}
                         intent={"gray-basic"}
                     >Mock</Button>
+
                 </div>
             </div>
             <ClassificationRecommendationHub

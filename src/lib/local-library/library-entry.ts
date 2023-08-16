@@ -1,6 +1,11 @@
+"use server"
 import { LocalFile, LocalFileWithMedia } from "@/lib/local-library/local-file"
 import { AnilistSimpleMedia } from "@/lib/anilist/fragment"
 import similarity from "string-similarity"
+import { logger } from "@/lib/helpers/debug"
+import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
+import { AnimeByMalIdDocument, AnimeCollectionDocument, UpdateEntryDocument } from "@/gql/graphql"
+import fs from "fs"
 
 export type LibraryEntry = {
     files: Array<LocalFile>
@@ -12,10 +17,12 @@ export type LibraryEntry = {
 /**
  * A [LibraryEntry] represents a single [AnilistSimpleMedia] and its associated local files.
  */
-
-export const createLibraryEntry = (props: { media: AnilistSimpleMedia, files: LocalFileWithMedia[] }): LibraryEntry & {
+export const createLibraryEntry = async (props: {
+    media: AnilistSimpleMedia,
+    files: LocalFileWithMedia[]
+}): Promise<LibraryEntry & {
     rejectedFiles: LocalFileWithMedia[]
-} => {
+}> => {
 
     const currentMedia = props.media
     const lFiles = props.files.filter(f => f.media?.id === currentMedia?.id)
@@ -89,4 +96,78 @@ export const createLibraryEntry = (props: { media: AnilistSimpleMedia, files: Lo
         sharedPath: "",
         rejectedFiles: [],
     }
+}
+
+/* -------------------------------------------------------------------------------------------------
+ * Rematch
+ * -----------------------------------------------------------------------------------------------*/
+
+export async function manuallyMatchFiles(
+    filePaths: string[],
+    type: "match" | "ignore",
+    userName: string,
+    malID?: string | undefined,
+): Promise<{ error?: string, media?: AnilistSimpleMedia }> {
+
+    logger("library-entry/manuallyMatchFiles").info("1) Fetching user collection")
+    const collectionQuery = await useAniListAsyncQuery(AnimeCollectionDocument, { userName })
+
+    logger("library-entry/manuallyMatchFiles").info("2) Verifying that all files exist")
+    if (filePaths.some(path => !(fs.existsSync(path)))) {
+        logger("library-entry/manuallyMatchFiles").error("File does not exist", filePaths.filter(path => !(fs.existsSync(path))))
+        return { error: "An error occurred. Refresh your library entries" }
+    }
+
+    if (type === "match") {
+
+
+        if (malID && !isNaN(Number(malID))) {
+
+            try {
+                logger("library-entry/manuallyMatchFiles").info("3) Trying to match files")
+                const data = await useAniListAsyncQuery(AnimeByMalIdDocument, { id: Number(malID) })
+
+                if (!data.Media) {
+                    return { error: "Could not find the anime on AniList" }
+                }
+
+                const animeExistsInUsersWatchList = collectionQuery.MediaListCollection?.lists?.some(list => !!list?.entries?.some(entry => entry?.media?.id === data.Media?.id)) ?? false
+
+                if (!animeExistsInUsersWatchList) {
+                    const mutation = await useAniListAsyncQuery(UpdateEntryDocument, {
+                        mediaId: data.Media.id, //Int
+                        status: "PLANNING", //MediaListStatus
+                        score: undefined, //Float
+                        progress: undefined, //Int
+                        repeat: undefined, //Int
+                        private: false, //Boolean
+                        notes: undefined, //String
+                        hiddenFromStatusLists: true, //Boolean
+                        startedAt: undefined, //FuzzyDateInput
+                        completedAt: undefined, //FuzzyDateInput
+                    })
+                }
+
+                // TODO Return media so that the client updates [sea-library-entries] and [sea-locked-paths] using already stored [sea-local-files]
+                return { media: data.Media }
+
+                // return { error: animeExistsInUsersWatchList ? "Anime exists in list" : "Anime doesn't exist in list" }
+
+            } catch (e) {
+
+                return { error: "Could not find/add the anime on AniList" }
+            }
+
+        } else {
+
+            return { error: "Selected anime is incorrect" }
+
+        }
+
+    } else {
+
+        return { error: "" }
+
+    }
+
 }

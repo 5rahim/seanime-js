@@ -9,13 +9,14 @@ import { localFilesAtom, localFilesWithNoMatchAtom } from "@/atoms/library"
 import { anilistCollectionAtom, getAnilistCollectionAtom } from "@/atoms/anilist-collection"
 
 export const AtomPreloader = () => {
-    const token = useAtomValue(aniListTokenAtom)
-    useAtomValue(settingsAtoms)
-    useAtomValue(localFilesAtom)
-    useAtomValue(anilistCollectionAtom)
-    useAtomValue(localFilesWithNoMatchAtom)
-    const collection = useAtomValue(anilistCollectionAtom)
-    const user = useAtomValue(userAtom)
+    const token = useAtomValue(aniListTokenAtom) // Token
+    const user = useAtomValue(userAtom) // User
+    useAtomValue(settingsAtoms) // Settings - (persistent)
+    useAtomValue(localFilesAtom) // Local files - (persistent)
+    useAtomValue(localFilesWithNoMatchAtom) // Local files with no match - (persistent)
+    // useAtomValue(markedPathsAtom) // Marked paths - (persistent)
+    const collection = useAtomValue(anilistCollectionAtom) // Anilist Collection - (persistent)
+
     const [, getUser] = useAtom(getUserAtom)
     const [, getAnilistCollection] = useAtom(getAnilistCollectionAtom)
 

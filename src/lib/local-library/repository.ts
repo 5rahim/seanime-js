@@ -30,7 +30,6 @@ export async function retrieveLocalFilesAsLibraryEntries(settings: Settings, use
 
     if (files && files.length > 0) {
 
-        // TODO Combine these with rejected files
         const localFilesWithNoMedia: LocalFileWithMedia[] = files.filter(n => !n.media)
         let entries: LibraryEntry[] = []
         let rejectedFiles: LocalFileWithMedia[] = []
@@ -40,14 +39,15 @@ export async function retrieveLocalFilesAsLibraryEntries(settings: Settings, use
 
         const groupedByMediaId = _.groupBy(localFilesWithMedia, n => n.media!.id)
 
-        Object.keys(groupedByMediaId).map(async mediaId => {
+        for (let i = 0; i < Object.keys(groupedByMediaId).length; i++) {
+            const mediaId = Object.keys(groupedByMediaId)[i]
             const mediaIdAsNumber = Number(mediaId)
             if (!isNaN(mediaIdAsNumber)) {
                 const currentMedia = allMedia.find(media => media?.id === mediaIdAsNumber)
                 const lFiles = localFilesWithMedia.filter(f => f.media?.id === mediaIdAsNumber)
 
                 if (currentMedia) {
-                    const { rejectedFiles: rejected, ...newEntry } = createLibraryEntry({
+                    const { rejectedFiles: rejected, ...newEntry } = await createLibraryEntry({
                         media: currentMedia,
                         files: lFiles,
                     })
@@ -56,13 +56,11 @@ export async function retrieveLocalFilesAsLibraryEntries(settings: Settings, use
                 }
 
             }
-        })
+        }
 
         // Remove media from localFilesWithNoMedia and rejectedFiles
         const filesWithNoMatch: LocalFile[] = [...localFilesWithNoMedia, ...rejectedFiles].map(obj => _.omit(obj, "media"))
 
-        // TODO Group rejected files by common ancestor path
-        // They will be used in popup for user to 1. Add to watch list
         logger("repository/retrieveLocalFilesAsLibraryEntries").success("Library entry creation successful")
         return {
             entries,
@@ -130,7 +128,7 @@ export async function retrieveHydratedLocalFiles(settings: Settings, userName: N
  * This method is an implementation of [getAllFilesRecursively]
  * @param settings
  */
-export async function retrieveLocalFiles(settings: Settings) {
+export async function retrieveLocalFilesFrom(settings: Settings) {
     const currentPath = settings.library.localDirectory
 
     logger("local-library/repository").info("Retrieving local files")

@@ -7,6 +7,7 @@ import { atom } from "jotai"
 import { logger } from "@/lib/helpers/debug"
 import _ from "lodash"
 import { fetchMALRecommendations } from "@/lib/mal/fetch-recommendations"
+import { AnilistSimpleMedia } from "@/lib/anilist/fragment"
 
 /* -------------------------------------------------------------------------------------------------
  * Library Entries
@@ -50,8 +51,6 @@ export function useStoredLocalFiles() {
 
 }
 
-// TODO Store locked file paths that will be used by async functions to ignore these files and speed up
-// TODO Store ignored files
 
 /* -------------------------------------------------------------------------------------------------
  * Local files with no match
@@ -66,12 +65,17 @@ export type MatchingRecommendationGroup = {
 }
 export const libraryMatchingRecommendationGroupsAtom = atomWithStorage<MatchingRecommendationGroup[]>("sea-library-matching-recommendation-groups", [])
 
+const _matchingRecommendationIsLoading = atom(false)
+
 const getRecommendationPerGroupAtom = atom(null, async (get, set) => {
     try {
         const files = get(localFilesWithNoMatchAtom)
+
         if (files.length > 0) {
+            set(libraryMatchingRecommendationGroupsAtom, [])
             //
             logger("atom/library").info("Grouping local files with no media")
+            set(_matchingRecommendationIsLoading, true)
             //
             const filesWithFolderPath = files.map(file => {
                 return _.setWith(file, "folderPath", file.path.replace("\\" + file.name, ""))
@@ -88,16 +92,18 @@ const getRecommendationPerGroupAtom = atom(null, async (get, set) => {
             for (let i = 0; i < Object.keys(groupedByCommonParentName).length; i++) {
                 const commonPath = Object.keys(groupedByCommonParentName)[i]
                 const lFiles = filesWithFolderPath.filter(file => file.folderPath === commonPath)
-                const _title = lFiles[0]?.parsedFolders.findLast(n => !!n.title)?.title || lFiles[0]?.parsedInfo?.title
+                const _fTitle = lFiles[0]?.parsedFolders.findLast(n => !!n.title)?.title
+                const _title = lFiles[0]?.parsedInfo?.title
                 try {
-                    if (_title) {
-                        const anime = await fetchMALRecommendations(_title)
+                    if (_fTitle || _title) {
+                        const animeList1 = _title ? (await fetchMALRecommendations(_title)) : []
+                        const animeList2 = _fTitle ? (await fetchMALRecommendations(_fTitle)) : []
 
-                        if (anime) {
+                        if (animeList1) {
                             groups = [...groups, {
                                 files: lFiles,
                                 folderPath: commonPath,
-                                recommendations: anime,
+                                recommendations: _.uniqBy([...animeList1, ...animeList2], "id"),
                             }]
                         }
                     }
@@ -105,7 +111,7 @@ const getRecommendationPerGroupAtom = atom(null, async (get, set) => {
                     logger("atom/library").error(e)
                 }
             }
-
+            set(_matchingRecommendationIsLoading, false)
             logger("atom/library").info("Matching recommendation groups", groups)
             set(libraryMatchingRecommendationGroupsAtom, groups)
 
@@ -118,24 +124,59 @@ const getRecommendationPerGroupAtom = atom(null, async (get, set) => {
 
 export function useStoredLocalFilesWithNoMatch() {
 
-    const [value, setter] = useAtom(localFilesWithNoMatchAtom)
+    const isLoading = useAtomValue(_matchingRecommendationIsLoading) // Loading state
+    const [value, setter] = useAtom(localFilesWithNoMatchAtom) // Local files with no match
+    const groups = useAtomValue(libraryMatchingRecommendationGroupsAtom) // Recommendation groups
+
+    const localFiles = useAtomValue(localFilesAtom)
+    const [, setLibraryEntries] = useAtom(libraryEntriesAtom)
+
     const [, getRecommendations] = useAtom(getRecommendationPerGroupAtom)
+
+    const handleManualEntry = (media: AnilistSimpleMedia, filePaths: string[], sharedPath: string) => {
+        const selectedLocalFiles = localFiles.filter(file => filePaths.some(path => path === file.path))
+
+        setLibraryEntries(entries => {
+            const existingEntry = entries.find(entry => entry.media.id === media.id)
+            if (existingEntry) {
+                return entries.map(entry => {
+                    if (entry.media.id === media.id) {
+                        return {
+                            ...entry,
+                            files: [...entry.files, ...selectedLocalFiles],
+                        }
+                    }
+                    return entry
+                })
+            } else {
+                return [
+                    ...entries,
+                    {
+                        media: media,
+                        files: selectedLocalFiles,
+                        accuracy: 1,
+                        sharedPath: sharedPath,
+                    },
+                ]
+            }
+        })
+
+        setter(files => {
+            return files.filter(file => !filePaths.some(path => path === file.path))
+        })
+    }
+
+    const handleIgnoreFiles = () => {
+
+    }
 
     return {
         getRecommendations: getRecommendations,
         files: value,
-        storeFilesWithNoMatch: setter,
-    }
-
-}
-
-export function useMatchingRecommendationGroups() {
-
-    const groups = useAtomValue(libraryMatchingRecommendationGroupsAtom)
-
-    return {
         groups,
+        storeFilesWithNoMatch: setter,
+        recommendationMatchingIsLoading: isLoading,
+        handleManualEntry,
     }
-
 
 }

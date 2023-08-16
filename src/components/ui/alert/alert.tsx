@@ -76,7 +76,7 @@ export interface AlertProps extends React.ComponentPropsWithRef<"div">,
     VariantProps<typeof AlertAnatomy.container>,
     ComponentWithAnatomy<typeof AlertAnatomy> {
     title?: string,
-    description?: string,
+    description?: React.ReactNode,
     isClosable?: boolean,
     onClose?: () => void
 }
@@ -187,9 +187,9 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>((props, ref) =
                         <span className={cn(AlertAnatomy.title(), titleClassName)}>
                             {title}
                         </span>
-                        {!!description && <span className={cn(AlertAnatomy.description(), descriptionClassName)}>
+                        {!!description && <div className={cn(AlertAnatomy.description(), descriptionClassName)}>
                             {description}
-                        </span>}
+                        </div>}
                     </div>
                 </div>
                 {onClose && <button className={cn(AlertAnatomy.closeButton(), closeButtonClassName)} onClick={onClose}>

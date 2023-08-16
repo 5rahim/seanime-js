@@ -31,3 +31,13 @@ export async function fileOrDirectoryExists(path: PathLike) {
         return false
     }
 }
+
+export async function fileExists(path: PathLike) {
+    try {
+        const stat = await fs.stat(path)
+        return stat.isFile()
+
+    } catch (e) {
+        return false
+    }
+}
