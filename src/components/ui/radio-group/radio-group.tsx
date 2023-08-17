@@ -114,8 +114,8 @@ export const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>((pro
 
     // Control the state
     useEffect(() => {
-        value && api.setValue(value)
-    }, [value])
+        (value && value.length > 0) && api.setValue(value)
+    }, [value || "", options])
 
     return (
         <>

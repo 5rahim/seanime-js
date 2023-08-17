@@ -18,8 +18,6 @@ export const settingsSchema = createTypesafeFormSchema(({ z }) => z.object({
             }
             return false
         }, { message: "Directory does not exist" }).transform(value => value?.replaceAll("/", "\\")),
-        ignoredPaths: z.array(z.string()),
-        lockedPaths: z.array(z.string()),
     }),
     player: z.object({
         defaultPlayer: z.enum(["mpc-hc", "vlc"]),
@@ -41,8 +39,6 @@ export type Settings = InferType<typeof settingsSchema>
 export const initialSettings: Settings = {
     library: {
         localDirectory: "E\\:ANIME",
-        ignoredPaths: [],
-        lockedPaths: [],
     },
     player: {
         defaultPlayer: "mpc-hc",
@@ -92,28 +88,7 @@ export function useSettings() {
                     ...value(prev[key]),
                 },
             }))
-        }, []),
-        addMarkedPaths: useCallback(<K extends "ignored" | "locked">(key: K, values: string[]) => {
-            setSettings(prev => ({
-                ...prev,
-                library: {
-                    ...prev.library,
-                    [key + "Paths" as ("ignoredPaths" | "lockedPaths")]: [
-                        ...prev.library[key + "Paths" as ("ignoredPaths" | "lockedPaths")],
-                        ...values,
-                    ],
-                },
-            }))
-        }, []),
-        removeMarkedPaths: useCallback(<K extends "ignored" | "locked">(key: K, values: string[]) => {
-            setSettings(prev => ({
-                ...prev,
-                library: {
-                    ...prev["library"],
-                    [key + "Paths" as ("ignoredPaths" | "lockedPaths")]: prev["library"][key + "Paths" as ("ignoredPaths" | "lockedPaths")].filter(n => !values.includes(n)),
-                },
-            }))
-        }, []),
+        }, [])
     }
 
 }

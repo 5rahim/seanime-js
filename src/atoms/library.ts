@@ -2,7 +2,6 @@ import { atomWithStorage } from "jotai/utils"
 import { LocalFile } from "@/lib/local-library/local-file"
 import { useAtom, useAtomValue } from "jotai/react"
 import { LibraryEntry } from "@/lib/local-library/library-entry"
-import { rejectedSnapshot } from "@/lib/local-library/mock_2"
 import { atom } from "jotai"
 import { logger } from "@/lib/helpers/debug"
 import _ from "lodash"
@@ -56,7 +55,7 @@ export function useStoredLocalFiles() {
  * Local files with no match
  * -----------------------------------------------------------------------------------------------*/
 
-export const localFilesWithNoMatchAtom = atomWithStorage<LocalFile[]>("sea-local-files-with-no-match", rejectedSnapshot)
+export const localFilesWithNoMatchAtom = atomWithStorage<LocalFile[]>("sea-local-files-with-no-match", [])
 
 export type MatchingRecommendationGroup = {
     files: LocalFile[],
@@ -69,7 +68,8 @@ const _matchingRecommendationIsLoading = atom(false)
 
 const getRecommendationPerGroupAtom = atom(null, async (get, set) => {
     try {
-        const files = get(localFilesWithNoMatchAtom)
+        // Find only files that are not ignored
+        const files = get(localFilesWithNoMatchAtom).filter(file => !file.ignored)
 
         if (files.length > 0) {
             set(libraryMatchingRecommendationGroupsAtom, [])
@@ -128,13 +128,12 @@ export function useStoredLocalFilesWithNoMatch() {
     const [value, setter] = useAtom(localFilesWithNoMatchAtom) // Local files with no match
     const groups = useAtomValue(libraryMatchingRecommendationGroupsAtom) // Recommendation groups
 
-    const localFiles = useAtomValue(localFilesAtom)
     const [, setLibraryEntries] = useAtom(libraryEntriesAtom)
 
     const [, getRecommendations] = useAtom(getRecommendationPerGroupAtom)
 
     const handleManualEntry = (media: AnilistSimpleMedia, filePaths: string[], sharedPath: string) => {
-        const selectedLocalFiles = localFiles.filter(file => filePaths.some(path => path === file.path))
+        const selectedLocalFiles = value.filter(file => filePaths.some(path => path === file.path))
 
         setLibraryEntries(entries => {
             const existingEntry = entries.find(entry => entry.media.id === media.id)
@@ -143,7 +142,7 @@ export function useStoredLocalFilesWithNoMatch() {
                     if (entry.media.id === media.id) {
                         return {
                             ...entry,
-                            files: [...entry.files, ...selectedLocalFiles],
+                            files: [...entry.files, ...selectedLocalFiles.map(file => ({ ...file, locked: true }))],
                         }
                     }
                     return entry
@@ -164,19 +163,56 @@ export function useStoredLocalFilesWithNoMatch() {
         setter(files => {
             return files.filter(file => !filePaths.some(path => path === file.path))
         })
+        getRecommendations()
     }
 
-    const handleIgnoreFiles = () => {
-
+    const handleIgnoreFiles = (filePaths: string[]) => {
+        setter(files => {
+            return files.map(file => {
+                if (filePaths.includes(file.path)) {
+                    return {
+                        ...file,
+                        ignored: true,
+                    }
+                }
+                return file
+            })
+        })
+        getRecommendations()
     }
 
     return {
         getRecommendations: getRecommendations,
-        files: value,
+        filesWithNoMatch: value.filter(file => !file.ignored),
+        nbFilesWithNoMatch: value.filter(file => !file.ignored).length,
         groups,
         storeFilesWithNoMatch: setter,
         recommendationMatchingIsLoading: isLoading,
         handleManualEntry,
+        handleIgnoreFiles,
+    }
+
+}
+
+/* -------------------------------------------------------------------------------------------------
+ * Locked and ignored paths
+ * -----------------------------------------------------------------------------------------------*/
+
+/**
+ * Get files that are locked from stored entries
+ * Get files that are ignored from stored entries and stored files with no match
+ */
+export function useLockedAndIgnoredFilePaths() {
+
+    const filesWithNoMatch = useAtomValue(localFilesWithNoMatchAtom)
+    const entries = useAtomValue(libraryEntriesAtom)
+
+    return {
+        lockedPaths: entries.flatMap(entry => entry.files).filter(file => file.locked).map(file => file.path),
+        ignoredPaths: [
+            ...entries.flatMap(entry => entry.files).filter(file => file.ignored).map(file => file.path),
+            ...filesWithNoMatch.filter(file => file.ignored).map(file => file.path),
+        ],
     }
 
 }

@@ -106,6 +106,7 @@ export async function manuallyMatchFiles(
     filePaths: string[],
     type: "match" | "ignore",
     userName: string,
+    token: string,
     malID?: string | undefined,
 ): Promise<{ error?: string, media?: AnilistSimpleMedia }> {
 
@@ -125,7 +126,7 @@ export async function manuallyMatchFiles(
 
             try {
                 logger("library-entry/manuallyMatchFiles").info("3) Trying to match files")
-                const data = await useAniListAsyncQuery(AnimeByMalIdDocument, { id: Number(malID) })
+                const data = await useAniListAsyncQuery(AnimeByMalIdDocument, { id: Number(malID) }, token)
 
                 if (!data.Media) {
                     return { error: "Could not find the anime on AniList" }
@@ -134,21 +135,26 @@ export async function manuallyMatchFiles(
                 const animeExistsInUsersWatchList = collectionQuery.MediaListCollection?.lists?.some(list => !!list?.entries?.some(entry => entry?.media?.id === data.Media?.id)) ?? false
 
                 if (!animeExistsInUsersWatchList) {
-                    const mutation = await useAniListAsyncQuery(UpdateEntryDocument, {
-                        mediaId: data.Media.id, //Int
-                        status: "PLANNING", //MediaListStatus
-                        score: undefined, //Float
-                        progress: undefined, //Int
-                        repeat: undefined, //Int
-                        private: false, //Boolean
-                        notes: undefined, //String
-                        hiddenFromStatusLists: true, //Boolean
-                        startedAt: undefined, //FuzzyDateInput
-                        completedAt: undefined, //FuzzyDateInput
-                    })
+                    try {
+                        const mutation = await useAniListAsyncQuery(UpdateEntryDocument, {
+                            mediaId: data.Media.id, //Int
+                            status: "PLANNING", //MediaListStatus
+                            score: undefined, //Float
+                            progress: undefined, //Int
+                            repeat: undefined, //Int
+                            private: false, //Boolean
+                            notes: undefined, //String
+                            hiddenFromStatusLists: true, //Boolean
+                            startedAt: undefined, //FuzzyDateInput
+                            completedAt: undefined, //FuzzyDateInput
+                        }, token)
+                    } catch (e) {
+                        logger("library-entry/manuallyMatchFiles").error("Error while adding anime to watch list")
+                        return { error: "Could not add the anime to your watch list" }
+                    }
                 }
 
-                // TODO Return media so that the client updates [sea-library-entries] and [sea-locked-paths] using already stored [sea-local-files]
+                // Return media so that the client updates [sea-library-entries] and [sea-local-files-with-no-match]
                 return { media: data.Media }
 
                 // return { error: animeExistsInUsersWatchList ? "Anime exists in list" : "Anime doesn't exist in list" }
@@ -166,7 +172,7 @@ export async function manuallyMatchFiles(
 
     } else {
 
-        return { error: "" }
+        return { error: undefined }
 
     }
 

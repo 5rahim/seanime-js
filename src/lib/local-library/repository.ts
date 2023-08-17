@@ -22,10 +22,13 @@ import { createLibraryEntry, LibraryEntry } from "@/lib/local-library/library-en
 import { logger } from "@/lib/helpers/debug"
 
 
-export async function retrieveLocalFilesAsLibraryEntries(settings: Settings, userName: Nullish<string>) {
+export async function retrieveLocalFilesAsLibraryEntries(settings: Settings, userName: Nullish<string>, {
+    ignored,
+    locked,
+}: { ignored: string[], locked: string[] }) {
     logger("repository/retrieveLocalFilesAsLibraryEntries").info("Start library entry creation")
 
-    const files = await retrieveHydratedLocalFiles(settings, userName)
+    const files = await retrieveHydratedLocalFiles(settings, userName, { ignored, locked })
     // const files = filesWithMediaSnapshot as LocalFileWithMedia[]
 
     if (files && files.length > 0) {
@@ -65,6 +68,7 @@ export async function retrieveLocalFilesAsLibraryEntries(settings: Settings, use
         return {
             entries,
             filesWithNoMatch,
+            // files
         }
     }
 
@@ -76,7 +80,10 @@ export async function retrieveLocalFilesAsLibraryEntries(settings: Settings, use
  * This method hydrates each file retrieved using [retrieveLocalFiles] with its associated [AnilistSimpleMedia]
  * @param settings
  */
-export async function retrieveHydratedLocalFiles(settings: Settings, userName: Nullish<string>) {
+export async function retrieveHydratedLocalFiles(settings: Settings, userName: Nullish<string>, { ignored, locked }: {
+    ignored: string[],
+    locked: string[]
+}) {
     const currentPath = settings.library.localDirectory
 
     if (currentPath && userName) {
@@ -85,7 +92,7 @@ export async function retrieveHydratedLocalFiles(settings: Settings, userName: N
         const data = await useAniListAsyncQuery(AnimeCollectionDocument, { userName })
 
         const localFiles: LocalFile[] = []
-        await getAllFilesRecursively(settings, currentPath, localFiles)
+        await getAllFilesRecursively(settings, currentPath, localFiles, { ignored, locked }) // <-----------------
 
         let allUserMedia = data.MediaListCollection?.lists?.map(n => n?.entries).flat().filter(entry => !!entry).map(entry => entry!.media) as AnilistMedia[] | undefined
         logger("repository/retrieveHydratedLocalFiles").info("Formatting related media")
@@ -134,7 +141,7 @@ export async function retrieveLocalFilesFrom(settings: Settings) {
     logger("local-library/repository").info("Retrieving local files")
     if (currentPath) {
         const files: LocalFile[] = []
-        await getAllFilesRecursively(settings, currentPath, files)
+        // await getAllFilesRecursively(settings, currentPath, files)
         // await mock_getAllFilesRecursively(settings, currentPath, files)
         return files
     }
@@ -152,6 +159,7 @@ async function getAllFilesRecursively(
     settings: Settings,
     directoryPath: string,
     files: LocalFile[],
+    { ignored, locked }: { ignored: string[], locked: string[] },
     allowedTypes: string[] = ["mkv", "mp4"],
 ): Promise<void> {
     const items: Dirent[] = await fs.readdir(directoryPath, { withFileTypes: true })
@@ -161,13 +169,17 @@ async function getAllFilesRecursively(
         const itemPath = path.join(directoryPath, item.name)
         const stats = await fs.stat(itemPath)
 
-        if (stats.isFile() && allowedTypes.some(type => itemPath.endsWith(`.${type}`))) {
+        if (
+            stats.isFile()
+            && allowedTypes.some(type => itemPath.endsWith(`.${type}`))
+            && ![...ignored, ...locked].includes(itemPath)
+        ) {
             files.push(await createLocalFile(settings, {
                 name: item.name,
                 path: itemPath,
             }))
         } else if (stats.isDirectory()) {
-            await getAllFilesRecursively(settings, itemPath, files)
+            await getAllFilesRecursively(settings, itemPath, files, { ignored, locked })
         }
     }
 }

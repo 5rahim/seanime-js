@@ -14,6 +14,7 @@ import { Alert } from "@/components/ui/alert"
 import { manuallyMatchFiles } from "@/lib/local-library/library-entry"
 import toast from "react-hot-toast"
 import { useCurrentUser } from "@/atoms/user"
+import { useAuthed } from "@/atoms/auth"
 
 /* -------------------------------------------------------------------------------------------------
  * ClassificationRecommendationHub
@@ -21,16 +22,17 @@ import { useCurrentUser } from "@/atoms/user"
 
 
 export function ClassificationRecommendationHub(props: { isOpen: boolean, close: () => void }) {
-    const { settings, addMarkedPaths, updateSettings, updateSettingsWithPrev } = useSettings()
+    const { settings } = useSettings()
     const { user } = useCurrentUser()
-    const { groups } = useStoredLocalFilesWithNoMatch()
+    const { token } = useAuthed()
+    const { groups, handleManualEntry, handleIgnoreFiles } = useStoredLocalFilesWithNoMatch()
     const {} = useLibraryEntries()
 
 
     const [isLoading, setIsLoading] = useState(false)
 
     const [index, setIndex] = useState(0)
-    const [selectedAnimeId, setSelectedAnimeId] = useState<string | undefined>(undefined)
+    const [selectedAnimeId, setSelectedAnimeId] = useState<string | undefined>("0")
 
     useEffect(() => {
         setSelectedAnimeId(undefined)
@@ -49,20 +51,16 @@ export function ClassificationRecommendationHub(props: { isOpen: boolean, close:
         setSelectedAnimeId(value ?? undefined)
     }
 
-    const handleConfirmFiles = async () => {
-        if (user?.name) {
+    const handleConfirm = async () => {
+        if (user?.name && token) {
             setIsLoading(true)
             const {
                 error,
                 media,
-            } = await manuallyMatchFiles(currentGroup.files.map(n => n.path), "match", user?.name, selectedAnimeId)
+            } = await manuallyMatchFiles(currentGroup.files.map(n => n.path), "match", user?.name, token, selectedAnimeId)
             if (media) {
-                updateSettingsWithPrev("library", library => ({
-                    lockedPaths: [
-                        ...library.lockedPaths,
-                        ...currentGroup.files.map(file => file.path),
-                    ],
-                }))
+                handleManualEntry(media, currentGroup.files.map(n => n.path), currentGroup.folderPath)
+                setIndex(0)
             }
             if (error) {
                 toast.error(error)
@@ -71,16 +69,16 @@ export function ClassificationRecommendationHub(props: { isOpen: boolean, close:
         }
     }
 
-    const handleIgnoreFiles = async () => {
+    const handleIgnore = async () => {
         if (user?.name) {
-            setIsLoading(true)
-            const { error } = await manuallyMatchFiles(currentGroup.files.map(n => n.path), "ignore", user?.name)
-            if (error) {
-                toast.error(error)
-            }
-            setIsLoading(false)
+            handleIgnoreFiles(currentGroup.files.map(n => n.path))
+            setIndex(0)
         }
     }
+
+    // useEffect(() => {
+    //     console.log(selectedAnimeId)
+    // }, [selectedAnimeId || "undefined"])
 
     return (
         <Drawer
@@ -90,7 +88,7 @@ export function ClassificationRecommendationHub(props: { isOpen: boolean, close:
             isClosable
             title={"Resolve unmatched files"}
         >
-            <div className={"space-y-4"}>
+            {!!currentGroup && <div className={"space-y-4"}>
 
                 <Alert
                     title={"Refresh entries after manually renaming/moving files"}
@@ -199,8 +197,8 @@ export function ClassificationRecommendationHub(props: { isOpen: boolean, close:
                     </ul>
 
                     <div className={"flex gap-2"}>
-                        <Button intent={"success"} onClick={handleConfirmFiles}>Confirm</Button>
-                        <Button intent={"alert-link"} onClick={handleIgnoreFiles}>Mark files as ignored</Button>
+                        <Button intent={"success"} onClick={handleConfirm}>Confirm</Button>
+                        <Button intent={"alert-link"} onClick={handleIgnore}>Mark files as ignored</Button>
                     </div>
                 </div>
                 <div>
@@ -214,7 +212,7 @@ export function ClassificationRecommendationHub(props: { isOpen: boolean, close:
                         </li>
                     </ul>
                 </div>
-            </div>
+            </div>}
         </Drawer>
     )
 

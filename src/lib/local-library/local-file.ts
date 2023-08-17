@@ -19,6 +19,8 @@ export type LocalFile = {
     path: string // File path
     parsedFolders: AnimeFileInfo[]
     parsedInfo: AnimeFileInfo | undefined // Parsed anime info
+    locked: boolean
+    ignored: boolean
 }
 
 /**
@@ -68,6 +70,8 @@ export const createLocalFile = async (settings: Settings, props: Pick<LocalFile,
                 episode: parsed.episode,
             } : undefined,
             parsedFolders,
+            locked: false,
+            ignored: false,
         }
     } catch (e) {
         console.error("[LocalFile] Parsing error", e)
@@ -77,6 +81,8 @@ export const createLocalFile = async (settings: Settings, props: Pick<LocalFile,
             name: props.name,
             parsedInfo: undefined,
             parsedFolders: [],
+            locked: false,
+            ignored: false,
         }
 
     }

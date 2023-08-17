@@ -8,7 +8,12 @@ import { type } from "@tauri-apps/api/os"
 import toast from "react-hot-toast"
 import { BiFolder } from "@react-icons/all-files/bi/BiFolder"
 import { retrieveLocalFilesAsLibraryEntries } from "@/lib/local-library/repository"
-import { useLibraryEntries, useStoredLocalFiles, useStoredLocalFilesWithNoMatch } from "@/atoms/library"
+import {
+    useLibraryEntries,
+    useLockedAndIgnoredFilePaths,
+    useStoredLocalFiles,
+    useStoredLocalFilesWithNoMatch,
+} from "@/atoms/library"
 import { useCurrentUser } from "@/atoms/user"
 import { mock_getUniqueAnimeTitles } from "@/lib/local-library/experimental_unique-titles"
 import { useStoredAnilistCollection } from "@/atoms/anilist-collection"
@@ -21,14 +26,20 @@ export function LibraryToolbar() {
 
     const { settings } = useSettings()
     const { user } = useCurrentUser()
+
     const { storeLocalFiles } = useStoredLocalFiles()
+
+    const { lockedPaths, ignoredPaths } = useLockedAndIgnoredFilePaths()
+
     const { storeLibraryEntries } = useLibraryEntries()
+
     const {
         storeFilesWithNoMatch,
-        files,
+        nbFilesWithNoMatch,
         getRecommendations,
         recommendationMatchingIsLoading,
     } = useStoredLocalFilesWithNoMatch()
+
     const { refetchCollection } = useStoredAnilistCollection()
 
     const matchingRecommendationDisclosure = useDisclosure(false)
@@ -45,7 +56,10 @@ export function LibraryToolbar() {
     const handleRefreshEntries = async () => {
         const tID = toast.loading("Loading")
         // TODO: Invoke [handleScanLibrary]
-        const result = await retrieveLocalFilesAsLibraryEntries(settings, user?.name)
+        const result = await retrieveLocalFilesAsLibraryEntries(settings, user?.name, {
+            ignored: ignoredPaths,
+            locked: lockedPaths,
+        })
         if (result) {
             storeLibraryEntries(result.entries)
             storeFilesWithNoMatch(result.filesWithNoMatch)
@@ -63,7 +77,7 @@ export function LibraryToolbar() {
                         Refresh entries
                     </Button>
 
-                    <Button
+                    {nbFilesWithNoMatch > 0 && <Button
                         onClick={async () => {
                             await getRecommendations()
                             matchingRecommendationDisclosure.open()
@@ -72,8 +86,8 @@ export function LibraryToolbar() {
                         leftIcon={<FcHighPriority/>}
                         isDisabled={recommendationMatchingIsLoading}
                     >
-                        Resolve unmatched ({files.length})
-                    </Button>
+                        Resolve unmatched ({nbFilesWithNoMatch})
+                    </Button>}
 
                     <Button onClick={handleOpenLocalDirectory} intent={"gray-basic"} leftIcon={<BiFolder/>}>
                         Open folder
