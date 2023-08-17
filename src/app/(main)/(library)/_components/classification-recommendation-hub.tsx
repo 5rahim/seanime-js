@@ -76,10 +76,6 @@ export function ClassificationRecommendationHub(props: { isOpen: boolean, close:
         }
     }
 
-    // useEffect(() => {
-    //     console.log(selectedAnimeId)
-    // }, [selectedAnimeId || "undefined"])
-
     return (
         <Drawer
             isOpen={props.isOpen}
@@ -197,8 +193,9 @@ export function ClassificationRecommendationHub(props: { isOpen: boolean, close:
                     </ul>
 
                     <div className={"flex gap-2"}>
-                        <Button intent={"success"} onClick={handleConfirm}>Confirm</Button>
-                        <Button intent={"alert-link"} onClick={handleIgnore}>Mark files as ignored</Button>
+                        <Button intent={"success"} onClick={handleConfirm} isDisabled={isLoading}>Confirm</Button>
+                        <Button intent={"alert-link"} onClick={handleIgnore} isDisabled={isLoading}>Mark files as
+                            ignored</Button>
                     </div>
                 </div>
                 <div>

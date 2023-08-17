@@ -55,7 +55,9 @@ export async function retrieveLocalFilesAsLibraryEntries(settings: Settings, use
                         files: lFiles,
                     })
                     rejectedFiles = [...rejectedFiles, ...rejected] // Return rejected files
-                    entries = [...entries, newEntry] // Return new entry
+                    if (newEntry.files.length > 0) {
+                        entries = [...entries, newEntry] // Return new entry only if it has files
+                    }
                 }
 
             }
@@ -122,7 +124,7 @@ export async function retrieveHydratedLocalFiles(settings: Settings, userName: N
             allUserMedia = allUserMedia?.map(media => _.omit(media, "streamingEpisodes", "relations", "studio", "description", "format", "source", "isAdult", "genres", "trailer", "countryOfOrigin", "studios"))
 
             logger("repository/retrieveHydratedLocalFiles").info("Hydrating local files")
-            const res = (await PromiseBatch(createLocalFileWithMedia, localFiles, allUserMedia, relatedMedia, 500)) as LocalFileWithMedia[]
+            const res = (await PromiseBatch(createLocalFileWithMedia, localFiles, allUserMedia, relatedMedia, 100)) as LocalFileWithMedia[]
             logger("repository/retrieveHydratedLocalFiles").success("Finished hydrating")
 
             return res

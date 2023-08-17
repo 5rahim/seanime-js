@@ -55,31 +55,40 @@ export function LibraryToolbar() {
             locked: lockedPaths,
         })
         if (result) {
-            storeLibraryEntries(entries => {
-                let newEntries: LibraryEntry[] = []
-                let resultEntries = structuredClone(result.entries)
-                entries.map(existingEntry => {
-                    const resultEntryWithSameMedia = result.entries.find(entry => entry.media.id === existingEntry.media.id)
-                    // If an entry already exists with that media
-                    if (resultEntryWithSameMedia) {
-                        resultEntries = resultEntries.filter(n => n.media.id !== resultEntryWithSameMedia.media.id)
-                        newEntries = [...newEntries, {
-                            ...resultEntryWithSameMedia,
-                            files: [
-                                ...existingEntry.files.filter(n => n.locked), // Keep the locked files of the existing entry
-                                ...resultEntryWithSameMedia.files,
-                            ],
-                        }]
+            storeLibraryEntries(prevEntries => {
+                // Store the final merged entries
+                const finalEntries: LibraryEntry[] = []
+                // Create a Set of media IDs from the fetched entries for efficient lookup
+                const fetchedEntriesMediaIds = new Set(result.entries.map(entry => entry.media.id))
+                const processedMediaIds = new Set<number>()
+
+                // Loop through previous entries so we can modify them
+                for (const prevEntry of prevEntries) {
+                    // Check if there's a fetched entry with the same media ID as the previous entry
+                    if (fetchedEntriesMediaIds.has(prevEntry.media.id)) {
+                        processedMediaIds.add(prevEntry.media.id)
+
+                        const fetchedEntryWithSameMedia = result.entries.find(entry => entry.media.id === prevEntry.media.id)!
+                        // Keep the locked files from the previous entry
+                        const lockedFiles = prevEntry.files.filter(file => file.locked)
+                        // Merge the fetched entry's files with locked files from the previous entry
+                        finalEntries.push({
+                            ...fetchedEntryWithSameMedia,
+                            files: [...lockedFiles, ...fetchedEntryWithSameMedia.files],
+                        })
                     } else {
-                        // If not just add the existing entry
-                        newEntries = [...newEntries, existingEntry]
+                        finalEntries.push(prevEntry)
                     }
-                })
-                return [...newEntries, ...resultEntries]
+                }
+
+                return [...finalEntries, ...result.entries.filter(entry => !processedMediaIds.has(entry.media.id))]
             })
-            storeFilesWithNoMatch(files => {
+
+            storeFilesWithNoMatch(prevFiles => {
+                const fetchedFilesPaths = new Set(result.filesWithNoMatch.map(file => file.path))
                 return [
-                    ...files.filter(file => !result.filesWithNoMatch.map(n => n.path).includes(file.path)),
+                    // Keep previous files not in fetched files
+                    ...prevFiles.filter(file => !fetchedFilesPaths.has(file.path)),
                     ...result.filesWithNoMatch,
                 ]
             })

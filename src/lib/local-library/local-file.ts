@@ -117,7 +117,9 @@ export const createLocalFileWithMedia = async (file: LocalFile, allUserMedia: An
 
         let correspondingMedia: AnilistMedia | undefined = undefined
 
-        if (!!file.parsedInfo && (!!file.parsedInfo?.title || file.parsedFolders.some(n => !!n.title))) { // Compare using parsed file title
+        // Find the corresponding media only if:
+        // The file has been parsed AND it has an anime title OR one of its folders have an anime title
+        if (!!file.parsedInfo && (!!file.parsedInfo?.title || file.parsedFolders.some(n => !!n.title))) {
 
             const { correspondingMedia: _c } = await findBestCorrespondingMedia(
                 allMedia,

@@ -63,7 +63,7 @@ Or
   - The file name (Can incorrectly use episode title)
   - The folder name
   - A combination of folder+title name if they do no match
-- The folder's title if prioritized
+    - If the file title is not included in the folder title
 
 ### TL;DR
 

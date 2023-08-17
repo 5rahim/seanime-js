@@ -134,49 +134,75 @@ export function useStoredLocalFilesWithNoMatch() {
     const [, getRecommendations] = useAtom(getRecommendationPerGroupAtom)
 
     const handleManualEntry = (media: AnilistSimpleMedia, filePaths: string[], sharedPath: string) => {
-        const selectedLocalFiles = value.filter(file => filePaths.some(path => path === file.path))
+        const filePathsSet = new Set(filePaths)
+        const selectedLocalFiles = value.filter(file => filePathsSet.has(file.path))
 
-        setLibraryEntries(entries => {
-            const existingEntry = entries.find(entry => entry.media.id === media.id)
-            if (existingEntry) {
-                return entries.map(entry => {
-                    if (entry.media.id === media.id) {
-                        return {
-                            ...entry,
-                            files: [...entry.files, ...selectedLocalFiles.map(file => ({ ...file, locked: true }))],
-                        }
-                    }
-                    return entry
-                })
-            } else {
-                return [
-                    ...entries,
-                    {
-                        media: media,
-                        files: selectedLocalFiles.map(file => ({ ...file, locked: true })),
-                        accuracy: 1,
-                        sharedPath: sharedPath,
-                    },
-                ]
+        // setLibraryEntries(prevEntries => {
+        //     const prevEntriesMediaIds = new Set(prevEntries.map(entry => entry.media.id))
+        //     if (prevEntriesMediaIds.has(media.id)) { // If the media already exists
+        //         return prevEntries.map(entry => {
+        //             if (entry.media.id === media.id) {
+        //                 return {
+        //                     ...entry,
+        //                     files: [...entry.files, ...selectedLocalFiles.map(file => ({ ...file, locked: true }))],
+        //                 }
+        //             }
+        //             return entry
+        //         })
+        //     } else {
+        //         return [
+        //             ...prevEntries,
+        //             {
+        //                 media: media,
+        //                 files: selectedLocalFiles.map(file => ({ ...file, locked: true })),
+        //                 accuracy: 1,
+        //                 sharedPath: sharedPath,
+        //             },
+        //         ]
+        //     }
+        // })
+
+        setLibraryEntries(prevEntries => {
+            const updatedEntries = [...prevEntries]
+            const existingEntryIndex = updatedEntries.findIndex(entry => entry.media.id === media.id)
+
+            if (existingEntryIndex !== -1) { // If entry already exists (entry with same media)
+                const existingEntry = updatedEntries[existingEntryIndex] // Get the existing entry
+
+                updatedEntries[existingEntryIndex] = { // Update the existing entry
+                    ...existingEntry,
+                    files: [ // Overwrite the files but keep files to add manually entered files as locked
+                        ...existingEntry.files,
+                        ...selectedLocalFiles.map(file => ({ ...file, locked: true })),
+                    ],
+                }
+            } else { // If no entry with that media exist, create a new one
+                const newEntry = {
+                    media: media,
+                    files: selectedLocalFiles.map(file => ({ ...file, locked: true })),
+                    accuracy: 1,
+                    sharedPath: sharedPath,
+                }
+                updatedEntries.push(newEntry)
             }
+
+            return updatedEntries
         })
 
         setter(files => {
-            return files.filter(file => !filePaths.some(path => path === file.path))
+            // Keep files that were not manually entered
+            return files.filter(file => !filePathsSet.has(file.path))
         })
         getRecommendations()
     }
 
     const handleIgnoreFiles = (filePaths: string[]) => {
+        const filePathsSet = new Set(filePaths)
         setter(files => {
+            // Go through each files with no match
             return files.map(file => {
-                if (filePaths.includes(file.path)) {
-                    return {
-                        ...file,
-                        ignored: true,
-                    }
-                }
-                return file
+                // If the file path is in the array that will be ignored, set property ignored to true
+                return filePathsSet.has(file.path) ? { ...file, ignored: true } : file
             })
         })
         getRecommendations()

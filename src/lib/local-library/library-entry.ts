@@ -71,6 +71,8 @@ export const createLibraryEntry = async (props: {
         // This is meant to filter out files that differ from the best matches
         // For example this can help avoid having different season episodes under the same Anime
         const mostAccurateFiles = lFilesWithRating
+            // Keep files with a rating greater than 0.4
+            .filter(item => item.rating >= 0.4)
             // If a file has a lower rating than the highest, filter it out
             .filter(item => item.rating.toFixed(3) === highestRating.toFixed(3))
             // If a file's parent folder name has a lower rating than the highest, filter it out
@@ -84,7 +86,7 @@ export const createLibraryEntry = async (props: {
             media: currentMedia,
             files: mostAccurateFiles,
             accuracy: Number(highestRating.toFixed(3)),
-            sharedPath: firstFile.path.replace("\\" + firstFile.parsedInfo?.original || "", ""), // MAY NOT BE ACCURATE
+            sharedPath: firstFile?.path?.replace("\\" + firstFile?.parsedInfo?.original || "", "") || "", // MAY NOT BE ACCURATE
             rejectedFiles: rejectedFiles,
         }
     }
