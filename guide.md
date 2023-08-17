@@ -241,3 +241,4 @@ You may discover that some episodes or seasons are not detected, if this is the 
 TODO:
 
 - Delete entries, local files with no match when user changes Library directory
+- Mutation to add new entry doesn't work 
