@@ -36,8 +36,12 @@ export const LocalLibrary: React.FC<LocalLibraryProps> = (props) => {
                             media: listEntry.media,
                             progress: { watched: listEntry.progress ?? 0, total: listEntry?.media?.episodes },
                             score: listEntry?.score,
+                            isInLocalLibrary: true,
+                            hideLibraryBadge: true,
                         } : {
                             media: entry.media,
+                            isInLocalLibrary: true,
+                            hideLibraryBadge: true,
                         }
                     }),
                 ].filter(Boolean)}

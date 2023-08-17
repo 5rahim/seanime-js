@@ -34,13 +34,13 @@ export default function Home() {
                         Currently Watching
                     </TabPanels.Tab>
                     <TabPanels.Tab>
-                        Completed
+                        Planning
                     </TabPanels.Tab>
                     <TabPanels.Tab>
                         Paused
                     </TabPanels.Tab>
                     <TabPanels.Tab>
-                        Planning
+                        Completed
                     </TabPanels.Tab>
                 </TabPanels.Nav>
                 <TabPanels.Container className="pt-8">
@@ -59,10 +59,9 @@ export default function Home() {
                     <TabPanels.Panel>
                         <AnimeList
                             items={[
-                                ...completedList.map(entry => ({
+                                ...planningList.map(entry => ({
                                     isInLocalLibrary: entries.some(e => e.media.id === entry?.media?.id),
                                     media: entry?.media,
-                                    score: entry?.score,
                                 })),
                             ]}
                         />
@@ -82,9 +81,10 @@ export default function Home() {
                     <TabPanels.Panel>
                         <AnimeList
                             items={[
-                                ...planningList.map(entry => ({
+                                ...completedList.map(entry => ({
                                     isInLocalLibrary: entries.some(e => e.media.id === entry?.media?.id),
                                     media: entry?.media,
+                                    score: entry?.score,
                                 })),
                             ]}
                         />

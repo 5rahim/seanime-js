@@ -10,11 +10,14 @@ import { BiStar } from "@react-icons/all-files/bi/BiStar"
 import { AnilistMedia } from "@/lib/anilist/fragment"
 import { Nullish } from "@/types/common"
 import { BiCalendarAlt } from "@react-icons/all-files/bi/BiCalendarAlt"
-import { IconButton } from "@/components/ui/button"
+import { Button, IconButton } from "@/components/ui/button"
 import { BiCalendarEdit } from "@react-icons/all-files/bi/BiCalendarEdit"
 import { addSeconds, formatDistanceToNow } from "date-fns"
 import _ from "lodash"
 import { BiDownload } from "@react-icons/all-files/bi/BiDownload"
+import { BiPlay } from "@react-icons/all-files/bi/BiPlay"
+import { BiBookmarkPlus } from "@react-icons/all-files/bi/BiBookmarkPlus"
+import Link from "next/link"
 
 export type AnimeListItem = {
     // id: string | null | undefined,
@@ -25,6 +28,7 @@ export type AnimeListItem = {
     isInLocalLibrary?: boolean
     progress?: { watched: number, total: Nullish<number> }
     score?: Nullish<number>
+    hideLibraryBadge?: boolean
 }
 
 interface AnimeListProps {
@@ -109,15 +113,20 @@ export const AnimeList: React.FC<AnimeListProps> = (props) => {
 
                                     {/*PLAY BUTTON*/}
                                     {/*TODO: Check if episode in library, if not show add button*/}
-                                    {/*<div>*/}
-                                    {/*    <div className={"py-1"}>*/}
-                                    {/*        <Button leftIcon={<BiPlay />} intent={"white"} size={"sm"} className={"w-full"}>Watch</Button>*/}
-                                    {/*    </div>*/}
-                                    {/*    <div className={"py-1"}>*/}
-                                    {/*        /!*This button will add the anime into the local library*!/*/}
-                                    {/*        <Button leftIcon={<BiBookmarkPlus />} intent={"warning-subtle"} size={"sm"} className={"w-full"}>Add to library</Button>*/}
-                                    {/*    </div>*/}
-                                    {/*</div>*/}
+                                    {isInLocalLibrary ? <div>
+                                        <div className={"py-1"}>
+                                            <Link href={`/view/${item.media.id}`}>
+                                                <Button leftIcon={<BiPlay/>} intent={"white"} size={"sm"}
+                                                        className={"w-full"}>Watch</Button>
+                                            </Link>
+                                        </div>
+                                    </div> : (item.media.status === "RELEASING" || item.media.status === "FINISHED") ? (
+                                        <div className={"py-1"}>
+                                            {/*This button will add the anime into the local library*/}
+                                            <Button leftIcon={<BiBookmarkPlus/>} intent={"warning-subtle"} size={"sm"}
+                                                    className={"w-full"}>Add to library</Button>
+                                        </div>
+                                    ) : null}
 
                                 </div>
                                 <div className={"flex gap-1"}>
@@ -152,10 +161,11 @@ export const AnimeList: React.FC<AnimeListProps> = (props) => {
                                 className={"z-[5] absolute bottom-0 w-full h-[50%] bg-gradient-to-t from-black to-transparent"}/>
 
                             {/*IN LOCAL LIBRARY*/}
-                            {isInLocalLibrary && <div className={"absolute z-10 left-0 top-0"}>
-                                <Badge size={"xl"} intent={"warning-solid"}
-                                       className={"rounded-md rounded-bl-none rounded-tr-none text-orange-900"}><IoLibrarySharp/></Badge>
-                            </div>}
+                            {(isInLocalLibrary && !item.hideLibraryBadge) &&
+                                <div className={"absolute z-10 left-0 top-0"}>
+                                    <Badge size={"xl"} intent={"warning-solid"}
+                                           className={"rounded-md rounded-bl-none rounded-tr-none text-orange-900"}><IoLibrarySharp/></Badge>
+                                </div>}
 
                             {/*RELEASING BADGE*/}
                             {item.media.status === "RELEASING" && <div className={"absolute z-10 right-1 top-1"}>
