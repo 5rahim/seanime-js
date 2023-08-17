@@ -1,5 +1,32 @@
 # Guide
 
+## Avoid bugs
+
+### When to refresh entries?
+
+Refreshing the library will keep previous entries even when they are deleted.
+
+Here are the scenarios:
+
+- You have locked or ignored files using Seanime
+- You haven't modified, added, deleted, moved files or folders
+
+If you have manually deleted a file or folder from your local library, the entry will still exist after refreshing if
+some files are locked.
+
+If you do not want to re-scan the library you should:
+
+- Un-match non-existent anime before deleting them, this will unlock all files, so they can be overridden when
+  refreshing.
+- Unlock the non-existent files in Seanime and refresh entries.
+
+### When to re-scan library?
+
+Re-scanning the library will un-match locked files and re-scan ignored files.
+
+- After manually renaming/adding/deleting files or folders
+- After changing local library
+
 ## Structure
 
 ### Recommended structure
@@ -237,8 +264,3 @@ You may discover that some episodes or seasons are not detected, if this is the 
 - If you still don't see the episodes, rename their parent folder so that it accurately matches the title on AniList.
 - Seanime may unmatch some episodes if it detects an anime title in the folder's name and that title differs too much
   from the actual anime.
-
-TODO:
-
-- Delete entries, local files with no match when user changes Library directory
-- Mutation to add new entry doesn't work 

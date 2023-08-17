@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useState } from "react"
 import { useSettings } from "@/atoms/settings"
 import { Button } from "@/components/ui/button"
 import { openLocalDirectoryInExplorer } from "@/lib/helpers/directory"
@@ -12,11 +12,14 @@ import { useLibraryEntries, useLockedAndIgnoredFilePaths, useStoredLocalFilesWit
 import { useCurrentUser } from "@/atoms/user"
 import { mock_getUniqueAnimeTitles } from "@/lib/local-library/experimental_unique-titles"
 import { useStoredAnilistCollection } from "@/atoms/anilist-collection"
-import { FcFinePrint } from "@react-icons/all-files/fc/FcFinePrint"
 import { FcHighPriority } from "@react-icons/all-files/fc/FcHighPriority"
 import { useDisclosure } from "@/hooks/use-disclosure"
 import { ClassificationRecommendationHub } from "@/app/(main)/(library)/_components/classification-recommendation-hub"
 import { LibraryEntry } from "@/lib/local-library/library-entry"
+import { Modal } from "@/components/ui/modal"
+import { IoReload } from "@react-icons/all-files/io5/IoReload"
+import { RiFolderDownloadFill } from "@react-icons/all-files/ri/RiFolderDownloadFill"
+import { RiFileSearchLine } from "@react-icons/all-files/ri/RiFileSearchLine"
 
 export function LibraryToolbar() {
 
@@ -36,7 +39,11 @@ export function LibraryToolbar() {
 
     const { refetchCollection } = useStoredAnilistCollection()
 
+    const [isLoading, setIsLoading] = useState(false)
+
     const matchingRecommendationDisclosure = useDisclosure(false)
+    const refreshModal = useDisclosure(false)
+    const rescanModal = useDisclosure(false)
 
     const handleOpenLocalDirectory = async () => {
         const tID = toast.loading("Opening")
@@ -49,6 +56,7 @@ export function LibraryToolbar() {
     // Create/update local library entries from scanned local files
     const handleRefreshEntries = async () => {
         const tID = toast.loading("Loading")
+        setIsLoading(true)
 
         const result = await retrieveLocalFilesAsLibraryEntries(settings, user?.name, {
             ignored: ignoredPaths,
@@ -95,40 +103,64 @@ export function LibraryToolbar() {
         }
         toast.success("Your local library is up to date")
         toast.remove(tID)
+        setIsLoading(false)
+    }
+    const handleRescanEntries = async () => {
+        const tID = toast.loading("Loading")
+        setIsLoading(true)
+
+        const result = await retrieveLocalFilesAsLibraryEntries(settings, user?.name, {
+            ignored: [],
+            locked: [],
+        })
+        if (result) {
+            storeLibraryEntries(result.entries)
+            storeFilesWithNoMatch(result.filesWithNoMatch)
+        }
+        toast.success("Your local library is up to date")
+        toast.remove(tID)
+        setIsLoading(false)
     }
 
     return (
         <>
             <div className={"p-4"}>
-                <div className={"p-2 border border-[--border] rounded-lg flex w-full gap-2"}>
+                <div className={"p-2 border border-[--border] rounded-lg flex w-full justify-between gap-2"}>
 
-                    {/*TODO Show confirm modal*/}
-                    <Button onClick={handleRefreshEntries} intent={"primary-subtle"} leftIcon={<FcFinePrint/>}>
-                        Refresh entries
-                    </Button>
+                    <div className={"inline-flex gap-2 items-center"}>
+                        <Button onClick={refreshModal.open} intent={"primary-subtle"} leftIcon={<RiFileSearchLine/>}>
+                            Refresh entries
+                        </Button>
 
-                    {nbFilesWithNoMatch > 0 && <Button
-                        onClick={async () => {
-                            await getRecommendations()
-                            matchingRecommendationDisclosure.open()
-                        }}
-                        intent={"alert-subtle"}
-                        leftIcon={<FcHighPriority/>}
-                        isDisabled={recommendationMatchingIsLoading}
-                    >
-                        Resolve unmatched ({nbFilesWithNoMatch})
-                    </Button>}
+                        {nbFilesWithNoMatch > 0 && <Button
+                            onClick={async () => {
+                                await getRecommendations()
+                                matchingRecommendationDisclosure.open()
+                            }}
+                            intent={"alert-subtle"}
+                            leftIcon={<FcHighPriority/>}
+                            isDisabled={recommendationMatchingIsLoading || isLoading}
+                        >
+                            Resolve unmatched ({nbFilesWithNoMatch})
+                        </Button>}
+                    </div>
 
-                    <Button onClick={handleOpenLocalDirectory} intent={"gray-basic"} leftIcon={<BiFolder/>}>
-                        Open folder
-                    </Button>
+                    <div className={"inline-flex gap-2 items-center"}>
+                        <Button onClick={rescanModal.open} intent={"warning-subtle"} leftIcon={<RiFolderDownloadFill/>}>
+                            Re-scan library
+                        </Button>
 
-                    <Button
-                        onClick={async () => {
-                            console.log((await mock_getUniqueAnimeTitles(settings, user?.name)))
-                        }}
-                        intent={"gray-basic"}
-                    >Mock</Button>
+                        <Button onClick={handleOpenLocalDirectory} intent={"gray-basic"} leftIcon={<BiFolder/>}>
+                            Open folder
+                        </Button>
+
+                        <Button
+                            onClick={async () => {
+                                console.log((await mock_getUniqueAnimeTitles(settings, user?.name)))
+                            }}
+                            intent={"gray-basic"}
+                        >Mock</Button>
+                    </div>
 
                 </div>
             </div>
@@ -136,6 +168,24 @@ export function LibraryToolbar() {
                 isOpen={matchingRecommendationDisclosure.isOpen}
                 close={matchingRecommendationDisclosure.close}
             />
+            <Modal isOpen={refreshModal.isOpen} onClose={refreshModal.close} isClosable title={"Refresh entries"}
+                   bodyClassName={"space-y-4"}>
+                <p>Are you sure you want to refresh entries?</p>
+                <ul className={"list-disc pl-4"}>
+                    <li>You have locked or ignored files using Seanime</li>
+                    <li>You have NOT manually modified, added, deleted, moved files or folders</li>
+                </ul>
+                <Button onClick={handleRefreshEntries} leftIcon={<IoReload/>} isDisabled={isLoading}>Refresh</Button>
+            </Modal>
+            <Modal isOpen={rescanModal.isOpen} onClose={rescanModal.close} isClosable title={"Re-scan library"}
+                   bodyClassName={"space-y-4"}>
+                <p>Are you sure you want to re-scan your library?</p>
+                <ul className={"list-disc pl-4"}>
+                    <li>This will un-match locked or ignored files</li>
+                </ul>
+                <Button onClick={handleRescanEntries} intent={"warning"} leftIcon={<IoReload/>}
+                        isDisabled={isLoading}>Re-scan</Button>
+            </Modal>
         </>
     )
 

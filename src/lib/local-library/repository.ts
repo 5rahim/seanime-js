@@ -155,8 +155,11 @@ export async function retrieveLocalFilesFrom(settings: Settings) {
 /**
  * Recursively get the files as [LocalFile] type
  * This method modifies the `files` argument
+ * @param settings
  * @param directoryPath
  * @param files
+ * @param ignored
+ * @param locked
  * @param allowedTypes
  */
 async function getAllFilesRecursively(

@@ -81,11 +81,8 @@ export async function findBestCorrespondingMedia(allMedia: AnilistMedia[], parse
         (noSeasons && _folderTitle) ? _folderTitle : undefined,
         (noSeasons && parsed.title) ? parsed.title : undefined,
         (bothTitles && !bothTitlesAreSimilar && noSeasons) ? `${_folderTitle} ${parsed.title}` : undefined,
-
         (_folderTitle && eitherSeasonIsFirst) ? _folderTitle : undefined,
         (parsed.title && eitherSeasonIsFirst) ? parsed.title : undefined,
-
-        // (There is a folder title BUT no file Title) OR (there is a folder title and that title is not in the file title)  -> Use folder title
         ((_folderTitle && !parsed.title) || (!bothTitlesAreSimilar && eitherSeasonExists)) ? `${_folderTitle} Season ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
         ((_folderTitle && !parsed.title) || (!bothTitlesAreSimilar && eitherSeasonExists)) ? `${_folderTitle} Part ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
         ((_folderTitle && !parsed.title) || (!bothTitlesAreSimilar && eitherSeasonExists)) ? `${_folderTitle} Cour ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
@@ -98,7 +95,6 @@ export async function findBestCorrespondingMedia(allMedia: AnilistMedia[], parse
         (parsed.title && eitherSeasonExists) ? `${parsed.title} Part ${romanize(seasonAsNumber || folderSeasonAsNumber!)}` : undefined,
         (parsed.title && eitherSeasonExists) ? `${parsed.title} S${seasonAsNumber || folderSeasonAsNumber}` : undefined,
         (parsed.title && eitherSeasonExists) ? `${parsed.title} ${ordinalize(String(seasonAsNumber || folderSeasonAsNumber))} Season` : undefined,
-        // (There is a folder AND a file title) BUT (the folder title is not in the file title) -> Combine the two
         (bothTitles && !bothTitlesAreSimilar && eitherSeasonExists) ? `${_folderTitle} ${parsed.title} Season ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
         (bothTitles && !bothTitlesAreSimilar && eitherSeasonExists) ? `${_folderTitle} ${parsed.title} Part ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
         (bothTitles && !bothTitlesAreSimilar && eitherSeasonExists) ? `${_folderTitle} ${parsed.title} Cour ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
@@ -125,15 +121,17 @@ export async function findBestCorrespondingMedia(allMedia: AnilistMedia[], parse
     }) ?? []
     similarTitleMatching = _.sortBy(similarTitleMatching, n => n.bestResult.bestMatch.rating).reverse()
 
-    const bestResult = similarTitleMatching?.[0]?.bestResult
+    const bestTitle = similarTitleMatching?.[0]?.bestResult
 
-    let correspondingMediaUsingSimilarity = (bestResult) ? allMedia.find(media => {
-        return media.title?.userPreferred?.toLowerCase() === bestResult.bestMatch.target.toLowerCase()
-            || media.title?.english?.toLowerCase() === bestResult.bestMatch.target.toLowerCase()
-            || media.title?.romaji?.toLowerCase() === bestResult.bestMatch.target.toLowerCase()
+    let correspondingMediaUsingSimilarity = (bestTitle) ? allMedia.find(media => {
+        return media.title?.userPreferred?.toLowerCase() === bestTitle.bestMatch.target.toLowerCase()
+            || media.title?.english?.toLowerCase() === bestTitle.bestMatch.target.toLowerCase()
+            || media.title?.romaji?.toLowerCase() === bestTitle.bestMatch.target.toLowerCase()
     }) : undefined
 
-    delete correspondingMediaUsingSimilarity?.relations
+    if (correspondingMediaUsingSimilarity) { // Unnecessary?
+        delete correspondingMediaUsingSimilarity?.relations
+    }
 
     /**
      * Using levenshtein
@@ -142,7 +140,7 @@ export async function findBestCorrespondingMedia(allMedia: AnilistMedia[], parse
     let correspondingMediaFromDistance: AnilistMedia | undefined
 
     const distances = allMedia.flatMap(media => {
-        return getDistanceFromTitle(media, titleVariations)!
+        return getDistanceFromTitle(media, titleVariations)
     })
     if (distances) {
         const lowest = distances.reduce((prev, curr) => prev.distance <= curr.distance ? prev : curr) // Lower distance
@@ -163,9 +161,9 @@ export async function findBestCorrespondingMedia(allMedia: AnilistMedia[], parse
             const res = await fetch(url, { method: "GET" })
             const body: any = await res.json()
             const anime = body?.categories?.find((category: any) => category?.type === "anime")?.items?.[0]
-            const corresponding = allMedia.find(media => media.idMal === anime.id)
-            if (anime && !!corresponding) {
-                correspondingMediaFromMAL = corresponding
+            const correspondingInUserList = allMedia.find(media => media.idMal === anime.id)
+            if (anime && !!correspondingInUserList) {
+                correspondingMediaFromMAL = correspondingInUserList
             }
         }
     } catch {
@@ -174,22 +172,17 @@ export async function findBestCorrespondingMedia(allMedia: AnilistMedia[], parse
 
     let differentFoundMedia = [correspondingMediaFromMAL, correspondingMediaUsingSimilarity, correspondingMediaFromDistance].filter(Boolean)
 
+    debug("------------------------------------------------------")
+    debug(titleVariations)
+    debug(differentFoundMedia.map(n => n.title?.userPreferred?.toLowerCase()).filter(Boolean))
+    debug(differentFoundMedia.map(n => n.title?.english?.toLowerCase()).filter(Boolean))
+    debug(differentFoundMedia.map(n => n.title?.romaji?.toLowerCase()).filter(Boolean))
+    debug("------------------------------------------------------")
 
-    debug("-----------------------------------------------------")
 
     const best_userPreferred = eliminateLeastSimilarElement(differentFoundMedia.map(n => n.title?.userPreferred?.toLowerCase()).filter(Boolean))
     const best_english = eliminateLeastSimilarElement(differentFoundMedia.map(n => n.title?.english?.toLowerCase()).filter(Boolean))
     const best_romaji = eliminateLeastSimilarElement(differentFoundMedia.map(n => n.title?.romaji?.toLowerCase()).filter(Boolean))
-
-    debug(titleVariations)
-    debug("-------------------")
-
-    debug(differentFoundMedia.map(n => n.title?.userPreferred?.toLowerCase()).filter(Boolean))
-    debug(differentFoundMedia.map(n => n.title?.english?.toLowerCase()).filter(Boolean))
-    debug(differentFoundMedia.map(n => n.title?.romaji?.toLowerCase()).filter(Boolean))
-
-    debug("------------------------------------------------------")
-
     // debug(best_userPreferred)
     // debug(best_english)
     // debug(best_romaji)
@@ -216,8 +209,7 @@ export async function findBestCorrespondingMedia(allMedia: AnilistMedia[], parse
     if (best) {
         bestMedia = allMedia.find(media => {
             // Sometimes torrents are released by episode number and not grouped by season
-            // So remove preceding seasons
-            if (!(seasonAsNumber || folderSeasonAsNumber) && media.episodes && episodeAsNumber) {
+            if (!eitherSeasonExists && media.episodes && episodeAsNumber) {
                 if (episodeAsNumber > media.episodes) return false
             }
             if (media.title?.userPreferred?.toLowerCase() === best!.bestMatch.target.toLowerCase()
@@ -231,8 +223,6 @@ export async function findBestCorrespondingMedia(allMedia: AnilistMedia[], parse
             }
         })
     }
-
-    // debug(titleVariations, bestMedia?.title)
 
     return {
         correspondingMedia: +rating >= 0.5 ? bestMedia : undefined,
@@ -249,6 +239,10 @@ function getDistanceFromTitle(media: AnilistSimpleMedia, values: string[]) {
             media,
             distance: min,
         } // Return the minimum distance
+    }
+    return {
+        media: undefined,
+        distance: 99999,
     }
 }
 

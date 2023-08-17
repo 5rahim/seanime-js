@@ -187,6 +187,9 @@ export function ClassificationRecommendationHub(props: { isOpen: boolean, close:
                     />
 
                     <ul className={"list-disc pl-6"}>
+                        <li>It is recommended that you manually solve the matching issues by renaming/removing files and
+                            RE-SCANNING the library instead of this
+                        </li>
                         <li>Seanime will not unmatch files that you confirm manually when refreshing entries</li>
                         <li>Seanime will not be able to index files marked as ignored</li>
                         <li>Renaming or moving the files later on will no longer keep them locked/ignored</li>
