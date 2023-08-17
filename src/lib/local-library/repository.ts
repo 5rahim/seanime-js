@@ -94,37 +94,39 @@ export async function retrieveHydratedLocalFiles(settings: Settings, userName: N
         const localFiles: LocalFile[] = []
         await getAllFilesRecursively(settings, currentPath, localFiles, { ignored, locked }) // <-----------------
 
-        let allUserMedia = data.MediaListCollection?.lists?.map(n => n?.entries).flat().filter(entry => !!entry).map(entry => entry!.media) as AnilistMedia[] | undefined
-        logger("repository/retrieveHydratedLocalFiles").info("Formatting related media")
+        if (localFiles.length > 0) {
+            let allUserMedia = data.MediaListCollection?.lists?.map(n => n?.entries).flat().filter(entry => !!entry).map(entry => entry!.media) as AnilistMedia[] | undefined
+            logger("repository/retrieveHydratedLocalFiles").info("Formatting related media")
 
-        // Get sequels, prequels... from each media as [ShowcaseMediaFragment]
-        let relatedMedia = ((
-            allUserMedia?.filter(media => !!media)
-                .flatMap(media => media.relations?.edges?.filter(edge => edge?.relationType === "PREQUEL"
-                        || edge?.relationType === "SEQUEL"
-                        || edge?.relationType === "SPIN_OFF"
-                        || edge?.relationType === "SIDE_STORY"
-                        || edge?.relationType === "ALTERNATIVE"
-                        || edge?.relationType === "PARENT",
-                    ).flatMap(edge => edge?.node).filter(Boolean)
-                    ?? [])
-        ) ?? []) as ShowcaseMediaFragment[]
+            // Get sequels, prequels... from each media as [ShowcaseMediaFragment]
+            let relatedMedia = ((
+                allUserMedia?.filter(media => !!media)
+                    .flatMap(media => media.relations?.edges?.filter(edge => edge?.relationType === "PREQUEL"
+                            || edge?.relationType === "SEQUEL"
+                            || edge?.relationType === "SPIN_OFF"
+                            || edge?.relationType === "SIDE_STORY"
+                            || edge?.relationType === "ALTERNATIVE"
+                            || edge?.relationType === "PARENT",
+                        ).flatMap(edge => edge?.node).filter(Boolean)
+                        ?? [])
+            ) ?? []) as ShowcaseMediaFragment[]
 
-        // \/ Used before using PromiseBatch
-        // const localFilesWithMedia: LocalFileWithMedia[] = []
-        // for (let i = 0; i < localFiles.length; i++) {
-        //     const created = await createLocalFileWithMedia(localFiles[i], allUserMedia, relatedMedia)
-        //     if (created) localFilesWithMedia.push(created)
-        // }
-        // return localFilesWithMedia
+            // \/ Used before using PromiseBatch
+            // const localFilesWithMedia: LocalFileWithMedia[] = []
+            // for (let i = 0; i < localFiles.length; i++) {
+            //     const created = await createLocalFileWithMedia(localFiles[i], allUserMedia, relatedMedia)
+            //     if (created) localFilesWithMedia.push(created)
+            // }
+            // return localFilesWithMedia
 
-        allUserMedia = allUserMedia?.map(media => _.omit(media, "streamingEpisodes", "relations", "studio", "description", "format", "source", "isAdult", "genres", "trailer", "countryOfOrigin", "studios"))
+            allUserMedia = allUserMedia?.map(media => _.omit(media, "streamingEpisodes", "relations", "studio", "description", "format", "source", "isAdult", "genres", "trailer", "countryOfOrigin", "studios"))
 
-        logger("repository/retrieveHydratedLocalFiles").info("Hydrating local files")
-        const res = (await PromiseBatch(createLocalFileWithMedia, localFiles, allUserMedia, relatedMedia, 100)) as LocalFileWithMedia[]
-        logger("repository/retrieveHydratedLocalFiles").success("Finished hydrating")
+            logger("repository/retrieveHydratedLocalFiles").info("Hydrating local files")
+            const res = (await PromiseBatch(createLocalFileWithMedia, localFiles, allUserMedia, relatedMedia, 500)) as LocalFileWithMedia[]
+            logger("repository/retrieveHydratedLocalFiles").success("Finished hydrating")
 
-        return res
+            return res
+        }
 
     }
     return undefined
@@ -162,24 +164,28 @@ async function getAllFilesRecursively(
     { ignored, locked }: { ignored: string[], locked: string[] },
     allowedTypes: string[] = ["mkv", "mp4"],
 ): Promise<void> {
-    const items: Dirent[] = await fs.readdir(directoryPath, { withFileTypes: true })
+    try {
+        const items: Dirent[] = await fs.readdir(directoryPath, { withFileTypes: true })
 
-    logger("repository/getAllFilesRecursively").info("Getting all files recursively")
-    for (const item of items) {
-        const itemPath = path.join(directoryPath, item.name)
-        const stats = await fs.stat(itemPath)
+        logger("repository/getAllFilesRecursively").info("Getting all files recursively")
+        for (const item of items) {
+            const itemPath = path.join(directoryPath, item.name)
+            const stats = await fs.stat(itemPath)
 
-        if (
-            stats.isFile()
-            && allowedTypes.some(type => itemPath.endsWith(`.${type}`))
-            && ![...ignored, ...locked].includes(itemPath)
-        ) {
-            files.push(await createLocalFile(settings, {
-                name: item.name,
-                path: itemPath,
-            }))
-        } else if (stats.isDirectory()) {
-            await getAllFilesRecursively(settings, itemPath, files, { ignored, locked })
+            if (
+                stats.isFile()
+                && allowedTypes.some(type => itemPath.endsWith(`.${type}`))
+                && ![...ignored, ...locked].includes(itemPath)
+            ) {
+                files.push(await createLocalFile(settings, {
+                    name: item.name,
+                    path: itemPath,
+                }))
+            } else if (stats.isDirectory()) {
+                await getAllFilesRecursively(settings, itemPath, files, { ignored, locked })
+            }
         }
+    } catch (e) {
+        logger("repository/getAllFilesRecursively").error("Failed")
     }
 }

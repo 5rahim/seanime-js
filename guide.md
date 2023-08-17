@@ -237,3 +237,7 @@ You may discover that some episodes or seasons are not detected, if this is the 
 - If you still don't see the episodes, rename their parent folder so that it accurately matches the title on AniList.
 - Seanime may unmatch some episodes if it detects an anime title in the folder's name and that title differs too much
   from the actual anime.
+
+TODO:
+
+- Delete entries, local files with no match when user changes Library directory

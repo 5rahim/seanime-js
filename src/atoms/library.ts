@@ -37,18 +37,18 @@ export function useLibraryEntries() {
  * - The user should preferably scan the local library once
  * - We will use the [LocalFile]s stored to organize the library entries
  */
-export const localFilesAtom = atomWithStorage<LocalFile[]>("sea-local-files", [])
-
-export function useStoredLocalFiles() {
-
-    const [value, setter] = useAtom(localFilesAtom)
-
-    return {
-        localFiles: value,
-        storeLocalFiles: setter,
-    }
-
-}
+// export const localFilesAtom = atomWithStorage<LocalFile[]>("sea-local-files", [])
+//
+// export function useStoredLocalFiles() {
+//
+//     const [value, setter] = useAtom(localFilesAtom)
+//
+//     return {
+//         localFiles: value,
+//         storeLocalFiles: setter,
+//     }
+//
+// }
 
 
 /* -------------------------------------------------------------------------------------------------
@@ -117,6 +117,7 @@ const getRecommendationPerGroupAtom = atom(null, async (get, set) => {
 
 
         } else {
+            set(libraryMatchingRecommendationGroupsAtom, [])
         }
     } catch (e) {
     }
@@ -152,7 +153,7 @@ export function useStoredLocalFilesWithNoMatch() {
                     ...entries,
                     {
                         media: media,
-                        files: selectedLocalFiles,
+                        files: selectedLocalFiles.map(file => ({ ...file, locked: true })),
                         accuracy: 1,
                         sharedPath: sharedPath,
                     },

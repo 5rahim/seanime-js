@@ -26,7 +26,7 @@ export const LocalLibrary: React.FC<LocalLibraryProps> = (props) => {
     // TODO Action -> Show option to rename parent folder and rescan
 
     return (
-        <>
+        <div className={"px-4"}>
             <AnimeList
                 items={[
                     ...entries.map(entry => {
@@ -42,7 +42,7 @@ export const LocalLibrary: React.FC<LocalLibraryProps> = (props) => {
                     }),
                 ].filter(Boolean)}
             />
-        </>
+        </div>
     )
 
 }

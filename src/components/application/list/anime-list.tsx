@@ -151,6 +151,12 @@ export const AnimeList: React.FC<AnimeListProps> = (props) => {
                             <div
                                 className={"z-[5] absolute bottom-0 w-full h-[50%] bg-gradient-to-t from-black to-transparent"}/>
 
+                            {/*IN LOCAL LIBRARY*/}
+                            {isInLocalLibrary && <div className={"absolute z-10 left-0 top-0"}>
+                                <Badge size={"xl"} intent={"warning-solid"}
+                                       className={"rounded-md rounded-bl-none rounded-tr-none text-orange-900"}><IoLibrarySharp/></Badge>
+                            </div>}
+
                             {/*RELEASING BADGE*/}
                             {item.media.status === "RELEASING" && <div className={"absolute z-10 right-1 top-1"}>
                                 <Tooltip
@@ -162,7 +168,7 @@ export const AnimeList: React.FC<AnimeListProps> = (props) => {
                             {/*NOT YET RELEASED BADGE*/}
                             {item.media.status === "NOT_YET_RELEASED" && <div className={"absolute z-10 right-1 top-1"}>
                                 <Tooltip
-                                    trigger={<Badge intent={"warning-solid"} size={"lg"}><RiSignalTowerLine/></Badge>}>
+                                    trigger={<Badge intent={"gray-solid"} size={"lg"}><RiSignalTowerLine/></Badge>}>
                                     {!!item.media.startDate?.year ?
                                         new Intl.DateTimeFormat("en-US", {
                                             year: "numeric",
@@ -205,15 +211,6 @@ export const AnimeList: React.FC<AnimeListProps> = (props) => {
                                 <p className={"text-center font-semibold text-sm min-[2000px]:text-lg"}>{item.media.title?.userPreferred}</p>
                             </div>
                             <div>
-                                <div className={"flex gap-2 w-full justify-center items-center flex-wrap"}>
-                                    {/*TODO Check if in local library*/}
-                                    {isInLocalLibrary && <div>
-                                        <Tooltip
-                                            trigger={<Badge size={"lg"} intent={"warning"}><IoLibrarySharp/></Badge>}>
-                                            In local library
-                                        </Tooltip>
-                                    </div>}
-                                </div>
                                 <div>
                                     <p className={"text-sm text-[--muted] inline-flex gap-1 items-center"}>
                                         <BiCalendarAlt/>{_.capitalize(item.media.season ?? "")} {new Intl.DateTimeFormat("en-US", {
