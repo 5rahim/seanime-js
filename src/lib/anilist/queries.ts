@@ -72,6 +72,14 @@ export const _AnimeByMalId = gql`
     }
 `
 
+export const _AnimeById = gql`
+    query AnimeById ($id: Int) {
+        Media(id: $id, type: ANIME) {
+            ...media
+        }
+    }
+`
+
 export const _SaveOrUpdateEntry = gql`
     mutation UpdateEntry (
         $mediaId: Int

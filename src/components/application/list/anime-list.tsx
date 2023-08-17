@@ -123,8 +123,11 @@ export const AnimeList: React.FC<AnimeListProps> = (props) => {
                                     </div> : (item.media.status === "RELEASING" || item.media.status === "FINISHED") ? (
                                         <div className={"py-1"}>
                                             {/*This button will add the anime into the local library*/}
-                                            <Button leftIcon={<BiBookmarkPlus/>} intent={"warning-subtle"} size={"sm"}
-                                                    className={"w-full"}>Add to library</Button>
+                                            <Link href={`/view/${item.media.id}`}>
+                                                <Button leftIcon={<BiBookmarkPlus/>} intent={"warning-subtle"}
+                                                        size={"sm"}
+                                                        className={"w-full"}>Add to library</Button>
+                                            </Link>
                                         </div>
                                     ) : null}
 

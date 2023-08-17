@@ -7,6 +7,9 @@ import { logger } from "@/lib/helpers/debug"
 import _ from "lodash"
 import { fetchMALRecommendations } from "@/lib/mal/fetch-recommendations"
 import { AnilistSimpleMedia } from "@/lib/anilist/fragment"
+import { Nullish } from "@/types/common"
+import { useMemo } from "react"
+import { useStoredAnilistCollection } from "@/atoms/anilist-collection"
 
 /* -------------------------------------------------------------------------------------------------
  * Library Entries
@@ -24,6 +27,49 @@ export function useLibraryEntries() {
     return {
         entries: value,
         storeLibraryEntries: setter,
+    }
+
+}
+
+export function useLibraryEntry(mediaId: Nullish<number>) {
+
+    const [entries, setter] = useAtom(libraryEntriesAtom)
+
+    const { collection, getMediaListEntry } = useStoredAnilistCollection()
+
+    const mediaListEntry = useMemo(() => mediaId ? getMediaListEntry(mediaId) : undefined, [collection, mediaId])
+
+    const entry = useMemo(() => {
+        return entries.find(entry => entry.media.id === mediaId)
+    }, [entries])
+
+    const sortedFiles = useMemo(() => {
+        return _.sortBy(entry?.files, n => Number(n.parsedInfo?.episode)) ?? []
+    }, [entry])
+
+    const watchOrderFiles = useMemo(() => {
+        // return entry?.files.sort((a, b) => a.parsedInfo?.episode && b.parsedInfo?.episode ? Number(a.parsedInfo?.episode) - Number(b.parsedInfo?.episode) : 0).slice(0, (mediaListEntry?.progress || entry?.files.length)+1)
+        // return _.sortBy()
+        if (!!sortedFiles && !!mediaListEntry?.progress && !!mediaListEntry.media?.episodes && !!entry?.files && !(mediaListEntry.progress === Number(mediaListEntry.media.episodes))) {
+
+            return {
+                toWatch: sortedFiles?.slice(mediaListEntry.progress) ?? [],
+                watched: sortedFiles?.slice(0, mediaListEntry.progress) ?? [],
+            }
+        }
+        return {
+            toWatch: sortedFiles ?? [],
+            watched: [],
+        }
+    }, [entry, mediaListEntry])
+
+    // TODO: Lock file
+    // TODO: Un-match file
+
+    return {
+        entry: entry,
+        sortedFiles,
+        watchOrderFiles,
     }
 
 }
@@ -137,31 +183,6 @@ export function useStoredLocalFilesWithNoMatch() {
         const filePathsSet = new Set(filePaths)
         const selectedLocalFiles = value.filter(file => filePathsSet.has(file.path))
 
-        // setLibraryEntries(prevEntries => {
-        //     const prevEntriesMediaIds = new Set(prevEntries.map(entry => entry.media.id))
-        //     if (prevEntriesMediaIds.has(media.id)) { // If the media already exists
-        //         return prevEntries.map(entry => {
-        //             if (entry.media.id === media.id) {
-        //                 return {
-        //                     ...entry,
-        //                     files: [...entry.files, ...selectedLocalFiles.map(file => ({ ...file, locked: true }))],
-        //                 }
-        //             }
-        //             return entry
-        //         })
-        //     } else {
-        //         return [
-        //             ...prevEntries,
-        //             {
-        //                 media: media,
-        //                 files: selectedLocalFiles.map(file => ({ ...file, locked: true })),
-        //                 accuracy: 1,
-        //                 sharedPath: sharedPath,
-        //             },
-        //         ]
-        //     }
-        // })
-
         setLibraryEntries(prevEntries => {
             const updatedEntries = [...prevEntries]
             const existingEntryIndex = updatedEntries.findIndex(entry => entry.media.id === media.id)
@@ -243,3 +264,7 @@ export function useLockedAndIgnoredFilePaths() {
     }
 
 }
+
+/* -------------------------------------------------------------------------------------------------
+ * Current viewing media
+ * -----------------------------------------------------------------------------------------------*/

@@ -10,7 +10,6 @@ import { BiFolder } from "@react-icons/all-files/bi/BiFolder"
 import { retrieveLocalFilesAsLibraryEntries } from "@/lib/local-library/repository"
 import { useLibraryEntries, useLockedAndIgnoredFilePaths, useStoredLocalFilesWithNoMatch } from "@/atoms/library"
 import { useCurrentUser } from "@/atoms/user"
-import { mock_getUniqueAnimeTitles } from "@/lib/local-library/experimental_unique-titles"
 import { useStoredAnilistCollection } from "@/atoms/anilist-collection"
 import { FcHighPriority } from "@react-icons/all-files/fc/FcHighPriority"
 import { useDisclosure } from "@/hooks/use-disclosure"
@@ -20,6 +19,7 @@ import { Modal } from "@/components/ui/modal"
 import { IoReload } from "@react-icons/all-files/io5/IoReload"
 import { RiFolderDownloadFill } from "@react-icons/all-files/ri/RiFolderDownloadFill"
 import { RiFileSearchLine } from "@react-icons/all-files/ri/RiFileSearchLine"
+import { parseLocalFilesToLibraryEntry } from "@/lib/gpt/config"
 
 export function LibraryToolbar() {
 
@@ -156,7 +156,7 @@ export function LibraryToolbar() {
 
                         <Button
                             onClick={async () => {
-                                console.log((await mock_getUniqueAnimeTitles(settings, user?.name)))
+                                console.log((await parseLocalFilesToLibraryEntry()))
                             }}
                             intent={"gray-basic"}
                         >Mock</Button>

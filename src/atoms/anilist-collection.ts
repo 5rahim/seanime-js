@@ -9,6 +9,7 @@ import { AnilistMedia } from "@/lib/anilist/fragment"
 import _ from "lodash"
 import { logger } from "@/lib/helpers/debug"
 import { atomWithStorage } from "jotai/utils"
+import toast from "react-hot-toast"
 
 export type AnilistCollection = AnimeCollectionQuery["MediaListCollection"]
 
@@ -31,6 +32,7 @@ export const getAnilistCollectionAtom = atom(null, async (get, set) => {
                 set(anilistCollectionAtom, res.MediaListCollection)
             }
             set(isLoadingAtom, false)
+            toast.success("AniList is up to date")
         } else {
             // set(anilistCollectionAtom, undefined)
         }
@@ -93,6 +95,9 @@ export const useStoredAnilistCollection = () => {
         completedList,
         planningList,
         pausedList,
+        getMediaListEntry: (mediaId: number) => {
+            return collection.find(collectionEntry => collectionEntry?.media?.id === mediaId)
+        },
     }
 
 }

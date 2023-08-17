@@ -68,22 +68,24 @@ export default function Layout({ children }: {
                         )}
                     </div>
                 </div>
-                {!pathname.includes("/anilist") && <Image
-                    src={"/landscape-beach.jpg"}
-                    alt={"tenki no ko"}
-                    fill
-                    priority
-                    className={"object-cover object-top"}
-                />}
-                {pathname.includes("/anilist") && <Image
-                    src={"/landscape-tenki-no-ko.jpg"}
-                    alt={"tenki no ko"}
-                    fill
-                    priority
-                    className={"object-cover"}
-                />}
-                <div
-                    className={"w-full absolute bottom-0 h-[20rem] bg-gradient-to-t from-[--background-color] to-transparent"}/>
+                {!pathname.includes("/view") && <>
+                    {!pathname.includes("/anilist") && <Image
+                        src={"/landscape-beach.jpg"}
+                        alt={"tenki no ko"}
+                        fill
+                        priority
+                        className={"object-cover object-top"}
+                    />}
+                    {pathname.includes("/anilist") && <Image
+                        src={"/landscape-tenki-no-ko.jpg"}
+                        alt={"tenki no ko"}
+                        fill
+                        priority
+                        className={"object-cover"}
+                    />}
+                    <div
+                        className={"w-full absolute bottom-0 h-[20rem] bg-gradient-to-t from-[--background-color] to-transparent"}/>
+                </>}
             </div>
 
             <div>

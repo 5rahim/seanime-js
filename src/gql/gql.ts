@@ -20,8 +20,9 @@ const documents = {
     "\n    query AnimeCollection ($userName: String) {\n        MediaListCollection(userName: $userName, type: ANIME) {\n            lists {\n                entries {\n                    score\n                    progress\n                    status\n                    notes\n                    repeat\n                    private\n                    startedAt {\n                        year\n                        month\n                        day\n                    }\n                    completedAt {\n                        year\n                        month\n                        day\n                    }\n                    media {\n                        ...shortMedia\n                    }\n                }\n            }\n        }\n    }\n": types.AnimeCollectionDocument,
     "\n    query SimpleAnimeCollection ($userName: String) {\n        MediaListCollection(userName: $userName, type: ANIME) {\n            lists {\n                entries {\n                    media {\n                        ...showcaseMedia\n                    }\n                }\n            }\n        }\n    }\n": types.SimpleAnimeCollectionDocument,
     "\n    query AnimeByMalId ($id: Int) {\n        Media(idMal: $id, type: ANIME) {\n            ...showcaseMedia\n        }\n    }\n": types.AnimeByMalIdDocument,
+    "\n    query AnimeById ($id: Int) {\n        Media(id: $id, type: ANIME) {\n            ...media\n        }\n    }\n": types.AnimeByIdDocument,
     "\n    mutation UpdateEntry (\n        $mediaId: Int\n        $status: MediaListStatus\n        $score: Float\n        $progress: Int\n        $repeat: Int\n        $private: Boolean\n        $notes: String\n        $hiddenFromStatusLists: Boolean\n        $startedAt: FuzzyDateInput\n        $completedAt: FuzzyDateInput\n    ) {\n        SaveMediaListEntry(\n            mediaId: $mediaId\n            status: $status\n            score: $score\n            progress: $progress\n            repeat: $repeat\n            private: $private\n            notes: $notes\n            hiddenFromStatusLists: $hiddenFromStatusLists\n            startedAt: $startedAt\n            completedAt: $completedAt\n        ) {\n            id\n        }\n    }\n": types.UpdateEntryDocument,
-}
+};
 
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -65,6 +66,10 @@ export function graphql(source: "\n    query SimpleAnimeCollection ($userName: S
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n    query AnimeByMalId ($id: Int) {\n        Media(idMal: $id, type: ANIME) {\n            ...showcaseMedia\n        }\n    }\n"): (typeof documents)["\n    query AnimeByMalId ($id: Int) {\n        Media(idMal: $id, type: ANIME) {\n            ...showcaseMedia\n        }\n    }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    query AnimeById ($id: Int) {\n        Media(id: $id, type: ANIME) {\n            ...media\n        }\n    }\n"): (typeof documents)["\n    query AnimeById ($id: Int) {\n        Media(id: $id, type: ANIME) {\n            ...media\n        }\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

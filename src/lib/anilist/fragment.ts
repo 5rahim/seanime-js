@@ -1,8 +1,9 @@
 import gql from "graphql-tag"
-import { ShortMediaFragment, ShowcaseMediaFragment } from "@/gql/graphql"
+import { MediaFragment, ShortMediaFragment, ShowcaseMediaFragment } from "@/gql/graphql"
 
 export type AnilistMedia = ShortMediaFragment
 export type AnilistSimpleMedia = ShowcaseMediaFragment
+export type AnilistDetailedMedia = MediaFragment
 
 export const _mediaFragment = gql`
     fragment media on Media {
