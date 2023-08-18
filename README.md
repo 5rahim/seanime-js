@@ -1,35 +1,44 @@
+<h2 align="center"><b>Seanime<b/></h2>
+
+<h4 align="center">Scan your local library, keep track of progress with AniList integration. Download new episodes or
+batches.</h4>
+
+``
+CURRENTLY IN DEVELOPMENT
+``
+
+``
+Windows, Tauri, Typescript, Next.js, Jotai, AniList API
+``
+
 ## Features
 
 - [x] Connect to AniList
-- [ ] Sync progress with AniList
-- [ ] Sync progress with MAL
-- [ ] Browse and manage local library with Anilist information
-  - [x] Automatically classify local files by
-    anime. [See classification guide](https://github.com/5rahim/seanime/blob/main/guide.md).
-  - [x] Show anime list from local library
-  - [x] In-App `Unresolved files` system
-    - [ ] Show AniList link using AniZip
-  - [x] Refresh/Re-scan library
-  - [ ] Open episode with default player
-  - [ ] Lock/Unlock individual files
-  - [ ] Un-match files
-  - [ ] .unsea/.seaignore file to ignore a folder
-  - [ ] Download additional episodes using qBittorent and Nyaa
-  - [ ] Show additional info like future airing episodes and sequels
-  - [ ] Stream episode from web source with custom player
-- [x] Browse and manage AniList list
-  - View AniList lists
-  - Change score, update status, remove
+- [x] Scan local library and match local files with corresponding
+  anime. [See classification guide](https://github.com/5rahim/seanime/blob/main/guide.md).
+- [x] Show anime list from local library
+- [x] Refresh/Re-scan library
+- [x] Open episode with default player
+- [ ] Automatic progress tracking
+  - [ ] Sync progress with AniList
+  - [ ] Sync progress with MAL
+- [x] Lock/Unlock individual files to speed up scanning
+- [x] Ignore filles
+  - [ ] Manage/Un-ignore ignored files
+- [x] Un-match files (that might be incorrectly matched)
+- [x] Resolve unmatched files in-app
+  - [ ] Show AniList link using AniZip
+- [ ] .unsea/.seaignore file support to ignore a folder
+- [ ] Download additional episodes using qBittorent and Nyaa
+- [ ] Show additional info like future airing episodes and sequels
+- [ ] Stream episode from web source with custom player
+- [ ] Browse and manage AniList list
+  - [x] View AniList lists
+  - [ ] Change score
+  - [ ] Update status, remove
 - [ ] Show airing schedule for anime in local library
-- [ ] Search new anime to add in local library
+- [ ] Search new anime to download
 
 ## Known issues
 
-- Delete entries, local files with no match when user changes Library directory
-- Mutation to add new entry doesn't work
-
-`sea-local-files` is the single source of truth
-
-- Refreshing returns `unlocked` paths with matching media
-- Update `sea-local-files` with the same paths
-- It will also return possibly unknown paths, add them to `sea-local-files` if those paths don't exist
+- :shrug:
