@@ -7,7 +7,7 @@ import { openLocalDirectoryInExplorer } from "@/lib/helpers/directory"
 import { type } from "@tauri-apps/api/os"
 import toast from "react-hot-toast"
 import { BiFolder } from "@react-icons/all-files/bi/BiFolder"
-import { retrieveLocalFilesAsLibraryEntries } from "@/lib/local-library/repository"
+import { cleanupFiles, retrieveLocalFilesAsLibraryEntries } from "@/lib/local-library/repository"
 import { useLibraryEntries, useLockedAndIgnoredFilePaths, useStoredLocalFilesWithNoMatch } from "@/atoms/library"
 import { useCurrentUser } from "@/atoms/user"
 import { useStoredAnilistCollection } from "@/atoms/anilist-collection"
@@ -94,10 +94,11 @@ export function LibraryToolbar() {
 
             storeFilesWithNoMatch(prevFiles => {
                 const fetchedFilesPaths = new Set(result.filesWithNoMatch.map(file => file.path))
+                const prevIgnoredPaths = new Set(prevFiles.filter(file => file.ignored).map(file => file.path))
                 return [
                     // Keep previous files not in fetched files
-                    ...prevFiles.filter(file => !fetchedFilesPaths.has(file.path)),
-                    ...result.filesWithNoMatch,
+                    ...prevFiles.filter(file => file.ignored).filter(file => !fetchedFilesPaths.has(file.path)),
+                    ...result.filesWithNoMatch.filter(file => !prevIgnoredPaths.has(file.path)),
                 ]
             })
         }
@@ -120,6 +121,37 @@ export function LibraryToolbar() {
         toast.success("Your local library is up to date")
         toast.remove(tID)
         setIsLoading(false)
+    }
+
+    const handleCleanRepository = async () => {
+        const { ignoredPathsToClean, lockedPathsToClean } = await cleanupFiles(settings, {
+            ignored: ignoredPaths,
+            locked: lockedPaths,
+        })
+
+        const ignoredPathsToCleanSet = new Set(ignoredPathsToClean)
+        const lockedPathsToCleanSet = new Set(lockedPathsToClean)
+
+        storeLibraryEntries(prevEntries => {
+            // Store the final merged entries
+            let finalEntries: LibraryEntry[] = []
+
+            if (lockedPathsToClean.length > 0) {
+                for (const entry of prevEntries) {
+                    finalEntries.push({
+                        ...entry,
+                        files: entry.files.filter(file => !lockedPathsToCleanSet.has(file.path)),
+                    })
+                }
+            }
+            return finalEntries.filter(entry => entry.files.length > 0) // Remove entries with no files
+        })
+
+        if (ignoredPathsToClean.length > 0) {
+            storeFilesWithNoMatch(prevFiles => {
+                return prevFiles.filter(file => !ignoredPathsToCleanSet.has(file.path))
+            })
+        }
     }
 
     return (
@@ -175,7 +207,10 @@ export function LibraryToolbar() {
                     <li>You have locked or ignored files using Seanime</li>
                     <li>You have NOT manually modified, added, deleted, moved files or folders</li>
                 </ul>
-                <Button onClick={handleRefreshEntries} leftIcon={<IoReload/>} isDisabled={isLoading}>Refresh</Button>
+                <Button onClick={async () => {
+                    await handleRefreshEntries()
+                    await handleCleanRepository()
+                }} leftIcon={<IoReload/>} isDisabled={isLoading}>Refresh</Button>
             </Modal>
             <Modal isOpen={rescanModal.isOpen} onClose={rescanModal.close} isClosable title={"Re-scan library"}
                    bodyClassName={"space-y-4"}>

@@ -194,3 +194,47 @@ async function getAllFilesRecursively(
         logger("repository/getAllFilesRecursively").error("Failed")
     }
 }
+
+/**
+ * This function is ran every time the user refresh entries
+ * It goes through the ignored and locked paths in the background to make sure they still exist
+ * If they don't it returns the array of paths that need to be cleaned from the entries and FWNM
+ */
+export async function cleanupFiles(settings: Settings, { ignored, locked }: { ignored: string[], locked: string[] }) {
+    try {
+
+        let ignoredPathsToClean: string[] = []
+        let lockedPathsToClean: string[] = []
+
+        const directoryPath = settings.library.localDirectory
+
+        if (directoryPath) {
+
+            for (const path of ignored) {
+                try {
+                    const stats = await fs.stat(path)
+                } catch (e) {
+                    ignoredPathsToClean.push(path)
+                }
+            }
+            for (const path of locked) {
+                try {
+                    const stats = await fs.stat(path)
+                } catch (e) {
+                    lockedPathsToClean.push(path)
+                }
+            }
+        }
+
+        return {
+            ignoredPathsToClean,
+            lockedPathsToClean,
+        }
+    } catch (e) {
+        logger("repository/cleanupFiles").error("Failed")
+        return {
+            ignoredPathsToClean: [],
+            lockedPathsToClean: [],
+        }
+    }
+}
