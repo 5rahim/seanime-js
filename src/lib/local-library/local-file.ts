@@ -10,17 +10,17 @@ export type AnimeFileInfo = {
     releaseGroup?: string
     season?: string
     part?: string
-    // Episode (or episode range)
     episode?: string
 }
 
 export type LocalFile = {
     name: string // File name
     path: string // File path
-    parsedFolders: AnimeFileInfo[]
+    parsedFolderInfo: AnimeFileInfo[]
     parsedInfo: AnimeFileInfo | undefined // Parsed anime info
     locked: boolean
     ignored: boolean
+    mediaId: number | null
 }
 
 /**
@@ -30,7 +30,7 @@ export type LocalFile = {
  * - parsedInfo: Parsed info from the file name
  *      - Is undefined if we can't parse a title from the file name or folders
  *      - It is undefined if we can't parse an episode
- * - parsedFolders: Parsed info from each parent folder
+ * - parsedFolderInfo: Parsed info from each parent folder
  *      - Is undefined if we can't parse a title or a season
  */
 export const createLocalFile = async (settings: Settings, props: Pick<LocalFile, "name" | "path">): Promise<LocalFile> => {
@@ -40,7 +40,7 @@ export const createLocalFile = async (settings: Settings, props: Pick<LocalFile,
         const parsed = rakun.parse(props.name)
 
         const folders = folderPath.split("\\").filter(value => !!value && value.length > 0)
-        const parsedFolders = folders.map(folder => {
+        const parsedFolderInfo = folders.map(folder => {
             const obj = rakun.parse(folder)
             // Keep the folder which has a parsed title or parsed season
             if (obj.name || obj.season) {
@@ -55,7 +55,7 @@ export const createLocalFile = async (settings: Settings, props: Pick<LocalFile,
             }
         }).filter(Boolean)
 
-        const branchHasTitle = !!parsed.name || parsedFolders.some(obj => !!obj.title)
+        const branchHasTitle = !!parsed.name || parsedFolderInfo.some(obj => !!obj.title)
         // const episodeIsValid = !!parsed.episode
 
         return {
@@ -69,9 +69,10 @@ export const createLocalFile = async (settings: Settings, props: Pick<LocalFile,
                 part: parsed.part,
                 episode: parsed.episode,
             } : undefined,
-            parsedFolders,
+            parsedFolderInfo,
             locked: false,
             ignored: false,
+            mediaId: null,
         }
     } catch (e) {
         console.error("[LocalFile] Parsing error", e)
@@ -80,9 +81,10 @@ export const createLocalFile = async (settings: Settings, props: Pick<LocalFile,
             path: props.path,
             name: props.name,
             parsedInfo: undefined,
-            parsedFolders: [],
+            parsedFolderInfo: [],
             locked: false,
             ignored: false,
+            mediaId: null,
         }
 
     }
@@ -119,12 +121,12 @@ export const createLocalFileWithMedia = async (file: LocalFile, allUserMedia: An
 
         // Find the corresponding media only if:
         // The file has been parsed AND it has an anime title OR one of its folders have an anime title
-        if (!!file.parsedInfo && (!!file.parsedInfo?.title || file.parsedFolders.some(n => !!n.title))) {
+        if (!!file.parsedInfo && (!!file.parsedInfo?.title || file.parsedFolderInfo.some(n => !!n.title))) {
 
             const { correspondingMedia: _c } = await findBestCorrespondingMedia(
                 allMedia,
                 file.parsedInfo,
-                file.parsedFolders,
+                file.parsedFolderInfo,
             )
             correspondingMedia = _c
 
@@ -133,6 +135,7 @@ export const createLocalFileWithMedia = async (file: LocalFile, allUserMedia: An
         return {
             ...file,
             media: correspondingMedia,
+            // mediaId: correspondingMedia?.id || null
         }
     }
     return undefined

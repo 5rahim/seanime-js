@@ -8,7 +8,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "1",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Cowboy Bebop [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Cowboy Bebop",
@@ -29,7 +29,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "2",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Cowboy Bebop [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Cowboy Bebop",
@@ -50,7 +50,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "3",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Cowboy Bebop [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Cowboy Bebop",
@@ -71,7 +71,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "4",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Cowboy Bebop [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Cowboy Bebop",
@@ -92,7 +92,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "5",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Cowboy Bebop [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Cowboy Bebop",
@@ -113,7 +113,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "6",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Cowboy Bebop [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Cowboy Bebop",
@@ -134,7 +134,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "7",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Cowboy Bebop [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Cowboy Bebop",
@@ -155,7 +155,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "8",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Cowboy Bebop [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Cowboy Bebop",
@@ -176,7 +176,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "9",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Cowboy Bebop [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Cowboy Bebop",
@@ -197,7 +197,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "10",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Cowboy Bebop [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Cowboy Bebop",
@@ -218,7 +218,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "11",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Cowboy Bebop [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Cowboy Bebop",
@@ -239,7 +239,7 @@ export const filesWithMediaSnapshot = [
             "season": "01 1",
             "episode": "12",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Cowboy Bebop [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Cowboy Bebop",
@@ -260,7 +260,7 @@ export const filesWithMediaSnapshot = [
             "season": "01 2",
             "episode": "13",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Cowboy Bebop [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Cowboy Bebop",
@@ -281,7 +281,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "14",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Cowboy Bebop [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Cowboy Bebop",
@@ -302,7 +302,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "15",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Cowboy Bebop [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Cowboy Bebop",
@@ -323,7 +323,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "16",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Cowboy Bebop [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Cowboy Bebop",
@@ -344,7 +344,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "17",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Cowboy Bebop [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Cowboy Bebop",
@@ -365,7 +365,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "18",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Cowboy Bebop [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Cowboy Bebop",
@@ -386,7 +386,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "19",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Cowboy Bebop [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Cowboy Bebop",
@@ -407,7 +407,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "20",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Cowboy Bebop [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Cowboy Bebop",
@@ -429,7 +429,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "21",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Cowboy Bebop [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Cowboy Bebop",
@@ -450,7 +450,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "22",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Cowboy Bebop [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Cowboy Bebop",
@@ -471,7 +471,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "23",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Cowboy Bebop [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Cowboy Bebop",
@@ -492,7 +492,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "24",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Cowboy Bebop [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Cowboy Bebop",
@@ -513,7 +513,7 @@ export const filesWithMediaSnapshot = [
             "season": "01 1",
             "episode": "25",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Cowboy Bebop [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Cowboy Bebop",
@@ -534,7 +534,7 @@ export const filesWithMediaSnapshot = [
             "season": "01 2",
             "episode": "26",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Cowboy Bebop [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Cowboy Bebop",
@@ -554,7 +554,7 @@ export const filesWithMediaSnapshot = [
             "title": "I'm Going",
             "episode": "1",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -608,7 +608,7 @@ export const filesWithMediaSnapshot = [
             "title": "They're All Animals!",
             "episode": "2",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -662,7 +662,7 @@ export const filesWithMediaSnapshot = [
             "title": "Let's Play Rich Man-Poor Man!",
             "episode": "3",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -716,7 +716,7 @@ export const filesWithMediaSnapshot = [
             "title": "What Year Is She",
             "episode": "4",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -770,7 +770,7 @@ export const filesWithMediaSnapshot = [
             "title": "I've Been Fooling Myself",
             "episode": "5",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -824,7 +824,7 @@ export const filesWithMediaSnapshot = [
             "title": "Perhaps We Should Invite Ourselves Over",
             "episode": "6",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -878,7 +878,7 @@ export const filesWithMediaSnapshot = [
             "title": "Spring Comes",
             "episode": "7",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -932,7 +932,7 @@ export const filesWithMediaSnapshot = [
             "title": "See You When You Get Back",
             "episode": "8",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -986,7 +986,7 @@ export const filesWithMediaSnapshot = [
             "title": "Yuki Was My First Love",
             "episode": "9",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -1040,7 +1040,7 @@ export const filesWithMediaSnapshot = [
             "title": "It's Valentine's, After All",
             "episode": "10",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -1094,7 +1094,7 @@ export const filesWithMediaSnapshot = [
             "title": "This Is a Wonderful Inn",
             "episode": "11",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -1148,7 +1148,7 @@ export const filesWithMediaSnapshot = [
             "title": "You Look Like You're Having Fun",
             "episode": "12",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -1202,7 +1202,7 @@ export const filesWithMediaSnapshot = [
             "title": "How Have You Been, My Brother",
             "episode": "13",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -1256,7 +1256,7 @@ export const filesWithMediaSnapshot = [
             "title": "That's a Secret",
             "episode": "14",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -1310,7 +1310,7 @@ export const filesWithMediaSnapshot = [
             "title": "I Wouldn't Say That",
             "episode": "15",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -1364,7 +1364,7 @@ export const filesWithMediaSnapshot = [
             "title": "She Said Don't Step on Them!",
             "episode": "16",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -1419,7 +1419,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "chan!",
             "episode": "17",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -1473,7 +1473,7 @@ export const filesWithMediaSnapshot = [
             "title": "What's Important Is",
             "episode": "18",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -1527,7 +1527,7 @@ export const filesWithMediaSnapshot = [
             "title": "I'm So Sorry!",
             "episode": "19",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -1581,7 +1581,7 @@ export const filesWithMediaSnapshot = [
             "title": "I Can't Believe You Picked It Up",
             "episode": "20",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -1635,7 +1635,7 @@ export const filesWithMediaSnapshot = [
             "title": "I Never Back Down from a Wave Fight",
             "episode": "21",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -1689,7 +1689,7 @@ export const filesWithMediaSnapshot = [
             "title": "Because I Was Happy",
             "episode": "22",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -1743,7 +1743,7 @@ export const filesWithMediaSnapshot = [
             "title": "You Look Well",
             "episode": "23",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -1797,7 +1797,7 @@ export const filesWithMediaSnapshot = [
             "title": "Let's Go Home",
             "episode": "24",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -1851,7 +1851,7 @@ export const filesWithMediaSnapshot = [
             "title": "Summer Will Be Here Soon",
             "episode": "25",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -1905,7 +1905,7 @@ export const filesWithMediaSnapshot = [
             "title": "Hello Again",
             "episode": "1",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -1962,7 +1962,7 @@ export const filesWithMediaSnapshot = [
             "title": "Eat Somen With Your Friends",
             "episode": "2",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -2019,7 +2019,7 @@ export const filesWithMediaSnapshot = [
             "title": "Shall We Go and Get You Changed",
             "episode": "3",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -2076,7 +2076,7 @@ export const filesWithMediaSnapshot = [
             "title": "I Got Dumped",
             "episode": "4",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -2133,7 +2133,7 @@ export const filesWithMediaSnapshot = [
             "title": "Wait for Me, Tororo Soba!",
             "episode": "5",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -2190,7 +2190,7 @@ export const filesWithMediaSnapshot = [
             "title": "Are You Really This Stupid",
             "episode": "6",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -2247,7 +2247,7 @@ export const filesWithMediaSnapshot = [
             "title": "Let the Watermelon Splitting Contest Begin!",
             "episode": "7",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -2304,7 +2304,7 @@ export const filesWithMediaSnapshot = [
             "title": "It's True, Isn't It",
             "episode": "8",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -2361,7 +2361,7 @@ export const filesWithMediaSnapshot = [
             "title": "So Precious",
             "episode": "9",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -2418,7 +2418,7 @@ export const filesWithMediaSnapshot = [
             "title": "Who Are You",
             "episode": "10",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -2475,7 +2475,7 @@ export const filesWithMediaSnapshot = [
             "title": "All Mine",
             "episode": "11",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -2532,7 +2532,7 @@ export const filesWithMediaSnapshot = [
             "title": "You Cried for Me",
             "episode": "12",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -2589,7 +2589,7 @@ export const filesWithMediaSnapshot = [
             "title": "Sure Thing",
             "episode": "13",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -2646,7 +2646,7 @@ export const filesWithMediaSnapshot = [
             "title": "I Might as Well Die, Then",
             "episode": "14",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -2703,7 +2703,7 @@ export const filesWithMediaSnapshot = [
             "title": "See You Later",
             "episode": "15",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -2760,7 +2760,7 @@ export const filesWithMediaSnapshot = [
             "title": "Ask Him For Me",
             "episode": "16",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -2817,7 +2817,7 @@ export const filesWithMediaSnapshot = [
             "title": "You Will, I'm Sure",
             "episode": "17",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -2874,7 +2874,7 @@ export const filesWithMediaSnapshot = [
             "title": "Wanna Kiss",
             "episode": "18",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -2931,7 +2931,7 @@ export const filesWithMediaSnapshot = [
             "title": "There's Just No Way!",
             "episode": "19",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -2988,7 +2988,7 @@ export const filesWithMediaSnapshot = [
             "title": "Are You Okay",
             "episode": "20",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -3045,7 +3045,7 @@ export const filesWithMediaSnapshot = [
             "title": "There Was, Definitely",
             "episode": "21",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -3102,7 +3102,7 @@ export const filesWithMediaSnapshot = [
             "title": "That Isn't What I Want!",
             "episode": "22",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -3159,7 +3159,7 @@ export const filesWithMediaSnapshot = [
             "title": "It's Cinderella-ish'!",
             "episode": "23",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -3216,7 +3216,7 @@ export const filesWithMediaSnapshot = [
             "title": "Here You Are",
             "episode": "24",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -3273,7 +3273,7 @@ export const filesWithMediaSnapshot = [
             "title": "I'm Different Now",
             "episode": "25",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -3330,7 +3330,7 @@ export const filesWithMediaSnapshot = [
             "title": "I'll Hold Another Banquet",
             "episode": "1",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -3387,7 +3387,7 @@ export const filesWithMediaSnapshot = [
             "title": "That's an Unwavering Truth",
             "episode": "2",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -3444,7 +3444,7 @@ export const filesWithMediaSnapshot = [
             "title": "I Hope It Snows Soon",
             "episode": "3",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -3501,7 +3501,7 @@ export const filesWithMediaSnapshot = [
             "title": "I'm Home",
             "episode": "4",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -3558,7 +3558,7 @@ export const filesWithMediaSnapshot = [
             "title": "I Mean You Know, Right",
             "episode": "5",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -3615,7 +3615,7 @@ export const filesWithMediaSnapshot = [
             "title": "It Was So Foolish",
             "episode": "6",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -3672,7 +3672,7 @@ export const filesWithMediaSnapshot = [
             "title": "That's Right, It's Empty",
             "episode": "7",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -3729,7 +3729,7 @@ export const filesWithMediaSnapshot = [
             "title": "I'm Disappointed in You",
             "episode": "8",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -3786,7 +3786,7 @@ export const filesWithMediaSnapshot = [
             "title": "What's Your Name",
             "episode": "9",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -3843,7 +3843,7 @@ export const filesWithMediaSnapshot = [
             "title": "I Just Love Her",
             "episode": "10",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -3900,7 +3900,7 @@ export const filesWithMediaSnapshot = [
             "title": "Goodbye",
             "episode": "11",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -3957,7 +3957,7 @@ export const filesWithMediaSnapshot = [
             "title": "You Fought Well",
             "episode": "12",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -4014,7 +4014,7 @@ export const filesWithMediaSnapshot = [
             "title": "See You Again Soon",
             "episode": "13",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -4071,7 +4071,7 @@ export const filesWithMediaSnapshot = [
             "title": "Fruits Basket Prelude",
             "releaseGroup": "EMBER",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Fruits Basket S01-S03+Movie 1080p Dual Audio BDRip 10 bits DD x265-EMBER",
                 "title": "Fruits Basket",
@@ -4120,7 +4120,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Breeze",
             "episode": "1",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "High Card",
                 "title": "High Card",
@@ -4166,7 +4166,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Breeze",
             "episode": "2",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "High Card",
                 "title": "High Card",
@@ -4212,7 +4212,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Breeze",
             "episode": "3",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "High Card",
                 "title": "High Card",
@@ -4258,7 +4258,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Breeze",
             "episode": "4",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "High Card",
                 "title": "High Card",
@@ -4304,7 +4304,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Breeze",
             "episode": "5",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "High Card",
                 "title": "High Card",
@@ -4350,7 +4350,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Breeze",
             "episode": "6",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "High Card",
                 "title": "High Card",
@@ -4396,7 +4396,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Breeze",
             "episode": "7",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "High Card",
                 "title": "High Card",
@@ -4442,7 +4442,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Breeze",
             "episode": "8",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "High Card",
                 "title": "High Card",
@@ -4488,7 +4488,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Breeze",
             "episode": "9",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "High Card",
                 "title": "High Card",
@@ -4534,7 +4534,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Breeze",
             "episode": "10",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "High Card",
                 "title": "High Card",
@@ -4580,7 +4580,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Breeze",
             "episode": "11",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "High Card",
                 "title": "High Card",
@@ -4626,7 +4626,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Breeze",
             "episode": "12",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "High Card",
                 "title": "High Card",
@@ -4672,7 +4672,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "1",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Kakegurui [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Kakegurui",
@@ -4727,7 +4727,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "2",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Kakegurui [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Kakegurui",
@@ -4782,7 +4782,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "3",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Kakegurui [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Kakegurui",
@@ -4837,7 +4837,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "4",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Kakegurui [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Kakegurui",
@@ -4892,7 +4892,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "5",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Kakegurui [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Kakegurui",
@@ -4947,7 +4947,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "6",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Kakegurui [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Kakegurui",
@@ -5002,7 +5002,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "7",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Kakegurui [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Kakegurui",
@@ -5057,7 +5057,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "8",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Kakegurui [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Kakegurui",
@@ -5112,7 +5112,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "9",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Kakegurui [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Kakegurui",
@@ -5167,7 +5167,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "10",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Kakegurui [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Kakegurui",
@@ -5222,7 +5222,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "11",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Kakegurui [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Kakegurui",
@@ -5277,7 +5277,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "12",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Kakegurui [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Kakegurui",
@@ -5332,7 +5332,7 @@ export const filesWithMediaSnapshot = [
             "season": "2",
             "episode": "1",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Kakegurui [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Kakegurui",
@@ -5384,7 +5384,7 @@ export const filesWithMediaSnapshot = [
             "season": "2",
             "episode": "2",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Kakegurui [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Kakegurui",
@@ -5436,7 +5436,7 @@ export const filesWithMediaSnapshot = [
             "season": "2",
             "episode": "3",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Kakegurui [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Kakegurui",
@@ -5488,7 +5488,7 @@ export const filesWithMediaSnapshot = [
             "season": "2",
             "episode": "4",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Kakegurui [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Kakegurui",
@@ -5540,7 +5540,7 @@ export const filesWithMediaSnapshot = [
             "season": "2",
             "episode": "5",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Kakegurui [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Kakegurui",
@@ -5592,7 +5592,7 @@ export const filesWithMediaSnapshot = [
             "season": "2",
             "episode": "6",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Kakegurui [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Kakegurui",
@@ -5644,7 +5644,7 @@ export const filesWithMediaSnapshot = [
             "season": "2",
             "episode": "7",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Kakegurui [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Kakegurui",
@@ -5696,7 +5696,7 @@ export const filesWithMediaSnapshot = [
             "season": "2",
             "episode": "8",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Kakegurui [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Kakegurui",
@@ -5748,7 +5748,7 @@ export const filesWithMediaSnapshot = [
             "season": "2",
             "episode": "9",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Kakegurui [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Kakegurui",
@@ -5800,7 +5800,7 @@ export const filesWithMediaSnapshot = [
             "season": "2",
             "episode": "10",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Kakegurui [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Kakegurui",
@@ -5852,7 +5852,7 @@ export const filesWithMediaSnapshot = [
             "season": "2",
             "episode": "11",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Kakegurui [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Kakegurui",
@@ -5904,7 +5904,7 @@ export const filesWithMediaSnapshot = [
             "season": "2",
             "episode": "12",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Kakegurui [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Kakegurui",
@@ -5956,7 +5956,7 @@ export const filesWithMediaSnapshot = [
             "season": "0",
             "episode": "1",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Kakegurui [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Kakegurui",
@@ -6011,7 +6011,7 @@ export const filesWithMediaSnapshot = [
             "season": "0",
             "episode": "2",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Kakegurui [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Kakegurui",
@@ -6066,7 +6066,7 @@ export const filesWithMediaSnapshot = [
             "season": "0",
             "episode": "3",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Kakegurui [BD][1080p][HEVC 10bit x265][Dual Audio][Tenrai-Sensei]",
                 "title": "Kakegurui",
@@ -6121,7 +6121,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "1",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai [BD][1080p][HEVC 10bit x265][Tenrai-Sensei]",
                 "title": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai",
@@ -6175,7 +6175,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "2",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai [BD][1080p][HEVC 10bit x265][Tenrai-Sensei]",
                 "title": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai",
@@ -6229,7 +6229,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "3",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai [BD][1080p][HEVC 10bit x265][Tenrai-Sensei]",
                 "title": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai",
@@ -6283,7 +6283,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "4",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai [BD][1080p][HEVC 10bit x265][Tenrai-Sensei]",
                 "title": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai",
@@ -6337,7 +6337,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "5",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai [BD][1080p][HEVC 10bit x265][Tenrai-Sensei]",
                 "title": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai",
@@ -6391,7 +6391,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "6",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai [BD][1080p][HEVC 10bit x265][Tenrai-Sensei]",
                 "title": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai",
@@ -6445,7 +6445,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "7",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai [BD][1080p][HEVC 10bit x265][Tenrai-Sensei]",
                 "title": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai",
@@ -6499,7 +6499,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "8",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai [BD][1080p][HEVC 10bit x265][Tenrai-Sensei]",
                 "title": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai",
@@ -6553,7 +6553,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "9",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai [BD][1080p][HEVC 10bit x265][Tenrai-Sensei]",
                 "title": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai",
@@ -6607,7 +6607,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "10",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai [BD][1080p][HEVC 10bit x265][Tenrai-Sensei]",
                 "title": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai",
@@ -6661,7 +6661,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "11",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai [BD][1080p][HEVC 10bit x265][Tenrai-Sensei]",
                 "title": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai",
@@ -6715,7 +6715,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "12",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai [BD][1080p][HEVC 10bit x265][Tenrai-Sensei]",
                 "title": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai",
@@ -6769,7 +6769,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "13",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai [BD][1080p][HEVC 10bit x265][Tenrai-Sensei]",
                 "title": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai",
@@ -6823,7 +6823,7 @@ export const filesWithMediaSnapshot = [
             "season": "0",
             "episode": "1",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai [BD][1080p][HEVC 10bit x265][Tenrai-Sensei]",
                 "title": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai",
@@ -6877,7 +6877,7 @@ export const filesWithMediaSnapshot = [
             "season": "0",
             "episode": "2",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai [BD][1080p][HEVC 10bit x265][Tenrai-Sensei]",
                 "title": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai",
@@ -6931,7 +6931,7 @@ export const filesWithMediaSnapshot = [
             "season": "0",
             "episode": "3",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai [BD][1080p][HEVC 10bit x265][Tenrai-Sensei]",
                 "title": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai",
@@ -6985,7 +6985,7 @@ export const filesWithMediaSnapshot = [
             "season": "0",
             "episode": "4",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai [BD][1080p][HEVC 10bit x265][Tenrai-Sensei]",
                 "title": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai",
@@ -7039,7 +7039,7 @@ export const filesWithMediaSnapshot = [
             "season": "0",
             "episode": "5",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai [BD][1080p][HEVC 10bit x265][Tenrai-Sensei]",
                 "title": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai",
@@ -7093,7 +7093,7 @@ export const filesWithMediaSnapshot = [
             "season": "0",
             "episode": "6",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai [BD][1080p][HEVC 10bit x265][Tenrai-Sensei]",
                 "title": "Rascal Does Not Dream of Bunny Girl Senpai Rascal Does Not Dream of Bunny Girl Senpai",
@@ -7147,7 +7147,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "1",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -7200,7 +7200,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "2",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -7253,7 +7253,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "3",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -7306,7 +7306,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "4",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -7359,7 +7359,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "5",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -7412,7 +7412,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "6",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -7465,7 +7465,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "7",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -7518,7 +7518,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "8",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -7571,7 +7571,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "9",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -7624,7 +7624,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "10",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -7677,7 +7677,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "11",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -7730,7 +7730,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "12",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -7783,7 +7783,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "12",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -7836,7 +7836,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "13",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -7889,7 +7889,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "14",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -7942,7 +7942,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "15",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -7995,7 +7995,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "16",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -8048,7 +8048,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "17",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -8101,7 +8101,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "18",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -8154,7 +8154,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "19",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -8207,7 +8207,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "20",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -8260,7 +8260,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "21",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -8313,7 +8313,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "22",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -8366,7 +8366,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "23",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -8419,7 +8419,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "24",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -8472,7 +8472,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "25",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -8493,7 +8493,7 @@ export const filesWithMediaSnapshot = [
             "title": "Durarara!! ED 1",
             "releaseGroup": "Anime Time",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -8545,7 +8545,7 @@ export const filesWithMediaSnapshot = [
             "title": "Durarara!! ED 2",
             "releaseGroup": "Anime Time",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -8597,7 +8597,7 @@ export const filesWithMediaSnapshot = [
             "title": "Durarara!! OP 1",
             "releaseGroup": "Anime Time",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -8649,7 +8649,7 @@ export const filesWithMediaSnapshot = [
             "title": "Durarara!! OP 2",
             "releaseGroup": "Anime Time",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -8701,7 +8701,7 @@ export const filesWithMediaSnapshot = [
             "title": "Durarara!!×2 Ketsu ED 1",
             "releaseGroup": "Anime Time",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -8753,7 +8753,7 @@ export const filesWithMediaSnapshot = [
             "title": "Durarara!!×2 Ketsu OP 1",
             "releaseGroup": "Anime Time",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -8805,7 +8805,7 @@ export const filesWithMediaSnapshot = [
             "title": "Durarara!!×2 Ketsu OVA ED 1",
             "releaseGroup": "Anime Time",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -8857,7 +8857,7 @@ export const filesWithMediaSnapshot = [
             "title": "Durarara!!×2 Shou ED 1",
             "releaseGroup": "Anime Time",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -8909,7 +8909,7 @@ export const filesWithMediaSnapshot = [
             "title": "Durarara!!×2 Shou OP 1",
             "releaseGroup": "Anime Time",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -8961,7 +8961,7 @@ export const filesWithMediaSnapshot = [
             "title": "Durarara!!×2 Shou OVA ED 1",
             "releaseGroup": "Anime Time",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -9013,7 +9013,7 @@ export const filesWithMediaSnapshot = [
             "title": "Durarara!!×2 Ten ED 1",
             "releaseGroup": "Anime Time",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -9065,7 +9065,7 @@ export const filesWithMediaSnapshot = [
             "title": "Durarara!!×2 Ten OP 1",
             "releaseGroup": "Anime Time",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -9117,7 +9117,7 @@ export const filesWithMediaSnapshot = [
             "title": "Durarara!!×2 Ten OVA ED 1",
             "releaseGroup": "Anime Time",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -9170,7 +9170,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "1",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -9223,7 +9223,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "2",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -9276,7 +9276,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "3",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -9329,7 +9329,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "4",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -9382,7 +9382,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "5",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -9435,7 +9435,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "6",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -9488,7 +9488,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "7",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -9541,7 +9541,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "8",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -9594,7 +9594,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "9",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -9647,7 +9647,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "10",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -9700,7 +9700,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "11",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -9753,7 +9753,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "12",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -9806,7 +9806,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "7",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -9859,7 +9859,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "1",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -9912,7 +9912,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "2",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -9965,7 +9965,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "3",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -10018,7 +10018,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "4",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -10071,7 +10071,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "5",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -10124,7 +10124,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "6",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -10177,7 +10177,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "7",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -10230,7 +10230,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "8",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -10283,7 +10283,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "9",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -10336,7 +10336,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "10",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -10389,7 +10389,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "11",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -10442,7 +10442,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "12",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -10494,7 +10494,7 @@ export const filesWithMediaSnapshot = [
             "title": "Durarara!! X2 Shou - OVA",
             "releaseGroup": "Anime Time",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -10547,7 +10547,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "1",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -10600,7 +10600,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "2",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -10653,7 +10653,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "3",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -10706,7 +10706,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "4",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -10759,7 +10759,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "5",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -10812,7 +10812,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "6",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -10865,7 +10865,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "7",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -10918,7 +10918,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "8",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -10971,7 +10971,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "9",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -11024,7 +11024,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "1",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -11077,7 +11077,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "10",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -11130,7 +11130,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "11",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -11183,7 +11183,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "12",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]",
                 "title": "Durarara!!",
@@ -11235,7 +11235,7 @@ export const filesWithMediaSnapshot = [
             "title": "Evangelion 3.0+1.11 Thrice Upon A Time",
             "releaseGroup": "Anime Time",
         },
-        "parsedFolders": [],
+        "parsedFolderInfo": [],
     },
     {
         "path": "E:\\ANIME\\[Anime Time] Neon Genesis Evangelion - Death & Rebirth.mkv",
@@ -11245,7 +11245,7 @@ export const filesWithMediaSnapshot = [
             "title": "Neon Genesis Evangelion - Death & Rebirth",
             "releaseGroup": "Anime Time",
         },
-        "parsedFolders": [],
+        "parsedFolderInfo": [],
         "media": {
             "id": 30,
             "idMal": 30,
@@ -11289,7 +11289,7 @@ export const filesWithMediaSnapshot = [
             "title": "Neon Genesis Evangelion - Death (True)²",
             "releaseGroup": "Anime Time",
         },
-        "parsedFolders": [],
+        "parsedFolderInfo": [],
         "media": {
             "id": 30,
             "idMal": 30,
@@ -11333,7 +11333,7 @@ export const filesWithMediaSnapshot = [
             "title": "Neon Genesis Evangelion - The End of Evangelion",
             "releaseGroup": "Anime Time",
         },
-        "parsedFolders": [],
+        "parsedFolderInfo": [],
         "media": {
             "id": 32,
             "idMal": 32,
@@ -11376,7 +11376,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "1",
         },
-        "parsedFolders": [],
+        "parsedFolderInfo": [],
         "media": {
             "id": 2759,
             "idMal": 2759,
@@ -11424,7 +11424,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "2",
         },
-        "parsedFolders": [],
+        "parsedFolderInfo": [],
     },
     {
         "path": "E:\\ANIME\\[Anime Time] Neon Genesis Evangelion 3.33 You Can (Not) Redo.mkv",
@@ -11435,7 +11435,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "3",
         },
-        "parsedFolders": [],
+        "parsedFolderInfo": [],
         "media": {
             "id": 30,
             "idMal": 30,
@@ -11480,7 +11480,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "1",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Neon Genesis Evangelion Complete Series [BD] [Dual Audio][1080p][HEVC 10bit x265][AAC][Multi Sub] [Batch]",
                 "title": "Neon Genesis Evangelion",
@@ -11531,7 +11531,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "2",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Neon Genesis Evangelion Complete Series [BD] [Dual Audio][1080p][HEVC 10bit x265][AAC][Multi Sub] [Batch]",
                 "title": "Neon Genesis Evangelion",
@@ -11582,7 +11582,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "3",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Neon Genesis Evangelion Complete Series [BD] [Dual Audio][1080p][HEVC 10bit x265][AAC][Multi Sub] [Batch]",
                 "title": "Neon Genesis Evangelion",
@@ -11633,7 +11633,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "4",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Neon Genesis Evangelion Complete Series [BD] [Dual Audio][1080p][HEVC 10bit x265][AAC][Multi Sub] [Batch]",
                 "title": "Neon Genesis Evangelion",
@@ -11684,7 +11684,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "5",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Neon Genesis Evangelion Complete Series [BD] [Dual Audio][1080p][HEVC 10bit x265][AAC][Multi Sub] [Batch]",
                 "title": "Neon Genesis Evangelion",
@@ -11735,7 +11735,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "6",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Neon Genesis Evangelion Complete Series [BD] [Dual Audio][1080p][HEVC 10bit x265][AAC][Multi Sub] [Batch]",
                 "title": "Neon Genesis Evangelion",
@@ -11786,7 +11786,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "7",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Neon Genesis Evangelion Complete Series [BD] [Dual Audio][1080p][HEVC 10bit x265][AAC][Multi Sub] [Batch]",
                 "title": "Neon Genesis Evangelion",
@@ -11837,7 +11837,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "8",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Neon Genesis Evangelion Complete Series [BD] [Dual Audio][1080p][HEVC 10bit x265][AAC][Multi Sub] [Batch]",
                 "title": "Neon Genesis Evangelion",
@@ -11888,7 +11888,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "9",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Neon Genesis Evangelion Complete Series [BD] [Dual Audio][1080p][HEVC 10bit x265][AAC][Multi Sub] [Batch]",
                 "title": "Neon Genesis Evangelion",
@@ -11939,7 +11939,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "10",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Neon Genesis Evangelion Complete Series [BD] [Dual Audio][1080p][HEVC 10bit x265][AAC][Multi Sub] [Batch]",
                 "title": "Neon Genesis Evangelion",
@@ -11990,7 +11990,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "11",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Neon Genesis Evangelion Complete Series [BD] [Dual Audio][1080p][HEVC 10bit x265][AAC][Multi Sub] [Batch]",
                 "title": "Neon Genesis Evangelion",
@@ -12041,7 +12041,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "12",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Neon Genesis Evangelion Complete Series [BD] [Dual Audio][1080p][HEVC 10bit x265][AAC][Multi Sub] [Batch]",
                 "title": "Neon Genesis Evangelion",
@@ -12092,7 +12092,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "13",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Neon Genesis Evangelion Complete Series [BD] [Dual Audio][1080p][HEVC 10bit x265][AAC][Multi Sub] [Batch]",
                 "title": "Neon Genesis Evangelion",
@@ -12143,7 +12143,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "14",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Neon Genesis Evangelion Complete Series [BD] [Dual Audio][1080p][HEVC 10bit x265][AAC][Multi Sub] [Batch]",
                 "title": "Neon Genesis Evangelion",
@@ -12194,7 +12194,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "15",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Neon Genesis Evangelion Complete Series [BD] [Dual Audio][1080p][HEVC 10bit x265][AAC][Multi Sub] [Batch]",
                 "title": "Neon Genesis Evangelion",
@@ -12245,7 +12245,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "16",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Neon Genesis Evangelion Complete Series [BD] [Dual Audio][1080p][HEVC 10bit x265][AAC][Multi Sub] [Batch]",
                 "title": "Neon Genesis Evangelion",
@@ -12296,7 +12296,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "17",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Neon Genesis Evangelion Complete Series [BD] [Dual Audio][1080p][HEVC 10bit x265][AAC][Multi Sub] [Batch]",
                 "title": "Neon Genesis Evangelion",
@@ -12347,7 +12347,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "18",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Neon Genesis Evangelion Complete Series [BD] [Dual Audio][1080p][HEVC 10bit x265][AAC][Multi Sub] [Batch]",
                 "title": "Neon Genesis Evangelion",
@@ -12398,7 +12398,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "19",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Neon Genesis Evangelion Complete Series [BD] [Dual Audio][1080p][HEVC 10bit x265][AAC][Multi Sub] [Batch]",
                 "title": "Neon Genesis Evangelion",
@@ -12449,7 +12449,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "20",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Neon Genesis Evangelion Complete Series [BD] [Dual Audio][1080p][HEVC 10bit x265][AAC][Multi Sub] [Batch]",
                 "title": "Neon Genesis Evangelion",
@@ -12500,7 +12500,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "21",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Neon Genesis Evangelion Complete Series [BD] [Dual Audio][1080p][HEVC 10bit x265][AAC][Multi Sub] [Batch]",
                 "title": "Neon Genesis Evangelion",
@@ -12551,7 +12551,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "22",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Neon Genesis Evangelion Complete Series [BD] [Dual Audio][1080p][HEVC 10bit x265][AAC][Multi Sub] [Batch]",
                 "title": "Neon Genesis Evangelion",
@@ -12602,7 +12602,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "23",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Neon Genesis Evangelion Complete Series [BD] [Dual Audio][1080p][HEVC 10bit x265][AAC][Multi Sub] [Batch]",
                 "title": "Neon Genesis Evangelion",
@@ -12653,7 +12653,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "24",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Neon Genesis Evangelion Complete Series [BD] [Dual Audio][1080p][HEVC 10bit x265][AAC][Multi Sub] [Batch]",
                 "title": "Neon Genesis Evangelion",
@@ -12704,7 +12704,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "25",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Neon Genesis Evangelion Complete Series [BD] [Dual Audio][1080p][HEVC 10bit x265][AAC][Multi Sub] [Batch]",
                 "title": "Neon Genesis Evangelion",
@@ -12755,7 +12755,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "26",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Neon Genesis Evangelion Complete Series [BD] [Dual Audio][1080p][HEVC 10bit x265][AAC][Multi Sub] [Batch]",
                 "title": "Neon Genesis Evangelion",
@@ -12806,7 +12806,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "25",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Neon Genesis Evangelion Complete Series [BD] [Dual Audio][1080p][HEVC 10bit x265][AAC][Multi Sub] [Batch]",
                 "title": "Neon Genesis Evangelion",
@@ -12862,7 +12862,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Anime Time",
             "episode": "26",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Neon Genesis Evangelion Complete Series [BD] [Dual Audio][1080p][HEVC 10bit x265][AAC][Multi Sub] [Batch]",
                 "title": "Neon Genesis Evangelion",
@@ -12917,7 +12917,7 @@ export const filesWithMediaSnapshot = [
             "title": "Neon Genesis Evangelion - Death",
             "releaseGroup": "Anime Time",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Neon Genesis Evangelion Complete Series [BD] [Dual Audio][1080p][HEVC 10bit x265][AAC][Multi Sub] [Batch]",
                 "title": "Neon Genesis Evangelion",
@@ -12972,7 +12972,7 @@ export const filesWithMediaSnapshot = [
             "title": "Neon Genesis Evangelion - Rebirth",
             "releaseGroup": "Anime Time",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Anime Time] Neon Genesis Evangelion Complete Series [BD] [Dual Audio][1080p][HEVC 10bit x265][AAC][Multi Sub] [Batch]",
                 "title": "Neon Genesis Evangelion",
@@ -13027,7 +13027,7 @@ export const filesWithMediaSnapshot = [
             "title": "Samurai Champloo (Creditless ED)",
             "releaseGroup": "Arid",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Arid] Samurai Champloo [Dual-Audio][BDRip 1920x1080 HEVC FLAC]",
                 "title": "Samurai Champloo",
@@ -13077,7 +13077,7 @@ export const filesWithMediaSnapshot = [
             "title": "Samurai Champloo (Creditless OP)",
             "releaseGroup": "Arid",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Arid] Samurai Champloo [Dual-Audio][BDRip 1920x1080 HEVC FLAC]",
                 "title": "Samurai Champloo",
@@ -13129,7 +13129,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "1",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Arid] Samurai Champloo [Dual-Audio][BDRip 1920x1080 HEVC FLAC]",
                 "title": "Samurai Champloo",
@@ -13177,7 +13177,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "2",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Arid] Samurai Champloo [Dual-Audio][BDRip 1920x1080 HEVC FLAC]",
                 "title": "Samurai Champloo",
@@ -13225,7 +13225,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "3",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Arid] Samurai Champloo [Dual-Audio][BDRip 1920x1080 HEVC FLAC]",
                 "title": "Samurai Champloo",
@@ -13273,7 +13273,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "4",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Arid] Samurai Champloo [Dual-Audio][BDRip 1920x1080 HEVC FLAC]",
                 "title": "Samurai Champloo",
@@ -13321,7 +13321,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "5",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Arid] Samurai Champloo [Dual-Audio][BDRip 1920x1080 HEVC FLAC]",
                 "title": "Samurai Champloo",
@@ -13369,7 +13369,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "6",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Arid] Samurai Champloo [Dual-Audio][BDRip 1920x1080 HEVC FLAC]",
                 "title": "Samurai Champloo",
@@ -13417,7 +13417,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "7",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Arid] Samurai Champloo [Dual-Audio][BDRip 1920x1080 HEVC FLAC]",
                 "title": "Samurai Champloo",
@@ -13465,7 +13465,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "8",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Arid] Samurai Champloo [Dual-Audio][BDRip 1920x1080 HEVC FLAC]",
                 "title": "Samurai Champloo",
@@ -13513,7 +13513,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "9",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Arid] Samurai Champloo [Dual-Audio][BDRip 1920x1080 HEVC FLAC]",
                 "title": "Samurai Champloo",
@@ -13561,7 +13561,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "10",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Arid] Samurai Champloo [Dual-Audio][BDRip 1920x1080 HEVC FLAC]",
                 "title": "Samurai Champloo",
@@ -13609,7 +13609,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "11",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Arid] Samurai Champloo [Dual-Audio][BDRip 1920x1080 HEVC FLAC]",
                 "title": "Samurai Champloo",
@@ -13657,7 +13657,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "12",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Arid] Samurai Champloo [Dual-Audio][BDRip 1920x1080 HEVC FLAC]",
                 "title": "Samurai Champloo",
@@ -13705,7 +13705,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "13",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Arid] Samurai Champloo [Dual-Audio][BDRip 1920x1080 HEVC FLAC]",
                 "title": "Samurai Champloo",
@@ -13753,7 +13753,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "14",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Arid] Samurai Champloo [Dual-Audio][BDRip 1920x1080 HEVC FLAC]",
                 "title": "Samurai Champloo",
@@ -13801,7 +13801,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "15",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Arid] Samurai Champloo [Dual-Audio][BDRip 1920x1080 HEVC FLAC]",
                 "title": "Samurai Champloo",
@@ -13849,7 +13849,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "16",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Arid] Samurai Champloo [Dual-Audio][BDRip 1920x1080 HEVC FLAC]",
                 "title": "Samurai Champloo",
@@ -13897,7 +13897,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "17",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Arid] Samurai Champloo [Dual-Audio][BDRip 1920x1080 HEVC FLAC]",
                 "title": "Samurai Champloo",
@@ -13945,7 +13945,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "18",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Arid] Samurai Champloo [Dual-Audio][BDRip 1920x1080 HEVC FLAC]",
                 "title": "Samurai Champloo",
@@ -13993,7 +13993,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "19",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Arid] Samurai Champloo [Dual-Audio][BDRip 1920x1080 HEVC FLAC]",
                 "title": "Samurai Champloo",
@@ -14041,7 +14041,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "20",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Arid] Samurai Champloo [Dual-Audio][BDRip 1920x1080 HEVC FLAC]",
                 "title": "Samurai Champloo",
@@ -14089,7 +14089,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "21",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Arid] Samurai Champloo [Dual-Audio][BDRip 1920x1080 HEVC FLAC]",
                 "title": "Samurai Champloo",
@@ -14137,7 +14137,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "22",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Arid] Samurai Champloo [Dual-Audio][BDRip 1920x1080 HEVC FLAC]",
                 "title": "Samurai Champloo",
@@ -14185,7 +14185,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "23",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Arid] Samurai Champloo [Dual-Audio][BDRip 1920x1080 HEVC FLAC]",
                 "title": "Samurai Champloo",
@@ -14233,7 +14233,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "24",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Arid] Samurai Champloo [Dual-Audio][BDRip 1920x1080 HEVC FLAC]",
                 "title": "Samurai Champloo",
@@ -14281,7 +14281,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "25",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Arid] Samurai Champloo [Dual-Audio][BDRip 1920x1080 HEVC FLAC]",
                 "title": "Samurai Champloo",
@@ -14329,7 +14329,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "26",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Arid] Samurai Champloo [Dual-Audio][BDRip 1920x1080 HEVC FLAC]",
                 "title": "Samurai Champloo",
@@ -14376,7 +14376,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "CBM",
             "episode": "1",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[CBM] Mieruko-chan 1-12 Complete (Dual Audio) [BDRip 1080p x265 10bit]",
                 "title": "Mieruko-chan 1-12",
@@ -14426,7 +14426,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "CBM",
             "episode": "2",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[CBM] Mieruko-chan 1-12 Complete (Dual Audio) [BDRip 1080p x265 10bit]",
                 "title": "Mieruko-chan 1-12",
@@ -14476,7 +14476,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "CBM",
             "episode": "3",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[CBM] Mieruko-chan 1-12 Complete (Dual Audio) [BDRip 1080p x265 10bit]",
                 "title": "Mieruko-chan 1-12",
@@ -14526,7 +14526,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "CBM",
             "episode": "4",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[CBM] Mieruko-chan 1-12 Complete (Dual Audio) [BDRip 1080p x265 10bit]",
                 "title": "Mieruko-chan 1-12",
@@ -14576,7 +14576,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "CBM",
             "episode": "5",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[CBM] Mieruko-chan 1-12 Complete (Dual Audio) [BDRip 1080p x265 10bit]",
                 "title": "Mieruko-chan 1-12",
@@ -14626,7 +14626,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "CBM",
             "episode": "6",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[CBM] Mieruko-chan 1-12 Complete (Dual Audio) [BDRip 1080p x265 10bit]",
                 "title": "Mieruko-chan 1-12",
@@ -14676,7 +14676,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "CBM",
             "episode": "7",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[CBM] Mieruko-chan 1-12 Complete (Dual Audio) [BDRip 1080p x265 10bit]",
                 "title": "Mieruko-chan 1-12",
@@ -14726,7 +14726,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "CBM",
             "episode": "8",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[CBM] Mieruko-chan 1-12 Complete (Dual Audio) [BDRip 1080p x265 10bit]",
                 "title": "Mieruko-chan 1-12",
@@ -14776,7 +14776,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "CBM",
             "episode": "9",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[CBM] Mieruko-chan 1-12 Complete (Dual Audio) [BDRip 1080p x265 10bit]",
                 "title": "Mieruko-chan 1-12",
@@ -14826,7 +14826,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "CBM",
             "episode": "10",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[CBM] Mieruko-chan 1-12 Complete (Dual Audio) [BDRip 1080p x265 10bit]",
                 "title": "Mieruko-chan 1-12",
@@ -14876,7 +14876,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "CBM",
             "episode": "11",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[CBM] Mieruko-chan 1-12 Complete (Dual Audio) [BDRip 1080p x265 10bit]",
                 "title": "Mieruko-chan 1-12",
@@ -14926,7 +14926,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "CBM",
             "episode": "12",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[CBM] Mieruko-chan 1-12 Complete (Dual Audio) [BDRip 1080p x265 10bit]",
                 "title": "Mieruko-chan 1-12",
@@ -14975,7 +14975,7 @@ export const filesWithMediaSnapshot = [
             "title": "Kaguya-sama wa Kokurasetai - First Kiss wa Owaranai (Movie)",
             "releaseGroup": "EMBER",
         },
-        "parsedFolders": [],
+        "parsedFolderInfo": [],
         "media": {
             "id": 151384,
             "idMal": 52198,
@@ -15017,7 +15017,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Erai-raws",
             "episode": "1",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Erai-raws] Black Lagoon - 01 ~ 12 [1080p][Multiple Subtitle]",
                 "title": "Black Lagoon",
@@ -15066,7 +15066,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Erai-raws",
             "episode": "2",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Erai-raws] Black Lagoon - 01 ~ 12 [1080p][Multiple Subtitle]",
                 "title": "Black Lagoon",
@@ -15115,7 +15115,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Erai-raws",
             "episode": "3",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Erai-raws] Black Lagoon - 01 ~ 12 [1080p][Multiple Subtitle]",
                 "title": "Black Lagoon",
@@ -15164,7 +15164,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Erai-raws",
             "episode": "4",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Erai-raws] Black Lagoon - 01 ~ 12 [1080p][Multiple Subtitle]",
                 "title": "Black Lagoon",
@@ -15213,7 +15213,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Erai-raws",
             "episode": "5",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Erai-raws] Black Lagoon - 01 ~ 12 [1080p][Multiple Subtitle]",
                 "title": "Black Lagoon",
@@ -15262,7 +15262,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Erai-raws",
             "episode": "6",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Erai-raws] Black Lagoon - 01 ~ 12 [1080p][Multiple Subtitle]",
                 "title": "Black Lagoon",
@@ -15311,7 +15311,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Erai-raws",
             "episode": "7",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Erai-raws] Black Lagoon - 01 ~ 12 [1080p][Multiple Subtitle]",
                 "title": "Black Lagoon",
@@ -15360,7 +15360,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Erai-raws",
             "episode": "8",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Erai-raws] Black Lagoon - 01 ~ 12 [1080p][Multiple Subtitle]",
                 "title": "Black Lagoon",
@@ -15409,7 +15409,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Erai-raws",
             "episode": "9",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Erai-raws] Black Lagoon - 01 ~ 12 [1080p][Multiple Subtitle]",
                 "title": "Black Lagoon",
@@ -15458,7 +15458,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Erai-raws",
             "episode": "10",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Erai-raws] Black Lagoon - 01 ~ 12 [1080p][Multiple Subtitle]",
                 "title": "Black Lagoon",
@@ -15507,7 +15507,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Erai-raws",
             "episode": "11",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Erai-raws] Black Lagoon - 01 ~ 12 [1080p][Multiple Subtitle]",
                 "title": "Black Lagoon",
@@ -15556,7 +15556,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Erai-raws",
             "episode": "12",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Erai-raws] Black Lagoon - 01 ~ 12 [1080p][Multiple Subtitle]",
                 "title": "Black Lagoon",
@@ -15605,7 +15605,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Erai-raws",
             "episode": "1",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Erai-raws] Black Lagoon - The Second Barrage - 01 ~ 12 [1080p][Multiple Subtitle]",
                 "title": "Black Lagoon - The Second Barrage",
@@ -15654,7 +15654,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Erai-raws",
             "episode": "2",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Erai-raws] Black Lagoon - The Second Barrage - 01 ~ 12 [1080p][Multiple Subtitle]",
                 "title": "Black Lagoon - The Second Barrage",
@@ -15703,7 +15703,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Erai-raws",
             "episode": "3",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Erai-raws] Black Lagoon - The Second Barrage - 01 ~ 12 [1080p][Multiple Subtitle]",
                 "title": "Black Lagoon - The Second Barrage",
@@ -15752,7 +15752,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Erai-raws",
             "episode": "4",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Erai-raws] Black Lagoon - The Second Barrage - 01 ~ 12 [1080p][Multiple Subtitle]",
                 "title": "Black Lagoon - The Second Barrage",
@@ -15801,7 +15801,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Erai-raws",
             "episode": "5",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Erai-raws] Black Lagoon - The Second Barrage - 01 ~ 12 [1080p][Multiple Subtitle]",
                 "title": "Black Lagoon - The Second Barrage",
@@ -15850,7 +15850,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Erai-raws",
             "episode": "6",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Erai-raws] Black Lagoon - The Second Barrage - 01 ~ 12 [1080p][Multiple Subtitle]",
                 "title": "Black Lagoon - The Second Barrage",
@@ -15899,7 +15899,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Erai-raws",
             "episode": "7",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Erai-raws] Black Lagoon - The Second Barrage - 01 ~ 12 [1080p][Multiple Subtitle]",
                 "title": "Black Lagoon - The Second Barrage",
@@ -15948,7 +15948,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Erai-raws",
             "episode": "8",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Erai-raws] Black Lagoon - The Second Barrage - 01 ~ 12 [1080p][Multiple Subtitle]",
                 "title": "Black Lagoon - The Second Barrage",
@@ -15997,7 +15997,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Erai-raws",
             "episode": "9",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Erai-raws] Black Lagoon - The Second Barrage - 01 ~ 12 [1080p][Multiple Subtitle]",
                 "title": "Black Lagoon - The Second Barrage",
@@ -16046,7 +16046,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Erai-raws",
             "episode": "10",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Erai-raws] Black Lagoon - The Second Barrage - 01 ~ 12 [1080p][Multiple Subtitle]",
                 "title": "Black Lagoon - The Second Barrage",
@@ -16095,7 +16095,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Erai-raws",
             "episode": "11",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Erai-raws] Black Lagoon - The Second Barrage - 01 ~ 12 [1080p][Multiple Subtitle]",
                 "title": "Black Lagoon - The Second Barrage",
@@ -16144,7 +16144,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Erai-raws",
             "episode": "12",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Erai-raws] Black Lagoon - The Second Barrage - 01 ~ 12 [1080p][Multiple Subtitle]",
                 "title": "Black Lagoon - The Second Barrage",
@@ -16193,7 +16193,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "Erai-raws",
             "episode": "1072",
         },
-        "parsedFolders": [],
+        "parsedFolderInfo": [],
         "media": {
             "id": 21,
             "idMal": 21,
@@ -16247,7 +16247,7 @@ export const filesWithMediaSnapshot = [
             "season": "3",
             "episode": "1",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Season 3) [1080p][HEVC x265 10bit][Multi-Subs]",
                 "title": "Golden Kamuy",
@@ -16296,7 +16296,7 @@ export const filesWithMediaSnapshot = [
             "season": "3",
             "episode": "2",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Season 3) [1080p][HEVC x265 10bit][Multi-Subs]",
                 "title": "Golden Kamuy",
@@ -16345,7 +16345,7 @@ export const filesWithMediaSnapshot = [
             "season": "3",
             "episode": "3",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Season 3) [1080p][HEVC x265 10bit][Multi-Subs]",
                 "title": "Golden Kamuy",
@@ -16394,7 +16394,7 @@ export const filesWithMediaSnapshot = [
             "season": "3",
             "episode": "4",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Season 3) [1080p][HEVC x265 10bit][Multi-Subs]",
                 "title": "Golden Kamuy",
@@ -16443,7 +16443,7 @@ export const filesWithMediaSnapshot = [
             "season": "3",
             "episode": "5",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Season 3) [1080p][HEVC x265 10bit][Multi-Subs]",
                 "title": "Golden Kamuy",
@@ -16492,7 +16492,7 @@ export const filesWithMediaSnapshot = [
             "season": "3",
             "episode": "6",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Season 3) [1080p][HEVC x265 10bit][Multi-Subs]",
                 "title": "Golden Kamuy",
@@ -16541,7 +16541,7 @@ export const filesWithMediaSnapshot = [
             "season": "3",
             "episode": "7",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Season 3) [1080p][HEVC x265 10bit][Multi-Subs]",
                 "title": "Golden Kamuy",
@@ -16590,7 +16590,7 @@ export const filesWithMediaSnapshot = [
             "season": "3",
             "episode": "8",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Season 3) [1080p][HEVC x265 10bit][Multi-Subs]",
                 "title": "Golden Kamuy",
@@ -16639,7 +16639,7 @@ export const filesWithMediaSnapshot = [
             "season": "3",
             "episode": "9",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Season 3) [1080p][HEVC x265 10bit][Multi-Subs]",
                 "title": "Golden Kamuy",
@@ -16688,7 +16688,7 @@ export const filesWithMediaSnapshot = [
             "season": "3",
             "episode": "10",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Season 3) [1080p][HEVC x265 10bit][Multi-Subs]",
                 "title": "Golden Kamuy",
@@ -16737,7 +16737,7 @@ export const filesWithMediaSnapshot = [
             "season": "3",
             "episode": "11",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Season 3) [1080p][HEVC x265 10bit][Multi-Subs]",
                 "title": "Golden Kamuy",
@@ -16786,7 +16786,7 @@ export const filesWithMediaSnapshot = [
             "season": "3",
             "episode": "12",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Season 3) [1080p][HEVC x265 10bit][Multi-Subs]",
                 "title": "Golden Kamuy",
@@ -16835,7 +16835,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "1",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Seasons 1-2) [BD 1080p][HEVC x265 10bit][Eng-Subs]",
                 "title": "Golden Kamuy",
@@ -16890,7 +16890,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "2",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Seasons 1-2) [BD 1080p][HEVC x265 10bit][Eng-Subs]",
                 "title": "Golden Kamuy",
@@ -16945,7 +16945,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "3",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Seasons 1-2) [BD 1080p][HEVC x265 10bit][Eng-Subs]",
                 "title": "Golden Kamuy",
@@ -17000,7 +17000,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "4",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Seasons 1-2) [BD 1080p][HEVC x265 10bit][Eng-Subs]",
                 "title": "Golden Kamuy",
@@ -17055,7 +17055,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "5",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Seasons 1-2) [BD 1080p][HEVC x265 10bit][Eng-Subs]",
                 "title": "Golden Kamuy",
@@ -17110,7 +17110,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "6",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Seasons 1-2) [BD 1080p][HEVC x265 10bit][Eng-Subs]",
                 "title": "Golden Kamuy",
@@ -17165,7 +17165,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "7",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Seasons 1-2) [BD 1080p][HEVC x265 10bit][Eng-Subs]",
                 "title": "Golden Kamuy",
@@ -17220,7 +17220,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "8",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Seasons 1-2) [BD 1080p][HEVC x265 10bit][Eng-Subs]",
                 "title": "Golden Kamuy",
@@ -17275,7 +17275,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "9",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Seasons 1-2) [BD 1080p][HEVC x265 10bit][Eng-Subs]",
                 "title": "Golden Kamuy",
@@ -17330,7 +17330,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "10",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Seasons 1-2) [BD 1080p][HEVC x265 10bit][Eng-Subs]",
                 "title": "Golden Kamuy",
@@ -17385,7 +17385,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "11",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Seasons 1-2) [BD 1080p][HEVC x265 10bit][Eng-Subs]",
                 "title": "Golden Kamuy",
@@ -17440,7 +17440,7 @@ export const filesWithMediaSnapshot = [
             "season": "1",
             "episode": "12",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Seasons 1-2) [BD 1080p][HEVC x265 10bit][Eng-Subs]",
                 "title": "Golden Kamuy",
@@ -17495,7 +17495,7 @@ export const filesWithMediaSnapshot = [
             "season": "2",
             "episode": "13",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Seasons 1-2) [BD 1080p][HEVC x265 10bit][Eng-Subs]",
                 "title": "Golden Kamuy",
@@ -17549,7 +17549,7 @@ export const filesWithMediaSnapshot = [
             "season": "2",
             "episode": "14",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Seasons 1-2) [BD 1080p][HEVC x265 10bit][Eng-Subs]",
                 "title": "Golden Kamuy",
@@ -17603,7 +17603,7 @@ export const filesWithMediaSnapshot = [
             "season": "2",
             "episode": "15",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Seasons 1-2) [BD 1080p][HEVC x265 10bit][Eng-Subs]",
                 "title": "Golden Kamuy",
@@ -17657,7 +17657,7 @@ export const filesWithMediaSnapshot = [
             "season": "2",
             "episode": "16",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Seasons 1-2) [BD 1080p][HEVC x265 10bit][Eng-Subs]",
                 "title": "Golden Kamuy",
@@ -17711,7 +17711,7 @@ export const filesWithMediaSnapshot = [
             "season": "2",
             "episode": "17",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Seasons 1-2) [BD 1080p][HEVC x265 10bit][Eng-Subs]",
                 "title": "Golden Kamuy",
@@ -17765,7 +17765,7 @@ export const filesWithMediaSnapshot = [
             "season": "2",
             "episode": "18",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Seasons 1-2) [BD 1080p][HEVC x265 10bit][Eng-Subs]",
                 "title": "Golden Kamuy",
@@ -17819,7 +17819,7 @@ export const filesWithMediaSnapshot = [
             "season": "2",
             "episode": "19",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Seasons 1-2) [BD 1080p][HEVC x265 10bit][Eng-Subs]",
                 "title": "Golden Kamuy",
@@ -17873,7 +17873,7 @@ export const filesWithMediaSnapshot = [
             "season": "2",
             "episode": "20",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Seasons 1-2) [BD 1080p][HEVC x265 10bit][Eng-Subs]",
                 "title": "Golden Kamuy",
@@ -17927,7 +17927,7 @@ export const filesWithMediaSnapshot = [
             "season": "2",
             "episode": "21",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Seasons 1-2) [BD 1080p][HEVC x265 10bit][Eng-Subs]",
                 "title": "Golden Kamuy",
@@ -17981,7 +17981,7 @@ export const filesWithMediaSnapshot = [
             "season": "2",
             "episode": "22",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Seasons 1-2) [BD 1080p][HEVC x265 10bit][Eng-Subs]",
                 "title": "Golden Kamuy",
@@ -18035,7 +18035,7 @@ export const filesWithMediaSnapshot = [
             "season": "2",
             "episode": "23",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Seasons 1-2) [BD 1080p][HEVC x265 10bit][Eng-Subs]",
                 "title": "Golden Kamuy",
@@ -18089,7 +18089,7 @@ export const filesWithMediaSnapshot = [
             "season": "2",
             "episode": "24",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[Judas] Golden Kamuy (Seasons 1-2) [BD 1080p][HEVC x265 10bit][Eng-Subs]",
                 "title": "Golden Kamuy",
@@ -18142,7 +18142,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "1",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Banana Fish (BD 1080p)",
                 "title": "Banana Fish",
@@ -18191,7 +18191,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "2",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Banana Fish (BD 1080p)",
                 "title": "Banana Fish",
@@ -18240,7 +18240,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "3",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Banana Fish (BD 1080p)",
                 "title": "Banana Fish",
@@ -18289,7 +18289,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "4",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Banana Fish (BD 1080p)",
                 "title": "Banana Fish",
@@ -18338,7 +18338,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "5",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Banana Fish (BD 1080p)",
                 "title": "Banana Fish",
@@ -18387,7 +18387,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "6",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Banana Fish (BD 1080p)",
                 "title": "Banana Fish",
@@ -18436,7 +18436,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "7",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Banana Fish (BD 1080p)",
                 "title": "Banana Fish",
@@ -18485,7 +18485,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "8",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Banana Fish (BD 1080p)",
                 "title": "Banana Fish",
@@ -18534,7 +18534,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "9",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Banana Fish (BD 1080p)",
                 "title": "Banana Fish",
@@ -18583,7 +18583,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "10",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Banana Fish (BD 1080p)",
                 "title": "Banana Fish",
@@ -18632,7 +18632,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "11",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Banana Fish (BD 1080p)",
                 "title": "Banana Fish",
@@ -18681,7 +18681,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "12",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Banana Fish (BD 1080p)",
                 "title": "Banana Fish",
@@ -18730,7 +18730,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "13",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Banana Fish (BD 1080p)",
                 "title": "Banana Fish",
@@ -18779,7 +18779,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "14",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Banana Fish (BD 1080p)",
                 "title": "Banana Fish",
@@ -18828,7 +18828,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "15",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Banana Fish (BD 1080p)",
                 "title": "Banana Fish",
@@ -18877,7 +18877,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "16",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Banana Fish (BD 1080p)",
                 "title": "Banana Fish",
@@ -18926,7 +18926,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "17",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Banana Fish (BD 1080p)",
                 "title": "Banana Fish",
@@ -18975,7 +18975,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "18",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Banana Fish (BD 1080p)",
                 "title": "Banana Fish",
@@ -19024,7 +19024,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "19",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Banana Fish (BD 1080p)",
                 "title": "Banana Fish",
@@ -19073,7 +19073,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "20",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Banana Fish (BD 1080p)",
                 "title": "Banana Fish",
@@ -19122,7 +19122,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "21",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Banana Fish (BD 1080p)",
                 "title": "Banana Fish",
@@ -19171,7 +19171,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "22",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Banana Fish (BD 1080p)",
                 "title": "Banana Fish",
@@ -19220,7 +19220,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "23",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Banana Fish (BD 1080p)",
                 "title": "Banana Fish",
@@ -19269,7 +19269,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "24",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Banana Fish (BD 1080p)",
                 "title": "Banana Fish",
@@ -19318,7 +19318,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "1",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Eizouken ni wa Te wo Dasu na! (BD 1080p)",
                 "title": "Eizouken ni wa Te wo Dasu na!",
@@ -19368,7 +19368,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "2",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Eizouken ni wa Te wo Dasu na! (BD 1080p)",
                 "title": "Eizouken ni wa Te wo Dasu na!",
@@ -19418,7 +19418,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "3",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Eizouken ni wa Te wo Dasu na! (BD 1080p)",
                 "title": "Eizouken ni wa Te wo Dasu na!",
@@ -19468,7 +19468,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "4",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Eizouken ni wa Te wo Dasu na! (BD 1080p)",
                 "title": "Eizouken ni wa Te wo Dasu na!",
@@ -19518,7 +19518,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "5",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Eizouken ni wa Te wo Dasu na! (BD 1080p)",
                 "title": "Eizouken ni wa Te wo Dasu na!",
@@ -19568,7 +19568,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "6",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Eizouken ni wa Te wo Dasu na! (BD 1080p)",
                 "title": "Eizouken ni wa Te wo Dasu na!",
@@ -19618,7 +19618,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "7",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Eizouken ni wa Te wo Dasu na! (BD 1080p)",
                 "title": "Eizouken ni wa Te wo Dasu na!",
@@ -19668,7 +19668,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "8",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Eizouken ni wa Te wo Dasu na! (BD 1080p)",
                 "title": "Eizouken ni wa Te wo Dasu na!",
@@ -19718,7 +19718,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "9",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Eizouken ni wa Te wo Dasu na! (BD 1080p)",
                 "title": "Eizouken ni wa Te wo Dasu na!",
@@ -19768,7 +19768,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "10",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Eizouken ni wa Te wo Dasu na! (BD 1080p)",
                 "title": "Eizouken ni wa Te wo Dasu na!",
@@ -19818,7 +19818,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "11",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Eizouken ni wa Te wo Dasu na! (BD 1080p)",
                 "title": "Eizouken ni wa Te wo Dasu na!",
@@ -19868,7 +19868,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "MTBB",
             "episode": "12",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[MTBB] Eizouken ni wa Te wo Dasu na! (BD 1080p)",
                 "title": "Eizouken ni wa Te wo Dasu na!",
@@ -19917,7 +19917,7 @@ export const filesWithMediaSnapshot = [
             "title": "The Garden of Words",
             "releaseGroup": "RAI",
         },
-        "parsedFolders": [],
+        "parsedFolderInfo": [],
         "media": {
             "id": 16782,
             "idMal": 16782,
@@ -19965,7 +19965,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "RH",
             "episode": "1",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[RH] Flying Witch [Dual Audio] [BDRip] [Hi10] [1080p]",
                 "title": "Flying Witch",
@@ -20010,7 +20010,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "RH",
             "episode": "2",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[RH] Flying Witch [Dual Audio] [BDRip] [Hi10] [1080p]",
                 "title": "Flying Witch",
@@ -20055,7 +20055,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "RH",
             "episode": "3",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[RH] Flying Witch [Dual Audio] [BDRip] [Hi10] [1080p]",
                 "title": "Flying Witch",
@@ -20100,7 +20100,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "RH",
             "episode": "4",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[RH] Flying Witch [Dual Audio] [BDRip] [Hi10] [1080p]",
                 "title": "Flying Witch",
@@ -20145,7 +20145,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "RH",
             "episode": "5",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[RH] Flying Witch [Dual Audio] [BDRip] [Hi10] [1080p]",
                 "title": "Flying Witch",
@@ -20190,7 +20190,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "RH",
             "episode": "6",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[RH] Flying Witch [Dual Audio] [BDRip] [Hi10] [1080p]",
                 "title": "Flying Witch",
@@ -20235,7 +20235,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "RH",
             "episode": "7",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[RH] Flying Witch [Dual Audio] [BDRip] [Hi10] [1080p]",
                 "title": "Flying Witch",
@@ -20280,7 +20280,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "RH",
             "episode": "8",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[RH] Flying Witch [Dual Audio] [BDRip] [Hi10] [1080p]",
                 "title": "Flying Witch",
@@ -20325,7 +20325,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "RH",
             "episode": "9",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[RH] Flying Witch [Dual Audio] [BDRip] [Hi10] [1080p]",
                 "title": "Flying Witch",
@@ -20370,7 +20370,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "RH",
             "episode": "10",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[RH] Flying Witch [Dual Audio] [BDRip] [Hi10] [1080p]",
                 "title": "Flying Witch",
@@ -20415,7 +20415,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "RH",
             "episode": "11",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[RH] Flying Witch [Dual Audio] [BDRip] [Hi10] [1080p]",
                 "title": "Flying Witch",
@@ -20460,7 +20460,7 @@ export const filesWithMediaSnapshot = [
             "releaseGroup": "RH",
             "episode": "12",
         },
-        "parsedFolders": [
+        "parsedFolderInfo": [
             {
                 "original": "[RH] Flying Witch [Dual Audio] [BDRip] [Hi10] [1080p]",
                 "title": "Flying Witch",

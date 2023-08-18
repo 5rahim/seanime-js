@@ -5,16 +5,15 @@ import { getUserAtom, userAtom } from "@/atoms/user"
 import { aniListTokenAtom } from "@/atoms/auth"
 import { useEffect } from "react"
 import { settingsAtoms } from "@/atoms/settings"
-import { libraryEntriesAtom, localFilesWithNoMatchAtom } from "@/atoms/library"
+import { libraryEntriesAtom, localFilesAtom } from "@/atoms/library"
 import { anilistCollectionAtom, getAnilistCollectionAtom } from "@/atoms/anilist-collection"
 
 export const AtomPreloader = () => {
     const token = useAtomValue(aniListTokenAtom) // Token
     const user = useAtomValue(userAtom) // User
     useAtomValue(settingsAtoms) // Settings - (persistent)
-    useAtomValue(localFilesWithNoMatchAtom) // Local files with no match - (persistent)
+    useAtomValue(localFilesAtom) // Local files
     useAtomValue(libraryEntriesAtom) // Library entries
-    // useAtomValue(markedPathsAtom) // Marked paths - (persistent)
     const collection = useAtomValue(anilistCollectionAtom) // Anilist Collection - (persistent)
 
     const [, getUser] = useAtom(getUserAtom)

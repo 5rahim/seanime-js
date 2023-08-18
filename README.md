@@ -27,3 +27,9 @@
 
 - Delete entries, local files with no match when user changes Library directory
 - Mutation to add new entry doesn't work
+
+`sea-local-files` is the single source of truth
+
+- Refreshing returns `unlocked` paths with matching media
+- Update `sea-local-files` with the same paths
+- It will also return possibly unknown paths, add them to `sea-local-files` if those paths don't exist

@@ -1,5 +1,5 @@
 "use server"
-import { LocalFile, LocalFileWithMedia } from "@/lib/local-library/local-file"
+import { LocalFileWithMedia } from "@/lib/local-library/local-file"
 import { AnilistSimpleMedia } from "@/lib/anilist/fragment"
 import similarity from "string-similarity"
 import { logger } from "@/lib/helpers/debug"
@@ -8,7 +8,7 @@ import { AnimeByMalIdDocument, AnimeCollectionDocument, UpdateEntryDocument } fr
 import fs from "fs"
 
 export type LibraryEntry = {
-    files: Array<LocalFile>
+    filePaths: Array<string>
     media: AnilistSimpleMedia
     accuracy: number
     sharedPath: string
@@ -20,9 +20,7 @@ export type LibraryEntry = {
 export const createLibraryEntry = async (props: {
     media: AnilistSimpleMedia,
     files: LocalFileWithMedia[]
-}): Promise<LibraryEntry & {
-    rejectedFiles: LocalFileWithMedia[]
-}> => {
+}): Promise<LibraryEntry & { acceptedFiles: LocalFileWithMedia[], rejectedFiles: LocalFileWithMedia[] }> => {
 
     const currentMedia = props.media
     const lFiles = props.files.filter(f => f.media?.id === currentMedia?.id)
@@ -33,11 +31,11 @@ export const createLibraryEntry = async (props: {
             // Select the file's media titles
             const mediaTitles = [currentMedia?.title?.english, currentMedia?.title?.romaji, currentMedia?.title?.userPreferred].filter(Boolean).map(n => n.toLowerCase())
             // Get the file's parent folder anime title
-            const fileFolderTitle = f.parsedFolders.findLast(n => !!n.title)?.title
+            const fileFolderTitle = f.parsedFolderInfo.findLast(n => !!n.title)?.title
             // Get the file's anime title
             const fileTitle = f.parsedInfo?.title
             // Get the file's parent folder original name
-            const fileFolderOriginal = f.parsedFolders.findLast(n => !!n.title)?.original
+            const fileFolderOriginal = f.parsedFolderInfo.findLast(n => !!n.title)?.original
 
             let rating = 0
             let ratingByFolderName = 0
@@ -84,19 +82,21 @@ export const createLibraryEntry = async (props: {
         const firstFile = mostAccurateFiles[0]
         return {
             media: currentMedia,
-            files: mostAccurateFiles,
+            filePaths: mostAccurateFiles.map(file => file.path),
+            acceptedFiles: mostAccurateFiles,
+            rejectedFiles: rejectedFiles,
             accuracy: Number(highestRating.toFixed(3)),
             sharedPath: firstFile?.path?.replace("\\" + firstFile?.parsedInfo?.original || "", "") || "", // MAY NOT BE ACCURATE
-            rejectedFiles: rejectedFiles,
         }
     }
 
     return {
         media: currentMedia,
-        files: [],
+        acceptedFiles: [],
+        rejectedFiles: [],
+        filePaths: [],
         accuracy: 0,
         sharedPath: "",
-        rejectedFiles: [],
     }
 }
 

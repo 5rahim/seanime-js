@@ -13,7 +13,7 @@ export async function mock_getUniqueAnimeTitles(settings: Settings, filter?: str
         logger("mock_getUniqueAnimeTitles").info(localFiles.length)
         logger("mock_getUniqueAnimeTitles").info("Grouping local files by unique anime title")
 
-        const allAnimeTitles = localFiles.flatMap(n => [n?.parsedInfo?.title?.toLowerCase().trim(), ...n.parsedFolders.flatMap(n => n.title).filter(Boolean)].filter(Boolean)).map(n => n.toLowerCase())
+        const allAnimeTitles = localFiles.flatMap(n => [n?.parsedInfo?.title?.toLowerCase().trim(), ...n.parsedFolderInfo.flatMap(n => n.title).filter(Boolean)].filter(Boolean)).map(n => n.toLowerCase())
         const uniqueTitles = removeContainedStrings(_.uniq(allAnimeTitles))
 
         return uniqueTitles
