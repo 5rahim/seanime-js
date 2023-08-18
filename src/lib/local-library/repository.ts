@@ -21,21 +21,27 @@ import _ from "lodash"
 import { createLibraryEntry, LibraryEntry } from "@/lib/local-library/library-entry"
 import { logger } from "@/lib/helpers/debug"
 
-
+/**
+ *  Goes through non-locked and non-ignored [LocalFile]s and returns them with updated meta
+ * @param settings
+ * @param userName
+ * @param ignored
+ * @param locked
+ */
 export async function retrieveLocalFilesAsLibraryEntries(settings: Settings, userName: Nullish<string>, {
     ignored,
     locked,
 }: { ignored: string[], locked: string[] }) {
-    logger("repository/retrieveLocalFilesAsLibraryEntries").info("Start library entry creation")
 
+    logger("repository/retrieveLocalFilesAsLibraryEntries").info("Start library entry creation")
     const files = await retrieveHydratedLocalFiles(settings, userName, { ignored, locked })
     // const files = filesWithMediaSnapshot as LocalFileWithMedia[]
 
     if (files && files.length > 0) {
 
-        const localFilesWithNoMedia: LocalFileWithMedia[] = files.filter(n => !n.media)
+        const filesWithNoMedia: LocalFileWithMedia[] = files.filter(n => !n.media)
         let entries: LibraryEntry[] = []
-        let rejectedFiles: LocalFileWithMedia[] = []
+        let checkedFiles: LocalFile[] = [...filesWithNoMedia.map(f => _.omit(f, "media"))]
 
         const localFilesWithMedia = files.filter(n => !!n.media)
         const allMedia = _.uniqBy(files.map(n => n.media), n => n?.id)
@@ -50,27 +56,37 @@ export async function retrieveLocalFilesAsLibraryEntries(settings: Settings, use
                 const lFiles = localFilesWithMedia.filter(f => f.media?.id === mediaIdAsNumber)
 
                 if (currentMedia) {
-                    const { rejectedFiles: rejected, ...newEntry } = await createLibraryEntry({
+                    const { acceptedFiles, rejectedFiles, ...newEntry } = await createLibraryEntry({
                         media: currentMedia,
                         files: lFiles,
                     })
-                    rejectedFiles = [...rejectedFiles, ...rejected] // Return rejected files
-                    if (newEntry.files.length > 0) {
+                    if (newEntry.filePaths.length > 0) {
                         entries = [...entries, newEntry] // Return new entry only if it has files
                     }
+                    checkedFiles = [
+                        ...checkedFiles,
+                        // Set media id for accepted files
+                        ...acceptedFiles.map(f => _.omit(f, "media")).map(file => ({
+                            ...file,
+                            mediaId: currentMedia.id,
+                        })),
+                        ...rejectedFiles.map(f => _.omit(f, "media")),
+                    ]
                 }
 
             }
         }
 
-        // Remove media from localFilesWithNoMedia and rejectedFiles
-        const filesWithNoMatch: LocalFile[] = [...localFilesWithNoMedia, ...rejectedFiles].map(obj => _.omit(obj, "media"))
-
         logger("repository/retrieveLocalFilesAsLibraryEntries").success("Library entry creation successful")
         return {
+            /**
+             * All entries found with up-to-date paths
+             */
             entries,
-            filesWithNoMatch,
-            // files
+            /**
+             * Non-locked and non-ignored retrieved files with up-to-date meta (mediaIds, paths...)
+             */
+            checkedFiles,
         }
     }
 

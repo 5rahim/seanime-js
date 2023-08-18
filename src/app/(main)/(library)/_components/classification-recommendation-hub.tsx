@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
-import { useLibraryEntries, useStoredLocalFilesWithNoMatch } from "@/atoms/library"
+import { useLibraryEntries, useMatchingRecommendation, useStoredLocalFiles } from "@/atoms/library"
 import { Drawer } from "@/components/ui/modal"
 import { Button } from "@/components/ui/button"
 import { ImNext } from "@react-icons/all-files/im/ImNext"
@@ -25,8 +25,9 @@ export function ClassificationRecommendationHub(props: { isOpen: boolean, close:
     const { settings } = useSettings()
     const { user } = useCurrentUser()
     const { token } = useAuthed()
-    const { groups, handleManualEntry, handleIgnoreFiles } = useStoredLocalFilesWithNoMatch()
-    const {} = useLibraryEntries()
+    const { groups } = useMatchingRecommendation()
+    const { setEntries } = useLibraryEntries()
+    const { setLocalFiles } = useStoredLocalFiles()
 
 
     const [isLoading, setIsLoading] = useState(false)
@@ -58,8 +59,30 @@ export function ClassificationRecommendationHub(props: { isOpen: boolean, close:
                 error,
                 media,
             } = await manuallyMatchFiles(currentGroup.files.map(n => n.path), "match", user?.name, token, selectedAnimeId)
+
             if (media) {
-                handleManualEntry(media, currentGroup.files.map(n => n.path), currentGroup.folderPath)
+                // Update stored local files
+                setLocalFiles(files => {
+                    for (const path of currentGroup.files.map(n => n.path)) {
+                        const fileIndex = files.findIndex(file => file.path === path)
+                        files[fileIndex].mediaId = media.id
+                        files[fileIndex].locked = true
+                    }
+                    return
+                })
+                // Add entry if it doesn't exist
+                setEntries(entries => {
+                    const entriesMediaIds = new Set(entries.map(entry => entry.media.id))
+                    if (!entriesMediaIds.has(media.id)) {
+                        entries.push({
+                            media: media,
+                            filePaths: currentGroup.files.map(n => n.path),
+                            sharedPath: currentGroup.folderPath,
+                            accuracy: 1,
+                        })
+                    }
+                    return
+                })
                 setIndex(0)
             }
             if (error) {
@@ -71,7 +94,7 @@ export function ClassificationRecommendationHub(props: { isOpen: boolean, close:
 
     const handleIgnore = async () => {
         if (user?.name) {
-            handleIgnoreFiles(currentGroup.files.map(n => n.path))
+            // handleIgnoreFiles(currentGroup.files.map(n => n.path))
             setIndex(0)
         }
     }
