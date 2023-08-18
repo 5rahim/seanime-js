@@ -6,23 +6,22 @@
 - [ ] Browse and manage local library with Anilist information
   - [x] Automatically classify local files by
     anime. [See classification guide](https://github.com/5rahim/seanime/blob/main/guide.md).
-  - [x] Show anime from local library
-  - [ ] Navigate, open, set episode as watched
+  - [x] Show anime list from local library
+  - [x] In-App `Unresolved files` system
+    - [ ] Show AniList link using AniZip
+  - [x] Refresh/Re-scan library
+  - [ ] Open episode with default player
+  - [ ] Lock/Unlock individual files
+  - [ ] Un-match files
+  - [ ] .unsea/.seaignore file to ignore a folder
   - [ ] Download additional episodes using qBittorent and Nyaa
   - [ ] Show additional info like future airing episodes and sequels
+  - [ ] Stream episode from web source with custom player
 - [x] Browse and manage AniList list
   - View AniList lists
   - Change score, update status, remove
 - [ ] Show airing schedule for anime in local library
 - [ ] Search new anime to add in local library
-
-## TODO
-
-- Lock/Unlock individual files
-- Un-match files
-- Add option to re-scan library (this will not keep previously locked/ignored files)
-  - Call `retrieveLocalFilesAsLibraryEntries` without locked and ignored file arrays
-  - Useful when user
 
 ## Known issues
 
