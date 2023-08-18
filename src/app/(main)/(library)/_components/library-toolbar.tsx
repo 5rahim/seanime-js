@@ -143,6 +143,8 @@ export function LibraryToolbar() {
                         files: entry.files.filter(file => !lockedPathsToCleanSet.has(file.path)),
                     })
                 }
+            } else {
+                finalEntries = [...prevEntries]
             }
             return finalEntries.filter(entry => entry.files.length > 0) // Remove entries with no files
         })
