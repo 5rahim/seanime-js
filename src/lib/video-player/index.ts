@@ -13,8 +13,10 @@ export type SupportedVideoPlayer = keyof typeof SupportedVideoPlayers
 
 export const VideoPlayer = (settings: Settings) => {
 
+    let tries = 0
+
     return {
-        start: async () => {
+        async start() {
             const location = settings.player[settings.player.defaultPlayer]
             try {
                 if (location.length > 0)
@@ -23,7 +25,7 @@ export const VideoPlayer = (settings: Settings) => {
                 toast.error("Could not open the player")
             }
         },
-        openVideo: async (path: string) => {
+        async openVideo(path: string) {
             // const loading = toast.loading("Opening")
             let res: any
             try {
@@ -35,7 +37,9 @@ export const VideoPlayer = (settings: Settings) => {
                         res = await openVideoWithVlc(path, settings)
                         break
                 }
-                if (res?.error) toast.error("Could not open video. Verify player is running and settings are correct.")
+                if (res?.error) {
+                    toast.error("Could not open video. Verify player is running and settings are correct.")
+                }
                 // setTimeout(() => {
                 //     toast.remove(loading)
                 // }, 1000)

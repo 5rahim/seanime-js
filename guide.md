@@ -1,5 +1,10 @@
 # Guide
 
+## Automatic Classification
+
+Seanime will try to match your episode files to AniList entries using
+multiple techniques.
+
 ## Unmatched files
 
 When some episode files are unmatched it generally means that:
@@ -12,9 +17,11 @@ When some episode files are unmatched it generally means that:
   - During the matching process, Seanime will not resolve files that have a folder name too dissimilar to the actual
     Anime.
 - Movies may be matched incorrectly if they are not in separate folders.
+- Seanime may unmatch some episodes if it detects an anime title in the folder's name and that title differs too much
+  from the actual anime.
 
 ```text
-├── Library folder
+├── %LIBRARY_FOLDER%
     ├── Jujutsu Kaisen
         ├── Season 1
         │   └── ...
@@ -27,7 +34,7 @@ When some episode files are unmatched it generally means that:
 ```
 
 ```text
-├── Library folder
+├── %LIBRARY_FOLDER%
     ├── Jujutsu Kaisen
         ├── Season 1
         │   └── ...
@@ -38,7 +45,7 @@ When some episode files are unmatched it generally means that:
             
 --> Move it \/
 
-├── Library folder
+├── %LIBRARY_FOLDER%
     ├── Jujutsu Kaisen
     │   ├── Season 1
     │   │   └── ...
@@ -49,23 +56,37 @@ When some episode files are unmatched it generally means that:
 
 ```
 
-### Unresolved files
+### Solution
 
-This a feature that allows you to match **folder files** to specific anime that you choose directly from Seanime.
-You should use it as the **LAST** resolve OR use it to match ED/OP/NC/Specials folders to an anime or ignore them.
+#### Renaming
+
+You may discover that some episodes or seasons are not detected, if this is the case:
+
+- You should **lock** the correct files, **un-match** the file, **rename** it and retry by **refreshing entries**.
+- Make sure that you added the season to your watch list
+  - Seanime will try to match with sequels or prequels that are not on your watch list but may not find earlier or
+    later seasons
+  - For example, let's say your have the 1st, 2nd and 3rd Season in your files but only have the 1st season added in
+    your watch list, Seanime will not be able to match to the 3rd season
+- If you still don't see the episodes, rename their parent folder so that it accurately matches the title on AniList.
+
+#### Unresolved files feature
+
+This feature allows you to match **folder files** to specific anime that you choose directly from Seanime.
+You should use it as the **LAST** resort OR use it to match ED/OP/NC/Specials folders to an anime or ignore them.
 
 It can be problematic because it doesn't support file-by-file matching, as explained above, it will match the **folder**
 content to the chosen anime.
 For exemple it prompt you to choose an anime for this folder:
 
 ```text
-├── Library folder
+├── %LIBRARY_FOLDER%
     ├── Movie title.mkv
     └── Unrelated movie.mkv
 
 Or
 
-├── Library folder
+├── %LIBRARY_FOLDER%
     └── Movies
         ├── Movie title.mkv
         └── Unrelated.mkv
@@ -79,17 +100,16 @@ After your first scan of the local library you should lock files that were perfe
 
 ## Refresh vs Re-scan
 
-### When to refresh entries?
+### Refreshing entries
 
 What happens when you refresh entries?
 
-- Seanime will not try to re-match **locked** or **ignored** files, this will speed up the process.
+- Seanime will skip **locked** and **ignored** files, this will speed up the process.
 - A cleanup process is started to remove non-existent files from entries.
 
-### When to re-scan library?
+### Re-scanning library
 
-Re-scanning the library will un-match locked files and re-scan ignored files.
-
+Re-scanning the library will un-match locked files and re-scan ignored files. Do it:
 - After manually re-organizing multiple files or folders
 - After changing local library
 
@@ -98,7 +118,7 @@ Re-scanning the library will un-match locked files and re-scan ignored files.
 ### Recommended structure
 
 ```text
-├── Library folder
+├── %LIBRARY_FOLDER%
     └── Anime title
         └── Anime title Season 1
             └── Anime title - S01E05.mkv
@@ -110,11 +130,11 @@ Re-scanning the library will un-match locked files and re-scan ignored files.
 - And make sure the folder's name has the anime title
 
 ```text
-├── Library folder
+├── %LIBRARY_FOLDER%
     └── Bungo Stray Dogs
         └── Bungo Stray Dogs 5
             ├── Bungo Stray Dogs 5 - E05.mkv
-            ├── Bungo Stray Dogs 5 - S05E05 - Optional episode title.mkv
+            ├── Bungo Stray Dogs 5 - S05E05 - Episode title.mkv
             └── ...
 ```
 
@@ -123,34 +143,13 @@ Re-scanning the library will un-match locked files and re-scan ignored files.
 /!\ Make sure the parent folder has the Anime title if the files do not.
 
 ```text
-├── Library folder
+├── %LIBRARY_FOLDER%
     └── Anime title
         └── Anime title Season 1
             └── Episode title - S01E05.mkv
 ```
 
-### Finding a movie title
-
-Make sure all movies are located at the root, in a separate folders with the same title.
-
-```text
-├── Library folder
-    ├── Movie title
-    │   └── Movie title.mkv
-    └── Another movie
-        └── Another movie.mkv
-```
-
-\/ This is bad because you will not be able to use the `Unresolved files` feature because they all share the same
-folder.
-
-```text
-├── Library folder
-    ├── Movie title.mkv
-    └── Another movie.mkv
-```
-
-## Auto-matching
+## How it works
 
 - Seanime will try to match files to an anime using parsed info from the file name and its parent folders.
 - Parsed data include: the title, the season and the episode number.
@@ -196,10 +195,31 @@ Root folder
 - `> Anime title - E1 - Episode title.mkv` -> Passable
 - `> Anime title - Episode title - E1.mkv` -> BAD
 
-### Exemple
+### Finding movie
+
+Make sure all movies are located at the root, in a separate folders with the same title.
 
 ```text
-├── Library folder
+├── %LIBRARY_FOLDER%
+    ├── Movie title
+    │   └── Movie title.mkv
+    └── Another movie
+        └── Another movie.mkv
+```
+
+\/ This is bad because you will not be able to use the `Unresolved files` feature because they all share the same
+folder.
+
+```text
+├── %LIBRARY_FOLDER%
+    ├── Movie title.mkv
+    └── Another movie.mkv
+```
+
+### Finding anime
+
+```text
+├── %LIBRARY_FOLDER%
     └── Jujustu Kaisen S1-2
         └── Jujustu Kaisen Season 1             <- (1) Captures season \/
             └── Jujustu Kaisen S01E01.mkv       <- (2) Captures title (ignores season)
@@ -208,7 +228,7 @@ Root folder
 ```
 
 ```text
-├── Library folder
+├── %LIBRARY_FOLDER%
     └── Jujustu Kaisen S1-2
         └── Season 2                            <- (1) Captures season \/
             └── Jujustu Kaisen 01.mkv           <- (2) Captures title
@@ -217,7 +237,7 @@ Root folder
 ```
 
 ```text
-├── Library folder
+├── %LIBRARY_FOLDER%
     └── Jujustu Kaisen S1-2                     <- (1) Captures title (ignores range) \/
         └── Season 1                            <- (2) Captures season \/
             └── Jujustu Kaisen S01E01.mkv       <- (3) Captures title (ignores season)
@@ -227,7 +247,7 @@ Root folder
 
 ```text
 (No recommended)
-├── Library folder           
+├── %LIBRARY_FOLDER%           
     └── Jujustu Kaisen S02E01.mkv               <- Captures title and season
     
 ---> Will try [Jujustu Kaisen Season 2, ...]
@@ -236,7 +256,7 @@ Root folder
 ### Edge cases
 
 ```text
-├── Library folder           
+├── %LIBRARY_FOLDER%           
     └── JJK                                     <- Captures "JJK" \/
         └── Jujustu Kaisen S01E01.mkv           <- Captures "Jujustu Kaisen" and season
 
@@ -244,7 +264,7 @@ Root folder
 ```
 
 ```text
-├── Library folder                              
+├── %LIBRARY_FOLDER%                              
     └── Jujustu Kaisen S1-2
         └── JJK S2                              <- Captures "JJK", captures season \/
             └── Jujustu Kaisen S01E01.mkv       <- Captures "Jujustu Kaisen"
@@ -253,7 +273,7 @@ Root folder
 ```
 
 ```text
-├── Library folder                              
+├── %LIBRARY_FOLDER%                              
     └── Fruits Basket S1-3                      <- Captures title (ignores range)
         └── Fruits Basket S2                    <- Overrides previous title, captures season \/
             └── S2E1 - Episode title.mkv        <- Captures "Episode title"
@@ -267,7 +287,7 @@ Root folder
 Seanime will first try to locate the season from the file name, then look for it in the parent folder.
 
 ```text
-├── Library folder
+├── %LIBRARY_FOLDER%
     └── Anime title                             
         └── Anime title Season 1                <- Season ignored
             ├── Anime title S01E05.mkv          <- Season 1 found
@@ -277,7 +297,7 @@ Seanime will first try to locate the season from the file name, then look for it
 ```
 
 ```text
-├── Library folder
+├── %LIBRARY_FOLDER%
     └── Anime title                             
         └── Anime title Season 1                <- (2) Season 1 found
             ├── Anime title E05.mkv             <- (1) No season found, go up /\
@@ -291,7 +311,7 @@ Seanime will search the file title for the episode number
 ### Example (Episode 5)
 
 ```text
-├── Library folder
+├── %LIBRARY_FOLDER%
 │   ├── Jujutsu Kaisen
 │   │   ├── Season 1
 │   │   │   ├── Jujutsu Kaisen S01E05.mkv
@@ -312,24 +332,9 @@ Seanime will search the file title for the episode number
 │   │   │   ├── Jujutsu Kaisen 05 Episode title.mkv    
 │   │   │   ├── Jujutsu Kaisen 2 - E05.mkv 
 │   │   │   ├── Jujutsu Kaisen 2 - 05 Episode title.mkv   
- 
+│   │   │   ├── S01E05 - Episode title.mkv   
+│   │   │   │
 │   │   │   ├── Jujutsu Kaisen 2 05 Episode title.mkv......<- This will be IGNORED
 │   │   │   └── ...
 │   │   └── ...
 ```
-
-### Automatic Classification
-
-As explained previously, Seanime will try to match your episode files to AniList entries using
-multiple techniques.
-
-You may discover that some episodes or seasons are not detected, if this is the case:
-
-- Make sure that you added the season to your watch list
-    - Seanime will try to match with sequels or prequels that are not on your watch list but may not find earlier or
-      later seasons
-    - For example, let's say your have the 1st, 2nd and 3rd Season in your files but only have the 1st season added in
-      your watch list, Seanime will not be able to match to the 3rd season
-- If you still don't see the episodes, rename their parent folder so that it accurately matches the title on AniList.
-- Seanime may unmatch some episodes if it detects an anime title in the folder's name and that title differs too much
-  from the actual anime.

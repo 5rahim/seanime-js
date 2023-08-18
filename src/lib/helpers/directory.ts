@@ -38,3 +38,24 @@ export async function openLocalDirectoryInExplorer(settings: Settings, osType: O
         await runCommand(`${explorer} "${path}"`)
     }
 }
+
+
+export async function openDirectoryInExplorer(path: string, osType: OsType) {
+
+    let explorer
+    switch (osType) {
+        case "Windows_NT":
+            explorer = "explorer"
+            break
+        case "Linux":
+            explorer = "xdg-open"
+            break
+        case "Darwin":
+            explorer = "open"
+            break
+    }
+
+    if (path && await fileOrDirectoryExists(path)) {
+        await runCommand(`${explorer} "${path}"`)
+    }
+}

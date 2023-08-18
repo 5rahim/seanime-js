@@ -265,7 +265,8 @@ const getRecommendationPerGroupAtom = atom(null, async (get, set) => {
             set(_matchingRecommendationIsLoading, true)
             //
             const filesWithFolderPath = files.map(file => {
-                return ({ ...file, folderPath: file.path.replace("\\" + file.name, "") })
+                // return ({ ...file, folderPath: file.path.replace("\\" + file.name, "") })
+                return ({ ...file, folderPath: file.path }) // <--- Group by file path instead of folder path
             }) as (LocalFile & { folderPath: string })[]
 
             logger("atom/library/getRecommendationPerGroupAtom").info("filesWithFolderPath", filesWithFolderPath)

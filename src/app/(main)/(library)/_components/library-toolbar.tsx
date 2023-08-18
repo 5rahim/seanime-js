@@ -19,11 +19,13 @@ import { IoReload } from "@react-icons/all-files/io5/IoReload"
 import { RiFolderDownloadFill } from "@react-icons/all-files/ri/RiFolderDownloadFill"
 import { RiFileSearchLine } from "@react-icons/all-files/ri/RiFileSearchLine"
 import { parseLocalFilesToLibraryEntry } from "@/lib/gpt/config"
+import { useAuthed } from "@/atoms/auth"
 
 export function LibraryToolbar() {
 
     const { settings } = useSettings()
     const { user } = useCurrentUser()
+    const { token } = useAuthed()
 
     const { actualizeEntries, setEntries } = useLibraryEntries()
     const { storeLocalFiles, setLocalFiles, markedFilePathSets, unresolvedFileCount } = useStoredLocalFiles()
@@ -49,44 +51,48 @@ export function LibraryToolbar() {
      * Calls [storeLocalFiles] to actualize files (preserves locked and ignored files and overwrites/adds with incoming files)
      */
     const handleRefreshEntries = useCallback(async () => {
-        const tID = toast.loading("Loading")
-        setIsLoading(true)
+        if (user && token) {
+            const tID = toast.loading("Loading")
+            setIsLoading(true)
 
-        const result = await retrieveLocalFilesAsLibraryEntries(settings, user?.name, {
-            ignored: Array.from(markedFilePathSets.ignored),
-            locked: Array.from(markedFilePathSets.locked),
-        })
-        if (result) {
+            const result = await retrieveLocalFilesAsLibraryEntries(settings, user?.name, token, {
+                ignored: Array.from(markedFilePathSets.ignored),
+                locked: Array.from(markedFilePathSets.locked),
+            })
+            if (result) {
 
-            storeLocalFiles(result.checkedFiles)
-            actualizeEntries(result.entries)
+                storeLocalFiles(result.checkedFiles)
+                actualizeEntries(result.entries)
 
+            }
+            toast.success("Your local library is up to date")
+            toast.remove(tID)
+            setIsLoading(false)
         }
-        toast.success("Your local library is up to date")
-        toast.remove(tID)
-        setIsLoading(false)
-    }, [settings, user, markedFilePathSets])
+    }, [settings, user, token, markedFilePathSets])
 
     const handleRescanEntries = useCallback(async () => {
-        const tID = toast.loading("Loading")
-        setIsLoading(true)
+        if (user && token) {
+            const tID = toast.loading("Loading")
+            setIsLoading(true)
 
-        const result = await retrieveLocalFilesAsLibraryEntries(settings, user?.name, {
-            ignored: [],
-            locked: [],
-        })
-        if (result) {
-            setLocalFiles(draft => {
-                return result.checkedFiles
+            const result = await retrieveLocalFilesAsLibraryEntries(settings, user?.name, token, {
+                ignored: [],
+                locked: [],
             })
-            setEntries(draft => {
-                return result.entries
-            })
+            if (result) {
+                setLocalFiles(draft => {
+                    return result.checkedFiles
+                })
+                setEntries(draft => {
+                    return result.entries
+                })
+            }
+            toast.success("Your local library is up to date")
+            toast.remove(tID)
+            setIsLoading(false)
         }
-        toast.success("Your local library is up to date")
-        toast.remove(tID)
-        setIsLoading(false)
-    }, [settings, user, markedFilePathSets])
+    }, [settings, user, token, markedFilePathSets])
 
     const handleCleanRepository = useCallback(async () => {
         const { ignoredPathsToClean, lockedPathsToClean } = await cleanupFiles(settings, {

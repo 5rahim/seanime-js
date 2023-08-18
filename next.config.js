@@ -8,6 +8,7 @@ const nextConfig = {
         remotePatterns: [
             {hostname: "s4.anilist.co"},
             {hostname: "cdn.myanimelist.net"},
+            {hostname: "artworks.thetvdb.com"},
         ]
     },
 }
