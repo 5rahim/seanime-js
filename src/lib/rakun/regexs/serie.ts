@@ -111,8 +111,9 @@ export default {
                 /\b[\(\[)]?[Ss]eason (?<season>\d+)[\)\]]?\b/,
                 /\b[\(\[)]?[Ss]aison (?<season>\d+)[\)\]]?\b/,
 
-                /[-._ ]S(?<season>\d+)(?=E\d)/,
+                /[-._ ][Ss](?<season>\d+)(?=[Ee]\d)/,
                 /\b[Ss](?<season>\d+)\b/,
+                /^[Ss](?<season>\d+)(?=[(E\d) _-])/,
             ],
             keep: [],
         },

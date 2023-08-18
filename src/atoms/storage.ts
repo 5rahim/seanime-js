@@ -5,7 +5,7 @@ import { getUserAtom, userAtom } from "@/atoms/user"
 import { aniListTokenAtom } from "@/atoms/auth"
 import { useEffect } from "react"
 import { settingsAtoms } from "@/atoms/settings"
-import { libraryEntriesAtom, localFilesAtom } from "@/atoms/library"
+import { libraryEntriesAtom, localFilesAtom, useLibraryCleanup } from "@/atoms/library"
 import { anilistCollectionAtom, getAnilistCollectionAtom } from "@/atoms/anilist-collection"
 
 export const AtomPreloader = () => {
@@ -18,6 +18,8 @@ export const AtomPreloader = () => {
 
     const [, getUser] = useAtom(getUserAtom)
     const [, getAnilistCollection] = useAtom(getAnilistCollectionAtom)
+
+    useLibraryCleanup()
 
     // Refetch when: user or token change, collection is set to undefined
     useEffect(() => {
