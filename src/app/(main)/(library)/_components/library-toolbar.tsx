@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useCallback, useState } from "react"
 import { useSettings } from "@/atoms/settings"
 import { Button } from "@/components/ui/button"
 import { openLocalDirectoryInExplorer } from "@/lib/helpers/directory"
@@ -48,7 +48,7 @@ export function LibraryToolbar() {
     /**
      * Calls [storeLocalFiles] to actualize files (preserves locked and ignored files and overwrites/adds with incoming files)
      */
-    const handleRefreshEntries = async () => {
+    const handleRefreshEntries = useCallback(async () => {
         const tID = toast.loading("Loading")
         setIsLoading(true)
 
@@ -65,8 +65,9 @@ export function LibraryToolbar() {
         toast.success("Your local library is up to date")
         toast.remove(tID)
         setIsLoading(false)
-    }
-    const handleRescanEntries = async () => {
+    }, [settings, user, markedFilePathSets])
+
+    const handleRescanEntries = useCallback(async () => {
         const tID = toast.loading("Loading")
         setIsLoading(true)
 
@@ -85,9 +86,9 @@ export function LibraryToolbar() {
         toast.success("Your local library is up to date")
         toast.remove(tID)
         setIsLoading(false)
-    }
+    }, [settings, user, markedFilePathSets])
 
-    const handleCleanRepository = async () => {
+    const handleCleanRepository = useCallback(async () => {
         const { ignoredPathsToClean, lockedPathsToClean } = await cleanupFiles(settings, {
             ignored: Array.from(markedFilePathSets.ignored),
             locked: Array.from(markedFilePathSets.locked),
@@ -96,12 +97,12 @@ export function LibraryToolbar() {
         const ignoredPathsToCleanSet = new Set(ignoredPathsToClean)
         const lockedPathsToCleanSet = new Set(lockedPathsToClean)
 
-        // TODO: Delete local files, this will trigger libraryEntries to delete the paths too
+        // Delete local files, this will trigger libraryEntries to delete the paths too
         setLocalFiles(files => {
             return files.filter(file => !ignoredPathsToCleanSet.has(file.path) && !lockedPathsToCleanSet.has(file.path))
         })
 
-    }
+    }, [settings])
 
     return (
         <>

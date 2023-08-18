@@ -49,7 +49,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                 </div>
             </div>
             <div className={"-mt-[8rem] relative z-10 max-w-full px-10 grid grid-cols-1 md:grid-cols-2 gap-8"}>
-                <div>
+                <div className={"relative"}>
                     <EpisodeSection detailedMedia={media} aniZipData={aniZipData}/>
                 </div>
                 <div

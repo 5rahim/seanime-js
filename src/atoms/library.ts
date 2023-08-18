@@ -12,114 +12,6 @@ import { useStoredAnilistCollection } from "@/atoms/anilist-collection"
 import { useImmerAtom } from "jotai-immer"
 
 /* -------------------------------------------------------------------------------------------------
- * Library Entries
- * -----------------------------------------------------------------------------------------------*/
-
-/**
- * Store the library entries upon scan
- */
-export const libraryEntriesAtom = atomWithStorage<LibraryEntry[]>("sea-library-entries", [], undefined, { unstable_getOnInit: true })
-
-export function useLibraryEntries() {
-
-    const [entries, setEntries] = useImmerAtom(libraryEntriesAtom)
-    const localFiles = useAtomValue(localFilesAtom)
-
-
-    /**
-     * When localFiles change, update entry's filePaths
-     */
-    useEffect(() => {
-        if (localFiles.length > 0) {
-            startTransition(() => {
-                setEntries(entries => {
-                    logger("atom/library/setEntries").info("Update entries files + cleanup")
-                    for (let i = 0; i < entries.length; i++) {
-                        const entryLocalFiles = localFiles.filter(file => file.mediaId === entries[i].media.id)
-                        // Actualize an entry file paths
-                        entries[i].filePaths = entryLocalFiles.map(file => file.path)
-
-                        if (entries[i].filePaths.length === 0) { // If an entry doesn't have any file path, delete it
-                            entries.splice(i, 1)
-                        }
-                    }
-                    return
-                })
-            })
-        } else {
-            logger("atom/library/setEntries").warning("No local files")
-        }
-    }, [localFiles])
-
-    return {
-        entries: entries,
-        setEntries,
-        /**
-         * Will only add entries that do not exist
-         */
-        actualizeEntries: (incomingEntries: LibraryEntry[]) => {
-            startTransition(() => {
-                setEntries(entries => {
-                    logger("atom/library/actualizeEntries").info("Incoming entries ", incomingEntries.length)
-                    const entriesMediaIds = new Set(entries.map(entry => entry.media.id))
-
-                    for (const incomingEntry of incomingEntries) {
-                        if (!entriesMediaIds.has(incomingEntry.media.id)) {
-                            entries.push(incomingEntry)
-                        }
-                    }
-                    return
-                })
-            })
-        },
-
-    }
-
-}
-
-export function useLibraryEntry(mediaId: Nullish<number>) {
-
-    const [entries, setter] = useAtom(libraryEntriesAtom)
-
-    const { collection, getMediaListEntry } = useStoredAnilistCollection()
-
-    const mediaListEntry = useMemo(() => mediaId ? getMediaListEntry(mediaId) : undefined, [collection, mediaId])
-
-    const entry = useMemo(() => {
-        return entries.find(entry => entry.media.id === mediaId)
-    }, [entries])
-
-    const sortedFiles = useMemo(() => {
-        // return _.sortBy(entry?.files, n => Number(n.parsedInfo?.episode)) ?? []
-        return []
-    }, [entry])
-
-    const watchOrderFiles = useMemo(() => {
-        // if (!!sortedFiles && !!mediaListEntry?.progress && !!mediaListEntry.media?.episodes && !!entry?.files && !(mediaListEntry.progress === Number(mediaListEntry.media.episodes))) {
-        //
-        //     return {
-        //         toWatch: sortedFiles?.slice(mediaListEntry.progress) ?? [],
-        //         watched: sortedFiles?.slice(0, mediaListEntry.progress) ?? [],
-        //     }
-        // }
-        return {
-            toWatch: sortedFiles ?? [],
-            watched: [],
-        }
-    }, [entry, mediaListEntry])
-
-    // TODO: Lock file
-    // TODO: Un-match file
-
-    return {
-        entry: entry,
-        sortedFiles,
-        watchOrderFiles,
-    }
-
-}
-
-/* -------------------------------------------------------------------------------------------------
  * Local files
  * -----------------------------------------------------------------------------------------------*/
 
@@ -131,7 +23,8 @@ export const localFilesAtom = atomWithStorage<LocalFile[]>("sea-local-files", []
 
 export function useStoredLocalFiles() {
 
-    const [files, setFiles] = useImmerAtom(localFilesAtom)
+    const files = useAtomValue(localFilesAtom)
+    const [, setFiles] = useImmerAtom(localFilesAtom)
 
     /**
      * Will keep locked and ignored files and insert new ones.
@@ -164,9 +57,61 @@ export function useStoredLocalFiles() {
         }
     }, [markedFiles])
 
-    const getMediaFiles = useCallback((mediaId: number) => {
-        return files.filter(file => file.mediaId === mediaId)
-    }, [])
+    const getMediaFiles = useCallback((mediaId: Nullish<number>) => {
+        return files.filter(file => file.mediaId === mediaId) ?? []
+    }, [files])
+
+    /**
+     * Lock file
+     */
+    const handleToggleMediaFileLocking = (mediaId: Nullish<number>) => {
+        startTransition(() => {
+            setFiles(files => {
+                const concernedFiles = files.filter(file => file.mediaId === mediaId) ?? []
+                const allFilesAreLocked = concernedFiles.every(n => n.locked)
+                for (const file of concernedFiles) {
+                    file.locked = !allFilesAreLocked
+                }
+                return
+            })
+        })
+    }
+
+    const handleToggleFileLocking = (path: string) => {
+        startTransition(() => {
+            setFiles(files => {
+                const index = files.findIndex(file => file.path === path)
+                if (index !== -1) files[index].locked = !files[index].locked
+                return
+            })
+        })
+    }
+
+    const handleUnignoreFile = (path: string) => {
+        startTransition(() => {
+            setFiles(files => {
+                const index = files.findIndex(file => file.path === path)
+                if (index !== -1) files[index].ignored = false
+                return
+            })
+        })
+    }
+
+    /**
+     * Un-match file
+     */
+    const handleUnmatchFile = (path: string) => {
+        startTransition(() => {
+            setFiles(files => {
+                const index = files.findIndex(file => file.path === path)
+                if (index !== -1) {
+                    files[index].mediaId = null
+                    files[index].locked = false
+                }
+                return
+            })
+        })
+    }
 
     return {
         localFiles: files,
@@ -175,7 +120,119 @@ export function useStoredLocalFiles() {
         getMediaFiles: getMediaFiles,
         markedFiles,
         markedFilePathSets,
-        unresolvedFileCount: useMemo(() => files.filter(file => !file.mediaId).length, [files]),
+        unresolvedFileCount: useMemo(() => files.filter(file => !file.mediaId && !file.ignored).length, [files]),
+        toggleFileLocking: handleToggleFileLocking,
+        toggleMediaFileLocking: handleToggleMediaFileLocking,
+        unmatchFile: handleUnmatchFile,
+        unignoreFile: handleUnignoreFile,
+    }
+
+}
+
+/* -------------------------------------------------------------------------------------------------
+ * Library Entries
+ * -----------------------------------------------------------------------------------------------*/
+
+/**
+ * Store the library entries upon scan
+ */
+export const libraryEntriesAtom = atomWithStorage<LibraryEntry[]>("sea-library-entries", [], undefined, { unstable_getOnInit: true })
+
+export function useLibraryCleanup() {
+    const [, setEntries] = useImmerAtom(libraryEntriesAtom)
+    const localFiles = useAtomValue(localFilesAtom)
+
+    /**
+     * When localFiles change, update entry's filePaths
+     */
+    useEffect(() => {
+        startTransition(() => {
+            setEntries(entries => {
+                logger("atom/library/setEntries").info("Update entries files + cleanup")
+                for (let i = 0; i < entries.length; i++) {
+                    const entryLocalFiles = localFiles.filter(file => file.mediaId === entries[i].media.id)
+                    // Actualize an entry file paths
+                    entries[i].filePaths = entryLocalFiles.map(file => file.path)
+
+                    if (entries[i].filePaths.length === 0) { // If an entry doesn't have any file path, delete it
+                        entries.splice(i, 1)
+                    }
+                }
+                return
+            })
+        })
+    }, [localFiles])
+}
+
+export function useLibraryEntries() {
+
+    const [entries, setEntries] = useImmerAtom(libraryEntriesAtom)
+    const localFiles = useAtomValue(localFilesAtom)
+
+
+    return {
+        entries: entries,
+        setEntries,
+        /**
+         * Will only add entries that do not exist
+         */
+        actualizeEntries: (incomingEntries: LibraryEntry[]) => {
+            startTransition(() => {
+                setEntries(entries => {
+                    logger("atom/library/actualizeEntries").info("Incoming entries ", incomingEntries.length)
+                    const entriesMediaIds = new Set(entries.map(entry => entry.media.id))
+
+                    for (const incomingEntry of incomingEntries) {
+                        if (!entriesMediaIds.has(incomingEntry.media.id)) {
+                            entries.push(incomingEntry)
+                        }
+                    }
+                    return
+                })
+            })
+        },
+
+    }
+
+}
+
+export function useLibraryEntry(mediaId: Nullish<number>) {
+
+    const entries = useAtomValue(libraryEntriesAtom)
+    const { getMediaFiles } = useStoredLocalFiles()
+
+    const { collection, getMediaListEntry } = useStoredAnilistCollection()
+
+    const mediaListEntry = useMemo(() => mediaId ? getMediaListEntry(mediaId) : undefined, [collection, mediaId])
+
+    const entry = useMemo(() => {
+        return entries.find(entry => entry.media.id === mediaId)
+    }, [entries])
+
+    const sortedFiles = useMemo(() => {
+        const files = getMediaFiles(entry?.media.id)
+        return _.sortBy(files, n => Number(n.parsedInfo?.episode)) ?? []
+    }, [entry])
+
+    const watchOrderFiles = useMemo(() => {
+        const files = getMediaFiles(entry?.media.id)
+        if (!!sortedFiles && !!mediaListEntry?.progress && !!mediaListEntry.media?.episodes && files.length > 0 && !(mediaListEntry.progress === Number(mediaListEntry.media.episodes))) {
+
+            return {
+                toWatch: sortedFiles?.slice(mediaListEntry.progress) ?? [],
+                watched: sortedFiles?.slice(0, mediaListEntry.progress) ?? [],
+            }
+        }
+        return {
+            toWatch: sortedFiles ?? [],
+            watched: [],
+        }
+    }, [entry, mediaListEntry])
+
+    return {
+        entry: entry,
+        sortedFiles,
+        watchOrderFiles,
     }
 
 }
@@ -197,7 +254,7 @@ const _matchingRecommendationIsLoading = atom(false)
 const getRecommendationPerGroupAtom = atom(null, async (get, set) => {
     try {
         // Find only files that are not ignored
-        const files = get(localFilesAtom).filter(file => file.mediaId === null)
+        const files = get(localFilesAtom).filter(file => file.mediaId === null && !file.ignored)
 
         logger("atom/library/getRecommendationPerGroupAtom").info(files.length)
 

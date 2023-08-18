@@ -6,6 +6,7 @@ import { logger } from "@/lib/helpers/debug"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
 import { AnimeByMalIdDocument, AnimeCollectionDocument, UpdateEntryDocument } from "@/gql/graphql"
 import fs from "fs"
+import { ANIDB_RX } from "@/lib/series-scanner/regex"
 
 export type LibraryEntry = {
     filePaths: Array<string>
@@ -66,15 +67,25 @@ export const createLibraryEntry = async (props: {
         const highestRating = Math.max(...lFilesWithRating.map(item => item.rating))
         const highestRatingByFolderName = Math.max(...lFilesWithRating.map(item => item.ratingByFolderName))
 
+        const isNotMain = (file: LocalFileWithMedia) => {
+            return (
+                ANIDB_RX[0].test(file.path) ||
+                ANIDB_RX[1].test(file.path) ||
+                ANIDB_RX[2].test(file.path) ||
+                ANIDB_RX[4].test(file.path)
+            )
+        }
+
+
         // This is meant to filter out files that differ from the best matches
         // For example this can help avoid having different season episodes under the same Anime
         const mostAccurateFiles = lFilesWithRating
             // Keep files with a rating greater than 0.4
-            .filter(item => item.rating >= 0.4)
+            .filter(item => item.rating >= 0.4 || isNotMain(item.file))
             // If a file has a lower rating than the highest, filter it out
-            .filter(item => item.rating.toFixed(3) === highestRating.toFixed(3))
+            .filter(item => item.rating.toFixed(3) === highestRating.toFixed(3) || isNotMain(item.file))
             // If a file's parent folder name has a lower rating than the highest, filter it out
-            .filter(item => item.ratingByFolderName.toFixed(3) === highestRatingByFolderName.toFixed(3))
+            .filter(item => item.ratingByFolderName.toFixed(3) === highestRatingByFolderName.toFixed(3) || isNotMain(item.file))
             .map(item => item.file)
 
         const rejectedFiles = lFiles.filter(n => !mostAccurateFiles.find(f => f.path === n.path))

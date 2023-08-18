@@ -55,6 +55,7 @@ export function ClassificationRecommendationHub(props: { isOpen: boolean, close:
     const handleConfirm = async () => {
         if (user?.name && token) {
             setIsLoading(true)
+            props.close()
             const {
                 error,
                 media,
@@ -94,7 +95,13 @@ export function ClassificationRecommendationHub(props: { isOpen: boolean, close:
 
     const handleIgnore = async () => {
         if (user?.name) {
-            // handleIgnoreFiles(currentGroup.files.map(n => n.path))
+            setLocalFiles(files => {
+                for (const path of currentGroup.files.map(n => n.path)) {
+                    const fileIndex = files.findIndex(file => file.path === path)
+                    files[fileIndex].ignored = true
+                }
+                return
+            })
             setIndex(0)
         }
     }

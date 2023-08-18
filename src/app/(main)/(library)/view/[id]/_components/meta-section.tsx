@@ -9,6 +9,7 @@ import { useStoredAnilistCollection } from "@/atoms/anilist-collection"
 import { Tooltip } from "@/components/ui/tooltip"
 import { Badge } from "@/components/ui/badge"
 import { addSeconds, formatDistanceToNow } from "date-fns"
+import { useLibraryEntry } from "@/atoms/library"
 
 interface MetaSectionProps {
     children?: React.ReactNode
@@ -20,6 +21,7 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
     const { children, detailedMedia, ...rest } = props
 
     const { collection, getMediaListEntry } = useStoredAnilistCollection()
+    const { entry } = useLibraryEntry(detailedMedia.id)
 
     const mediaListEntry = useMemo(() => getMediaListEntry(detailedMedia.id), [collection, detailedMedia])
 
@@ -56,7 +58,7 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
                 </div>
 
                 {/*TODO !!detailedMedia.nextAiringEpisode && episodeNotDownloaded*/}
-                {<div className={"space-y-2"}>
+                {detailedMedia.status !== "FINISHED" && <div className={"space-y-2"}>
                     {/*TODO Fetch info from torrent - If next episode is available and not in library*/}
                     <h4>
                         {!!mediaListEntry?.progress && mediaListEntry.progress > 0 ? "Episode X" : "Start watching!"}
@@ -65,7 +67,7 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
                         episode (7)</Button>
                 </div>}
 
-                {detailedMedia.status === "FINISHED" && <div className={"space-y-2"}>
+                {(detailedMedia.status === "FINISHED" && !entry) && <div className={"space-y-2"}>
                     {/*TODO Fetch info from torrent - If no episodes in library*/}
                     <h4>{!!mediaListEntry?.status && (mediaListEntry.status === "PLANNING" ? "First watch!" : mediaListEntry.status === "COMPLETED" ? "Re-watch" : "Watch")}</h4>
                     <Button intent={"white"} className={"w-full"} size={"lg"}>Download batch</Button>
