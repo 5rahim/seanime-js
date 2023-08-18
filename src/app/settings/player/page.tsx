@@ -34,6 +34,12 @@ export default function Page() {
                                 { value: "vlc", label: "VLC" },
                             ]}
                         />
+
+                        <Field.Switch
+                            name={"pauseAfterOpening"}
+                            label={"No auto-play"}
+                        />
+
                         <Divider/>
 
                         <div className={"flex gap-2"}>

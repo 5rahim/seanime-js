@@ -72,7 +72,8 @@ export const createLibraryEntry = async (props: {
                 ANIDB_RX[0].test(file.path) ||
                 ANIDB_RX[1].test(file.path) ||
                 ANIDB_RX[2].test(file.path) ||
-                ANIDB_RX[4].test(file.path)
+                ANIDB_RX[4].test(file.path) ||
+                ANIDB_RX[5].test(file.path)
             )
         }
 
@@ -87,6 +88,7 @@ export const createLibraryEntry = async (props: {
             // If a file's parent folder name has a lower rating than the highest, filter it out
             .filter(item => item.ratingByFolderName.toFixed(3) === highestRatingByFolderName.toFixed(3) || isNotMain(item.file))
             .map(item => item.file)
+
 
         const rejectedFiles = lFiles.filter(n => !mostAccurateFiles.find(f => f.path === n.path))
 
@@ -152,14 +154,6 @@ export async function manuallyMatchFiles(
                         const mutation = await useAniListAsyncQuery(UpdateEntryDocument, {
                             mediaId: data.Media.id, //Int
                             status: "PLANNING", //MediaListStatus
-                            score: undefined, //Float
-                            progress: undefined, //Int
-                            repeat: undefined, //Int
-                            private: false, //Boolean
-                            notes: undefined, //String
-                            hiddenFromStatusLists: true, //Boolean
-                            startedAt: undefined, //FuzzyDateInput
-                            completedAt: undefined, //FuzzyDateInput
                         }, token)
                     } catch (e) {
                         logger("library-entry/manuallyMatchFiles").error("Error while adding anime to watch list")

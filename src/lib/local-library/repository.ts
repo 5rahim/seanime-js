@@ -15,7 +15,12 @@ import {
 import { AnilistMedia } from "@/lib/anilist/fragment"
 import { Nullish } from "@/types/common"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
-import { AnimeCollectionDocument, ShowcaseMediaFragment } from "@/gql/graphql"
+import {
+    AnimeCollectionDocument,
+    AnimeCollectionQuery,
+    ShowcaseMediaFragment,
+    UpdateEntryDocument,
+} from "@/gql/graphql"
 import { PromiseBatch } from "@/lib/helpers/batch"
 import _ from "lodash"
 import { createLibraryEntry, LibraryEntry } from "@/lib/local-library/library-entry"
@@ -28,13 +33,17 @@ import { logger } from "@/lib/helpers/debug"
  * @param ignored
  * @param locked
  */
-export async function retrieveLocalFilesAsLibraryEntries(settings: Settings, userName: Nullish<string>, {
+export async function retrieveLocalFilesAsLibraryEntries(settings: Settings, userName: Nullish<string>, token: string, {
     ignored,
     locked,
 }: { ignored: string[], locked: string[] }) {
 
+    logger("repository/retrieveLocalFilesAsLibraryEntries").info("Fetching user media list")
+    const data = await useAniListAsyncQuery(AnimeCollectionDocument, { userName })
+    const watchListMediaIds = new Set(data.MediaListCollection?.lists?.filter(n => n?.entries).flatMap(n => n?.entries?.map(n => n?.media)).map(n => n?.id).filter(Boolean))
+
     logger("repository/retrieveLocalFilesAsLibraryEntries").info("Start library entry creation")
-    const files = await retrieveHydratedLocalFiles(settings, userName, { ignored, locked })
+    const files = await retrieveHydratedLocalFiles(settings, userName, data, { ignored, locked })
     // const files = filesWithMediaSnapshot as LocalFileWithMedia[]
 
     if (files && files.length > 0) {
@@ -72,6 +81,17 @@ export async function retrieveLocalFilesAsLibraryEntries(settings: Settings, use
                         })),
                         ...rejectedFiles.map(f => _.omit(f, "media")),
                     ]
+
+                    if (!watchListMediaIds.has(currentMedia.id)) {
+                        try {
+                            const mutation = await useAniListAsyncQuery(UpdateEntryDocument, {
+                                mediaId: currentMedia.id, //Int
+                                status: "PLANNING", //MediaListStatus
+                            }, token)
+                        } catch (e) {
+                            logger("repository/retrieveLocalFilesAsLibraryEntries").error("Couldn't add media to watch list")
+                        }
+                    }
                 }
 
             }
@@ -98,16 +118,17 @@ export async function retrieveLocalFilesAsLibraryEntries(settings: Settings, use
  * This method hydrates each file retrieved using [retrieveLocalFiles] with its associated [AnilistSimpleMedia]
  * @param settings
  */
-export async function retrieveHydratedLocalFiles(settings: Settings, userName: Nullish<string>, { ignored, locked }: {
+export async function retrieveHydratedLocalFiles(settings: Settings, userName: Nullish<string>, data: AnimeCollectionQuery, {
+    ignored,
+    locked,
+}: {
     ignored: string[],
-    locked: string[]
+    locked: string[],
 }) {
     const currentPath = settings.library.localDirectory
 
     if (currentPath && userName) {
 
-        logger("repository/retrieveHydratedLocalFiles").info("Fetching user media list")
-        const data = await useAniListAsyncQuery(AnimeCollectionDocument, { userName })
 
         const localFiles: LocalFile[] = []
         await getAllFilesRecursively(settings, currentPath, localFiles, { ignored, locked }) // <-----------------

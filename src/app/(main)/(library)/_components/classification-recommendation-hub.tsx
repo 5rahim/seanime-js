@@ -221,25 +221,25 @@ export function ClassificationRecommendationHub(props: { isOpen: boolean, close:
                             RE-SCANNING the library instead of this
                         </li>
                         <li>Seanime will not unmatch files that you confirm manually when refreshing entries</li>
-                        <li>Seanime will not be able to index files marked as ignored</li>
+                        <li>Seanime will not scan files marked as ignored when you refresh entries</li>
                         <li>Renaming or moving the files later on will no longer keep them locked/ignored</li>
                     </ul>
 
                     <div className={"flex gap-2"}>
                         <Button intent={"success"} onClick={handleConfirm} isDisabled={isLoading}>Confirm</Button>
-                        <Button intent={"alert-link"} onClick={handleIgnore} isDisabled={isLoading}>Mark files as
-                            ignored</Button>
+                        <Button intent={"alert-link"} onClick={handleIgnore} isDisabled={isLoading}>
+                            Mark files as ignored
+                        </Button>
                     </div>
                 </div>
                 <div>
                     <h5>Help</h5>
                     <ul className={"list-disc pl-6"}>
-                        <li>Delete the files that are not important (ED, OP...)</li>
-                        <li>Separate the files that do not belong together with appropriately named folders</li>
-                        <li>Put movies at the root, in separate folders containing the movie title</li>
-                        <li>Reorganize/Rename your
-                            files: <code>{`Root > Anime title > Anime title Season X > Anime title S0XE0X.mkv`}</code>
+                        <li>This feature allows you to match files to specific anime.
+                            You should use it as the LAST resort OR use it to match ED/OP/NC/Specials folders to an
+                            anime.
                         </li>
+                        <li>See guide for more information</li>
                     </ul>
                 </div>
             </div>}

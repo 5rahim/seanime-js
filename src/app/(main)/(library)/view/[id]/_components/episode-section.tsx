@@ -6,6 +6,15 @@ import { Tooltip } from "@/components/ui/tooltip"
 import { IconButton } from "@/components/ui/button"
 import { BiLockOpenAlt } from "@react-icons/all-files/bi/BiLockOpenAlt"
 import { VscVerified } from "@react-icons/all-files/vsc/VscVerified"
+import { useSettings } from "@/atoms/settings"
+import { VideoPlayer } from "@/lib/video-player"
+import { EpisodeList } from "@/app/(main)/(library)/view/[id]/_components/episode-list"
+import { Divider } from "@/components/ui/divider"
+import { BiFolder } from "@react-icons/all-files/bi/BiFolder"
+import toast from "react-hot-toast"
+import { openDirectoryInExplorer } from "@/lib/helpers/directory"
+import { type } from "@tauri-apps/api/os"
+import { SiVlcmediaplayer } from "@react-icons/all-files/si/SiVlcmediaplayer"
 
 interface EpisodeSectionProps {
     children?: React.ReactNode
@@ -13,12 +22,14 @@ interface EpisodeSectionProps {
     aniZipData: AniZipData
 }
 
+
 export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
 
     const { children, detailedMedia, aniZipData, ...rest } = props
 
+    const { settings } = useSettings()
     const { entry, sortedFiles, watchOrderFiles } = useLibraryEntry(detailedMedia.id)
-    const { localFiles, toggleMediaFileLocking, toggleFileLocking, getMediaFiles } = useStoredLocalFiles()
+    const { localFiles, toggleMediaFileLocking, getMediaFiles } = useStoredLocalFiles()
 
 
     const isMovie = detailedMedia.format === "MOVIE"
@@ -36,11 +47,36 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
             <div className={"mb-8 flex items-center justify-between"}>
                 <h2>{isMovie ? "Movie" : "Episodes"}</h2>
 
-                {!!entry && <div className={""}>
+                {!!entry && <div className={"space-x-4"}>
+                    <Tooltip trigger={<IconButton
+                        icon={<SiVlcmediaplayer/>}
+                        intent={"warning-basic"}
+                        size={"xl"}
+                        className={"hover:opacity-60"}
+                        onClick={async () => {
+                            await VideoPlayer(settings).start()
+                        }}
+                    />}>
+                        Start video player
+                    </Tooltip>
+                    <IconButton
+                        icon={<BiFolder/>}
+                        intent={"gray-basic"}
+                        size={"xl"}
+                        className={"hover:opacity-60"}
+                        onClick={async () => {
+                            const tID = toast.loading("Opening")
+                            await openDirectoryInExplorer(entry.sharedPath, await type())
+                            setTimeout(() => {
+                                toast.remove(tID)
+                            }, 1000)
+                        }}
+                    />
+
                     <Tooltip trigger={
                         <IconButton
                             icon={allFilesAreLocked ? <VscVerified/> : <BiLockOpenAlt/>}
-                            intent={allFilesAreLocked ? "success-basic" : "warning-basic"}
+                            intent={allFilesAreLocked ? "success-subtle" : "warning-subtle"}
                             size={"xl"}
                             className={"hover:opacity-60"}
                             onClick={() => toggleMediaFileLocking(entry?.media.id)}
@@ -51,41 +87,31 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
                 </div>}
             </div>
             {/*<pre>{JSON.stringify(aniZipData, null, 2)}</pre>*/}
-            <div className={"grid grid-cols-2 gap-4"}>
-                {watchOrderFiles.toWatch.map(file => {
 
-                    const episodeData = aniZipData?.episodes[String(Number(file.parsedInfo?.episode))]
+            <div className={"space-y-4"}>
+                <div className={"grid grid-cols-2 gap-4"}>
+                    <EpisodeList
+                        entry={entry}
+                        detailedMedia={detailedMedia}
+                        files={watchOrderFiles.toWatch}
+                        aniZipData={aniZipData}
+                    />
+                </div>
 
-                    return (
-                        <div key={file.path} className={"border border-[--border] p-4 rounded-lg relative"}>
+                <Divider/>
 
-                            <h4 className={"font-medium"}>{isMovie ? file.parsedInfo?.title : `Episode ${file.parsedInfo?.episode}`}</h4>
-                            <p className={"text-sm text-[--muted]"}>{episodeData?.title?.en}</p>
-                            <p className={"text-sm text-[--muted]"}>{file.parsedInfo?.original?.replace(/.(mkv|mp4)/, "")?.replaceAll(/(\[)[a-zA-Z0-9 ._~-]+(\])/ig, "")?.replaceAll(/[_,-]/g, " ")}</p>
+                <h3>Watched</h3>
 
-                            <div className={"absolute right-1 top-1"}>
-                                <IconButton
-                                    icon={file.locked ? <VscVerified/> : <BiLockOpenAlt/>}
-                                    intent={file.locked ? "success-basic" : "warning-basic"}
-                                    size={"md"}
-                                    className={"hover:opacity-60"}
-                                    onClick={() => toggleFileLocking(file.path)}
-                                />
-                            </div>
-                        </div>
-                    )
-                })}
+                <div className={"grid grid-cols-2 gap-4"}>
+                    <EpisodeList
+                        entry={entry}
+                        detailedMedia={detailedMedia}
+                        files={watchOrderFiles.watched}
+                        aniZipData={aniZipData}
+                    />
+                </div>
             </div>
-            -------
-            <div>
-                {watchOrderFiles.watched.reverse().map(file => {
-                    return (
-                        <div key={file.path}>
-                            {file.name}
-                        </div>
-                    )
-                })}
-            </div>
+
         </div>
     )
 
