@@ -29,6 +29,7 @@ export type AnimeListItem = {
     progress?: { watched: number, total: Nullish<number> }
     score?: Nullish<number>
     hideLibraryBadge?: boolean
+    action?: React.ReactNode
 }
 
 interface AnimeListProps {
@@ -116,7 +117,7 @@ export const AnimeList: React.FC<AnimeListProps> = (props) => {
                                     {isInLocalLibrary ? <div>
                                         <div className={"py-1"}>
                                             <Link href={`/view/${item.media.id}`}>
-                                                <Button leftIcon={<BiPlay/>} intent={"white"} size={"sm"}
+                                                <Button leftIcon={<BiPlay/>} intent={"white"} size={"md"}
                                                         className={"w-full"}>Watch</Button>
                                             </Link>
                                         </div>
@@ -132,25 +133,28 @@ export const AnimeList: React.FC<AnimeListProps> = (props) => {
                                     ) : null}
 
                                 </div>
-                                <div className={"flex gap-1"}>
-                                    <Tooltip trigger={<IconButton
-                                        icon={<BiCalendarEdit/>}
-                                        size={"sm"}
-                                        intent={"gray-subtle"}/>}
-                                    >
-                                        Change watch dates
-                                    </Tooltip>
-                                    <Tooltip trigger={<IconButton
-                                        icon={<BiStar/>}
-                                        size={"sm"}
-                                        intent={"gray-subtle"}/>}
-                                    >
-                                        Change score
-                                    </Tooltip>
-                                    <IconButton
-                                        icon={<BiDownload/>}
-                                        size={"sm"}
-                                        intent={"warning-subtle"}/>
+                                <div className={"space-y-2"}>
+                                    {item.action && item.action}
+                                    <div className={"flex gap-1"}>
+                                        <Tooltip trigger={<IconButton
+                                            icon={<BiCalendarEdit/>}
+                                            size={"sm"}
+                                            intent={"gray-subtle"}/>}
+                                        >
+                                            Change watch dates
+                                        </Tooltip>
+                                        <Tooltip trigger={<IconButton
+                                            icon={<BiStar/>}
+                                            size={"sm"}
+                                            intent={"gray-subtle"}/>}
+                                        >
+                                            Change score
+                                        </Tooltip>
+                                        <IconButton
+                                            icon={<BiDownload/>}
+                                            size={"sm"}
+                                            intent={"warning-subtle"}/>
+                                    </div>
                                 </div>
                             </div>
                         </div>

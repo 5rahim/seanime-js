@@ -1,9 +1,13 @@
 "use client"
-import React from "react"
+import React, { useMemo } from "react"
 import { useSettings } from "@/atoms/settings"
-import { useLibraryEntries } from "@/atoms/library"
+import { useLibraryEntries, useStoredLocalFiles } from "@/atoms/library"
 import { AnimeList } from "@/components/application/list/anime-list"
 import { useStoredAnilistCollection } from "@/atoms/anilist-collection"
+import { IconButton } from "@/components/ui/button"
+import { VscVerified } from "@react-icons/all-files/vsc/VscVerified"
+import { BiLockOpenAlt } from "@react-icons/all-files/bi/BiLockOpenAlt"
+import { Tooltip } from "@/components/ui/tooltip"
 
 interface LocalLibraryProps {
     children?: React.ReactNode
@@ -17,13 +21,7 @@ export const LocalLibrary: React.FC<LocalLibraryProps> = (props) => {
     const { entries } = useLibraryEntries()
     const { collection } = useStoredAnilistCollection()
 
-    // useEffect(() => {
-    //     ()()
-    // }, [])
-
-    // TODO Add option to lock individual files or entire media files in the View Page
-    // TODO Add link to view page
-    // TODO Action -> Show option to rename parent folder and rescan
+    const { localFiles, getMediaFiles, toggleMediaFileLocking } = useStoredLocalFiles()
 
     return (
         <div className={"px-4"}>
@@ -31,6 +29,8 @@ export const LocalLibrary: React.FC<LocalLibraryProps> = (props) => {
                 items={[
                     ...entries.map(entry => {
                         const listEntry = collection.find(m => m?.media?.id === entry.media.id)
+                        const files = useMemo(() => getMediaFiles(entry?.media.id), [localFiles])
+                        const allFilesAreLocked = files.every(file => file.locked)
                         // console.log(listEntry)
                         return listEntry ? {
                             media: listEntry.media,
@@ -38,6 +38,19 @@ export const LocalLibrary: React.FC<LocalLibraryProps> = (props) => {
                             score: listEntry?.score,
                             isInLocalLibrary: true,
                             hideLibraryBadge: true,
+                            action: <>
+                                <Tooltip trigger={
+                                    <IconButton
+                                        icon={allFilesAreLocked ? <VscVerified/> : <BiLockOpenAlt/>}
+                                        intent={allFilesAreLocked ? "success" : "warning-subtle"}
+                                        size={"sm"}
+                                        className={"hover:opacity-60"}
+                                        onClick={() => toggleMediaFileLocking(entry?.media.id)}
+                                    />
+                                }>
+                                    {allFilesAreLocked ? "Unlock all files" : "Lock all files"}
+                                </Tooltip>
+                            </>,
                         } : {
                             media: entry.media,
                             isInLocalLibrary: true,

@@ -10,6 +10,7 @@ import { Nullish } from "@/types/common"
 import { startTransition, useCallback, useEffect, useMemo } from "react"
 import { useStoredAnilistCollection } from "@/atoms/anilist-collection"
 import { useImmerAtom } from "jotai-immer"
+import { ANIDB_RX } from "@/lib/series-scanner/regex"
 
 /* -------------------------------------------------------------------------------------------------
  * Local files
@@ -209,30 +210,58 @@ export function useLibraryEntry(mediaId: Nullish<number>) {
         return entries.find(entry => entry.media.id === mediaId)
     }, [entries])
 
-    const sortedFiles = useMemo(() => {
+    const mainFiles = useMemo(() => {
         const files = getMediaFiles(entry?.media.id)
-        return _.sortBy(files, n => Number(n.parsedInfo?.episode)) ?? []
+        return _.sortBy(files, n => Number(n.parsedInfo?.episode)).filter(file => !ANIDB_RX[0].test(file.path) &&
+            !ANIDB_RX[1].test(file.path) &&
+            !ANIDB_RX[2].test(file.path) &&
+            !ANIDB_RX[4].test(file.path) &&
+            !ANIDB_RX[5].test(file.path) &&
+            !ANIDB_RX[6].test(file.path),
+        ) ?? []
+    }, [entry])
+
+    const ovaFiles = useMemo(() => {
+        const files = getMediaFiles(entry?.media.id)
+        return _.sortBy(files, n => Number(n.parsedInfo?.episode)).filter(file => (ANIDB_RX[0].test(file.path) ||
+            ANIDB_RX[5].test(file.path) ||
+            ANIDB_RX[6].test(file.path)) && !(ANIDB_RX[1].test(file.path) ||
+            ANIDB_RX[2].test(file.path) ||
+            ANIDB_RX[3].test(file.path) ||
+            ANIDB_RX[4].test(file.path)),
+        ) ?? []
+    }, [entry])
+
+    const ncFiles = useMemo(() => {
+        const files = getMediaFiles(entry?.media.id)
+        return _.sortBy(files, n => Number(n.parsedInfo?.episode)).filter(file => ANIDB_RX[1].test(file.path) ||
+            ANIDB_RX[2].test(file.path) ||
+            ANIDB_RX[3].test(file.path) ||
+            ANIDB_RX[4].test(file.path),
+        ) ?? []
     }, [entry])
 
     const watchOrderFiles = useMemo(() => {
         const files = getMediaFiles(entry?.media.id)
-        if (!!sortedFiles && !!mediaListEntry?.progress && !!mediaListEntry.media?.episodes && files.length > 0 && !(mediaListEntry.progress === Number(mediaListEntry.media.episodes))) {
+        if (!!mainFiles && !!mediaListEntry?.progress && !!mediaListEntry.media?.episodes && files.length > 0 && !(mediaListEntry.progress === Number(mediaListEntry.media.episodes))) {
 
             return {
-                toWatch: sortedFiles?.slice(mediaListEntry.progress) ?? [],
-                watched: sortedFiles?.slice(0, mediaListEntry.progress) ?? [],
+                toWatch: mainFiles?.slice(mediaListEntry.progress) ?? [],
+                watched: mainFiles?.slice(0, mediaListEntry.progress) ?? [],
             }
         }
         return {
-            toWatch: sortedFiles ?? [],
+            toWatch: mainFiles ?? [],
             watched: [],
         }
     }, [entry, mediaListEntry])
 
     return {
         entry: entry,
-        sortedFiles,
+        mainFiles,
         watchOrderFiles,
+        ncFiles,
+        ovaFiles,
     }
 
 }

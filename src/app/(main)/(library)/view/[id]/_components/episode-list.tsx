@@ -49,8 +49,8 @@ export const EpisodeList: React.FC<EpisodeListProps> = (props) => {
                 const fileTitle = file.parsedInfo?.original?.replace(/.(mkv|mp4)/, "")?.replaceAll(/(\[)[a-zA-Z0-9 ._~-]+(\])/ig, "")?.replaceAll(/[_,-]/g, " ")
 
                 let title = fileTitle || "???"
-                if (isMovie && file.parsedInfo?.title) title = file.parsedInfo.title
                 if (file.parsedInfo?.episode) title = `Episode ${file.parsedInfo.episode}`
+                if (isMovie && file.parsedInfo?.title) title = file.parsedInfo.title
 
                 return (
                     <div key={file.path}

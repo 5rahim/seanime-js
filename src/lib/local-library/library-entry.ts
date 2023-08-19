@@ -73,7 +73,8 @@ export const createLibraryEntry = async (props: {
                 ANIDB_RX[1].test(file.path) ||
                 ANIDB_RX[2].test(file.path) ||
                 ANIDB_RX[4].test(file.path) ||
-                ANIDB_RX[5].test(file.path)
+                ANIDB_RX[5].test(file.path) ||
+                ANIDB_RX[6].test(file.path)
             )
         }
 

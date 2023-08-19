@@ -6,10 +6,12 @@ batches.</h4>
 ![img_2.png](img_2.png)
 
 ``
-Windows, Tauri, Typescript, Next.js 13, Jotai, AniList API
+Windows, Tauri, Typescript, Next.js 13, Jotai, AniList API, Chalk UI Components
 ``
 
 This project is a hobby and is not being made to solve every single edge case.
+
+Like the design? [Chalk UI](https://github.com/5rahim/chalk-ui)
 
 ## Why?
 
@@ -20,6 +22,8 @@ This project is a hobby and is not being made to solve every single edge case.
 - [x] Connect to AniList
 - [x] Scan local library and match local files with corresponding
   anime. [See classification guide](https://github.com/5rahim/seanime/blob/main/guide.md).
+  - [ ] Scan logs system
+  - [ ] File name tag system for faster matching (eg: {id-0001})
 - [x] Show anime list from local library
 - [x] Refresh/Re-scan library
 - [x] Open episode with default player
@@ -31,6 +35,7 @@ This project is a hobby and is not being made to solve every single edge case.
   - [ ] Manage/Un-ignore ignored files
 - [x] Un-match files (that might be incorrectly matched)
 - [x] Resolve unmatched files in-app
+  - [ ] Show option to enter AniList ID
   - [ ] Show AniList link using AniZip
 - [ ] .unsea/.seaignore file support to ignore a folder
 - [ ] Download additional episodes using qBittorent and Nyaa

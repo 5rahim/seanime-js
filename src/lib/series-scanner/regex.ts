@@ -5,6 +5,7 @@ export const ANIDB_RX = [
     /(^|(?<show>.*?)[ _\.\-(]+)(TRAILER|PROMO|PV|T) ?(?<ep>\d{1,2}) ?(v2|v3|v4|v5)?([ _\.\-)]+(?<title>.*))?$/i,                                         //   #  8 # 200-299 Trailer, Promo with a  number  '(^|(?<show>.*?)[ _\.\-]+)((?<=E)P|PARODY|PARODIES?) ?(?<ep>\d{1,2})? ?(v2|v3|v4|v5)?(?<title>.*)$',                                                                        # 10 # 300-399 Parodies
     /(^|(?<show>.*?)[ _\.\-(]+)(O|OTHERS?)(?<ep>\d{1,2}) ?(v2|v3|v4|v5)?[ _\.\-)]+(?<title>.*)$/i,                                                       //   #  9 # 400-499 Others
     /[-._ ][Ss](?<season>(0|00))(?=[Ee]\d)/i,
+    /[-._ ](OVA)[-._ ]/,
     /(^|(?<show>.*?)[ _\.\-(]+)(e|ep|e |ep |e-|ep-)?(?<ep>[0-9]{1,3})((e|ep|-e|-ep|-)(?<ep2>[0-9]{1,3})|)? ?(v2|v3|v4|v5)?([ _\.\-]+(?<title>.*))?$/, //   # 10 # E01 | E01-02| E01-E02 | E01E02                                                                                                                       # __ # look behind: (?<=S) < position < look forward: (?!S)
     /(^|(?<show>.*?)[ _\.\-(]+)S ?(?<ep>\d{1,2}) ?(?<title>.*)$/i,
 ]

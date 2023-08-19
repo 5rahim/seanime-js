@@ -28,7 +28,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
     const { children, detailedMedia, aniZipData, ...rest } = props
 
     const { settings } = useSettings()
-    const { entry, sortedFiles, watchOrderFiles } = useLibraryEntry(detailedMedia.id)
+    const { entry, watchOrderFiles, ncFiles, ovaFiles } = useLibraryEntry(detailedMedia.id)
     const { localFiles, toggleMediaFileLocking, getMediaFiles } = useStoredLocalFiles()
 
 
@@ -88,7 +88,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
             </div>
             {/*<pre>{JSON.stringify(aniZipData, null, 2)}</pre>*/}
 
-            <div className={"space-y-4"}>
+            <div className={"space-y-10"}>
                 <div className={"grid grid-cols-2 gap-4"}>
                     <EpisodeList
                         entry={entry}
@@ -98,18 +98,57 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
                     />
                 </div>
 
-                <Divider/>
 
-                <h3>Watched</h3>
+                {watchOrderFiles.watched.length > 0 && <div className={"space-y-10"}>
+                    <Divider/>
 
-                <div className={"grid grid-cols-2 gap-4"}>
-                    <EpisodeList
-                        entry={entry}
-                        detailedMedia={detailedMedia}
-                        files={watchOrderFiles.watched}
-                        aniZipData={aniZipData}
-                    />
-                </div>
+                    <h3>Watched</h3>
+
+                    <div className={"grid grid-cols-2 gap-4"}>
+                        <EpisodeList
+                            entry={entry}
+                            detailedMedia={detailedMedia}
+                            files={watchOrderFiles.watched}
+                            aniZipData={aniZipData}
+                        />
+                    </div>
+
+                </div>}
+
+
+                {ovaFiles.length > 0 && <div className={"space-y-10"}>
+                    <Divider/>
+
+                    <h3>Specials</h3>
+
+                    <div className={"grid grid-cols-2 gap-4"}>
+                        <EpisodeList
+                            entry={entry}
+                            detailedMedia={detailedMedia}
+                            files={ovaFiles}
+                            aniZipData={aniZipData}
+                        />
+                    </div>
+
+                </div>}
+
+                {ncFiles.length > 0 && <div className={"space-y-10"}>
+                    <Divider/>
+
+                    <h3>Others</h3>
+
+                    <div className={"grid grid-cols-2 gap-4"}>
+                        <EpisodeList
+                            entry={entry}
+                            detailedMedia={detailedMedia}
+                            files={ncFiles}
+                            aniZipData={aniZipData}
+                        />
+                    </div>
+
+                </div>}
+
+
             </div>
 
         </div>

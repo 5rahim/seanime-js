@@ -15,6 +15,7 @@ import { manuallyMatchFiles } from "@/lib/local-library/library-entry"
 import toast from "react-hot-toast"
 import { useCurrentUser } from "@/atoms/user"
 import { useAuthed } from "@/atoms/auth"
+import { TextInput } from "@/components/ui/text-input"
 
 /* -------------------------------------------------------------------------------------------------
  * ClassificationRecommendationHub
@@ -36,7 +37,7 @@ export function ClassificationRecommendationHub(props: { isOpen: boolean, close:
     const [selectedAnimeId, setSelectedAnimeId] = useState<string | undefined>("0")
 
     useEffect(() => {
-        setSelectedAnimeId(undefined)
+        setSelectedAnimeId("0")
     }, [index])
 
     const currentGroup = groups[index]
@@ -49,7 +50,7 @@ export function ClassificationRecommendationHub(props: { isOpen: boolean, close:
     if (groups.length === 0) return <div></div>
 
     function handleSelectAnime(value: string | null) {
-        setSelectedAnimeId(value ?? undefined)
+        setSelectedAnimeId(value ?? "0")
     }
 
     const handleConfirm = async () => {
@@ -216,9 +217,13 @@ export function ClassificationRecommendationHub(props: { isOpen: boolean, close:
                         stackClassName="grid grid-cols-2 gap-2 space-y-0"
                     />
 
+                    <TextInput label={"Or enter AniList ID"} value={selectedAnimeId}
+                               onChange={e => handleSelectAnime(e.target.value)}/>
+
                     <ul className={"list-disc pl-6"}>
-                        <li>It is recommended that you manually solve the matching issues by renaming/removing files and
-                            RE-SCANNING the library instead of this
+                        <li>Good to know: It is recommended that you manually solve the matching issues by
+                            renaming/removing files and
+                            refreshing the entries instead
                         </li>
                         <li>Seanime will not unmatch files that you confirm manually when refreshing entries</li>
                         <li>Seanime will not scan files marked as ignored when you refresh entries</li>
