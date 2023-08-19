@@ -36,7 +36,8 @@ Like the design? [Chalk UI](https://github.com/5rahim/chalk-ui)
   - [ ] Manage/Un-ignore ignored files
 - [x] Un-match files (that might be incorrectly matched)
 - [x] "Resolve unmatched" files features
-  - [ ] Show option to enter AniList ID
+  - [x] Match single files or folders to a media
+  - [x] Option to match files using AniList ID
   - [ ] Show AniList link using AniZip
 - [ ] Download additional episodes using qBittorent and Nyaa
 - [ ] Show additional info like future airing episodes and sequels
@@ -61,3 +62,11 @@ npm run tauri:dev
 ## Known issues
 
 - :shrug:
+
+## TODO
+
+- Improve performance
+  - Leveraging Jotai's best practices
+  - Remove heavy calculations from the React scope to Jotai
+  - Find a way to improve `media-matching` by avoiding multiple comparisons per file for the same titles
+- Video
