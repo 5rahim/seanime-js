@@ -81,7 +81,7 @@ export function ResolveUnmatched(props: { isOpen: boolean, close: () => void }) 
                         entries.push({
                             media: media,
                             filePaths: currentGroup.files.map(n => n.path),
-                            sharedPath: currentGroup.folderPath,
+                            sharedPath: groupBy === "folder" ? currentGroup.folderPath : currentGroup.folderPath.replace("\\" + currentGroup.files[0]?.name, ""),
                             accuracy: 1,
                         })
                     }
