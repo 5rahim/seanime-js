@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
-import { useLibraryEntries, useMatchingRecommendation, useStoredLocalFiles } from "@/atoms/library"
+import { useLibraryEntries, useMatchingSuggestions, useStoredLocalFiles } from "@/atoms/library"
 import { Drawer } from "@/components/ui/modal"
 import { Button } from "@/components/ui/button"
 import { ImNext } from "@react-icons/all-files/im/ImNext"
@@ -16,22 +16,24 @@ import toast from "react-hot-toast"
 import { useCurrentUser } from "@/atoms/user"
 import { useAuthed } from "@/atoms/auth"
 import { TextInput } from "@/components/ui/text-input"
+import { Switch } from "@/components/ui/switch"
+import { LoadingSpinner } from "@/components/ui/loading-spinner"
 
 /* -------------------------------------------------------------------------------------------------
  * ClassificationRecommendationHub
  * -----------------------------------------------------------------------------------------------*/
 
 
-export function ClassificationRecommendationHub(props: { isOpen: boolean, close: () => void }) {
+export function ResolveUnmatched(props: { isOpen: boolean, close: () => void }) {
     const { settings } = useSettings()
     const { user } = useCurrentUser()
     const { token } = useAuthed()
-    const { groups } = useMatchingRecommendation()
+    const { groups, getMatchingSuggestions, isLoading: isFetchingSuggestion } = useMatchingSuggestions()
     const { setEntries } = useLibraryEntries()
     const { setLocalFiles } = useStoredLocalFiles()
 
-
     const [isLoading, setIsLoading] = useState(false)
+    const [groupBy, setGroupBy] = useState<"file" | "folder">("folder")
 
     const [index, setIndex] = useState(0)
     const [selectedAnimeId, setSelectedAnimeId] = useState<string | undefined>("0")
@@ -47,7 +49,7 @@ export function ClassificationRecommendationHub(props: { isOpen: boolean, close:
     const specialsDetected = currentGroup?.files?.some(n => n.name.match(/\s(\()?[Ss]pecials(\))?\s?/))
     const episodeDetected = currentGroup?.files?.some(n => n.name.match(/\s([Ss]|[Ee])?0?\d{2,4}(?:.|$|E)/))
 
-    if (groups.length === 0) return <div></div>
+    // if (groups.length === 0) return <div>Nothing to see, reload if necessary.</div>
 
     function handleSelectAnime(value: string | null) {
         setSelectedAnimeId(value ?? "0")
@@ -56,7 +58,7 @@ export function ClassificationRecommendationHub(props: { isOpen: boolean, close:
     const handleConfirm = async () => {
         if (user?.name && token) {
             setIsLoading(true)
-            props.close()
+            // props.close()
             const {
                 error,
                 media,
@@ -85,7 +87,9 @@ export function ClassificationRecommendationHub(props: { isOpen: boolean, close:
                     }
                     return
                 })
+
                 setIndex(0)
+                getMatchingSuggestions(groupBy)
             }
             if (error) {
                 toast.error(error)
@@ -109,18 +113,32 @@ export function ClassificationRecommendationHub(props: { isOpen: boolean, close:
 
     return (
         <Drawer
-            isOpen={props.isOpen}
+            isOpen={props.isOpen && (isFetchingSuggestion || groups.length > 0)}
             onClose={props.close}
             size={"xl"}
             isClosable
             title={"Resolve unmatched files"}
         >
-            {!!currentGroup && <div className={"space-y-4"}>
+            {(isFetchingSuggestion || groups.length > 0) && <Switch
+                label={"Group by folders"}
+                checked={groupBy === "folder"}
+                containerClassName={"mb-4"}
+                onChange={value => {
+                    if (value) {
+                        getMatchingSuggestions("folder")
+                        setGroupBy("folder")
+                    } else {
+                        getMatchingSuggestions("file")
+                        setGroupBy("file")
+                    }
+                    setIndex(0)
+                }}
+            />}
 
-                <Alert
-                    title={"Refresh entries after manually renaming/moving files"}
-                    intent={"alert"}
-                />
+            {isFetchingSuggestion && <LoadingSpinner/>}
+
+            {!currentGroup && <p>Nothing to see</p>}
+            {(groups.length > 0 && !!currentGroup) && <div className={"space-y-4"}>
 
                 <div className={"flex w-full justify-between"}>
                     <Button
@@ -156,10 +174,12 @@ export function ClassificationRecommendationHub(props: { isOpen: boolean, close:
                             {specialsDetected &&
                                 <li>Specials detected, rename these files with the correct AniList title and move them
                                     to separate and appropriately named folders</li>}
-                            {episodeDetected && <li>Episodes were detected, it might be because:</li>}
+                            {episodeDetected && <li>Episodes were detected:</li>}
                             {episodeDetected && <li>{`-->`} The anime was not added to your watch list</li>}
-                            {episodeDetected && <li>{`-->`} The episode number is greater than the original media</li>}
-                            {episodeDetected && <li>{`-->`} Another folder is present where the files are located</li>}
+                            {episodeDetected &&
+                                <li>{`-->`} It was unmatched because the episode number is greater than the original
+                                    media's number of episodes</li>}
+                            {episodeDetected && <li>{`-->`} Your structure or naming is inconsistent</li>}
                         </ul>
                     </>}
                 />}

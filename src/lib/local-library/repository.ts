@@ -48,12 +48,13 @@ export async function retrieveLocalFilesAsLibraryEntries(settings: Settings, use
 
     if (files && files.length > 0) {
 
-        const filesWithNoMedia: LocalFileWithMedia[] = files.filter(n => !n.media)
+        const filesWithNoMedia: LocalFileWithMedia[] = files.filter(n => !n.media) // Get files with no media
+        const localFilesWithMedia = files.filter(n => !!n.media) // Successfully matches files
+        const allMedia = _.uniqBy(files.map(n => n.media), n => n?.id)
+
+        /** Values to be returned **/
         let entries: LibraryEntry[] = []
         let checkedFiles: LocalFile[] = [...filesWithNoMedia.map(f => _.omit(f, "media"))]
-
-        const localFilesWithMedia = files.filter(n => !!n.media)
-        const allMedia = _.uniqBy(files.map(n => n.media), n => n?.id)
 
         const groupedByMediaId = _.groupBy(localFilesWithMedia, n => n.media!.id)
 
@@ -224,7 +225,13 @@ async function getAllFilesRecursively(
                     path: itemPath,
                 }))
             } else if (stats.isDirectory()) {
-                await getAllFilesRecursively(settings, itemPath, files, { ignored, locked })
+
+                const dirents = await fs.readdir(itemPath, { withFileTypes: true })
+                const fileNames = dirents.filter(dirent => dirent.isFile()).map(dirent => dirent.name)
+                if (!fileNames.find(name => name === ".unsea")) {
+                    await getAllFilesRecursively(settings, itemPath, files, { ignored, locked })
+                }
+
             }
         }
     } catch (e) {
@@ -235,7 +242,7 @@ async function getAllFilesRecursively(
 /**
  * This function is ran every time the user refresh entries
  * It goes through the ignored and locked paths in the background to make sure they still exist
- * If they don't it returns the array of paths that need to be cleaned from the entries and FWNM
+ * If they don't, it returns the array of paths that need to be cleaned from [sea-local-files]
  */
 export async function cleanupFiles(settings: Settings, { ignored, locked }: { ignored: string[], locked: string[] }) {
     try {

@@ -8,12 +8,12 @@ import { type } from "@tauri-apps/api/os"
 import toast from "react-hot-toast"
 import { BiFolder } from "@react-icons/all-files/bi/BiFolder"
 import { cleanupFiles, retrieveLocalFilesAsLibraryEntries } from "@/lib/local-library/repository"
-import { useLibraryEntries, useMatchingRecommendation, useStoredLocalFiles } from "@/atoms/library"
+import { useLibraryEntries, useMatchingSuggestions, useStoredLocalFiles } from "@/atoms/library"
 import { useCurrentUser } from "@/atoms/user"
 import { useStoredAnilistCollection } from "@/atoms/anilist-collection"
 import { FcHighPriority } from "@react-icons/all-files/fc/FcHighPriority"
 import { useDisclosure } from "@/hooks/use-disclosure"
-import { ClassificationRecommendationHub } from "@/app/(main)/(library)/_components/classification-recommendation-hub"
+import { ResolveUnmatched } from "@/app/(main)/(library)/_components/resolve-unmatched"
 import { Modal } from "@/components/ui/modal"
 import { IoReload } from "@react-icons/all-files/io5/IoReload"
 import { RiFolderDownloadFill } from "@react-icons/all-files/ri/RiFolderDownloadFill"
@@ -29,7 +29,7 @@ export function LibraryToolbar() {
 
     const { actualizeEntries, setEntries } = useLibraryEntries()
     const { storeLocalFiles, setLocalFiles, markedFilePathSets, unresolvedFileCount } = useStoredLocalFiles()
-    const { getRecommendations, isLoading: recommendationLoading } = useMatchingRecommendation()
+    const { getMatchingSuggestions, isLoading: recommendationLoading } = useMatchingSuggestions()
 
     const { refetchCollection } = useStoredAnilistCollection()
 
@@ -122,7 +122,7 @@ export function LibraryToolbar() {
 
                         {unresolvedFileCount > 0 && <Button
                             onClick={async () => {
-                                await getRecommendations()
+                                await getMatchingSuggestions("folder")
                                 matchingRecommendationDisclosure.open()
                             }}
                             intent={"alert-subtle"}
@@ -152,7 +152,7 @@ export function LibraryToolbar() {
 
                 </div>
             </div>
-            <ClassificationRecommendationHub
+            <ResolveUnmatched
                 isOpen={matchingRecommendationDisclosure.isOpen}
                 close={matchingRecommendationDisclosure.close}
             />

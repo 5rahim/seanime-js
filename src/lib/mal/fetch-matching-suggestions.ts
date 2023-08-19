@@ -1,9 +1,9 @@
 "use server"
 import { logger } from "@/lib/helpers/debug"
 
-export async function fetchMALRecommendations(title: string) {
-    let recommendations: any = []
-    logger("fetchMALRecommendations").info(`Fetching recommendations for ${title}`)
+export async function fetchMALMatchingSuggestions(title: string) {
+    let suggestions: any = []
+    logger("lib/mal/fetchMatchingSuggestions").info(`Fetching matching suggestions for ${title}`)
     try {
         const url = new URL("https://myanimelist.net/search/prefix.json")
         url.searchParams.set("type", "anime")
@@ -15,11 +15,11 @@ export async function fetchMALRecommendations(title: string) {
         const anime = body?.categories?.find((category: any) => category?.type === "anime")?.items?.slice(0, 4)
 
         if (anime && anime.length > 0) {
-            recommendations = [...recommendations, ...anime]
+            suggestions = [...suggestions, ...anime]
         }
     } catch (e) {
-        logger("fetchMALRecommendations").error(e)
+        logger("lib/mal/fetchMatchingSuggestions").error(e)
     }
 
-    return recommendations
+    return suggestions
 }

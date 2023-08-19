@@ -1,5 +1,5 @@
 "use client"
-import React, { useMemo } from "react"
+import React from "react"
 import { useSettings } from "@/atoms/settings"
 import { useLibraryEntries, useStoredLocalFiles } from "@/atoms/library"
 import { AnimeList } from "@/components/application/list/anime-list"
@@ -29,7 +29,7 @@ export const LocalLibrary: React.FC<LocalLibraryProps> = (props) => {
                 items={[
                     ...entries.map(entry => {
                         const listEntry = collection.find(m => m?.media?.id === entry.media.id)
-                        const files = useMemo(() => getMediaFiles(entry?.media.id), [localFiles])
+                        const files = getMediaFiles(entry?.media.id)
                         const allFilesAreLocked = files.every(file => file.locked)
                         // console.log(listEntry)
                         return listEntry ? {

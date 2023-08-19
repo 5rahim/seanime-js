@@ -5,7 +5,7 @@ import { LibraryEntry } from "@/lib/local-library/library-entry"
 import { atom } from "jotai"
 import { logger } from "@/lib/helpers/debug"
 import _ from "lodash"
-import { fetchMALRecommendations } from "@/lib/mal/fetch-recommendations"
+import { fetchMALMatchingSuggestions } from "@/lib/mal/fetch-matching-suggestions"
 import { Nullish } from "@/types/common"
 import { startTransition, useCallback, useEffect, useMemo } from "react"
 import { useStoredAnilistCollection } from "@/atoms/anilist-collection"
@@ -271,41 +271,44 @@ export function useLibraryEntry(mediaId: Nullish<number>) {
  * Local files with no match
  * -----------------------------------------------------------------------------------------------*/
 
-export type MatchingRecommendationGroup = {
+export type MatchingSuggestionGroups = {
     files: LocalFile[],
     folderPath: string,
     recommendations: any // From MAL
 }
-export const libraryMatchingRecommendationGroupsAtom = atomWithStorage<MatchingRecommendationGroup[]>("sea-library-matching-recommendation-groups", [])
+export const libraryMatchingSuggestionGroupsAtom = atomWithStorage<MatchingSuggestionGroups[]>("sea-library-matching-recommendation-groups", [])
 
-const _matchingRecommendationIsLoading = atom(false)
+const _isCurrentlyFetchingSuggestions = atom(false)
 
-const getRecommendationPerGroupAtom = atom(null, async (get, set) => {
+const getMatchingSuggestionGroupsAtom = atom(null, async (get, set, payload: "file" | "folder") => {
     try {
-        // Find only files that are not ignored
+        // Get only files with no media that are not ignored
         const files = get(localFilesAtom).filter(file => file.mediaId === null && !file.ignored)
 
-        logger("atom/library/getRecommendationPerGroupAtom").info(files.length)
+        logger("atom/library/getMatchingSuggestionGroup").info(files.length)
 
         if (files.length > 0) {
-            set(libraryMatchingRecommendationGroupsAtom, [])
-            //
-            logger("atom/library/getRecommendationPerGroupAtom").info("Grouping local files with no media")
-            set(_matchingRecommendationIsLoading, true)
-            //
+            set(libraryMatchingSuggestionGroupsAtom, []) // Reset suggestions
+
+            logger("atom/library/getMatchingSuggestionGroup").info("Grouping local files with no media")
+            set(_isCurrentlyFetchingSuggestions, true)
+
+            /** Grouping **/
             const filesWithFolderPath = files.map(file => {
-                // return ({ ...file, folderPath: file.path.replace("\\" + file.name, "") })
-                return ({ ...file, folderPath: file.path }) // <--- Group by file path instead of folder path
+                if (payload === "folder")
+                    return ({ ...file, folderPath: file.path.replace("\\" + file.name, "") }) // <-- Group by folder path (file by file)
+                else
+                    return ({ ...file, folderPath: file.path }) // <--- Group by file path (folder by folder)
             }) as (LocalFile & { folderPath: string })[]
-
-            logger("atom/library/getRecommendationPerGroupAtom").info("filesWithFolderPath", filesWithFolderPath)
-
             const groupedByCommonParentName = _.groupBy(filesWithFolderPath, n => n.folderPath)
 
-
-            let groups: MatchingRecommendationGroup[] = []
+            /** Final groups **/
+            let groups: MatchingSuggestionGroups[] = []
             //
-            logger("atom/library/getRecommendationPerGroupAtom").info("Fetching recommendation for each group")
+            logger("atom/library/getMatchingSuggestionGroup").info("Fetching suggestions for each group")
+            //
+            // For performance reasons, store title that we've already fetched suggestions for
+            const fetchedSuggestionMap = new Map()
             //
             for (let i = 0; i < Object.keys(groupedByCommonParentName).length; i++) {
                 const commonPath = Object.keys(groupedByCommonParentName)[i]
@@ -313,11 +316,31 @@ const getRecommendationPerGroupAtom = atom(null, async (get, set) => {
                 const _fTitle = lFiles[0]?.parsedFolderInfo.findLast(n => !!n.title)?.title
                 const _title = lFiles[0]?.parsedInfo?.title
                 try {
-                    if (_fTitle || _title) {
-                        const animeList1 = _title ? (await fetchMALRecommendations(_title)) : []
-                        const animeList2 = _fTitle ? (await fetchMALRecommendations(_fTitle)) : []
+                    if ((_fTitle || _title)) {
+                        let animeList1: any[] = []
+                        let animeList2: any[] = []
+                        // title
+                        if (_title && !fetchedSuggestionMap.has(_title)) {
+                            const res = await fetchMALMatchingSuggestions(_title)
+                            if (res && res.length > 0) {
+                                animeList1 = res
+                                fetchedSuggestionMap.set(_title, res)
+                            }
+                        } else if (_title) {
+                            animeList1 = fetchedSuggestionMap.get(_title)
+                        }
+                        // folder title
+                        if (_fTitle && !fetchedSuggestionMap.has(_fTitle)) {
+                            const res = await fetchMALMatchingSuggestions(_fTitle)
+                            if (res && res.length > 0) {
+                                animeList1 = res
+                                fetchedSuggestionMap.set(_fTitle, res)
+                            }
+                        } else if (_fTitle) {
+                            animeList1 = fetchedSuggestionMap.get(_fTitle)
+                        }
 
-                        if (animeList1) {
+                        if (animeList1.length > 0 || animeList2.length > 0) {
                             groups = [...groups, {
                                 files: lFiles,
                                 folderPath: commonPath,
@@ -329,25 +352,25 @@ const getRecommendationPerGroupAtom = atom(null, async (get, set) => {
                     logger("atom/library").error(e)
                 }
             }
-            set(_matchingRecommendationIsLoading, false)
-            logger("atom/library").info("Matching recommendation groups", groups)
-            set(libraryMatchingRecommendationGroupsAtom, groups)
+            set(_isCurrentlyFetchingSuggestions, false)
+            logger("atom/library").info("Matching suggestion groups", groups)
+            set(libraryMatchingSuggestionGroupsAtom, groups)
 
 
         } else {
-            set(libraryMatchingRecommendationGroupsAtom, [])
+            set(libraryMatchingSuggestionGroupsAtom, [])
         }
     } catch (e) {
     }
 })
 
-export const useMatchingRecommendation = () => {
-    const groups = useAtomValue(libraryMatchingRecommendationGroupsAtom)
-    const [, getRecommendations] = useAtom(getRecommendationPerGroupAtom)
-    const isLoading = useAtomValue(_matchingRecommendationIsLoading)
+export const useMatchingSuggestions = () => {
+    const groups = useAtomValue(libraryMatchingSuggestionGroupsAtom)
+    const [, getMatchingSuggestions] = useAtom(getMatchingSuggestionGroupsAtom)
+    const isLoading = useAtomValue(_isCurrentlyFetchingSuggestions)
 
     return {
-        getRecommendations,
+        getMatchingSuggestions,
         groups,
         isLoading,
     }

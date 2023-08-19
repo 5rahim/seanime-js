@@ -24,6 +24,7 @@ Like the design? [Chalk UI](https://github.com/5rahim/chalk-ui)
   anime. [See classification guide](https://github.com/5rahim/seanime/blob/main/guide.md).
   - [ ] Scan logs system
   - [ ] File name tag system for faster matching (eg: {id-0001})
+  - [x] .unsea/.seaignore file support to ignore a folder
 - [x] Show anime list from local library
 - [x] Refresh/Re-scan library
 - [x] Open episode with default player
@@ -34,10 +35,9 @@ Like the design? [Chalk UI](https://github.com/5rahim/chalk-ui)
 - [x] Ignore filles
   - [ ] Manage/Un-ignore ignored files
 - [x] Un-match files (that might be incorrectly matched)
-- [x] Resolve unmatched files in-app
+- [x] "Resolve unmatched" files features
   - [ ] Show option to enter AniList ID
   - [ ] Show AniList link using AniZip
-- [ ] .unsea/.seaignore file support to ignore a folder
 - [ ] Download additional episodes using qBittorent and Nyaa
 - [ ] Show additional info like future airing episodes and sequels
 - [ ] Stream episode from web source with custom player
