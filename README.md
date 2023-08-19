@@ -1,15 +1,19 @@
-<h2 align="center"><b>Seanime<b/></h2>
+<h2 align="center"><b>Seanime</b></h2>
 
 <h4 align="center">Scan your local library, keep track of progress with AniList integration. Download new episodes or
 batches.</h4>
 
-``
-CURRENTLY IN DEVELOPMENT
-``
+![img_2.png](img_2.png)
 
 ``
 Windows, Tauri, Typescript, Next.js, Jotai, AniList API
 ``
+
+This project is a hobby and is not being made to solve every single edge case.
+
+## Why?
+
+![img_1.png](img_1.png)
 
 ## Features
 
