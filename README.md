@@ -6,7 +6,7 @@ batches.</h4>
 ![img_2.png](img_2.png)
 
 ``
-Windows, Tauri, Typescript, Next.js, Jotai, AniList API
+Windows, Tauri, Typescript, Next.js 13, Jotai, AniList API
 ``
 
 This project is a hobby and is not being made to solve every single edge case.
@@ -42,6 +42,16 @@ This project is a hobby and is not being made to solve every single edge case.
   - [ ] Update status, remove
 - [ ] Show airing schedule for anime in local library
 - [ ] Search new anime to download
+
+## Try it
+
+```shell
+npm install
+```
+
+```shell
+npm run tauri:dev
+```
 
 ## Known issues
 
