@@ -18,6 +18,7 @@ import { BiDownload } from "@react-icons/all-files/bi/BiDownload"
 import { BiPlay } from "@react-icons/all-files/bi/BiPlay"
 import { BiBookmarkPlus } from "@react-icons/all-files/bi/BiBookmarkPlus"
 import Link from "next/link"
+import { logger } from "@/lib/helpers/debug"
 
 export type AnimeListItem = {
     // id: string | null | undefined,
@@ -37,7 +38,7 @@ interface AnimeListProps {
     items: AnimeListItem[]
 }
 
-export const AnimeList: React.FC<AnimeListProps> = (props) => {
+export const AnimeList: React.FC<AnimeListProps> = React.memo((props) => {
 
     const { children, items, ...rest } = props
 
@@ -53,6 +54,7 @@ export const AnimeList: React.FC<AnimeListProps> = (props) => {
                             item.score < 9 ? "bg-green-500" :
                                 "bg-brand-500 text-white bg-opacity-80"
                 ) : ""
+                logger("animelist item").warning("re-rendered")
                 return (
                     <div
                         key={item.media.id!}
@@ -243,4 +245,4 @@ export const AnimeList: React.FC<AnimeListProps> = (props) => {
         </div>
     )
 
-}
+})

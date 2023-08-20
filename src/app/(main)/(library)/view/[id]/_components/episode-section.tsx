@@ -1,7 +1,6 @@
 "use client"
-import React, { useMemo } from "react"
+import React, { startTransition, useMemo } from "react"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
-import { useLibraryEntry, useStoredLocalFiles } from "@/atoms/library"
 import { Tooltip } from "@/components/ui/tooltip"
 import { IconButton } from "@/components/ui/button"
 import { BiLockOpenAlt } from "@react-icons/all-files/bi/BiLockOpenAlt"
@@ -15,6 +14,9 @@ import toast from "react-hot-toast"
 import { openDirectoryInExplorer } from "@/lib/helpers/directory"
 import { type } from "@tauri-apps/api/os"
 import { SiVlcmediaplayer } from "@react-icons/all-files/si/SiVlcmediaplayer"
+
+import { useLibraryEntry } from "@/atoms/library/library-entry.atoms"
+import { useStoredLocalFiles } from "@/atoms/library/local-file.atoms"
 
 interface EpisodeSectionProps {
     children?: React.ReactNode
@@ -79,7 +81,11 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
                             intent={allFilesAreLocked ? "success-subtle" : "warning-subtle"}
                             size={"xl"}
                             className={"hover:opacity-60"}
-                            onClick={() => toggleMediaFileLocking(entry?.media.id)}
+                            onClick={() => {
+                                startTransition(() => {
+                                    toggleMediaFileLocking(entry?.media.id)
+                                })
+                            }}
                         />
                     }>
                         {allFilesAreLocked ? "Unlock all files" : "Lock all files"}

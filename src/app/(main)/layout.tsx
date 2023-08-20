@@ -7,7 +7,7 @@ import { NavigationTabs } from "@/components/ui/tabs"
 import Image from "next/image"
 import { IoReload } from "@react-icons/all-files/io5/IoReload"
 import { Button } from "@/components/ui/button"
-import { useStoredAnilistCollection } from "@/atoms/anilist-collection"
+import { useRefreshAnilistCollection } from "@/atoms/anilist-collection"
 
 export default function Layout({ children }: {
     children: React.ReactNode,
@@ -16,7 +16,7 @@ export default function Layout({ children }: {
     const pathname = usePathname()
     const { isAuthed } = useAuthed()
     const { user } = useCurrentUser()
-    const { refetchCollection } = useStoredAnilistCollection()
+    const refetchCollection = useRefreshAnilistCollection()
 
     const navigationItems = useMemo(() => {
         const authedItems = isAuthed ? [

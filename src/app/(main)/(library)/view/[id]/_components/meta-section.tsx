@@ -9,7 +9,9 @@ import { useStoredAnilistCollection } from "@/atoms/anilist-collection"
 import { Tooltip } from "@/components/ui/tooltip"
 import { Badge } from "@/components/ui/badge"
 import { addSeconds, formatDistanceToNow } from "date-fns"
-import { useLibraryEntry } from "@/atoms/library"
+
+
+import { useLibraryEntry } from "@/atoms/library/library-entry.atoms"
 
 interface MetaSectionProps {
     children?: React.ReactNode

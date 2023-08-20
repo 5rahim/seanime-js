@@ -1,7 +1,6 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
-import { useLibraryEntries, useMatchingSuggestions, useStoredLocalFiles } from "@/atoms/library"
 import { Drawer } from "@/components/ui/modal"
 import { Button } from "@/components/ui/button"
 import { ImNext } from "@react-icons/all-files/im/ImNext"
@@ -18,6 +17,10 @@ import { useAuthed } from "@/atoms/auth"
 import { TextInput } from "@/components/ui/text-input"
 import { Switch } from "@/components/ui/switch"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
+import { useMatchingSuggestions } from "@/atoms/library/matching-suggestions.atoms"
+
+import { useLibraryEntries } from "@/atoms/library/library-entry.atoms"
+import { useStoredLocalFiles } from "@/atoms/library/local-file.atoms"
 
 /* -------------------------------------------------------------------------------------------------
  * ClassificationRecommendationHub
@@ -237,7 +240,7 @@ export function ResolveUnmatched(props: { isOpen: boolean, close: () => void }) 
                         stackClassName="grid grid-cols-2 gap-2 space-y-0"
                     />
 
-                    <TextInput label={"Or enter AniList ID"} value={selectedAnimeId}
+                    <TextInput label={"Or enter MyAnimeList ID"} value={selectedAnimeId}
                                onChange={e => handleSelectAnime(e.target.value)}/>
 
                     <ul className={"list-disc pl-6"}>

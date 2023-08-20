@@ -8,9 +8,7 @@ import { type } from "@tauri-apps/api/os"
 import toast from "react-hot-toast"
 import { BiFolder } from "@react-icons/all-files/bi/BiFolder"
 import { cleanupFiles, retrieveLocalFilesAsLibraryEntries } from "@/lib/local-library/repository"
-import { useLibraryEntries, useMatchingSuggestions, useStoredLocalFiles } from "@/atoms/library"
 import { useCurrentUser } from "@/atoms/user"
-import { useStoredAnilistCollection } from "@/atoms/anilist-collection"
 import { FcHighPriority } from "@react-icons/all-files/fc/FcHighPriority"
 import { useDisclosure } from "@/hooks/use-disclosure"
 import { ResolveUnmatched } from "@/app/(main)/(library)/_components/resolve-unmatched"
@@ -20,6 +18,10 @@ import { RiFolderDownloadFill } from "@react-icons/all-files/ri/RiFolderDownload
 import { RiFileSearchLine } from "@react-icons/all-files/ri/RiFileSearchLine"
 import { parseLocalFilesToLibraryEntry } from "@/lib/gpt/config"
 import { useAuthed } from "@/atoms/auth"
+import { useMatchingSuggestions } from "@/atoms/library/matching-suggestions.atoms"
+
+import { useLibraryEntries } from "@/atoms/library/library-entry.atoms"
+import { useStoredLocalFiles } from "@/atoms/library/local-file.atoms"
 
 export function LibraryToolbar() {
 
@@ -30,8 +32,6 @@ export function LibraryToolbar() {
     const { actualizeEntries, setEntries } = useLibraryEntries()
     const { storeLocalFiles, setLocalFiles, markedFilePathSets, unresolvedFileCount } = useStoredLocalFiles()
     const { getMatchingSuggestions, isLoading: recommendationLoading } = useMatchingSuggestions()
-
-    const { refetchCollection } = useStoredAnilistCollection()
 
     const [isLoading, setIsLoading] = useState(false)
 

@@ -16,6 +16,7 @@ import { useCurrentUser } from "@/atoms/user"
 import { usePathname } from "next/navigation"
 import { FiSettings } from "@react-icons/all-files/fi/FiSettings"
 import { FiSearch } from "@react-icons/all-files/fi/FiSearch"
+import { BiTestTube } from "@react-icons/all-files/bi/BiTestTube"
 
 interface MainSidebarProps {
     children?: React.ReactNode
@@ -43,6 +44,7 @@ export const MainSidebar: React.FC<MainSidebarProps> = (props) => {
                     <VerticalNav items={[
                         { icon: RiHome2Line, name: "Home", href: "/", isCurrent: pathname === "/" },
                         { icon: FiSearch, name: "Search", href: "/", isCurrent: pathname === "/search" },
+                        { icon: BiTestTube, name: "Test", href: "/test", isCurrent: pathname === "/test" },
                     ]}/>
                 </div>
                 <div className={"flex w-full gap-2 flex-col"}>

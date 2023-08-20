@@ -1,13 +1,15 @@
 "use client"
 import React from "react"
 import { useSettings } from "@/atoms/settings"
-import { useLibraryEntries, useStoredLocalFiles } from "@/atoms/library"
 import { AnimeList } from "@/components/application/list/anime-list"
 import { useStoredAnilistCollection } from "@/atoms/anilist-collection"
 import { IconButton } from "@/components/ui/button"
 import { VscVerified } from "@react-icons/all-files/vsc/VscVerified"
 import { BiLockOpenAlt } from "@react-icons/all-files/bi/BiLockOpenAlt"
 import { Tooltip } from "@/components/ui/tooltip"
+
+import { useLibraryEntries } from "@/atoms/library/library-entry.atoms"
+import { useStoredLocalFiles } from "@/atoms/library/local-file.atoms"
 
 interface LocalLibraryProps {
     children?: React.ReactNode
@@ -21,7 +23,7 @@ export const LocalLibrary: React.FC<LocalLibraryProps> = (props) => {
     const { entries } = useLibraryEntries()
     const { collection } = useStoredAnilistCollection()
 
-    const { localFiles, getMediaFiles, toggleMediaFileLocking } = useStoredLocalFiles()
+    const { getMediaFiles, toggleMediaFileLocking } = useStoredLocalFiles()
 
     return (
         <div className={"px-4"}>

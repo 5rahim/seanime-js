@@ -56,7 +56,6 @@ export const createLocalFile = async (settings: Settings, props: Pick<LocalFile,
         }).filter(Boolean)
 
         const branchHasTitle = !!parsed.name || parsedFolderInfo.some(obj => !!obj.title)
-        // const episodeIsValid = !!parsed.episode
 
         return {
             path: props.path,
@@ -70,9 +69,9 @@ export const createLocalFile = async (settings: Settings, props: Pick<LocalFile,
                 episode: parsed.episode,
             } : undefined,
             parsedFolderInfo,
-            locked: false,
-            ignored: false,
-            mediaId: null,
+            locked: false, // Default values, will be hydrated later
+            ignored: false, // Default values, will be hydrated later
+            mediaId: null, // Default values, will be hydrated later
         }
     } catch (e) {
         console.error("[LocalFile] Parsing error", e)
@@ -101,15 +100,6 @@ export type LocalFileWithMedia = LocalFile & {
 /**
  * This method take a [LocalFile] and an array of [AnilistMedia] fetched from AniList.
  * We compare the filenames, anime title, folder title to get the exact media.
- *
- * /!\ IMPORTANT
- * For this to work optimally the user must:
- * 1. Make sure they have the local file's actual anime in their AniList watch list
- * 2. Limit the depth of files to 2 folders
- * -    Example: High Card \ Season 1 \ [Judas] High Card - S01E01.mkv
- * -    Example: High Card \ [Judas] High Card - S01E01.mkv
- * -    Example: [Judas] One Piece Film Z.mkv
- * 3. Make sure if a file DOES NOT have the season, its parent folder has one
  */
 export const createLocalFileWithMedia = async (file: LocalFile, allUserMedia: AnilistMedia[] | undefined, relatedMedia: AnilistMedia[]): Promise<LocalFileWithMedia | undefined> => {
 
@@ -120,22 +110,22 @@ export const createLocalFileWithMedia = async (file: LocalFile, allUserMedia: An
         let correspondingMedia: AnilistMedia | undefined = undefined
 
         // Find the corresponding media only if:
-        // The file has been parsed AND it has an anime title OR one of its folders have an anime title
+        // The file has been parsed AND it has an anime title OR one of its folders has an anime title
         if (!!file.parsedInfo && (!!file.parsedInfo?.title || file.parsedFolderInfo.some(n => !!n.title))) {
 
-            const { correspondingMedia: _c } = await findBestCorrespondingMedia(
+            const { correspondingMedia: media } = await findBestCorrespondingMedia(
                 allMedia,
                 file.parsedInfo,
                 file.parsedFolderInfo,
             )
-            correspondingMedia = _c
+            correspondingMedia = media
 
         }
 
         return {
             ...file,
             media: correspondingMedia,
-            // mediaId: correspondingMedia?.id || null
+            // mediaId: correspondingMedia?.id || null <- Don't need it, will be hydrated later
         }
     }
     return undefined

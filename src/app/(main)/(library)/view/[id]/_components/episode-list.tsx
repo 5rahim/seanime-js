@@ -9,9 +9,10 @@ import { DropdownMenu } from "@/components/ui/dropdown-menu"
 import { BiDotsHorizontal } from "@react-icons/all-files/bi/BiDotsHorizontal"
 import { LibraryEntry } from "@/lib/local-library/library-entry"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
-import { useStoredLocalFiles } from "@/atoms/library"
 import { VideoPlayer } from "@/lib/video-player"
 import { useSettings } from "@/atoms/settings"
+import { logger } from "@/lib/helpers/debug"
+import { useStoredLocalFiles } from "@/atoms/library/local-file.atoms"
 
 interface EpisodeListProps {
     children?: React.ReactNode
@@ -22,18 +23,22 @@ interface EpisodeListProps {
     unDownloadedEpisodes?: any //TODO
 }
 
-export const EpisodeList: React.FC<EpisodeListProps> = (props) => {
+export const EpisodeList: React.FC<EpisodeListProps> = React.memo((props) => {
 
     const { children, files, entry, aniZipData, detailedMedia, ...rest } = props
 
     const { settings } = useSettings()
-    const { localFiles, toggleMediaFileLocking, toggleFileLocking, getMediaFiles, unmatchFile } = useStoredLocalFiles()
+    const { toggleFileLocking, unmatchFile } = useStoredLocalFiles()
 
     const videoPlayer = useRef(VideoPlayer(settings))
 
     useEffect(() => {
         videoPlayer.current = VideoPlayer(settings)
     }, [settings])
+
+    useEffect(() => {
+        logger("EpisodeList").warning("re-rendered")
+    })
 
     const isMovie = detailedMedia.format === "MOVIE"
 
@@ -106,4 +111,4 @@ export const EpisodeList: React.FC<EpisodeListProps> = (props) => {
         </>
     )
 
-}
+})

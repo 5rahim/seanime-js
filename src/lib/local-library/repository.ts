@@ -27,9 +27,11 @@ import { createLibraryEntry, LibraryEntry } from "@/lib/local-library/library-en
 import { logger } from "@/lib/helpers/debug"
 
 /**
- *  Goes through non-locked and non-ignored [LocalFile]s and returns them with updated meta
+ *  Goes through non-locked and non-ignored [LocalFile]s and returns
+ *  - Scanned [LocalFile]s and their associated [LibraryEntry]s
  * @param settings
  * @param userName
+ * @param token
  * @param ignored
  * @param locked
  */
@@ -116,16 +118,20 @@ export async function retrieveLocalFilesAsLibraryEntries(settings: Settings, use
 
 /**
  * Recursively get the files from the local directory
- * This method hydrates each file retrieved using [retrieveLocalFiles] with its associated [AnilistSimpleMedia]
- * @param settings
+ * This method hydrates each retrieved [LocalFile] with its associated [AnilistSimpleMedia]
  */
-export async function retrieveHydratedLocalFiles(settings: Settings, userName: Nullish<string>, data: AnimeCollectionQuery, {
-    ignored,
-    locked,
-}: {
-    ignored: string[],
-    locked: string[],
-}) {
+export async function retrieveHydratedLocalFiles(
+    settings: Settings,
+    userName: Nullish<string>,
+    data: AnimeCollectionQuery,
+    {
+        ignored,
+        locked,
+    }: {
+        ignored: string[],
+        locked: string[],
+    },
+) {
     const currentPath = settings.library.localDirectory
 
     if (currentPath && userName) {
@@ -150,14 +156,6 @@ export async function retrieveHydratedLocalFiles(settings: Settings, userName: N
                         ).flatMap(edge => edge?.node).filter(Boolean)
                         ?? [])
             ) ?? []) as ShowcaseMediaFragment[]
-
-            // \/ Used before using PromiseBatch
-            // const localFilesWithMedia: LocalFileWithMedia[] = []
-            // for (let i = 0; i < localFiles.length; i++) {
-            //     const created = await createLocalFileWithMedia(localFiles[i], allUserMedia, relatedMedia)
-            //     if (created) localFilesWithMedia.push(created)
-            // }
-            // return localFilesWithMedia
 
             allUserMedia = allUserMedia?.map(media => _.omit(media, "streamingEpisodes", "relations", "studio", "description", "format", "source", "isAdult", "genres", "trailer", "countryOfOrigin", "studios"))
 

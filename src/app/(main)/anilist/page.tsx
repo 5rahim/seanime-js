@@ -2,12 +2,13 @@
 
 import React from "react"
 import { useSettings } from "@/atoms/settings"
-import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { AnimeList } from "@/components/application/list/anime-list"
 import { TabPanels } from "@/components/ui/tabs"
 import { cn } from "@/components/ui/core"
 import { useStoredAnilistCollection } from "@/atoms/anilist-collection"
-import { useLibraryEntries } from "@/atoms/library"
+
+
+import { useLibraryEntries } from "@/atoms/library/library-entry.atoms"
 
 export default function Home() {
 
@@ -15,8 +16,6 @@ export default function Home() {
 
     const { currentlyWatchingList, completedList, planningList, pausedList, isLoading } = useStoredAnilistCollection()
     const { entries } = useLibraryEntries()
-
-    if (isLoading) return <LoadingSpinner/>
 
     return (
         <main className={"px-4"}>
