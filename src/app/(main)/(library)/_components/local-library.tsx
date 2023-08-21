@@ -2,7 +2,7 @@
 import React from "react"
 
 import { LibraryEntry, useLibraryEntryAtoms } from "@/atoms/library/library-entry.atoms"
-import { PrimitiveAtom } from "jotai/index"
+import { PrimitiveAtom } from "jotai"
 import { useSelectAtom } from "@/atoms/helpers"
 import { AnimeListItem } from "@/components/application/list/anime-list-item"
 

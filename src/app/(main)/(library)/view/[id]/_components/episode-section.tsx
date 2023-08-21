@@ -23,7 +23,6 @@ import { openDirectoryInExplorer } from "@/lib/helpers/directory"
 import { type } from "@tauri-apps/api/os"
 import { LocalFile } from "@/lib/local-library/local-file"
 import { Divider } from "@/components/ui/divider"
-import { logger } from "@/lib/helpers/debug"
 import Image from "next/image"
 import { BiDotsHorizontal } from "@react-icons/all-files/bi/BiDotsHorizontal"
 import { DropdownMenu } from "@/components/ui/dropdown-menu"
@@ -43,7 +42,10 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
     const { toWatch, watched } = useMainLocalFileAtomsByMediaId(detailedMedia.id)
     const ovaFileAtoms = useOVALocalFileAtomsByMediaId(detailedMedia.id)
     const ncFileAtoms = useNCLocalFileAtomsByMediaId(detailedMedia.id)
-    // const localFileAtoms = useLocalFileAtomsByMediaId(detailedMedia.id)
+
+    useEffect(() => {
+        videoPlayer.current = VideoPlayer(settings)
+    }, [settings])
 
     const isMovie = detailedMedia.format === "MOVIE"
     const videoPlayer = useRef(VideoPlayer(settings))
@@ -54,13 +56,6 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
         </div>
     }
 
-    useEffect(() => {
-        videoPlayer.current = VideoPlayer(settings)
-    }, [settings])
-
-    useEffect(() => {
-        logger("EpisodeList").warning("re-rendered")
-    })
 
     async function handlePlayFile(path: string) {
         await videoPlayer.current.openVideo(path)

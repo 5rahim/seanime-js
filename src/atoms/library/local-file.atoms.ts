@@ -1,15 +1,13 @@
 import { atomWithStorage, selectAtom, splitAtom } from "jotai/utils"
 import { LocalFile } from "@/lib/local-library/local-file"
 import { useAtom, useAtomValue, useSetAtom } from "jotai/react"
-import { useImmerAtom, withImmer } from "jotai-immer"
-import { startTransition, useCallback, useMemo } from "react"
-import { logger } from "@/lib/helpers/debug"
-import { Nullish } from "@/types/common"
+import { withImmer } from "jotai-immer"
+import { useCallback, useMemo } from "react"
 import { atom, PrimitiveAtom } from "jotai"
 import deepEquals from "fast-deep-equal"
 import _ from "lodash"
 import { ANIDB_RX } from "@/lib/series-scanner/regex"
-import { anilistCollectionEntryAtoms } from "@/atoms/anilist-collection"
+import { anilistCollectionEntryAtoms, useAnilistCollectionEntryByMediaId } from "@/atoms/anilist-collection"
 
 /* -------------------------------------------------------------------------------------------------
  * Main atoms
@@ -124,19 +122,25 @@ export const useLocalFileAtomsByMediaId = (mediaId: number) => {
 }
 
 export const useMainLocalFileAtomsByMediaId = (mediaId: number) => {
+    // Actualize file list when collection entry changes
+    const collectionEntry = useAnilistCollectionEntryByMediaId(mediaId)
     const [, get] = useAtom(get_ToWatch_LocalFileAtomsByMediaIdAtom)
-    return useMemo(() => get(mediaId), []) as {
+    return useMemo(() => get(mediaId), [collectionEntry]) as {
         toWatch: Array<PrimitiveAtom<LocalFile>>,
         watched: Array<PrimitiveAtom<LocalFile>>
     }
 }
 export const useOVALocalFileAtomsByMediaId = (mediaId: number) => {
+    // Actualize file list when collection entry changes
+    const collectionEntry = useAnilistCollectionEntryByMediaId(mediaId)
     const [, get] = useAtom(get_OVA_LocalFileAtomsByMediaIdAtom)
-    return useMemo(() => get(mediaId), []) as Array<PrimitiveAtom<LocalFile>>
+    return useMemo(() => get(mediaId), [collectionEntry]) as Array<PrimitiveAtom<LocalFile>>
 }
 export const useNCLocalFileAtomsByMediaId = (mediaId: number) => {
+    // Actualize file list when collection entry changes
+    const collectionEntry = useAnilistCollectionEntryByMediaId(mediaId)
     const [, get] = useAtom(get_NC_LocalFileAtomsByMediaIdAtom)
-    return useMemo(() => get(mediaId), []) as Array<PrimitiveAtom<LocalFile>>
+    return useMemo(() => get(mediaId), [collectionEntry]) as Array<PrimitiveAtom<LocalFile>>
 }
 
 /**
@@ -163,6 +167,10 @@ export const useLocalFileAtomByPath = (path: string) => {
     const [, get] = useAtom(getLocalFileAtomByPathAtom)
     return useMemo(() => get(path), []) as (PrimitiveAtom<LocalFile> | undefined)
 }
+
+/**
+ * Locked, ignored paths
+ */
 
 /* -------------------------------------------------------------------------------------------------
  * Write
@@ -199,60 +207,4 @@ export const refreshLocalFilesAtom = atom(null,
 export const useRefreshLocalFiles = () => {
     const [, refreshLocalFiles] = useAtom(refreshLocalFilesAtom)
     return useMemo(() => refreshLocalFiles, [])
-}
-
-/* -------------------------------------------------------------------------------------------------
- * Hooks
- * -----------------------------------------------------------------------------------------------*/
-
-export function useStoredLocalFiles() {
-
-    const files = useAtomValue(localFilesAtom)
-    const [, setFiles] = useImmerAtom(localFilesAtom)
-
-    /**
-     * Will keep locked and ignored files and insert new ones.
-     *
-     * Call this function when [refreshing entries]
-     * @param files
-     */
-    const handleStoreLocalFiles = useCallback((incomingFiles: LocalFile[]) => {
-        startTransition(() => {
-            setFiles(files => {
-                logger("atom/library/handleStoreLocalFiles").info("Incoming files", incomingFiles.length)
-                const keptFiles = files.filter(file => file.ignored || file.locked)
-                const keptFilesPaths = new Set<string>(keptFiles.map(file => file.path))
-                return [...keptFiles, ...incomingFiles.filter(file => !keptFilesPaths.has(file.path))]
-            })
-        })
-    }, [])
-
-    const markedFiles = useMemo(() => {
-        return {
-            ignored: files.filter(file => file.ignored),
-            locked: files.filter(file => file.locked),
-        }
-    }, [files])
-
-    const markedFilePathSets = useMemo(() => {
-        return {
-            ignored: new Set(markedFiles.ignored.map(file => file.path)),
-            locked: new Set(markedFiles.locked.map(file => file.path)),
-        }
-    }, [markedFiles])
-
-    const getMediaFiles = useCallback((mediaId: Nullish<number>) => {
-        return files.filter(file => file.mediaId === mediaId) ?? []
-    }, [files])
-
-    return {
-        localFiles: files,
-        storeLocalFiles: handleStoreLocalFiles,
-        setLocalFiles: setFiles,
-        getMediaFiles: getMediaFiles,
-        markedFiles,
-        markedFilePathSets,
-        unresolvedFileCount: useMemo(() => files.filter(file => !file.mediaId && !file.ignored).length, [files]),
-    }
-
 }

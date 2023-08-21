@@ -1,85 +1,18 @@
 import { useAtom, useAtomValue } from "jotai/react"
 import { allUserMediaAtom } from "@/atoms/anilist-collection"
-import { startTransition, useCallback, useEffect, useMemo } from "react"
-import { useImmerAtom } from "jotai-immer"
-import { Deprecated_LibraryEntry } from "@/lib/local-library/library-entry"
+import { useCallback, useMemo } from "react"
 import { logger } from "@/lib/helpers/debug"
-import { atomWithStorage, selectAtom, splitAtom } from "jotai/utils"
+import { selectAtom, splitAtom } from "jotai/utils"
 import { localFilesAtom } from "@/atoms/library/local-file.atoms"
 import { atom, PrimitiveAtom } from "jotai"
 import deepEquals from "fast-deep-equal"
 import { AnilistSimpleMedia } from "@/lib/anilist/fragment"
 import { LocalFile } from "@/lib/local-library/local-file"
-
-/**
- * Store the library entries upon scan
- */
-export const deprecated_libraryEntriesAtom = atomWithStorage<Deprecated_LibraryEntry[]>("sea-library-entries", [], undefined, { unstable_getOnInit: true })
-
-/**
- * @deprecated
- */
-export function legacy_useLibraryCleanup() {
-    const [, setEntries] = useImmerAtom(deprecated_libraryEntriesAtom)
-    const localFiles = useAtomValue(localFilesAtom)
-
-    /**
-     * When localFiles change, update entry's filePaths
-     */
-    useEffect(() => {
-        startTransition(() => {
-            setEntries(entries => {
-                logger("atom/library/setEntries").info("Update entries files + cleanup")
-                for (let i = 0; i < entries.length; i++) {
-                    const entryLocalFiles = localFiles.filter(file => file.mediaId === entries[i].media.id)
-                    // Actualize an entry file paths
-                    entries[i].filePaths = entryLocalFiles.map(file => file.path)
-
-                    if (entries[i].filePaths.length === 0) { // If an entry doesn't have any file path, delete it
-                        entries.splice(i, 1)
-                    }
-                }
-                return
-            })
-        })
-    }, [localFiles])
-}
-
-/**
- * @deprecated
- */
-export function legacy_useLibraryEntries() {
-
-    const [entries, setEntries] = useImmerAtom(deprecated_libraryEntriesAtom)
-
-    return {
-        entries: entries,
-        setEntries,
-        /**
-         * Will only add entries that do not exist
-         */
-        actualizeEntries: (incomingEntries: Deprecated_LibraryEntry[]) => {
-            // startTransition(() => {
-            //     setEntries(entries => {
-            //         logger("atom/library/actualizeEntries").info("Scanned entries ", incomingEntries.length)
-            //         const entriesMediaIds = new Set(entries.map(entry => entry.media.id))
-            //
-            //         for (const incomingEntry of incomingEntries) {
-            //             if (!entriesMediaIds.has(incomingEntry.media.id)) {
-            //                 entries.push(incomingEntry)
-            //             }
-            //         }
-            //         return
-            //     })
-            // })
-        },
-
-    }
-
-}
+import { useSelectAtom } from "@/atoms/helpers"
 
 /* -------------------------------------------------------------------------------------------------
  * LibraryEntry
+ * - Derived from `allUserMediaAtom` and `localFilesAtom`
  * -----------------------------------------------------------------------------------------------*/
 
 export type LibraryEntry = {
@@ -128,27 +61,20 @@ export const getLibraryEntryAtomsByMediaIdAtom = atom(null,
  * const entry = useAtomValue(entryAtom)
  */
 export const useLibraryEntryAtomByMediaId = (mediaId: number) => {
+    // Refresh atom when its file count changes
+    const fileCount = useSelectAtom(localFilesAtom, files => files.filter(file => file.mediaId === mediaId).length ?? 0)
     const [, get] = useAtom(getLibraryEntryAtomsByMediaIdAtom)
-    return useMemo(() => get(mediaId), []) as PrimitiveAtom<LibraryEntry> | undefined
-}
-
-export const useLibraryEntryAtoms = () => {
-    const value = useAtomValue(libraryEntryAtoms)
-    return useMemo(() => value, []) as Array<PrimitiveAtom<LibraryEntry>>
+    return useMemo(() => get(mediaId), [fileCount]) as PrimitiveAtom<LibraryEntry> | undefined
 }
 
 /**
- * @example
- * const entries = useLibraryEntries()
+ * Used in local library to display anime list
  */
-export const useLibraryEntries = (): LibraryEntry[] => {
-    return useAtomValue(
-        selectAtom(
-            libraryEntriesAtom,
-            useCallback(entries => entries, []), // Stable reference
-            deepEquals, // Equality check
-        ),
-    )
+export const useLibraryEntryAtoms = () => {
+    // Refresh libraryEntry atom list when number of entries changes
+    const entryCount = useSelectAtom(libraryEntriesAtom, entries => entries.length)
+    const value = useAtomValue(libraryEntryAtoms)
+    return useMemo(() => value, [entryCount]) as Array<PrimitiveAtom<LibraryEntry>>
 }
 
 /**

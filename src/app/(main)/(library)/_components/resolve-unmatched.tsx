@@ -5,7 +5,6 @@ import { Drawer } from "@/components/ui/modal"
 import { Button } from "@/components/ui/button"
 import { ImNext } from "@react-icons/all-files/im/ImNext"
 import { ImPrevious } from "@react-icons/all-files/im/ImPrevious"
-import { useSettings } from "@/atoms/settings"
 import { FcOpenedFolder } from "@react-icons/all-files/fc/FcOpenedFolder"
 import { RadioGroup } from "@/components/ui/radio-group"
 import Image from "next/image"
@@ -17,10 +16,13 @@ import { useAuthed } from "@/atoms/auth"
 import { TextInput } from "@/components/ui/text-input"
 import { Switch } from "@/components/ui/switch"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
-import { useMatchingSuggestions } from "@/atoms/library/matching-suggestions.atoms"
+import { libraryMatchingSuggestionGroupsAtom, useMatchingSuggestions } from "@/atoms/library/matching-suggestions.atoms"
 
-import { legacy_useLibraryEntries } from "@/atoms/library/library-entry.atoms"
-import { useStoredLocalFiles } from "@/atoms/library/local-file.atoms"
+import { libraryEntriesAtom } from "@/atoms/library/library-entry.atoms"
+import { useSetLocalFiles } from "@/atoms/library/local-file.atoms"
+import { useSelectAtom } from "@/atoms/helpers"
+import { useRefreshAnilistCollection } from "@/atoms/anilist-collection"
+import { useAtomValue } from "jotai/react"
 
 /* -------------------------------------------------------------------------------------------------
  * ClassificationRecommendationHub
@@ -28,18 +30,20 @@ import { useStoredLocalFiles } from "@/atoms/library/local-file.atoms"
 
 
 export function ResolveUnmatched(props: { isOpen: boolean, close: () => void }) {
-    const { settings } = useSettings()
     const { user } = useCurrentUser()
     const { token } = useAuthed()
-    const { groups, getMatchingSuggestions, isLoading: isFetchingSuggestion } = useMatchingSuggestions()
-    const { setEntries } = legacy_useLibraryEntries()
-    const { setLocalFiles } = useStoredLocalFiles()
+    const groups = useAtomValue(libraryMatchingSuggestionGroupsAtom)
+    const { getMatchingSuggestions, isLoading: isFetchingSuggestion } = useMatchingSuggestions()
+    const setLocalFiles = useSetLocalFiles()
 
     const [isLoading, setIsLoading] = useState(false)
     const [groupBy, setGroupBy] = useState<"file" | "folder">("folder")
 
     const [index, setIndex] = useState(0)
     const [selectedAnimeId, setSelectedAnimeId] = useState<string | undefined>("0")
+
+    const entriesMediaIds = useSelectAtom(libraryEntriesAtom, entries => entries.map(entry => entry.id))
+    const refreshAnilistCollection = useRefreshAnilistCollection()
 
     useEffect(() => {
         setSelectedAnimeId("0")
@@ -51,8 +55,6 @@ export function ResolveUnmatched(props: { isOpen: boolean, close: () => void }) 
     const ovaDetected = currentGroup?.files?.some(n => n.name.match(/\s(OVA)\s?/))
     const specialsDetected = currentGroup?.files?.some(n => n.name.match(/\s(\()?[Ss]pecials(\))?\s?/))
     const episodeDetected = currentGroup?.files?.some(n => n.name.match(/\s([Ss]|[Ee])?0?\d{2,4}(?:.|$|E)/))
-
-    // if (groups.length === 0) return <div>Nothing to see, reload if necessary.</div>
 
     function handleSelectAnime(value: string | null) {
         setSelectedAnimeId(value ?? "0")
@@ -74,22 +76,15 @@ export function ResolveUnmatched(props: { isOpen: boolean, close: () => void }) 
                         const fileIndex = files.findIndex(file => file.path === path)
                         files[fileIndex].mediaId = media.id
                         files[fileIndex].locked = true
+                        files[fileIndex].ignored = false
                     }
                     return
                 })
-                // Add entry if it doesn't exist
-                setEntries(entries => {
-                    const entriesMediaIds = new Set(entries.map(entry => entry.media.id))
-                    if (!entriesMediaIds.has(media.id)) {
-                        entries.push({
-                            media: media,
-                            filePaths: currentGroup.files.map(n => n.path),
-                            sharedPath: groupBy === "folder" ? currentGroup.folderPath : currentGroup.folderPath.replace("\\" + currentGroup.files[0]?.name, ""),
-                            accuracy: 1,
-                        })
-                    }
-                    return
-                })
+                const entriesMediaIdsSet = new Set([...entriesMediaIds])
+                // If entry didn't exist, refresh collection
+                if (!entriesMediaIdsSet.has(media.id)) {
+                    await refreshAnilistCollection()
+                }
 
                 setIndex(0)
                 getMatchingSuggestions(groupBy)

@@ -217,28 +217,3 @@ export const anilistPausedListAtom = atom((get) => {
     arr = _.sortBy(arr, entry => entry?.score).reverse()
     return arr
 })
-
-
-export const useStoredAnilistCollection = () => {
-    const isLoading = useAtomValue(_isLoadingAtom)
-    const collection = useAtomValue(anilistCollectionEntriesAtom)
-    const allUserMedia = useAtomValue(allUserMediaAtom)
-    const currentlyWatchingList = useAtomValue(anilistCurrentlyWatchingListAtom)
-    const completedList = useAtomValue(anilistCompletedListAtom)
-    const planningList = useAtomValue(anilistPlanningListAtom)
-    const pausedList = useAtomValue(anilistPausedListAtom)
-
-    return {
-        isLoading,
-        collection,
-        allUserMedia,
-        currentlyWatchingList,
-        completedList,
-        planningList,
-        pausedList,
-        getMediaListEntry: (mediaId: number) => {
-            return collection.find(collectionEntry => collectionEntry?.media?.id === mediaId)
-        },
-    }
-
-}

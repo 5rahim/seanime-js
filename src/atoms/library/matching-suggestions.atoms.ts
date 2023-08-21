@@ -101,13 +101,11 @@ const getMatchingSuggestionGroupsAtom = atom(null, async (get, set, payload: "fi
     }
 })
 export const useMatchingSuggestions = () => {
-    const groups = useAtomValue(libraryMatchingSuggestionGroupsAtom)
     const [, getMatchingSuggestions] = useAtom(getMatchingSuggestionGroupsAtom)
     const isLoading = useAtomValue(_isCurrentlyFetchingSuggestions)
 
     return {
         getMatchingSuggestions,
-        groups,
         isLoading,
     }
 }

@@ -19,14 +19,11 @@ import { RiFileSearchLine } from "@react-icons/all-files/ri/RiFileSearchLine"
 import { parseLocalFilesToLibraryEntry } from "@/lib/gpt/config"
 import { useAuthed } from "@/atoms/auth"
 import { useMatchingSuggestions } from "@/atoms/library/matching-suggestions.atoms"
-
-import { legacy_useLibraryEntries } from "@/atoms/library/library-entry.atoms"
-import { useStoredLocalFiles } from "@/atoms/library/local-file.atoms"
-
-/**
- * TODO: Refactor
- * @constructor
- */
+import { localFilesAtom, useSetLocalFiles } from "@/atoms/library/local-file.atoms"
+import { useAtomValue } from "jotai/react"
+import { selectAtom } from "jotai/utils"
+import deepEquals from "fast-deep-equal"
+import { logger } from "@/lib/helpers/debug"
 
 export function LibraryToolbar() {
 
@@ -34,9 +31,35 @@ export function LibraryToolbar() {
     const { user } = useCurrentUser()
     const { token } = useAuthed()
 
-    const { actualizeEntries, setEntries } = legacy_useLibraryEntries()
-    const { storeLocalFiles, setLocalFiles, markedFilePathSets, unresolvedFileCount } = useStoredLocalFiles()
     const { getMatchingSuggestions, isLoading: recommendationLoading } = useMatchingSuggestions()
+    const setLocalFiles = useSetLocalFiles()
+
+    const unresolvedFileCount = useAtomValue(
+        selectAtom(
+            localFilesAtom,
+            useCallback(files => files.filter(file => !file.mediaId && !file.ignored).length, []),
+            deepEquals,
+        ),
+    )
+
+    const lockedPaths = useAtomValue(
+        selectAtom(
+            localFilesAtom,
+            useCallback(files => files.filter(file => file.locked).map(file => file.path), []),
+            deepEquals,
+        ),
+    )
+
+    const ignoredPaths = useAtomValue(
+        selectAtom(
+            localFilesAtom,
+            useCallback(files => files.filter(file => file.ignored).map(file => file.path), []),
+            deepEquals,
+        ),
+    )
+
+    const lockedPathsSet = new Set([...lockedPaths])
+    const ignoredPathsSet = new Set([...ignoredPaths])
 
     const [isLoading, setIsLoading] = useState(false)
 
@@ -52,31 +75,33 @@ export function LibraryToolbar() {
         }, 1000)
     }
 
-    /**
-     * Calls [storeLocalFiles] to actualize files (preserves locked and ignored files and overwrites/adds with incoming files)
-     */
-    const handleRefreshEntries = useCallback(async () => {
+    const handleRefreshEntries = async () => {
         if (user && token) {
             const tID = toast.loading("Loading")
             setIsLoading(true)
 
             const result = await retrieveLocalFilesAsLibraryEntries(settings, user?.name, token, {
-                ignored: Array.from(markedFilePathSets.ignored),
-                locked: Array.from(markedFilePathSets.locked),
+                ignored: Array.from(lockedPathsSet),
+                locked: Array.from(ignoredPathsSet),
             })
             if (result) {
+                const incomingFiles = result.checkedFiles
 
-                storeLocalFiles(result.checkedFiles)
-                actualizeEntries(result.entries)
+                setLocalFiles(files => {
+                    logger("atom/library/handleStoreLocalFiles").info("Incoming files", incomingFiles.length)
+                    const keptFiles = files.filter(file => file.ignored || file.locked)
+                    const keptFilesPaths = new Set<string>(keptFiles.map(file => file.path))
+                    return [...keptFiles, ...incomingFiles.filter(file => !keptFilesPaths.has(file.path))]
+                })
 
             }
             toast.success("Your local library is up to date")
             toast.remove(tID)
             setIsLoading(false)
         }
-    }, [settings, user, token, markedFilePathSets])
+    }
 
-    const handleRescanEntries = useCallback(async () => {
+    const handleRescanEntries = async () => {
         if (user && token) {
             const tID = toast.loading("Loading")
             setIsLoading(true)
@@ -86,34 +111,27 @@ export function LibraryToolbar() {
                 locked: [],
             })
             if (result) {
-                setLocalFiles(draft => {
-                    return result.checkedFiles
-                })
-                setEntries(draft => {
-                    return result.entries
-                })
+                setLocalFiles(result.checkedFiles)
             }
             toast.success("Your local library is up to date")
             toast.remove(tID)
             setIsLoading(false)
         }
-    }, [settings, user, token, markedFilePathSets])
+    }
 
-    const handleCleanRepository = useCallback(async () => {
+    const handleCleanRepository = async () => {
         const { ignoredPathsToClean, lockedPathsToClean } = await cleanupFiles(settings, {
-            ignored: Array.from(markedFilePathSets.ignored),
-            locked: Array.from(markedFilePathSets.locked),
+            ignored: Array.from(lockedPathsSet),
+            locked: Array.from(ignoredPathsSet),
         })
-
         const ignoredPathsToCleanSet = new Set(ignoredPathsToClean)
         const lockedPathsToCleanSet = new Set(lockedPathsToClean)
-
-        // Delete local files, this will trigger libraryEntries to delete the paths too
-        setLocalFiles(files => {
-            return files.filter(file => !ignoredPathsToCleanSet.has(file.path) && !lockedPathsToCleanSet.has(file.path))
+        // Delete local files
+        setLocalFiles(prev => {
+            return prev.filter(file => !ignoredPathsToCleanSet.has(file.path) && !lockedPathsToCleanSet.has(file.path))
         })
 
-    }, [settings])
+    }
 
     return (
         <>
