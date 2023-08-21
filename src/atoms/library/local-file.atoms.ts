@@ -42,6 +42,7 @@ export const getLocalFileAtomsByMediaIdAtom = atom(null,
 )
 
 const get_ToWatch_LocalFileAtomsByMediaIdAtom = atom(null,
+    // Get the local files from a specific media, split the `watched` and `to watch` files by listening to a specific `anilistCollectionEntryAtom`
     (get, set, mediaId: number) => {
         // Get the AniList Collection Entry Atom by media ID
         const collectionEntryAtom = get(anilistCollectionEntryAtoms).find((collectionEntryAtom) => get(collectionEntryAtom)?.media?.id === mediaId)
