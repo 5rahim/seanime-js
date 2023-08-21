@@ -66,9 +66,8 @@ npm run tauri:dev
 ## TODO
 
 - Improve performance
-  - Leveraging Jotai's best practices
-  - Remove heavy calculations from the React scope to Jotai
-  - Stop excessive re-renders in Anime List
-  - ~~Get rid of `libraryEntriesAtom` in favor of derived atoms from `localLibrary`~~
-  - Find a way to improve `media-matching` by avoiding multiple comparisons per file for the same titles
+  - [x] Leveraging Jotai's best practices
+  - [x] Remove heavy calculations from the React scope to Jotai
+  - [x] Stop excessive re-renders in Anime List
+  - [ ] Find a way to improve `media-matching` by avoiding multiple comparisons per file for the same titles
 - Video
