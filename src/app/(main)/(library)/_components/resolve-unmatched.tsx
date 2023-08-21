@@ -19,7 +19,7 @@ import { Switch } from "@/components/ui/switch"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { useMatchingSuggestions } from "@/atoms/library/matching-suggestions.atoms"
 
-import { useLibraryEntries } from "@/atoms/library/library-entry.atoms"
+import { legacy_useLibraryEntries } from "@/atoms/library/library-entry.atoms"
 import { useStoredLocalFiles } from "@/atoms/library/local-file.atoms"
 
 /* -------------------------------------------------------------------------------------------------
@@ -32,7 +32,7 @@ export function ResolveUnmatched(props: { isOpen: boolean, close: () => void }) 
     const { user } = useCurrentUser()
     const { token } = useAuthed()
     const { groups, getMatchingSuggestions, isLoading: isFetchingSuggestion } = useMatchingSuggestions()
-    const { setEntries } = useLibraryEntries()
+    const { setEntries } = legacy_useLibraryEntries()
     const { setLocalFiles } = useStoredLocalFiles()
 
     const [isLoading, setIsLoading] = useState(false)

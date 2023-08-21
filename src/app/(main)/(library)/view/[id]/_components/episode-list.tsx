@@ -7,7 +7,7 @@ import { VscVerified } from "@react-icons/all-files/vsc/VscVerified"
 import { BiLockOpenAlt } from "@react-icons/all-files/bi/BiLockOpenAlt"
 import { DropdownMenu } from "@/components/ui/dropdown-menu"
 import { BiDotsHorizontal } from "@react-icons/all-files/bi/BiDotsHorizontal"
-import { LibraryEntry } from "@/lib/local-library/library-entry"
+import { Deprecated_LibraryEntry } from "@/lib/local-library/library-entry"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
 import { VideoPlayer } from "@/lib/video-player"
 import { useSettings } from "@/atoms/settings"
@@ -16,7 +16,7 @@ import { useStoredLocalFiles } from "@/atoms/library/local-file.atoms"
 
 interface EpisodeListProps {
     children?: React.ReactNode
-    entry: LibraryEntry | undefined
+    entry: Deprecated_LibraryEntry | undefined
     detailedMedia: AnilistDetailedMedia
     files: LocalFile[]
     aniZipData?: AniZipData

@@ -15,7 +15,7 @@ import { openDirectoryInExplorer } from "@/lib/helpers/directory"
 import { type } from "@tauri-apps/api/os"
 import { SiVlcmediaplayer } from "@react-icons/all-files/si/SiVlcmediaplayer"
 
-import { useLibraryEntry } from "@/atoms/library/library-entry.atoms"
+import { legacy_useLibraryEntry } from "@/atoms/library/library-entry.atoms"
 import { useStoredLocalFiles } from "@/atoms/library/local-file.atoms"
 
 interface EpisodeSectionProps {
@@ -30,7 +30,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
     const { children, detailedMedia, aniZipData, ...rest } = props
 
     const { settings } = useSettings()
-    const { entry, watchOrderFiles, ncFiles, ovaFiles } = useLibraryEntry(detailedMedia.id)
+    const { entry, watchOrderFiles, ncFiles, ovaFiles } = legacy_useLibraryEntry(detailedMedia.id)
     const { localFiles, toggleMediaFileLocking, getMediaFiles } = useStoredLocalFiles()
 
 

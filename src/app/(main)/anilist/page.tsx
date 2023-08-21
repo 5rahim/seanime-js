@@ -1,32 +1,48 @@
 "use client"
 
-import React from "react"
+import React, { useTransition } from "react"
 import { useSettings } from "@/atoms/settings"
-import { AnimeList } from "@/components/application/list/anime-list"
 import { TabPanels } from "@/components/ui/tabs"
 import { cn } from "@/components/ui/core"
-import { useStoredAnilistCollection } from "@/atoms/anilist-collection"
+import {
+    AnilistCollectionEntry,
+    anilistCompletedListAtom,
+    anilistCurrentlyWatchingListAtom,
+    anilistPausedListAtom,
+    anilistPlanningListAtom,
+} from "@/atoms/anilist-collection"
+import { Atom, atom } from "jotai"
+import { useAtom } from "jotai/react"
+import { useSelectAtom } from "@/atoms/helpers"
+import { AnimeListItem } from "@/components/application/list/anime-list-item"
+import { LoadingOverlay } from "@/components/ui/loading-spinner"
 
-
-import { useLibraryEntries } from "@/atoms/library/library-entry.atoms"
+const selectedIndexAtom = atom(0)
 
 export default function Home() {
 
     const { settings } = useSettings()
 
-    const { currentlyWatchingList, completedList, planningList, pausedList, isLoading } = useStoredAnilistCollection()
-    const { entries } = useLibraryEntries()
+    const [selectedIndex, setSelectedIndex] = useAtom(selectedIndexAtom)
+    const [pending, startTransition] = useTransition()
 
     return (
-        <main className={"px-4"}>
+        <main className={"px-4 relative"}>
+
 
             <TabPanels
                 navClassName={"border-none"}
                 tabClassName={cn(
                     "text-lg rounded-none border-b border-b-2 border-b-transparent data-[selected=true]:text-white data-[selected=true]:border-brand-400",
-                    "dark:border-transparent dark:hover:border-b-transparent dark:data-[selected=true]:border-brand-400",
+                    "dark:border-transparent dark:hover:border-b-transparent dark:data-[selected=true]:border-brand-400 dark:data-[selected=true]:text-white",
                     "hover:bg-[--highlight]",
                 )}
+                selectedIndex={selectedIndex}
+                onIndexChange={value => {
+                    startTransition(() => {
+                        setSelectedIndex(value)
+                    })
+                }}
             >
                 <TabPanels.Nav>
                     <TabPanels.Tab>
@@ -42,58 +58,38 @@ export default function Home() {
                         Completed
                     </TabPanels.Tab>
                 </TabPanels.Nav>
-                <TabPanels.Container className="pt-8">
+                <TabPanels.Container className="pt-8 relative">
+                    <LoadingOverlay className={cn("z-50 backdrop-blur-none", { "hidden": !pending })}/>
+
                     <TabPanels.Panel>
-                        <AnimeList
-                            items={[
-                                ...currentlyWatchingList.map(entry => ({
-                                    isInLocalLibrary: entries.some(e => e.media.id === entry?.media?.id),
-                                    media: entry?.media,
-                                    progress: { watched: entry?.progress ?? 0, total: entry?.media?.episodes },
-                                    score: entry?.score,
-                                })),
-                            ]}
-                        />
+                        <WatchList collectionEntriesAtom={anilistCurrentlyWatchingListAtom}/>
                     </TabPanels.Panel>
                     <TabPanels.Panel>
-                        <AnimeList
-                            items={[
-                                ...planningList.map(entry => ({
-                                    isInLocalLibrary: entries.some(e => e.media.id === entry?.media?.id),
-                                    media: entry?.media,
-                                })),
-                            ]}
-                        />
+                        <WatchList collectionEntriesAtom={anilistPlanningListAtom}/>
                     </TabPanels.Panel>
                     <TabPanels.Panel>
-                        <AnimeList
-                            items={[
-                                ...pausedList.map(entry => ({
-                                    isInLocalLibrary: entries.some(e => e.media.id === entry?.media?.id),
-                                    media: entry?.media,
-                                    progress: { watched: entry?.progress ?? 0, total: entry?.media?.episodes },
-                                    score: entry?.score,
-                                })),
-                            ]}
-                        />
+                        <WatchList collectionEntriesAtom={anilistPausedListAtom}/>
                     </TabPanels.Panel>
                     <TabPanels.Panel>
-                        <AnimeList
-                            items={[
-                                ...completedList.map(entry => ({
-                                    isInLocalLibrary: entries.some(e => e.media.id === entry?.media?.id),
-                                    media: entry?.media,
-                                    score: entry?.score,
-                                })),
-                            ]}
-                        />
+                        <WatchList collectionEntriesAtom={anilistCompletedListAtom}/>
                     </TabPanels.Panel>
                 </TabPanels.Container>
             </TabPanels>
 
-            {/*<pre>*/}
-            {/*    {JSON.stringify(currentlyWatchingList, null, 2)}*/}
-            {/*</pre>*/}
         </main>
     )
 }
+
+const WatchList = React.memo(({ collectionEntriesAtom }: { collectionEntriesAtom: Atom<AnilistCollectionEntry[]> }) => {
+
+    const collectionEntriesMedia = useSelectAtom(collectionEntriesAtom, entries => entries.map(entry => entry?.media).filter(Boolean))
+
+    return (
+        <div className={"px-4 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4"}>
+            {collectionEntriesMedia.map(media => (
+                <AnimeListItem key={`${media.id}`} mediaId={media.id}/>
+            ))}
+        </div>
+    )
+
+})

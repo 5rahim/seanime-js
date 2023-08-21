@@ -18,7 +18,7 @@ import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
 import { AnimeCollectionDocument, AnimeCollectionQuery, UpdateEntryDocument } from "@/gql/graphql"
 import { PromiseBatch } from "@/lib/helpers/batch"
 import _ from "lodash"
-import { createLibraryEntry, LibraryEntry } from "@/lib/local-library/library-entry"
+import { createLibraryEntry, Deprecated_LibraryEntry } from "@/lib/local-library/library-entry"
 import { logger } from "@/lib/helpers/debug"
 
 /**
@@ -50,7 +50,7 @@ export async function retrieveLocalFilesAsLibraryEntries(settings: Settings, use
         const allMedia = _.uniqBy(files.map(n => n.media), n => n?.id)
 
         /** Values to be returned **/
-        let entries: LibraryEntry[] = []
+        let entries: Deprecated_LibraryEntry[] = []
         let checkedFiles: LocalFile[] = [...filesWithNoMedia.map(f => _.omit(f, "media"))]
 
         const groupedByMediaId = _.groupBy(localFilesWithMedia, n => n.media!.id)

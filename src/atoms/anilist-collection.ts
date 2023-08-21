@@ -1,7 +1,7 @@
-import { atom } from "jotai"
+import { atom, PrimitiveAtom } from "jotai"
 import { aniListTokenAtom } from "@/atoms/auth"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
-import { AnimeCollectionDocument, AnimeCollectionQuery } from "@/gql/graphql"
+import { AnimeCollectionDocument, AnimeCollectionQuery, MediaListStatus } from "@/gql/graphql"
 import { userAtom } from "@/atoms/user"
 import { useAtom, useAtomValue } from "jotai/react"
 import _ from "lodash"
@@ -10,9 +10,21 @@ import { atomWithStorage, selectAtom, splitAtom } from "jotai/utils"
 import toast from "react-hot-toast"
 import { useCallback, useMemo } from "react"
 import deepEquals from "fast-deep-equal"
-import { AnilistSimpleMedia } from "@/lib/anilist/fragment"
+import { AnilistMedia, AnilistSimpleMedia } from "@/lib/anilist/fragment"
 
 export type AnilistCollection = AnimeCollectionQuery["MediaListCollection"]
+// Typescript's being annoying, so I had to extract the type myself
+export type AnilistCollectionEntry = {
+    score?: number | null,
+    progress?: number | null,
+    status?: MediaListStatus | null,
+    notes?: string | null,
+    repeat?: number | null,
+    private?: boolean | null,
+    startedAt?: { year?: number | null, month?: number | null, day?: number | null } | null,
+    completedAt?: { year?: number | null, month?: number | null, day?: number | null } | null,
+    media?: AnilistMedia | null
+} | null | undefined
 
 /**
  * We will store the fetched Anilist Collection
@@ -81,12 +93,32 @@ export const useRefreshAnilistCollection = () => {
 }
 
 /* -------------------------------------------------------------------------------------------------
- * Anilist Entry Collection
+ * Anilist Collection Entries
+ * - Each entry holds specific data like score, progress...
+ * - Each entry also contains a specific media
  * -----------------------------------------------------------------------------------------------*/
 
-export const anilistCollectionEntriesAtom = atom((get) => (get(anilistCollectionAtom)?.lists?.map(n => n?.entries).flat() ?? []))
+export const anilistCollectionEntriesAtom = atom<AnilistCollectionEntry[]>((get) => {
+    const arr = get(anilistCollectionAtom)?.lists?.map(n => n?.entries)?.flat().filter(Boolean)
+    return arr !== undefined ? arr : []
+})
 
-export const useAnilistEntryByMediaId = (mediaId: number) => {
+/**
+ * Split collection entries by media ID
+ */
+export const anilistCollectionEntryAtoms = splitAtom(anilistCollectionEntriesAtom, collectionEntry => collectionEntry?.media?.id)
+
+// Read
+export const getAnilistCollectionAtomsByMediaIdAtom = atom(null,
+    (get, set, mediaId: number) => get(anilistCollectionEntryAtoms).find((entryAtom) => get(entryAtom)?.media?.id === mediaId),
+)
+
+export const useAnilistCollectionEntryAtomByMediaId = (mediaId: number) => {
+    const [, get] = useAtom(getAnilistCollectionAtomsByMediaIdAtom)
+    return useMemo(() => get(mediaId), []) as PrimitiveAtom<AnilistCollectionEntry> | undefined
+}
+
+export const useAnilistCollectionEntryByMediaId = (mediaId: number) => {
     return useAtomValue(
         selectAtom(
             anilistCollectionEntriesAtom,
@@ -101,7 +133,52 @@ export const useAnilistEntryByMediaId = (mediaId: number) => {
  * -----------------------------------------------------------------------------------------------*/
 
 export const allUserMediaAtom = atomWithStorage<AnilistSimpleMedia[]>("sea-anilist-media", [], undefined, { unstable_getOnInit: true })
-export const allUserMediaAtomAtoms = splitAtom(allUserMediaAtom)
+
+export const allUserMediaAtoms = splitAtom(allUserMediaAtom, media => media.id)
+
+/** Read **/
+
+export const getUserMediaByIdAtom = atom(null,
+    (get, set, mediaId: number) => get(allUserMediaAtoms).find((media) => get(media).id === mediaId),
+)
+
+/**
+ * @example
+ * const media = useAnilistUserMedia(21)
+ *
+ * const title = media?.title?.english //=> One Piece
+ */
+export const useAnilistUserMedia = (mediaId: number) => {
+    return useAtomValue(
+        selectAtom(
+            allUserMediaAtom,
+            useCallback(media => media.find(medium => medium.id === mediaId), []), // Stable reference
+            deepEquals, // Equality check
+        ),
+    )
+}
+
+/**
+ * @example
+ * const mediaAtom = useAnilistUserMediaAtom(21)
+ *
+ * const value = useAtomValue(
+ *     selectAtom(
+ *         mediaAtom,
+ *         useCallback(media => media[property], []),
+ *         deepEquals,
+ *     ),
+ * )
+ */
+export const useAnilistUserMediaAtom = (mediaId: number) => {
+    const [, get] = useAtom(getUserMediaByIdAtom)
+    return useMemo(() => get(mediaId), []) as PrimitiveAtom<AnilistSimpleMedia> | undefined
+}
+
+export const useAnilistUserMediaAtoms = () => {
+    const value = useAtomValue(allUserMediaAtoms)
+    return useMemo(() => value, []) as Array<PrimitiveAtom<AnilistSimpleMedia>>
+}
 
 
 /* -------------------------------------------------------------------------------------------------

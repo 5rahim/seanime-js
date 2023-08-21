@@ -1,15 +1,10 @@
 "use client"
 import React from "react"
-import { useSettings } from "@/atoms/settings"
-import { AnimeList } from "@/components/application/list/anime-list"
-import { useStoredAnilistCollection } from "@/atoms/anilist-collection"
-import { IconButton } from "@/components/ui/button"
-import { VscVerified } from "@react-icons/all-files/vsc/VscVerified"
-import { BiLockOpenAlt } from "@react-icons/all-files/bi/BiLockOpenAlt"
-import { Tooltip } from "@/components/ui/tooltip"
 
-import { useLibraryEntries } from "@/atoms/library/library-entry.atoms"
-import { useStoredLocalFiles } from "@/atoms/library/local-file.atoms"
+import { LibraryEntry, useLibraryEntryAtoms } from "@/atoms/library/library-entry.atoms"
+import { PrimitiveAtom } from "jotai/index"
+import { useSelectAtom } from "@/atoms/helpers"
+import { AnimeListItem } from "@/components/application/list/anime-list-item"
 
 interface LocalLibraryProps {
     children?: React.ReactNode
@@ -19,49 +14,28 @@ export const LocalLibrary: React.FC<LocalLibraryProps> = (props) => {
 
     const { children, ...rest } = props
 
-    const { settings } = useSettings()
-    const { entries } = useLibraryEntries()
-    const { collection } = useStoredAnilistCollection()
-
-    const { getMediaFiles, toggleMediaFileLocking } = useStoredLocalFiles()
+    const entryAtoms = useLibraryEntryAtoms()
 
     return (
         <div className={"px-4"}>
-            <AnimeList
-                items={[
-                    ...entries.map(entry => {
-                        const listEntry = collection.find(m => m?.media?.id === entry.media.id)
-                        const files = getMediaFiles(entry?.media.id)
-                        const allFilesAreLocked = files.every(file => file.locked)
-                        // console.log(listEntry)
-                        return listEntry ? {
-                            media: listEntry.media,
-                            progress: { watched: listEntry.progress ?? 0, total: listEntry?.media?.episodes },
-                            score: listEntry?.score,
-                            isInLocalLibrary: true,
-                            hideLibraryBadge: true,
-                            action: <>
-                                <Tooltip trigger={
-                                    <IconButton
-                                        icon={allFilesAreLocked ? <VscVerified/> : <BiLockOpenAlt/>}
-                                        intent={allFilesAreLocked ? "success" : "warning-subtle"}
-                                        size={"sm"}
-                                        className={"hover:opacity-60"}
-                                        onClick={() => toggleMediaFileLocking(entry?.media.id)}
-                                    />
-                                }>
-                                    {allFilesAreLocked ? "Unlock all files" : "Lock all files"}
-                                </Tooltip>
-                            </>,
-                        } : {
-                            media: entry.media,
-                            isInLocalLibrary: true,
-                            hideLibraryBadge: true,
-                        }
-                    }),
-                ].filter(Boolean)}
-            />
+            <div className={"grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4"}>
+                {entryAtoms.map(entryAtom => {
+                    return <EntryAnimeItem key={`${entryAtom}`} entryAtom={entryAtom}/>
+                })}
+            </div>
         </div>
+    )
+
+}
+
+const EntryAnimeItem = (props: { entryAtom: PrimitiveAtom<LibraryEntry> }) => {
+
+    const { entryAtom } = props
+
+    const media = useSelectAtom(entryAtom, entry => entry.media)
+
+    return (
+        <AnimeListItem key={`${media.id}`} mediaId={media.id}/>
     )
 
 }

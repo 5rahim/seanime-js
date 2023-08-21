@@ -44,6 +44,8 @@ export interface TabPanelsProps extends React.ComponentPropsWithRef<"div">,
     ComponentWithAnatomy<typeof TabPanelsAnatomy>,
     ComponentWithAnatomy<typeof TabNavAnatomy>,
     ComponentWithAnatomy<typeof TabAnatomy> {
+    selectedIndex?: number
+    onIndexChange?: (index: number) => void
 }
 
 const _TabPanels = (props: TabPanelsProps) => {
@@ -54,6 +56,8 @@ const _TabPanels = (props: TabPanelsProps) => {
         navClassName,
         tabClassName,
         className,
+        selectedIndex,
+        onIndexChange,
         ref,
         ...rest
     } = props
@@ -67,6 +71,8 @@ const _TabPanels = (props: TabPanelsProps) => {
 
     return (
         <TabPrimitive.Group
+            selectedIndex={selectedIndex}
+            onChange={onIndexChange}
         >
             <div
                 className={cn(TabPanelsAnatomy.panels(), panelsClassName)}
@@ -167,7 +173,7 @@ Tab.displayName = "Tab"
 
 _TabPanels.Tab = Tab
 _TabPanels.Nav = TabNav
-_TabPanels.Container = TabPrimitive.Panels
+_TabPanels.Container = React.memo(TabPrimitive.Panels)
 _TabPanels.Panel = TabPrimitive.Panel
 
 _TabPanels.Container.displayName = "TabContainer"

@@ -5,7 +5,7 @@ import { startTransition, useCallback, useEffect, useMemo } from "react"
 import _ from "lodash"
 import { ANIDB_RX } from "@/lib/series-scanner/regex"
 import { useImmerAtom } from "jotai-immer"
-import { LibraryEntry } from "@/lib/local-library/library-entry"
+import { Deprecated_LibraryEntry } from "@/lib/local-library/library-entry"
 import { logger } from "@/lib/helpers/debug"
 import { atomWithStorage, selectAtom, splitAtom } from "jotai/utils"
 import { localFilesAtom, useStoredLocalFiles } from "@/atoms/library/local-file.atoms"
@@ -17,10 +17,13 @@ import { LocalFile } from "@/lib/local-library/local-file"
 /**
  * Store the library entries upon scan
  */
-export const libraryEntriesAtom = atomWithStorage<LibraryEntry[]>("sea-library-entries", [], undefined, { unstable_getOnInit: true })
+export const deprecated_libraryEntriesAtom = atomWithStorage<Deprecated_LibraryEntry[]>("sea-library-entries", [], undefined, { unstable_getOnInit: true })
 
-export function useLibraryCleanup() {
-    const [, setEntries] = useImmerAtom(libraryEntriesAtom)
+/**
+ * @deprecated
+ */
+export function legacy_useLibraryCleanup() {
+    const [, setEntries] = useImmerAtom(deprecated_libraryEntriesAtom)
     const localFiles = useAtomValue(localFilesAtom)
 
     /**
@@ -45,9 +48,12 @@ export function useLibraryCleanup() {
     }, [localFiles])
 }
 
-export function useLibraryEntries() {
+/**
+ * @deprecated
+ */
+export function legacy_useLibraryEntries() {
 
-    const [entries, setEntries] = useImmerAtom(libraryEntriesAtom)
+    const [entries, setEntries] = useImmerAtom(deprecated_libraryEntriesAtom)
 
     return {
         entries: entries,
@@ -55,7 +61,7 @@ export function useLibraryEntries() {
         /**
          * Will only add entries that do not exist
          */
-        actualizeEntries: (incomingEntries: LibraryEntry[]) => {
+        actualizeEntries: (incomingEntries: Deprecated_LibraryEntry[]) => {
             startTransition(() => {
                 setEntries(entries => {
                     logger("atom/library/actualizeEntries").info("Scanned entries ", incomingEntries.length)
@@ -75,9 +81,12 @@ export function useLibraryEntries() {
 
 }
 
-export function useLibraryEntry(mediaId: Nullish<number>) {
+/**
+ * @deprecated
+ */
+export function legacy_useLibraryEntry(mediaId: Nullish<number>) {
 
-    const entries = useAtomValue(libraryEntriesAtom)
+    const entries = useAtomValue(deprecated_libraryEntriesAtom)
     const { getMediaFiles } = useStoredLocalFiles()
 
     const { collection, getMediaListEntry } = useStoredAnilistCollection()
@@ -148,12 +157,13 @@ export function useLibraryEntry(mediaId: Nullish<number>) {
  * LibraryEntry
  * -----------------------------------------------------------------------------------------------*/
 
-export type unstable_LibraryEntry = {
+export type LibraryEntry = {
     id: number // Media ID
     media: AnilistSimpleMedia,
     files: LocalFile[]
 }
-export const unstable_libraryEntriesAtom = atom(get => {
+export const libraryEntriesAtom = atom(get => {
+    logger("atom/libraryEntriesAtom").warning("Derived")
     // Get all `mediaId`s
     const mediaIds = new Set(get(allUserMediaAtom).map(media => media?.id).filter(Boolean))
     // For each mediaId, create a new [LibraryEntry] from the existing [LocalFile]s
@@ -168,23 +178,23 @@ export const unstable_libraryEntriesAtom = atom(get => {
                 sharedPath: firstFile.path.replace("\\" + firstFile.name, ""),
             }
         }
-    }).filter(Boolean).filter(entry => entry.files.length > 0) as unstable_LibraryEntry[]
+    }).filter(Boolean).filter(entry => entry.files.length > 0) as LibraryEntry[]
 })
 
 /* -------------------------------------------------------------------------------------------------
  * Read
  * -----------------------------------------------------------------------------------------------*/
 
-export const libraryEntryAtoms = splitAtom(unstable_libraryEntriesAtom)
+export const libraryEntryAtoms = splitAtom(libraryEntriesAtom, entry => entry.id)
 
 export const getLibraryEntryAtomsByMediaIdAtom = atom(null,
-    (get, set, mediaId: number) => get(libraryEntryAtoms).filter((fileAtom) => get(fileAtom).id === mediaId),
+    (get, set, mediaId: number) => get(libraryEntryAtoms).find((fileAtom) => get(fileAtom).id === mediaId),
 )
 
 /**
  * Useful for mapping over [LibraryEntry]s
  * @example Parent
- * const libraryEntryAtoms = useLocalFileAtomsByMediaId(props.mediaId)
+ * const libraryEntryAtoms = useLocalFileAtomsByMediaId(21)
  *  ...
  * libraryEntryAtoms.map(entryAtom => <Child key={`${entryAtom}`} entryAtom={entryAtom}/>
  *
@@ -193,22 +203,39 @@ export const getLibraryEntryAtomsByMediaIdAtom = atom(null,
  */
 export const useLibraryEntryAtomByMediaId = (mediaId: number) => {
     const [, get] = useAtom(getLibraryEntryAtomsByMediaIdAtom)
-    return useMemo(() => get(mediaId), []) as Array<PrimitiveAtom<unstable_LibraryEntry>>
+    return useMemo(() => get(mediaId), []) as PrimitiveAtom<LibraryEntry> | undefined
 }
 
 export const useLibraryEntryAtoms = () => {
     const value = useAtomValue(libraryEntryAtoms)
-    return useMemo(() => value, []) as Array<PrimitiveAtom<unstable_LibraryEntry>>
+    return useMemo(() => value, []) as Array<PrimitiveAtom<LibraryEntry>>
+}
+
+/**
+ * @example
+ * const entries = useLibraryEntries()
+ */
+export const useLibraryEntries = (): LibraryEntry[] => {
+    return useAtomValue(
+        selectAtom(
+            libraryEntriesAtom,
+            useCallback(entries => entries, []), // Stable reference
+            deepEquals, // Equality check
+        ),
+    )
 }
 
 /**
  * @example
  * const entry = useLibraryEntryByMediaId(21)
+ *
+ * const title = entry?.media?.title?.english //=> One Piece
+ * const files = entry?.files //=> [{...}, ...]
  */
-export const useLibraryEntryByMediaId = (mediaId: number): unstable_LibraryEntry | undefined => {
+export const useLibraryEntryByMediaId = (mediaId: number): LibraryEntry | undefined => {
     return useAtomValue(
         selectAtom(
-            unstable_libraryEntriesAtom,
+            libraryEntriesAtom,
             useCallback(entries => entries.find(entry => entry.media.id === mediaId), []), // Stable reference
             deepEquals, // Equality check
         ),

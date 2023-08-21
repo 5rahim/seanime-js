@@ -20,7 +20,7 @@ import { BiBookmarkPlus } from "@react-icons/all-files/bi/BiBookmarkPlus"
 import Link from "next/link"
 import { logger } from "@/lib/helpers/debug"
 
-export type AnimeListItem = {
+type AnimeListItem = {
     // id: string | null | undefined,
     // title: string
     // imageSrc: string
@@ -38,7 +38,7 @@ interface AnimeListProps {
     items: AnimeListItem[]
 }
 
-export const AnimeList: React.FC<AnimeListProps> = React.memo((props) => {
+export const LegacyAnimeList: React.FC<AnimeListProps> = React.memo((props) => {
 
     const { children, items, ...rest } = props
 

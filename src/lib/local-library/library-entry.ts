@@ -8,7 +8,7 @@ import { AnimeByMalIdDocument, AnimeCollectionDocument, UpdateEntryDocument } fr
 import fs from "fs"
 import { ANIDB_RX } from "@/lib/series-scanner/regex"
 
-export type LibraryEntry = {
+export type Deprecated_LibraryEntry = {
     filePaths: Array<string>
     media: AnilistSimpleMedia
     accuracy: number
@@ -21,7 +21,7 @@ export type LibraryEntry = {
 export const createLibraryEntry = async (props: {
     media: AnilistSimpleMedia,
     files: LocalFileWithMedia[]
-}): Promise<LibraryEntry & { acceptedFiles: LocalFileWithMedia[], rejectedFiles: LocalFileWithMedia[] }> => {
+}): Promise<Deprecated_LibraryEntry & { acceptedFiles: LocalFileWithMedia[], rejectedFiles: LocalFileWithMedia[] }> => {
 
     const currentMedia = props.media
     const lFiles = props.files.filter(f => f.media?.id === currentMedia?.id)

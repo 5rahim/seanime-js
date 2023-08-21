@@ -5,7 +5,7 @@ import { getUserAtom, userAtom } from "@/atoms/user"
 import { aniListTokenAtom } from "@/atoms/auth"
 import { useEffect } from "react"
 import { settingsAtoms } from "@/atoms/settings"
-import { libraryEntriesAtom, useLibraryCleanup } from "@/atoms/library/library-entry.atoms"
+import { deprecated_libraryEntriesAtom, legacy_useLibraryCleanup } from "@/atoms/library/library-entry.atoms"
 import { localFilesAtom } from "@/atoms/library/local-file.atoms"
 
 export const AtomPreloader = () => {
@@ -13,12 +13,12 @@ export const AtomPreloader = () => {
     const user = useAtomValue(userAtom) // User
     useAtomValue(settingsAtoms) // Settings - (persistent)
     useAtomValue(localFilesAtom) // Local files
-    useAtomValue(libraryEntriesAtom) // Library entries
+    useAtomValue(deprecated_libraryEntriesAtom) // Library entries
     // const collection = useAtomValue(anilistCollectionAtom) // Anilist Collection - (persistent)
 
     const [, getUser] = useAtom(getUserAtom)
 
-    useLibraryCleanup()
+    legacy_useLibraryCleanup()
 
     useEffect(() => {
         (async () => {

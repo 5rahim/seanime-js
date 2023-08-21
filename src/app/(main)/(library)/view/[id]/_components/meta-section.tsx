@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { addSeconds, formatDistanceToNow } from "date-fns"
 
 
-import { useLibraryEntry } from "@/atoms/library/library-entry.atoms"
+import { legacy_useLibraryEntry } from "@/atoms/library/library-entry.atoms"
 
 interface MetaSectionProps {
     children?: React.ReactNode
@@ -23,7 +23,7 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
     const { children, detailedMedia, ...rest } = props
 
     const { collection, getMediaListEntry } = useStoredAnilistCollection()
-    const { entry } = useLibraryEntry(detailedMedia.id)
+    const { entry } = legacy_useLibraryEntry(detailedMedia.id)
 
     const mediaListEntry = useMemo(() => getMediaListEntry(detailedMedia.id), [collection, detailedMedia])
 

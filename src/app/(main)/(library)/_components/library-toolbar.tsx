@@ -20,8 +20,13 @@ import { parseLocalFilesToLibraryEntry } from "@/lib/gpt/config"
 import { useAuthed } from "@/atoms/auth"
 import { useMatchingSuggestions } from "@/atoms/library/matching-suggestions.atoms"
 
-import { useLibraryEntries } from "@/atoms/library/library-entry.atoms"
+import { legacy_useLibraryEntries } from "@/atoms/library/library-entry.atoms"
 import { useStoredLocalFiles } from "@/atoms/library/local-file.atoms"
+
+/**
+ * TODO: Refactor
+ * @constructor
+ */
 
 export function LibraryToolbar() {
 
@@ -29,7 +34,7 @@ export function LibraryToolbar() {
     const { user } = useCurrentUser()
     const { token } = useAuthed()
 
-    const { actualizeEntries, setEntries } = useLibraryEntries()
+    const { actualizeEntries, setEntries } = legacy_useLibraryEntries()
     const { storeLocalFiles, setLocalFiles, markedFilePathSets, unresolvedFileCount } = useStoredLocalFiles()
     const { getMatchingSuggestions, isLoading: recommendationLoading } = useMatchingSuggestions()
 

@@ -223,7 +223,7 @@ function get<T = any>(options: http.RequestOptions): Promise<T> {
                 }
 
                 try {
-                    resolve(JSON.parse(data))
+                    resolve(JSON.parse(data) as any)
                 } catch (err) {
                     reject(err)
                 }

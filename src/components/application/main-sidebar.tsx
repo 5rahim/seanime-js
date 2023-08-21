@@ -45,6 +45,7 @@ export const MainSidebar: React.FC<MainSidebarProps> = (props) => {
                         { icon: RiHome2Line, name: "Home", href: "/", isCurrent: pathname === "/" },
                         { icon: FiSearch, name: "Search", href: "/", isCurrent: pathname === "/search" },
                         { icon: BiTestTube, name: "Test", href: "/test", isCurrent: pathname === "/test" },
+                        { icon: BiTestTube, name: "Test2", href: "/test/two", isCurrent: pathname === "/test/two" },
                     ]}/>
                 </div>
                 <div className={"flex w-full gap-2 flex-col"}>
