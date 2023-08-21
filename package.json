@@ -53,6 +53,7 @@
     "graphql-request": "^6.1.0",
     "inflection": "^2.0.1",
     "jotai": "^2.3.1",
+    "jotai-cache": "^0.3.0",
     "jotai-immer": "^0.2.0",
     "jotai-optics": "^0.3.1",
     "js-levenshtein": "^1.1.6",

@@ -1,13 +1,16 @@
-import { Atom, atom } from "jotai"
+import { atom } from "jotai"
 import { aniListTokenAtom } from "@/atoms/auth"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
-import { AnimeCollectionDocument, AnimeCollectionQuery, ShortMediaFragment } from "@/gql/graphql"
+import { AnimeCollectionDocument, AnimeCollectionQuery } from "@/gql/graphql"
 import { userAtom } from "@/atoms/user"
-import { useAtom, useAtomValue, useSetAtom } from "jotai/react"
+import { useAtom, useAtomValue } from "jotai/react"
 import _ from "lodash"
 import { logger } from "@/lib/helpers/debug"
-import { atomWithStorage, splitAtom } from "jotai/utils"
+import { atomWithStorage, selectAtom, splitAtom } from "jotai/utils"
 import toast from "react-hot-toast"
+import { useCallback, useMemo } from "react"
+import deepEquals from "fast-deep-equal"
+import { AnilistSimpleMedia } from "@/lib/anilist/fragment"
 
 export type AnilistCollection = AnimeCollectionQuery["MediaListCollection"]
 
@@ -31,7 +34,31 @@ export const getAnilistCollectionAtom = atom(null, async (get, set) => {
             logger("atom/anilist-collection").info("Fetching AniList collection")
             const res = await useAniListAsyncQuery(AnimeCollectionDocument, { userName: user.name }, token)
             if (res.MediaListCollection) {
+
+                // Set Anilist collection
                 set(anilistCollectionAtom, res.MediaListCollection)
+
+                // Set all user media
+                const collectionEntries = res.MediaListCollection?.lists?.map(n => n?.entries).flat() ?? []
+                // Get media from user's watchlist as [AnilistMedia]
+                const userMedia = collectionEntries.filter(Boolean).map(entry => entry.media)
+                // Normalize [AnilistMedia] to [AnilistSimpleMedia]
+                const watchListMedia = userMedia.map(media => _.omit(media, "streamingEpisodes", "relations", "studio", "description", "format", "source", "isAdult", "genres", "trailer", "countryOfOrigin", "studios")) ?? []
+                // Get related [AnilistSimpleMedia]
+                const relatedMedia = userMedia
+                    .filter(Boolean)
+                    .flatMap(media => media.relations?.edges?.filter(edge => edge?.relationType === "PREQUEL"
+                        || edge?.relationType === "SEQUEL"
+                        || edge?.relationType === "SPIN_OFF"
+                        || edge?.relationType === "SIDE_STORY"
+                        || edge?.relationType === "ALTERNATIVE"
+                        || edge?.relationType === "PARENT")
+                        .flatMap(edge => edge?.node).filter(Boolean),
+                    ) as AnilistSimpleMedia[]
+
+                // Set all media
+                set(allUserMediaAtom, _.uniqBy([...watchListMedia, ...relatedMedia], media => media.id))
+
             }
             set(_isLoadingAtom, false)
             toast.success("AniList is up to date")
@@ -44,42 +71,38 @@ export const getAnilistCollectionAtom = atom(null, async (get, set) => {
     }
 })
 
+/**
+ * @example
+ * const refetchCollection = useRefreshAnilistCollection()
+ */
+export const useRefreshAnilistCollection = () => {
+    const [, get] = useAtom(getAnilistCollectionAtom)
+    return useMemo(() => get, [])
+}
+
 /* -------------------------------------------------------------------------------------------------
  * Anilist Entry Collection
  * -----------------------------------------------------------------------------------------------*/
 
 export const anilistCollectionEntriesAtom = atom((get) => (get(anilistCollectionAtom)?.lists?.map(n => n?.entries).flat() ?? []))
 
-export const anilistCollectionEntriesAtoms = splitAtom(anilistCollectionEntriesAtom)
-
-export const getAnilistEntryByMediaIdAtom = atom(undefined,
-    (get, set, payload: number) => {
-        return get(anilistCollectionEntriesAtoms).find((itemAtom) => get(atom((get) => get(itemAtom)?.media?.id === payload))) ?? atom(undefined)
-    },
-)
-
-export const getAnilistEntryByMediaId = (mediaId: number) => {
-    const get = useSetAtom(getAnilistEntryByMediaIdAtom)
-    return get(mediaId)
+export const useAnilistEntryByMediaId = (mediaId: number) => {
+    return useAtomValue(
+        selectAtom(
+            anilistCollectionEntriesAtom,
+            useCallback(entries => entries.find(entry => entry?.media?.id === mediaId), []), // Stable reference
+            deepEquals, // Equality check
+        ),
+    )
 }
 
 /* -------------------------------------------------------------------------------------------------
  * All media
  * -----------------------------------------------------------------------------------------------*/
 
-export const allUserMediaAtom = atom((get) => get(anilistCollectionEntriesAtom).filter(Boolean).map(entry => entry.media))
+export const allUserMediaAtom = atomWithStorage<AnilistSimpleMedia[]>("sea-anilist-media", [], undefined, { unstable_getOnInit: true })
 export const allUserMediaAtomAtoms = splitAtom(allUserMediaAtom)
 
-export const getUserMediaByIdAtom = atom(undefined,
-    (get, set, payload: number) => {
-        return get(allUserMediaAtomAtoms).find((itemAtom) => get(atom((get) => get(itemAtom)?.id === payload))) ?? atom(undefined)
-    },
-)
-
-export const getUserMediaById = (mediaId: number): Atom<ShortMediaFragment | null | undefined> => {
-    const get = useSetAtom(getUserMediaByIdAtom)
-    return get(mediaId)
-}
 
 /* -------------------------------------------------------------------------------------------------
  * Different lists
@@ -118,14 +141,6 @@ export const anilistPausedListAtom = atom((get) => {
     return arr
 })
 
-/**
- * @example
- * const refetchCollection = useRefreshAnilistCollection()
- */
-export const useRefreshAnilistCollection = () => {
-    const [, get] = useAtom(getAnilistCollectionAtom)
-    return () => get()
-}
 
 export const useStoredAnilistCollection = () => {
     const isLoading = useAtomValue(_isLoadingAtom)

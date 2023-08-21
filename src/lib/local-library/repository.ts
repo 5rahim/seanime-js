@@ -12,15 +12,10 @@ import {
     LocalFile,
     LocalFileWithMedia,
 } from "@/lib/local-library/local-file"
-import { AnilistMedia } from "@/lib/anilist/fragment"
+import { AnilistMedia, AnilistSimpleMedia } from "@/lib/anilist/fragment"
 import { Nullish } from "@/types/common"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
-import {
-    AnimeCollectionDocument,
-    AnimeCollectionQuery,
-    ShowcaseMediaFragment,
-    UpdateEntryDocument,
-} from "@/gql/graphql"
+import { AnimeCollectionDocument, AnimeCollectionQuery, UpdateEntryDocument } from "@/gql/graphql"
 import { PromiseBatch } from "@/lib/helpers/batch"
 import _ from "lodash"
 import { createLibraryEntry, LibraryEntry } from "@/lib/local-library/library-entry"
@@ -104,8 +99,10 @@ export async function retrieveLocalFilesAsLibraryEntries(settings: Settings, use
         return {
             /**
              * All entries found with up-to-date paths
+             * @deprecated Will be replaced by just sending down the ids
              */
             entries,
+            // mediaIds: entries.map(entry => entry.media.id),
             /**
              * Non-locked and non-ignored retrieved files with up-to-date meta (mediaIds, paths...)
              */
@@ -155,7 +152,7 @@ export async function retrieveHydratedLocalFiles(
                             || edge?.relationType === "PARENT",
                         ).flatMap(edge => edge?.node).filter(Boolean)
                         ?? [])
-            ) ?? []) as ShowcaseMediaFragment[]
+            ) ?? []) as AnilistSimpleMedia[]
 
             allUserMedia = allUserMedia?.map(media => _.omit(media, "streamingEpisodes", "relations", "studio", "description", "format", "source", "isAdult", "genres", "trailer", "countryOfOrigin", "studios"))
 

@@ -1,14 +1,18 @@
 import { Nullish } from "@/types/common"
-import { useAtomValue } from "jotai/react"
-import { useStoredAnilistCollection } from "@/atoms/anilist-collection"
-import { startTransition, useEffect, useMemo } from "react"
+import { useAtom, useAtomValue } from "jotai/react"
+import { allUserMediaAtom, useStoredAnilistCollection } from "@/atoms/anilist-collection"
+import { startTransition, useCallback, useEffect, useMemo } from "react"
 import _ from "lodash"
 import { ANIDB_RX } from "@/lib/series-scanner/regex"
 import { useImmerAtom } from "jotai-immer"
 import { LibraryEntry } from "@/lib/local-library/library-entry"
 import { logger } from "@/lib/helpers/debug"
-import { atomWithStorage } from "jotai/utils"
+import { atomWithStorage, selectAtom, splitAtom } from "jotai/utils"
 import { localFilesAtom, useStoredLocalFiles } from "@/atoms/library/local-file.atoms"
+import { atom, PrimitiveAtom } from "jotai"
+import deepEquals from "fast-deep-equal"
+import { AnilistSimpleMedia } from "@/lib/anilist/fragment"
+import { LocalFile } from "@/lib/local-library/local-file"
 
 /**
  * Store the library entries upon scan
@@ -138,4 +142,75 @@ export function useLibraryEntry(mediaId: Nullish<number>) {
         ovaFiles,
     }
 
+}
+
+/* -------------------------------------------------------------------------------------------------
+ * LibraryEntry
+ * -----------------------------------------------------------------------------------------------*/
+
+export type unstable_LibraryEntry = {
+    id: number // Media ID
+    media: AnilistSimpleMedia,
+    files: LocalFile[]
+}
+export const unstable_libraryEntriesAtom = atom(get => {
+    // Get all `mediaId`s
+    const mediaIds = new Set(get(allUserMediaAtom).map(media => media?.id).filter(Boolean))
+    // For each mediaId, create a new [LibraryEntry] from the existing [LocalFile]s
+    return [...mediaIds].map(mediaId => {
+        const firstFile = get(localFilesAtom).find(file => file.mediaId === mediaId)
+        if (firstFile) {
+            // Entry
+            return {
+                id: mediaId,
+                media: get(allUserMediaAtom).filter(Boolean).find(media => media.id === mediaId)!,
+                files: get(localFilesAtom).filter(file => file.mediaId === mediaId),
+                sharedPath: firstFile.path.replace("\\" + firstFile.name, ""),
+            }
+        }
+    }).filter(Boolean).filter(entry => entry.files.length > 0) as unstable_LibraryEntry[]
+})
+
+/* -------------------------------------------------------------------------------------------------
+ * Read
+ * -----------------------------------------------------------------------------------------------*/
+
+export const libraryEntryAtoms = splitAtom(unstable_libraryEntriesAtom)
+
+export const getLibraryEntryAtomsByMediaIdAtom = atom(null,
+    (get, set, mediaId: number) => get(libraryEntryAtoms).filter((fileAtom) => get(fileAtom).id === mediaId),
+)
+
+/**
+ * Useful for mapping over [LibraryEntry]s
+ * @example Parent
+ * const libraryEntryAtoms = useLocalFileAtomsByMediaId(props.mediaId)
+ *  ...
+ * libraryEntryAtoms.map(entryAtom => <Child key={`${entryAtom}`} entryAtom={entryAtom}/>
+ *
+ * @example Children
+ * const entry = useAtomValue(entryAtom)
+ */
+export const useLibraryEntryAtomByMediaId = (mediaId: number) => {
+    const [, get] = useAtom(getLibraryEntryAtomsByMediaIdAtom)
+    return useMemo(() => get(mediaId), []) as Array<PrimitiveAtom<unstable_LibraryEntry>>
+}
+
+export const useLibraryEntryAtoms = () => {
+    const value = useAtomValue(libraryEntryAtoms)
+    return useMemo(() => value, []) as Array<PrimitiveAtom<unstable_LibraryEntry>>
+}
+
+/**
+ * @example
+ * const entry = useLibraryEntryByMediaId(21)
+ */
+export const useLibraryEntryByMediaId = (mediaId: number): unstable_LibraryEntry | undefined => {
+    return useAtomValue(
+        selectAtom(
+            unstable_libraryEntriesAtom,
+            useCallback(entries => entries.find(entry => entry.media.id === mediaId), []), // Stable reference
+            deepEquals, // Equality check
+        ),
+    )
 }

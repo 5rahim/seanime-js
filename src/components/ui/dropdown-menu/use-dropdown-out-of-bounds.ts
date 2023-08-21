@@ -75,7 +75,7 @@ export function useDropdownOutOfBounds<T extends HTMLElement = HTMLDivElement>()
     }, [ref])
 
     useEventListener("resize", handleSize)
-    useEventListener("click", handleSize)
+    // useEventListener("click", handleSize)
 
     useIsomorphicLayoutEffect(() => {
         handleSize()
