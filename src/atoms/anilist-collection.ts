@@ -109,12 +109,12 @@ export const anilistCollectionEntriesAtom = atom<AnilistCollectionEntry[]>((get)
 export const anilistCollectionEntryAtoms = splitAtom(anilistCollectionEntriesAtom, collectionEntry => collectionEntry?.media?.id)
 
 // Read
-export const getAnilistCollectionAtomsByMediaIdAtom = atom(null,
+const getAnilist_CollectionEntry_Atoms_ByMediaIdAtom = atom(null,
     (get, set, mediaId: number) => get(anilistCollectionEntryAtoms).find((entryAtom) => get(entryAtom)?.media?.id === mediaId),
 )
 
 export const useAnilistCollectionEntryAtomByMediaId = (mediaId: number) => {
-    const [, get] = useAtom(getAnilistCollectionAtomsByMediaIdAtom)
+    const [, get] = useAtom(getAnilist_CollectionEntry_Atoms_ByMediaIdAtom)
     return useMemo(() => get(mediaId), []) as PrimitiveAtom<AnilistCollectionEntry> | undefined
 }
 

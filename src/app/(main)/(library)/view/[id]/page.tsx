@@ -54,7 +54,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                     {/*<div className={"-mt-[18rem] p-8 rounded-xl backdrop-blur-2xl bg-gray-900 bg-opacity-50 backdrop-opacity-80 drop-shadow-md"}>*/}
                     <MetaSection detailedMedia={media}/>
                 </div>
-                <div className={"relative 2xl:order-first"}>
+                <div className={"relative 2xl:order-first pb-10"}>
                     <EpisodeSection detailedMedia={media} aniZipData={aniZipData}/>
                 </div>
             </div>

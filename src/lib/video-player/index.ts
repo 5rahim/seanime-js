@@ -50,3 +50,5 @@ export const VideoPlayer = (settings: Settings) => {
     }
 
 }
+
+export type VideoPlayer = typeof VideoPlayer

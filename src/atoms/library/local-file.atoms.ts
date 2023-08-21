@@ -7,6 +7,9 @@ import { logger } from "@/lib/helpers/debug"
 import { Nullish } from "@/types/common"
 import { atom, PrimitiveAtom } from "jotai"
 import deepEquals from "fast-deep-equal"
+import _ from "lodash"
+import { ANIDB_RX } from "@/lib/series-scanner/regex"
+import { anilistCollectionEntryAtoms } from "@/atoms/anilist-collection"
 
 /* -------------------------------------------------------------------------------------------------
  * Main atoms
@@ -40,6 +43,64 @@ export const getLocalFileAtomsByMediaIdAtom = atom(null,
     (get, set, mediaId: number) => get(localFileAtoms).filter((fileAtom) => get(fileAtom).mediaId === mediaId),
 )
 
+const get_ToWatch_LocalFileAtomsByMediaIdAtom = atom(null,
+    (get, set, mediaId: number) => {
+        // Get the AniList Collection Entry Atom by media ID
+        const collectionEntryAtom = get(anilistCollectionEntryAtoms).find((collectionEntryAtom) => get(collectionEntryAtom)?.media?.id === mediaId)
+        // Get the value
+        const collectionEntry = !!collectionEntryAtom ? get(collectionEntryAtom) : undefined
+        // Get the local file atoms by media ID
+        const fileAtoms = get(localFileAtoms).filter((fileAtom) => get(fileAtom).mediaId === mediaId)
+        // Sort the local files atoms by episode number
+        const mainFileAtoms = _.sortBy(fileAtoms, fileAtom => Number(get(fileAtom).parsedInfo?.episode)).filter(fileAtom => {
+            const file = get(fileAtom)
+            return !ANIDB_RX[0].test(file.path) && !ANIDB_RX[1].test(file.path) && !ANIDB_RX[2].test(file.path) &&
+                !ANIDB_RX[4].test(file.path) && !ANIDB_RX[5].test(file.path) && !ANIDB_RX[6].test(file.path)
+        }) ?? []
+
+        if (mainFileAtoms.length > 0 && !!collectionEntry?.progress && !!collectionEntry.media?.episodes && !(collectionEntry.progress === Number(collectionEntry.media.episodes))) {
+            return {
+                toWatch: mainFileAtoms?.slice(collectionEntry.progress) ?? [],
+                watched: mainFileAtoms?.slice(0, collectionEntry.progress) ?? [],
+            }
+        } else {
+            return {
+                toWatch: mainFileAtoms ?? [],
+                watched: [],
+            }
+        }
+    },
+)
+
+
+const get_OVA_LocalFileAtomsByMediaIdAtom = atom(null,
+    (get, set, mediaId: number) => {
+        const fileAtoms = get(localFileAtoms).filter((fileAtom) => get(fileAtom).mediaId === mediaId)
+        return _.sortBy(fileAtoms, fileAtom => Number(get(fileAtom).parsedInfo?.episode)).filter(fileAtom => {
+            const file = get(fileAtom)
+            return (ANIDB_RX[0].test(file.path) ||
+                ANIDB_RX[5].test(file.path) ||
+                ANIDB_RX[6].test(file.path)) && !(ANIDB_RX[1].test(file.path) ||
+                ANIDB_RX[2].test(file.path) ||
+                ANIDB_RX[3].test(file.path) ||
+                ANIDB_RX[4].test(file.path))
+        }) ?? []
+    },
+)
+
+const get_NC_LocalFileAtomsByMediaIdAtom = atom(null,
+    (get, set, mediaId: number) => {
+        const fileAtoms = get(localFileAtoms).filter((fileAtom) => get(fileAtom).mediaId === mediaId)
+        return _.sortBy(fileAtoms, fileAtom => Number(get(fileAtom).parsedInfo?.episode)).filter(fileAtom => {
+            const file = get(fileAtom)
+            return (ANIDB_RX[1].test(file.path) ||
+                ANIDB_RX[2].test(file.path) ||
+                ANIDB_RX[3].test(file.path) ||
+                ANIDB_RX[4].test(file.path))
+        }) ?? []
+    },
+)
+
 /**
  * Get [LocalFile] atom by `path`
  */
@@ -59,6 +120,22 @@ export const getLocalFileAtomByPathAtom = atom(null,
  */
 export const useLocalFileAtomsByMediaId = (mediaId: number) => {
     const [, get] = useAtom(getLocalFileAtomsByMediaIdAtom)
+    return useMemo(() => get(mediaId), []) as Array<PrimitiveAtom<LocalFile>>
+}
+
+export const useMainLocalFileAtomsByMediaId = (mediaId: number) => {
+    const [, get] = useAtom(get_ToWatch_LocalFileAtomsByMediaIdAtom)
+    return useMemo(() => get(mediaId), []) as {
+        toWatch: Array<PrimitiveAtom<LocalFile>>,
+        watched: Array<PrimitiveAtom<LocalFile>>
+    }
+}
+export const useOVALocalFileAtomsByMediaId = (mediaId: number) => {
+    const [, get] = useAtom(get_OVA_LocalFileAtomsByMediaIdAtom)
+    return useMemo(() => get(mediaId), []) as Array<PrimitiveAtom<LocalFile>>
+}
+export const useNCLocalFileAtomsByMediaId = (mediaId: number) => {
+    const [, get] = useAtom(get_NC_LocalFileAtomsByMediaIdAtom)
     return useMemo(() => get(mediaId), []) as Array<PrimitiveAtom<LocalFile>>
 }
 
@@ -168,58 +245,6 @@ export function useStoredLocalFiles() {
         return files.filter(file => file.mediaId === mediaId) ?? []
     }, [files])
 
-    /**
-     * Lock file
-     */
-    const handleToggleMediaFileLocking = (mediaId: Nullish<number>) => {
-        startTransition(() => {
-            setFiles(files => {
-                const concernedFiles = files.filter(file => file.mediaId === mediaId) ?? []
-                const allFilesAreLocked = concernedFiles.every(n => n.locked)
-                for (const file of concernedFiles) {
-                    file.locked = !allFilesAreLocked
-                }
-                return
-            })
-        })
-    }
-
-    const handleToggleFileLocking = (path: string) => {
-        startTransition(() => {
-            setFiles(files => {
-                const index = files.findIndex(file => file.path === path)
-                if (index !== -1) files[index].locked = !files[index].locked
-                return
-            })
-        })
-    }
-
-    const handleUnignoreFile = (path: string) => {
-        startTransition(() => {
-            setFiles(files => {
-                const index = files.findIndex(file => file.path === path)
-                if (index !== -1) files[index].ignored = false
-                return
-            })
-        })
-    }
-
-    /**
-     * Un-match file
-     */
-    const handleUnmatchFile = (path: string) => {
-        startTransition(() => {
-            setFiles(files => {
-                const index = files.findIndex(file => file.path === path)
-                if (index !== -1) {
-                    files[index].mediaId = null
-                    files[index].locked = false
-                }
-                return
-            })
-        })
-    }
-
     return {
         localFiles: files,
         storeLocalFiles: handleStoreLocalFiles,
@@ -228,10 +253,6 @@ export function useStoredLocalFiles() {
         markedFiles,
         markedFilePathSets,
         unresolvedFileCount: useMemo(() => files.filter(file => !file.mediaId && !file.ignored).length, [files]),
-        toggleFileLocking: handleToggleFileLocking,
-        toggleMediaFileLocking: handleToggleMediaFileLocking,
-        unmatchFile: handleUnmatchFile,
-        unignoreFile: handleUnignoreFile,
     }
 
 }
