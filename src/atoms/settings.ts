@@ -92,13 +92,3 @@ export function useSettings() {
     }
 
 }
-
-/**
- * Put at the root of the project
- * When settings change -> do something
- */
-export function useSettingsEffects() {
-
-    // const settings = useAtomValue(settingsAtoms)
-
-}

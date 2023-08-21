@@ -11,7 +11,7 @@ export default function loading() {
                         className={"w-full absolute z-[1] top-0 h-[15rem] bg-gradient-to-b from-[--background-color] to-transparent via"}/>
                     <Skeleton className={"h-full absolute w-full"}/>
                     <div
-                        className={"w-full absolute bottom-0 h-[10rem] bg-gradient-to-t from-[--background-color] via-transparent to-transparent"}/>
+                        className={"w-full absolute bottom-0 h-[20rem] bg-gradient-to-t from-[--background-color] via-transparent to-transparent"}/>
                 </div>
             </div>
         </>

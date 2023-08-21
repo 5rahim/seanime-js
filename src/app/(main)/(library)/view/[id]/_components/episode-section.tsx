@@ -26,6 +26,7 @@ import { Divider } from "@/components/ui/divider"
 import Image from "next/image"
 import { BiDotsHorizontal } from "@react-icons/all-files/bi/BiDotsHorizontal"
 import { DropdownMenu } from "@/components/ui/dropdown-menu"
+import { anilistCollectionAtom } from "@/atoms/anilist-collection"
 
 interface EpisodeSectionProps {
     children?: React.ReactNode
@@ -156,11 +157,24 @@ export const EpisodeItem = React.memo((props: {
     const setFileLocked = useFocusSetAtom(fileAtom, "locked")
     const setFileMediaId = useFocusSetAtom(fileAtom, "mediaId")
 
-    const episodeData = aniZipData?.episodes[String(Number(parsedInfo?.episode))]
+    // Get the number of episodes of the prequel
+    const prequelEpisodes = useSelectAtom(anilistCollectionAtom, n => n?.lists?.flatMap(list => list?.entries).filter(Boolean)
+        .find(entry => entry?.media?.id === media.id)?.media?.relations?.edges?.find(n => n?.relationType === "PREQUEL")?.node?.episodes)
+    // If there's a prequel AND the episode number from this season is greater the prequel's number of episodes, normalize it
+    // Example: JJK S1 is 24 episodes, if S2 episode number is 25 but there's only 23 episodes in S2, then normalize it to 1
+    const normalizedEpisodeNumber =
+        prequelEpisodes
+        && media.episodes
+        && (Number(parsedInfo?.episode) > prequelEpisodes)
+        && (Number(parsedInfo?.episode) > media.episodes)
+            ? (Number(parsedInfo?.episode) - (+prequelEpisodes))
+            : undefined
+
+    const episodeData = aniZipData?.episodes[String(normalizedEpisodeNumber ?? Number(parsedInfo?.episode))]
     const fileTitle = parsedInfo?.original?.replace(/.(mkv|mp4)/, "")?.replaceAll(/(\[)[a-zA-Z0-9 ._~-]+(\])/ig, "")?.replaceAll(/[_,-]/g, " ")
 
     let title = fileTitle || "???"
-    if (parsedInfo?.episode) title = `Episode ${parsedInfo.episode}`
+    if (episodeData?.episodeNumber || parsedInfo?.episode) title = `Episode ${episodeData?.episodeNumber ?? parsedInfo?.episode}`
     if (media.format === "MOVIE" && parsedInfo?.title) title = parsedInfo.title
 
     if (mediaID !== media.id) return null
