@@ -87,10 +87,10 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
 
 }
 
-export const ProgressBadge = (({ collectionEntryAtom, episodes }: {
+export function ProgressBadge({ collectionEntryAtom, episodes }: {
     collectionEntryAtom: PrimitiveAtom<AnilistCollectionEntry>,
     episodes: number | null | undefined
-}) => {
+}) {
 
     const progress = useSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress)
 
@@ -98,11 +98,11 @@ export const ProgressBadge = (({ collectionEntryAtom, episodes }: {
 
     return (
         <>
-            <div className={""}>
-                <Badge intent={"gray-solid"}
-                       className={"bg-gray-800 border dark:border-[--border] border-[--border]"}
-                       size={"xl"}>{`${progress}/${episodes || "-"}`}</Badge>
+            <div
+                className={"text-3xl font-bold text-yellow-100"}
+            >
+                {`${progress}/${episodes || "-"}`}
             </div>
         </>
     )
-})
+}

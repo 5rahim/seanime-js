@@ -247,11 +247,3 @@ const ScoreBadge = (props: { mediaId: number }) => {
         </div>
     )
 }
-
-
-const ProgressBadge = (props: { mediaId: string }) => {
-    return (
-        <>
-        </>
-    )
-}

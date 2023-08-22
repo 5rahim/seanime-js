@@ -26,7 +26,7 @@ import { Divider } from "@/components/ui/divider"
 import Image from "next/image"
 import { BiDotsHorizontal } from "@react-icons/all-files/bi/BiDotsHorizontal"
 import { DropdownMenu } from "@/components/ui/dropdown-menu"
-import { anilistCollectionAtom } from "@/atoms/anilist-collection"
+import { useNormalizedEpisodeNumber } from "@/app/(main)/(library)/view/[id]/_components/normalizeEpisodeNumber"
 
 interface EpisodeSectionProps {
     children?: React.ReactNode
@@ -65,7 +65,10 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
     return (
         <div>
             <div className={"mb-8 flex items-center justify-between"}>
-                <h2>{isMovie ? "Movie" : "Episodes"}</h2>
+
+                <h2 className={"flex items-center gap-2"}>
+                    {isMovie ? "Movie" : "Episodes"}
+                </h2>
 
                 {!!entryAtom && <div className={"space-x-4"}>
                     <UtilityButtons entryAtom={entryAtom}/>
@@ -82,9 +85,8 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
                     aniZipData={aniZipData}
                 />
 
-
                 {watched.length > 0 && <>
-                    <Divider/>
+                    {toWatch.length > 0 && <Divider/>}
                     <h3>Watched</h3>
                     <EpisodeList
                         fileAtoms={watched}
@@ -142,7 +144,7 @@ export const EpisodeList = React.memo((props: {
     )
 })
 
-export const EpisodeItem = React.memo((props: {
+const EpisodeItem = React.memo((props: {
     fileAtom: PrimitiveAtom<LocalFile>,
     aniZipData?: AniZipData,
     onPlayFile: (path: string) => void
@@ -157,18 +159,7 @@ export const EpisodeItem = React.memo((props: {
     const setFileLocked = useFocusSetAtom(fileAtom, "locked")
     const setFileMediaId = useFocusSetAtom(fileAtom, "mediaId")
 
-    // Get the number of episodes of the prequel
-    const prequelEpisodes = useSelectAtom(anilistCollectionAtom, n => n?.lists?.flatMap(list => list?.entries).filter(Boolean)
-        .find(entry => entry?.media?.id === media.id)?.media?.relations?.edges?.find(n => n?.relationType === "PREQUEL")?.node?.episodes)
-    // If there's a prequel AND the episode number from this season is greater the prequel's number of episodes, normalize it
-    // Example: JJK S1 is 24 episodes, if S2 episode number is 25 but there's only 23 episodes in S2, then normalize it to 1
-    const normalizedEpisodeNumber =
-        prequelEpisodes
-        && media.episodes
-        && (Number(parsedInfo?.episode) > prequelEpisodes)
-        && (Number(parsedInfo?.episode) > media.episodes)
-            ? (Number(parsedInfo?.episode) - (+prequelEpisodes))
-            : undefined
+    const normalizedEpisodeNumber = useNormalizedEpisodeNumber(parsedInfo, media)
 
     const episodeData = aniZipData?.episodes[String(normalizedEpisodeNumber ?? Number(parsedInfo?.episode))]
     const fileTitle = parsedInfo?.original?.replace(/.(mkv|mp4)/, "")?.replaceAll(/(\[)[a-zA-Z0-9 ._~-]+(\])/ig, "")?.replaceAll(/[_,-]/g, " ")
@@ -181,7 +172,6 @@ export const EpisodeItem = React.memo((props: {
 
     return (
         <div className={"border border-[--border] p-4 pr-12 rounded-lg relative transition hover:bg-gray-900"}>
-
             <div
                 className={"flex gap-4 relative cursor-pointer"}
                 onClick={async () => onPlayFile(path)}
@@ -202,7 +192,7 @@ export const EpisodeItem = React.memo((props: {
                 <div>
                     <h4 className={"font-medium"}>{title}</h4>
                     {!!episodeData && <p className={"text-sm text-[--muted]"}>{episodeData?.title?.en}</p>}
-                    <p className={"text-sm text-[--muted]"}>{parsedInfo?.original?.replace(/.(mkv|mp4)/, "")?.replaceAll(/(\[)[a-zA-Z0-9 ._~-]+(\])/ig, "")?.replaceAll(/[_,-]/g, " ")}</p>
+                    <p className={"text-sm text-gray-600"}>{parsedInfo?.original?.replace(/.(mkv|mp4)/, "")?.replaceAll(/(\[)[a-zA-Z0-9 ._~-]+(\])/ig, "")?.replaceAll(/[_,-]/g, " ")}</p>
                 </div>
             </div>
 

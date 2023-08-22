@@ -13,7 +13,6 @@ export default async function Page({ params }: { params: { id: string } }) {
     if (!params.id || isNaN(Number(params.id))) redirect("/")
 
     const mediaQuery = await useAniListAsyncQuery(AnimeByIdDocument, { id: Number(params.id) })
-
     if (!mediaQuery.Media) redirect("/")
 
     const aniQuery = await fetch("https://api.ani.zip/mappings?anilist_id=" + Number(params.id))

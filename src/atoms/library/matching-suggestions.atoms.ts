@@ -89,6 +89,7 @@ const getMatchingSuggestionGroupsAtom = atom(null, async (get, set, payload: "fi
                     logger("atom/library").error(e)
                 }
             }
+            fetchedSuggestionMap.clear()
             set(_isCurrentlyFetchingSuggestions, false)
             logger("atom/library").info("Matching suggestion groups", groups)
             set(libraryMatchingSuggestionGroupsAtom, groups)

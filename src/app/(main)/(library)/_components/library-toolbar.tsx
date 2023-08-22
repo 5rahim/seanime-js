@@ -113,6 +113,7 @@ export function LibraryToolbar() {
             if (result) {
                 setLocalFiles(result.checkedFiles)
             }
+
             toast.success("Your local library is up to date")
             toast.remove(tID)
             setIsLoading(false)

@@ -1,34 +1,20 @@
 "use client"
 
-import { LibraryEntry, useLibraryEntryAtoms } from "@/atoms/library/library-entry.atoms"
 import React from "react"
-import { PrimitiveAtom } from "jotai"
-import { useSelectAtom } from "@/atoms/helpers"
-import { AnimeListItem } from "@/components/application/list/anime-list-item"
 
 export default function Page() {
 
-    const entryAtoms = useLibraryEntryAtoms()
+    // useEffect(() => {
+    //     const watcher = chokidar.watch("E:/ANIME/[Anime Time] Durarara!! Complete Series [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] [Batch]/[Anime Time] Durarara!!/[Anime Time] Durarara!! - 25.mkv", {
+    //     })
+    //     watcher.on('change', (path, stats) => {
+    //         if (stats) console.log(`File ${path} changed size to ${stats.size}`);
+    //     });
+    // }, [])
 
     return (
         <div className={"px-4"}>
-            <div className={"grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4"}>
-                {entryAtoms.map(entryAtom => {
-                    return <EntryAnimeItem key={`${entryAtom}`} entryAtom={entryAtom}/>
-                })}
-            </div>
+
         </div>
     )
-}
-
-const EntryAnimeItem = (props: { entryAtom: PrimitiveAtom<LibraryEntry> }) => {
-
-    const { entryAtom } = props
-
-    const media = useSelectAtom(entryAtom, entry => entry.media)
-
-    return (
-        <AnimeListItem key={`${media.id}`} mediaId={media.id}/>
-    )
-
 }
