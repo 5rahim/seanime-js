@@ -46,8 +46,7 @@ Like the design? [Chalk UI](https://github.com/5rahim/chalk-ui)
   - [x] View AniList lists
   - [ ] Change score
   - [ ] Update status, remove
-- [ ] Show airing schedule for anime in local library
-- [ ] Search new anime to download
+- [ ] Search new anime
 
 ## Try it
 
@@ -65,9 +64,5 @@ npm run tauri:dev
 
 ## TODO
 
-- Improve performance
-  - [x] Leveraging Jotai's best practices
-  - [x] Remove heavy calculations from the React scope to Jotai
-  - [x] Stop excessive re-renders in Anime List
-  - [ ] Find a way to improve `media-matching` by avoiding multiple comparisons per file for the same titles
+- [x] Improve performance
 - Video

@@ -16,7 +16,6 @@ import { AnilistMedia, AnilistSimpleMedia } from "@/lib/anilist/fragment"
 import { Nullish } from "@/types/common"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
 import { AnimeCollectionDocument, AnimeCollectionQuery, UpdateEntryDocument } from "@/gql/graphql"
-import { PromiseBatch } from "@/lib/helpers/batch"
 import _ from "lodash"
 import { createLibraryEntry, Deprecated_LibraryEntry } from "@/lib/local-library/library-entry"
 import { logger } from "@/lib/helpers/debug"
@@ -41,7 +40,6 @@ export async function retrieveLocalFilesAsLibraryEntries(settings: Settings, use
 
     logger("repository/retrieveLocalFilesAsLibraryEntries").info("Start library entry creation")
     const files = await retrieveHydratedLocalFiles(settings, userName, data, { ignored, locked })
-    // const files = filesWithMediaSnapshot as LocalFileWithMedia[]
 
     if (files && files.length > 0) {
 
@@ -138,29 +136,64 @@ export async function retrieveHydratedLocalFiles(
         await getAllFilesRecursively(settings, currentPath, localFiles, { ignored, locked }) // <-----------------
 
         if (localFiles.length > 0) {
-            let allUserMedia = data.MediaListCollection?.lists?.map(n => n?.entries).flat().filter(entry => !!entry).map(entry => entry!.media) as AnilistMedia[] | undefined
+            let allUserMedia = data.MediaListCollection?.lists?.map(n => n?.entries).flat().filter(Boolean).map(entry => entry.media) ?? [] as AnilistMedia[]
             logger("repository/retrieveHydratedLocalFiles").info("Formatting related media")
 
             // Get sequels, prequels... from each media as [ShowcaseMediaFragment]
-            let relatedMedia = ((
-                allUserMedia?.filter(media => !!media)
-                    .flatMap(media => media.relations?.edges?.filter(edge => edge?.relationType === "PREQUEL"
-                            || edge?.relationType === "SEQUEL"
-                            || edge?.relationType === "SPIN_OFF"
-                            || edge?.relationType === "SIDE_STORY"
-                            || edge?.relationType === "ALTERNATIVE"
-                            || edge?.relationType === "PARENT",
-                        ).flatMap(edge => edge?.node).filter(Boolean)
-                        ?? [])
-            ) ?? []) as AnilistSimpleMedia[]
+            let relatedMedia = allUserMedia.filter(Boolean)
+                .flatMap(media => media.relations?.edges?.filter(edge => edge?.relationType === "PREQUEL"
+                    || edge?.relationType === "SEQUEL"
+                    || edge?.relationType === "SPIN_OFF"
+                    || edge?.relationType === "SIDE_STORY"
+                    || edge?.relationType === "ALTERNATIVE"
+                    || edge?.relationType === "PARENT")
+                    .flatMap(edge => edge?.node).filter(Boolean),
+                ) as AnilistSimpleMedia[]
 
-            allUserMedia = allUserMedia?.map(media => _.omit(media, "streamingEpisodes", "relations", "studio", "description", "format", "source", "isAdult", "genres", "trailer", "countryOfOrigin", "studios"))
+            allUserMedia = allUserMedia.map(media => _.omit(media, "streamingEpisodes", "relations", "studio", "description", "format", "source", "isAdult", "genres", "trailer", "countryOfOrigin", "studios"))
+
+            const allMedia = [...allUserMedia, ...relatedMedia].filter(Boolean).filter(media => media?.status === "RELEASING" || media?.status === "FINISHED") as AnilistSimpleMedia[]
+            const mediaEngTitles = allMedia.map(media => media.title?.english).filter(Boolean)
+            const mediaRomTitles = allMedia.map(media => media.title?.romaji).filter(Boolean)
+            const mediaPreferredTitles = allMedia.map(media => media.title?.userPreferred).filter(Boolean)
 
             logger("repository/retrieveHydratedLocalFiles").info("Hydrating local files")
-            const res = (await PromiseBatch(createLocalFileWithMedia, localFiles, allUserMedia, relatedMedia, 100)) as LocalFileWithMedia[]
+            let localFilesWithMedia: LocalFileWithMedia[] = []
+
+            const matchingCache = new Map<string, AnilistSimpleMedia | undefined>()
+
+            /** This ignores the cache **/
+            // localFilesWithMedia = (
+            //     await PromiseBatch(
+            //         createLocalFileWithMedia,
+            //         localFiles,
+            //         allMedia,
+            //         { eng: mediaEngTitles, rom: mediaRomTitles, preferred: mediaPreferredTitles  },
+            //         matchingCache,
+            //         100
+            //     )
+            // ) as LocalFileWithMedia[]
+
+            /** This ignores the cache **/
+            // localFilesWithMedia = (await Promise.all(
+            //     localFiles.map((item) => createLocalFileWithMedia(item, allMedia, { eng: mediaEngTitles, rom: mediaRomTitles, preferred: mediaPreferredTitles  }, matchingCache))
+            // )).filter(Boolean)
+
+            for (let i = 0; i < localFiles.length; i++) {
+                const created = await createLocalFileWithMedia(
+                    localFiles[i],
+                    allMedia,
+                    { eng: mediaEngTitles, rom: mediaRomTitles, preferred: mediaPreferredTitles },
+                    matchingCache,
+                )
+                if (created) {
+                    localFilesWithMedia.push(created)
+                }
+            }
+            matchingCache.clear()
             logger("repository/retrieveHydratedLocalFiles").success("Finished hydrating")
 
-            return res
+            return localFilesWithMedia
         }
 
     }
@@ -223,7 +256,7 @@ async function getAllFilesRecursively(
 
                 const dirents = await fs.readdir(itemPath, { withFileTypes: true })
                 const fileNames = dirents.filter(dirent => dirent.isFile()).map(dirent => dirent.name)
-                if (!fileNames.find(name => name === ".unsea")) {
+                if (!fileNames.find(name => name === ".unsea" || name === ".seaignore")) {
                     await getAllFilesRecursively(settings, itemPath, files, { ignored, locked })
                 }
 
@@ -242,8 +275,7 @@ async function getAllFilesRecursively(
 export async function cleanupFiles(settings: Settings, { ignored, locked }: { ignored: string[], locked: string[] }) {
     try {
 
-        let ignoredPathsToClean: string[] = []
-        let lockedPathsToClean: string[] = []
+        let pathsToClean: string[] = []
 
         const directoryPath = settings.library.localDirectory
 
@@ -253,27 +285,25 @@ export async function cleanupFiles(settings: Settings, { ignored, locked }: { ig
                 try {
                     const stats = await fs.stat(path)
                 } catch (e) {
-                    ignoredPathsToClean.push(path)
+                    pathsToClean.push(path)
                 }
             }
             for (const path of locked) {
                 try {
                     const stats = await fs.stat(path)
                 } catch (e) {
-                    lockedPathsToClean.push(path)
+                    pathsToClean.push(path)
                 }
             }
         }
 
         return {
-            ignoredPathsToClean,
-            lockedPathsToClean,
+            pathsToClean,
         }
     } catch (e) {
         logger("repository/cleanupFiles").error("Failed")
         return {
-            ignoredPathsToClean: [],
-            lockedPathsToClean: [],
+            pathsToClean: [],
         }
     }
 }

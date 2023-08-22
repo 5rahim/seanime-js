@@ -1,7 +1,7 @@
 "use server"
 import rakun from "@/lib/rakun/rakun"
 import { Settings } from "@/atoms/settings"
-import { AnilistMedia, AnilistSimpleMedia } from "@/lib/anilist/fragment"
+import { AnilistSimpleMedia } from "@/lib/anilist/fragment"
 import { findBestCorrespondingMedia } from "@/lib/local-library/media-matching"
 
 export type AnimeFileInfo = {
@@ -101,13 +101,16 @@ export type LocalFileWithMedia = LocalFile & {
  * This method take a [LocalFile] and an array of [AnilistMedia] fetched from AniList.
  * We compare the filenames, anime title, folder title to get the exact media.
  */
-export const createLocalFileWithMedia = async (file: LocalFile, allUserMedia: AnilistMedia[] | undefined, relatedMedia: AnilistMedia[]): Promise<LocalFileWithMedia | undefined> => {
+export const createLocalFileWithMedia = async (
+    file: LocalFile,
+    allMedia: AnilistSimpleMedia[],
+    mediaTitles: { eng: string[], rom: string[], preferred: string[] },
+    matchingCache: Map<string, AnilistSimpleMedia | undefined>,
+): Promise<LocalFileWithMedia | undefined> => {
 
-    if (allUserMedia) {
+    if (allMedia.length > 0) {
 
-        const allMedia = [...allUserMedia, ...relatedMedia].filter(media => media.status === "RELEASING" || media.status === "FINISHED")
-
-        let correspondingMedia: AnilistMedia | undefined = undefined
+        let correspondingMedia: AnilistSimpleMedia | undefined = undefined
 
         // Find the corresponding media only if:
         // The file has been parsed AND it has an anime title OR one of its folders has an anime title
@@ -115,8 +118,10 @@ export const createLocalFileWithMedia = async (file: LocalFile, allUserMedia: An
 
             const { correspondingMedia: media } = await findBestCorrespondingMedia(
                 allMedia,
+                mediaTitles,
                 file.parsedInfo,
                 file.parsedFolderInfo,
+                matchingCache,
             )
             correspondingMedia = media
 

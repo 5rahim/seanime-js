@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useCallback, useState } from "react"
+import React, { useState } from "react"
 import { useSettings } from "@/atoms/settings"
 import { Button } from "@/components/ui/button"
 import { openLocalDirectoryInExplorer } from "@/lib/helpers/directory"
@@ -20,10 +20,8 @@ import { parseLocalFilesToLibraryEntry } from "@/lib/gpt/config"
 import { useAuthed } from "@/atoms/auth"
 import { useMatchingSuggestions } from "@/atoms/library/matching-suggestions.atoms"
 import { localFilesAtom, useSetLocalFiles } from "@/atoms/library/local-file.atoms"
-import { useAtomValue } from "jotai/react"
-import { selectAtom } from "jotai/utils"
-import deepEquals from "fast-deep-equal"
 import { logger } from "@/lib/helpers/debug"
+import { useSelectAtom } from "@/atoms/helpers"
 
 export function LibraryToolbar() {
 
@@ -34,32 +32,11 @@ export function LibraryToolbar() {
     const { getMatchingSuggestions, isLoading: recommendationLoading } = useMatchingSuggestions()
     const setLocalFiles = useSetLocalFiles()
 
-    const unresolvedFileCount = useAtomValue(
-        selectAtom(
-            localFilesAtom,
-            useCallback(files => files.filter(file => !file.mediaId && !file.ignored).length, []),
-            deepEquals,
-        ),
-    )
+    const unresolvedFileCount = useSelectAtom(localFilesAtom, files => files.filter(file => !file.mediaId && !file.ignored).length)
 
-    const lockedPaths = useAtomValue(
-        selectAtom(
-            localFilesAtom,
-            useCallback(files => files.filter(file => file.locked).map(file => file.path), []),
-            deepEquals,
-        ),
-    )
+    const lockedPaths = useSelectAtom(localFilesAtom, files => files.filter(file => file.locked).map(file => file.path))
 
-    const ignoredPaths = useAtomValue(
-        selectAtom(
-            localFilesAtom,
-            useCallback(files => files.filter(file => file.ignored).map(file => file.path), []),
-            deepEquals,
-        ),
-    )
-
-    const lockedPathsSet = new Set([...lockedPaths])
-    const ignoredPathsSet = new Set([...ignoredPaths])
+    const ignoredPaths = useSelectAtom(localFilesAtom, files => files.filter(file => file.ignored).map(file => file.path))
 
     const [isLoading, setIsLoading] = useState(false)
 
@@ -76,6 +53,9 @@ export function LibraryToolbar() {
     }
 
     const handleRefreshEntries = async () => {
+        const lockedPathsSet = new Set([...lockedPaths])
+        const ignoredPathsSet = new Set([...ignoredPaths])
+
         if (user && token) {
             const tID = toast.loading("Loading")
             setIsLoading(true)
@@ -87,9 +67,12 @@ export function LibraryToolbar() {
             if (result) {
                 const incomingFiles = result.checkedFiles
 
-                setLocalFiles(files => {
+                /**
+                 * Refresh the local files by adding scanned files and keeping locked/ignored files intact
+                 */
+                setLocalFiles(draft => {
                     logger("atom/library/handleStoreLocalFiles").info("Incoming files", incomingFiles.length)
-                    const keptFiles = files.filter(file => file.ignored || file.locked)
+                    const keptFiles = draft.filter(file => file.ignored || file.locked)
                     const keptFilesPaths = new Set<string>(keptFiles.map(file => file.path))
                     return [...keptFiles, ...incomingFiles.filter(file => !keptFilesPaths.has(file.path))]
                 })
@@ -121,15 +104,17 @@ export function LibraryToolbar() {
     }
 
     const handleCleanRepository = async () => {
-        const { ignoredPathsToClean, lockedPathsToClean } = await cleanupFiles(settings, {
+        const lockedPathsSet = new Set([...lockedPaths])
+        const ignoredPathsSet = new Set([...ignoredPaths])
+
+        const { pathsToClean } = await cleanupFiles(settings, {
             ignored: Array.from(lockedPathsSet),
             locked: Array.from(ignoredPathsSet),
         })
-        const ignoredPathsToCleanSet = new Set(ignoredPathsToClean)
-        const lockedPathsToCleanSet = new Set(lockedPathsToClean)
+        const pathsToCleanSet = new Set(pathsToClean)
         // Delete local files
         setLocalFiles(prev => {
-            return prev.filter(file => !ignoredPathsToCleanSet.has(file.path) && !lockedPathsToCleanSet.has(file.path))
+            return prev.filter(file => !pathsToCleanSet.has(file.path))
         })
 
     }

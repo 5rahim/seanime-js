@@ -5,6 +5,7 @@ import { ordinalize } from "inflection"
 import similarity from "string-similarity"
 import lavenshtein from "js-levenshtein"
 import { AnimeFileInfo } from "@/lib/local-library/local-file"
+import { logger } from "@/lib/helpers/debug"
 
 /**
  * This method employs 3 comparison algorithms: Dice's coefficient (string-similarity), Levenshtein's algorithm, and MAL's elastic search algorithm
@@ -18,12 +19,18 @@ import { AnimeFileInfo } from "@/lib/local-library/local-file"
  * - From these 3 best matches, eliminate the least similar one using Dice's coefficient
  * - From these 2 best matches, find the most similar to the title using Dice's coefficient
  * - Compare the best match titles (===) to a media
- * @param allMedia
- * @param parsed
- * @param foldersParsed
  */
-export async function findBestCorrespondingMedia(allMedia: AnilistMedia[], parsed: AnimeFileInfo, foldersParsed: AnimeFileInfo[]) {
-
+export async function findBestCorrespondingMedia(
+    allMedia: AnilistMedia[],
+    mediaTitles: {
+        eng: string[],
+        rom: string[],
+        preferred: string[],
+    },
+    parsed: AnimeFileInfo,
+    parsedFolders: AnimeFileInfo[],
+    matchingCache: Map<string, AnilistSimpleMedia | undefined>,
+) {
 
     function debug(...value: any[]) {
         // if (parsed.original.toLowerCase().includes("evangelion")) console.log(...value)
@@ -32,17 +39,17 @@ export async function findBestCorrespondingMedia(allMedia: AnilistMedia[], parse
     let folderParsed: AnimeFileInfo | undefined
     let rootFolderParsed: AnimeFileInfo | undefined
 
-    if (foldersParsed.length > 0) {
-        folderParsed = foldersParsed[foldersParsed.length - 1]
-        rootFolderParsed = foldersParsed[foldersParsed.length - 2]
+    if (parsedFolders.length > 0) {
+        folderParsed = parsedFolders[parsedFolders.length - 1]
+        rootFolderParsed = parsedFolders[parsedFolders.length - 2]
         // console.log(rootFolderParsed)
     }
 
     /* Get constants */
 
-    const mediaEngTitles = allMedia.map(media => media.title?.english).filter(Boolean)
-    const mediaRomTitles = allMedia.map(media => media.title?.romaji).filter(Boolean)
-    const mediaPreferredTitles = allMedia.map(media => media.title?.userPreferred).filter(Boolean)
+    const mediaEngTitles = mediaTitles.eng
+    const mediaRomTitles = mediaTitles.rom
+    const mediaPreferredTitles = mediaTitles.preferred
 
     const episodeAsNumber = (parsed.episode && _.isNumber(parseInt(parsed.episode)))
         ? parseInt(parsed.episode)
@@ -63,12 +70,8 @@ export async function findBestCorrespondingMedia(allMedia: AnilistMedia[], parse
             ? rootFolderParsed.title
             : undefined
 
-    // Get the title from the folder first
+    // Get the title from the folders first
     const _title = _folderTitle || parsed.title
-    // Use these titles if we managed to parse a season
-    // eg: ANIME S02 \ ANIME 25.mp4 -> ["ANIME Season 2", "ANIME S2"]
-    // eg: ANIME \ ANIME S02E01.mp4 -> ["ANIME Season 2", "ANIME S2"]
-    // eg: ANIME \ ANIME 25.mp4 -> undefined
 
     const bothTitles = !!parsed.title && !!_folderTitle
     const noSeasons = !seasonAsNumber && !folderSeasonAsNumber
@@ -103,14 +106,21 @@ export async function findBestCorrespondingMedia(allMedia: AnilistMedia[], parse
         (bothTitles && !bothTitlesAreSimilar && eitherSeasonExists) ? `${_folderTitle} ${parsed.title} ${ordinalize(String(seasonAsNumber || folderSeasonAsNumber))} Season` : undefined,
     ].filter(Boolean)
 
-    // Handle movie
-    titleVariations = titleVariations?.map(value => value.toLowerCase())
+    titleVariations = [...(new Set(titleVariations.map(value => value.toLowerCase())))]
+
+    // Cache
+    if (matchingCache.has(JSON.stringify(titleVariations))) {
+        logger("media-matching").success("Cache HIT:", _title, (seasonAsNumber || folderSeasonAsNumber) || "")
+        return {
+            correspondingMedia: matchingCache.get(JSON.stringify(titleVariations)),
+        }
+    }
 
     /**
      * Using string-similarity
      */
 
-    let similarTitleMatching = titleVariations?.filter(Boolean).map((tValue) => {
+    let similarTitleMatching = titleVariations.map((tValue) => {
         const engResult = similarity.findBestMatch(tValue, mediaEngTitles.map(value => value.toLowerCase()))
         const romResult = similarity.findBestMatch(tValue, mediaRomTitles.map(value => value.toLowerCase()))
         const preferredResult = similarity.findBestMatch(tValue, mediaPreferredTitles.map(value => value.toLowerCase()))
@@ -223,6 +233,11 @@ export async function findBestCorrespondingMedia(allMedia: AnilistMedia[], parse
             }
         })
     }
+
+    // if(+rating >= 0.5 && bestMedia) {
+    // }
+    logger("media-matching").error("Cache MISS", _title)
+    matchingCache.set(JSON.stringify(titleVariations), bestMedia)
 
     return {
         correspondingMedia: +rating >= 0.5 ? bestMedia : undefined,

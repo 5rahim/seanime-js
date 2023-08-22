@@ -1,11 +1,10 @@
 import { useAtom, useAtomValue } from "jotai/react"
 import { allUserMediaAtom } from "@/atoms/anilist-collection"
-import { useCallback, useMemo } from "react"
+import { useMemo } from "react"
 import { logger } from "@/lib/helpers/debug"
-import { selectAtom, splitAtom } from "jotai/utils"
+import { splitAtom } from "jotai/utils"
 import { localFilesAtom } from "@/atoms/library/local-file.atoms"
 import { atom, PrimitiveAtom } from "jotai"
-import deepEquals from "fast-deep-equal"
 import { AnilistSimpleMedia } from "@/lib/anilist/fragment"
 import { LocalFile } from "@/lib/local-library/local-file"
 import { useSelectAtom } from "@/atoms/helpers"
@@ -71,7 +70,7 @@ export const useLibraryEntryAtomByMediaId = (mediaId: number) => {
  * Used in local library to display anime list
  */
 export const useLibraryEntryAtoms = () => {
-    // Refresh libraryEntry atom list when number of entries changes
+    // Refresh entry atom list when number of entries changes
     const entryCount = useSelectAtom(libraryEntriesAtom, entries => entries.length)
     const value = useAtomValue(libraryEntryAtoms)
     return useMemo(() => value, [entryCount]) as Array<PrimitiveAtom<LibraryEntry>>
@@ -85,11 +84,5 @@ export const useLibraryEntryAtoms = () => {
  * const files = entry?.files //=> [{...}, ...]
  */
 export const useLibraryEntryByMediaId = (mediaId: number): LibraryEntry | undefined => {
-    return useAtomValue(
-        selectAtom(
-            libraryEntriesAtom,
-            useCallback(entries => entries.find(entry => entry.media.id === mediaId), []), // Stable reference
-            deepEquals, // Equality check
-        ),
-    )
+    return useSelectAtom(libraryEntriesAtom, entries => entries.find(entry => entry.media.id === mediaId))
 }

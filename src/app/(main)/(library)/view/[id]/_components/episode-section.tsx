@@ -164,7 +164,7 @@ const EpisodeItem = React.memo((props: {
     const episodeData = aniZipData?.episodes[String(normalizedEpisodeNumber ?? Number(parsedInfo?.episode))]
     const fileTitle = parsedInfo?.original?.replace(/.(mkv|mp4)/, "")?.replaceAll(/(\[)[a-zA-Z0-9 ._~-]+(\])/ig, "")?.replaceAll(/[_,-]/g, " ")
 
-    let title = fileTitle || "???"
+    let title = parsedInfo?.title || fileTitle || "???"
     if (episodeData?.episodeNumber || parsedInfo?.episode) title = `Episode ${episodeData?.episodeNumber ?? parsedInfo?.episode}`
     if (media.format === "MOVIE" && parsedInfo?.title) title = parsedInfo.title
 

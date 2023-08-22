@@ -164,47 +164,7 @@ Caveats: This will only work if it does not contain locked files.
   - It will also create candidate title variations based on the parsed season.
   - If the file title is not included in the folder title
 
-### Finding movie
-
-Make sure all movies are located at the root, in separate folders with the same title.
-
-```text
-├── %LIBRARY_FOLDER%
-    ├── Movie title
-    │   └── Movie title.mkv
-    └── Another movie
-        └── Another movie.mkv
-```
-
-```text
-├── %LIBRARY_FOLDER%
-    ├── Movie title.mkv
-    └── Another movie.mkv
-```
-
-```text
-Avoid this
-
-├── %LIBRARY_FOLDER%
-    └── Neon Genesis Evangelion Complete Series
-        ├── Neon Genesis Evangelion 01.mkv         
-        ├── Neon Genesis Evangelion 02.mkv          
-        ├── ...            
-        └── Neon Genesis Evangelion Movies        
-            └── ...     
-
-Do this
-
-├── %LIBRARY_FOLDER%
-    └── Neon Genesis Evangelion Complete Series
-    │   ├── Neon Genesis Evangelion 01.mkv         
-    │   ├── Neon Genesis Evangelion 02.mkv          
-    │   └── ...            
-    └── Neon Genesis Evangelion Movies        
-        └── ...       
-```
-
-### Finding anime by Title+Season
+### Finding anime by title variations
 
 ```text
 ├── %LIBRARY_FOLDER%
@@ -264,10 +224,10 @@ Do this
 ├── %LIBRARY_FOLDER%                              
     └── Fruits Basket S1-3                      <- Captures title (ignores range)
         └── Fruits Basket S2                    <- Overrides previous title, captures season \/
-            └── S2E1 - Episode title.mkv        <- Captures "Episode title"
+            └── S2E1 - Spring comes.mkv         <- Captures "Spring comes"
 
----> Will try [Fruits Basket Season 2, ..., Episode title Season 2, ..., Fruits Basket Episode title Season 2, ...]
----> However, since the Folder's title is prioritized the episode title might not affect the matching process
+---> Will try [Fruits Basket Season 2, ..., Spring comes Season 2, ..., Fruits Basket Spring comes Season 2, ...]
+---> However, since the folder's title is prioritized the episode title might not negatively impact the matching process
 ```
 
 ### More about seasons
@@ -327,9 +287,47 @@ Seanime will search the file title for the episode number
 │   │   └── ...
 ```
 
-### Algorithms
+### Finding movie
 
-i.e. why scanning is slow.
+Make sure all movies are located at the root, in separate folders with the same title.
+
+```text
+├── %LIBRARY_FOLDER%
+    ├── Movie title
+    │   └── Movie title.mkv
+    └── Another movie
+        └── Another movie.mkv
+```
+
+```text
+├── %LIBRARY_FOLDER%
+    ├── Movie title.mkv
+    └── Another movie.mkv
+```
+
+```text
+Avoid this
+
+├── %LIBRARY_FOLDER%
+    └── Neon Genesis Evangelion Complete Series
+        ├── Neon Genesis Evangelion 01.mkv         
+        ├── Neon Genesis Evangelion 02.mkv          
+        ├── ...            
+        └── Neon Genesis Evangelion Movies        
+            └── ...     
+
+Do this
+
+├── %LIBRARY_FOLDER%
+    └── Neon Genesis Evangelion Complete Series
+    │   ├── Neon Genesis Evangelion 01.mkv         
+    │   ├── Neon Genesis Evangelion 02.mkv          
+    │   └── ...            
+    └── Neon Genesis Evangelion Movies        
+        └── ...       
+```
+
+### Algorithms
 
 Scanning employs 3 comparison algorithms: Dice's coefficient (string-similarity), Levenshtein's algorithm (
 js-levenshtein), and MAL's elastic search. These are the steps for **every single** file:
@@ -345,6 +343,47 @@ js-levenshtein), and MAL's elastic search. These are the steps for **every singl
 - From these 3 titles, eliminate the least similar one using Dice's coefficient
 - From these 2 best matches, find the most similar to the parsed title using Dice's coefficient
 - Return the media from user's watch list
+
+### Cache
+
+Seanime uses an internal cache system to speed up the media matching process.
+It uses **title variations** as keys.
+
+This is perfect if your episode files have consistent names.
+
+```
+├── %LIBRARY_FOLDER%
+    └── Jujustu Kaisen                             
+        └── Jujustu Kaisen Season 2                
+            ├── Jujustu Kaisen 01.mkv          
+            ├── Jujustu Kaisen 02.mkv           
+            ├── Jujustu Kaisen 03.mkv            
+            ├── Jujustu Kaisen 04.mkv            
+```
+
+```
+[media-matching]:  (Cache MISS) Jujustu Kaisen 01           <- 1-2 seconds, key: "[Jujustu Kaisen Season 2, Jujustu Kaisen 2, ...]"
+[media-matching]:  (Cache HIT) Jujustu Kaisen 02            <- Near instant
+[media-matching]:  (Cache HIT) Jujustu Kaisen 03            <- Near instant
+[media-matching]:  (Cache HIT) Jujustu Kaisen 04            <- ...
+```
+
+However, if your episode files do not have consistent names, the matching process will slow down considerably.
+
+```
+├── %LIBRARY_FOLDER%
+    └── Black Lagoon                             
+        └── Black Lagoon                
+            ├── The Black Lagoon 01.mkv          
+            ├── Mangrove Heaven 02.mkv           
+            ├── Ring-Ding Ship Chase 03.mkv            
+```
+
+```
+[media-matching]:  (Cache MISS) The Black Lagoon 01         <- 1-2 seconds, key: "[Black Lagoon, The Black Lagoon]"
+[media-matching]:  (Cache MISS) Mangrove Heaven 02          <- 1-2 seconds key: "[Black Lagoon, Mangrove Heaven]"
+[media-matching]:  (Cache MISS) Ring-Ding Ship Chase 03     <- 1-2 seconds key: "[Black Lagoon, Ring-Ding Ship Chase]"
+```
 
 ## TL;DR
 

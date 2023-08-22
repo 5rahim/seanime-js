@@ -22,7 +22,7 @@ export const localFilesAtom = atomWithStorage<LocalFile[]>("sea-local-files", []
 // Split [LocalFile] into multiple atom by `path`
 export const localFileAtoms = splitAtom(localFilesAtom, localFile => localFile.path)
 
-// Derived atom for updates
+// Derived atom for updates using Immer
 const localFilesAtomWithImmer = withImmer(localFilesAtom)
 
 
@@ -41,7 +41,7 @@ export const getLocalFileAtomsByMediaIdAtom = atom(null,
     (get, set, mediaId: number) => get(localFileAtoms).filter((fileAtom) => get(fileAtom).mediaId === mediaId),
 )
 
-const get_ToWatch_LocalFileAtomsByMediaIdAtom = atom(null,
+const get_Main_LocalFileAtomsByMediaIdAtom = atom(null,
     // Get the local files from a specific media, split the `watched` and `to watch` files by listening to a specific `anilistCollectionEntryAtom`
     (get, set, mediaId: number) => {
         // Get the AniList Collection Entry Atom by media ID
@@ -125,7 +125,7 @@ export const useLocalFileAtomsByMediaId = (mediaId: number) => {
 export const useMainLocalFileAtomsByMediaId = (mediaId: number) => {
     // Actualize file list when collection entry changes
     const collectionEntry = useAnilistCollectionEntryByMediaId(mediaId)
-    const [, get] = useAtom(get_ToWatch_LocalFileAtomsByMediaIdAtom)
+    const [, get] = useAtom(get_Main_LocalFileAtomsByMediaIdAtom)
     return useMemo(() => get(mediaId), [collectionEntry]) as {
         toWatch: Array<PrimitiveAtom<LocalFile>>,
         watched: Array<PrimitiveAtom<LocalFile>>
@@ -178,6 +178,7 @@ export const useLocalFileAtomByPath = (path: string) => {
  * -----------------------------------------------------------------------------------------------*/
 
 /**
+ * @description Update local files using Immer
  * @example
  * const setLocalFiles = useSetLocalFiles()
  *
@@ -192,20 +193,4 @@ export const useLocalFileAtomByPath = (path: string) => {
  */
 export const useSetLocalFiles = () => {
     return useSetAtom(localFilesAtomWithImmer)
-}
-
-/**
- * Refresh the local files by adding scanned files and keeping locked/ignored files intact
- */
-export const refreshLocalFilesAtom = atom(null,
-    (get, set, scannedFiles: LocalFile[]) => {
-        const keptFiles = get(localFilesAtom).filter(file => file.ignored || file.locked)
-        const keptFilesPaths = new Set<string>(keptFiles.map(file => file.path))
-        set(localFilesAtom, [...keptFiles, ...scannedFiles.filter(file => !keptFilesPaths.has(file.path))])
-    },
-)
-
-export const useRefreshLocalFiles = () => {
-    const [, refreshLocalFiles] = useAtom(refreshLocalFilesAtom)
-    return useMemo(() => refreshLocalFiles, [])
 }

@@ -14,10 +14,11 @@ With memoization, we stop unnecessary re-renders.
 ```ts
 
 // Atom derived from `localFileAtoms` and `anilistCollectionEntryAtoms`
-const get_ToWatch_LocalFileAtomsByMediaIdAtom = atom(null,
+const get_Main_LocalFileAtomsByMediaIdAtom = atom(null,
     // Get the local file atoms from a specific media
     // Split the `watched` and `to watch` file atoms by listening to a specific `anilistCollectionEntryAtom`
     (get, set, mediaId: number) => {
+        // ...
     },
 )
 
@@ -30,7 +31,7 @@ export const useMainLocalFileAtomsByMediaId = (mediaId: number) => {
             deepEquals, // Equality check
         ),
     )
-    const [, get] = useAtom(get_ToWatch_LocalFileAtomsByMediaIdAtom)
+    const [, get] = useAtom(get_Main_LocalFileAtomsByMediaIdAtom)
     return useMemo(() => get(mediaId), [collectionEntry]) // Actualize atom list when collection entry changes 
 }
 ```
