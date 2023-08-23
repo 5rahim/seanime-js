@@ -44,7 +44,10 @@ export default async function Page({ params }: { params: { id: string } }) {
                     <h2>{media.title?.english}</h2>
                 </div>
                 <div>
-                    <DownloadPage/>
+                    <DownloadPage
+                        media={media}
+                        aniZipData={aniZipData}
+                    />
                 </div>
             </div>
         </div>

@@ -8,20 +8,22 @@ import { AnimeByMalIdDocument, AnimeCollectionDocument, UpdateEntryDocument } fr
 import fs from "fs"
 import { ANIDB_RX } from "@/lib/series-scanner/regex"
 
-export type Deprecated_LibraryEntry = {
+export type ProspectiveLibraryEntry = {
     filePaths: Array<string>
     media: AnilistSimpleMedia
     accuracy: number
     sharedPath: string
+    acceptedFiles: LocalFileWithMedia[],
+    rejectedFiles: LocalFileWithMedia[]
 }
 
 /**
- * A [LibraryEntry] represents a single [AnilistSimpleMedia] and its associated local files.
+ *
  */
-export const createLibraryEntry = async (props: {
+export const inspectProspectiveLibraryEntry = async (props: {
     media: AnilistSimpleMedia,
     files: LocalFileWithMedia[]
-}): Promise<Deprecated_LibraryEntry & { acceptedFiles: LocalFileWithMedia[], rejectedFiles: LocalFileWithMedia[] }> => {
+}): Promise<ProspectiveLibraryEntry> => {
 
     const currentMedia = props.media
     const lFiles = props.files.filter(f => f.media?.id === currentMedia?.id)
@@ -86,14 +88,36 @@ export const createLibraryEntry = async (props: {
             .filter(item => item.rating >= 0.4 || isNotMain(item.file))
             // If a file has a lower rating than the highest, filter it out
             .filter(item => item.rating.toFixed(3) === highestRating.toFixed(3) || isNotMain(item.file))
-            // If a file's parent folder name has a lower rating than the highest, filter it out
-            .filter(item => item.ratingByFolderName.toFixed(3) === highestRatingByFolderName.toFixed(3) || isNotMain(item.file))
+            //
+            .filter(item =>
+                // Keep files with the highest folder rating
+                (item.ratingByFolderName.toFixed(3) === highestRatingByFolderName.toFixed(3))
+                // OR files with folder rating deviation from the highest that is lower than 0.1
+                || Math.abs(+item.ratingByFolderName.toFixed(3) - +highestRatingByFolderName.toFixed(3)) < 0.1 // deviation is lower than 0.1
+                // OR files that are specials, ova...
+                || isNotMain(item.file),
+            )
             .map(item => item.file)
 
 
         const rejectedFiles = lFiles.filter(n => !mostAccurateFiles.find(f => f.path === n.path))
 
         const firstFile = mostAccurateFiles[0]
+
+        if (rejectedFiles.map(n => n.path).length > 0) {
+            logger("library-entry/inspectProspectiveLibraryEntry").warning(
+                `${currentMedia.title?.english} |`,
+                "Rejected", lFilesWithRating.map(n => ({
+                    filename: n.file.path,
+                    rating: n.rating,
+                    folderRating: n.ratingByFolderName,
+                })),
+                "| Highest folder rating", +highestRatingByFolderName.toFixed(3),
+            )
+        }
+
+        logger("library-entry/inspectProspectiveLibraryEntry").info(`${currentMedia.title?.english} |`, "Accuracy", Number(highestRating.toFixed(3)))
+
         return {
             media: currentMedia,
             filePaths: mostAccurateFiles.map(file => file.path),

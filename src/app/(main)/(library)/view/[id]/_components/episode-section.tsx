@@ -37,16 +37,15 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = React.memo((props) 
     const isMovie = detailedMedia.format === "MOVIE"
     const videoPlayer = useRef(VideoPlayer(settings))
 
+    const handlePlayFile = useCallback(async (path: string) => {
+        await videoPlayer.current.openVideo(path)
+    }, [videoPlayer.current])
+
     if (!entryAtom) {
         return <div>
             Not in your library
         </div>
     }
-
-
-    const handlePlayFile = useCallback(async (path: string) => {
-        await videoPlayer.current.openVideo(path)
-    }, [videoPlayer.current])
 
     return (
         <div>

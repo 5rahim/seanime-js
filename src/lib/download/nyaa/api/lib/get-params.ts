@@ -1,4 +1,4 @@
-import { SearchParams, SearchQuery } from "../../types/agent"
+import { SearchParams, SearchQuery } from "../types"
 import { deepmerge } from "./deepmerge"
 
 export const DefaultSearchParams: SearchParams = {
@@ -15,6 +15,9 @@ export const getParams = (query: string | SearchQuery): SearchParams => {
     }
 
     return deepmerge(DefaultSearchParams, {
+        //@ts-ignore
+        s: "seeders",
+        o: "desc",
         q: query.title,
         f: typeof query.filter === "number" ? query.filter : 0,
         c: query.category,

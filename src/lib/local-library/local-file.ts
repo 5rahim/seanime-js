@@ -104,7 +104,7 @@ export type LocalFileWithMedia = LocalFile & {
 export const createLocalFileWithMedia = async (
     file: LocalFile,
     allMedia: AnilistSimpleMedia[],
-    mediaTitles: { eng: string[], rom: string[], preferred: string[] },
+    mediaTitles: { eng: string[], rom: string[], preferred: string[], season: string[] },
     matchingCache: Map<string, AnilistSimpleMedia | undefined>,
 ): Promise<LocalFileWithMedia | undefined> => {
 

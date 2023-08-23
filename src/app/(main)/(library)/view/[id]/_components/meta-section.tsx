@@ -7,6 +7,7 @@ import { useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist-collecti
 import { ProgressBadge } from "@/app/(main)/(library)/view/[id]/_components/meta/progress-badge"
 import { NextAiringEpisode } from "@/app/(main)/(library)/view/[id]/_components/meta/next-airing-episode"
 import { DownloadPageButton } from "@/app/(main)/(library)/view/[id]/_components/meta/download-page-button"
+import { useLibraryEntryAtomByMediaId } from "@/atoms/library/library-entry.atoms"
 
 interface MetaSectionProps {
     children?: React.ReactNode
@@ -18,6 +19,7 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
     const { children, detailedMedia, ...rest } = props
 
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(detailedMedia.id)
+    const entryAtom = useLibraryEntryAtomByMediaId(detailedMedia.id)
 
     return (
         <>
@@ -47,7 +49,11 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
                     <p className={"max-h-24 overflow-y-auto"}>{detailedMedia.description?.replace(/(<([^>]+)>)/ig, "")}</p>
                 </div>
 
-                <DownloadPageButton collectionEntryAtom={collectionEntryAtom} detailedMedia={detailedMedia}/>
+                {/*Avoid "rendered fewer hooks than expected" error*/}
+                {!!entryAtom && <DownloadPageButton entryAtom={entryAtom} collectionEntryAtom={collectionEntryAtom}
+                                                    detailedMedia={detailedMedia}/>}
+                {!entryAtom && <DownloadPageButton entryAtom={entryAtom} collectionEntryAtom={collectionEntryAtom}
+                                                   detailedMedia={detailedMedia}/>}
 
                 <NextAiringEpisode detailedMedia={detailedMedia}/>
 

@@ -7,7 +7,7 @@ import { openLocalDirectoryInExplorer } from "@/lib/helpers/directory"
 import { type } from "@tauri-apps/api/os"
 import toast from "react-hot-toast"
 import { BiFolder } from "@react-icons/all-files/bi/BiFolder"
-import { cleanupFiles, retrieveLocalFilesAsLibraryEntries } from "@/lib/local-library/repository"
+import { cleanupFiles, scanLocalFiles } from "@/lib/local-library/repository"
 import { useCurrentUser } from "@/atoms/user"
 import { FcHighPriority } from "@react-icons/all-files/fc/FcHighPriority"
 import { useDisclosure } from "@/hooks/use-disclosure"
@@ -60,7 +60,7 @@ export function LibraryToolbar() {
             const tID = toast.loading("Loading")
             setIsLoading(true)
 
-            const result = await retrieveLocalFilesAsLibraryEntries(settings, user?.name, token, {
+            const result = await scanLocalFiles(settings, user?.name, token, {
                 ignored: Array.from(lockedPathsSet),
                 locked: Array.from(ignoredPathsSet),
             })
@@ -89,7 +89,7 @@ export function LibraryToolbar() {
             const tID = toast.loading("Loading")
             setIsLoading(true)
 
-            const result = await retrieveLocalFilesAsLibraryEntries(settings, user?.name, token, {
+            const result = await scanLocalFiles(settings, user?.name, token, {
                 ignored: [],
                 locked: [],
             })

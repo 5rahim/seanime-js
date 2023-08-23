@@ -17,28 +17,30 @@ import { Nullish } from "@/types/common"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
 import { AnimeCollectionDocument, AnimeCollectionQuery, UpdateEntryDocument } from "@/gql/graphql"
 import _ from "lodash"
-import { createLibraryEntry, Deprecated_LibraryEntry } from "@/lib/local-library/library-entry"
+import { inspectProspectiveLibraryEntry } from "@/lib/local-library/library-entry"
 import { logger } from "@/lib/helpers/debug"
 
 /**
  *  Goes through non-locked and non-ignored [LocalFile]s and returns
- *  - Scanned [LocalFile]s and their associated [LibraryEntry]s
+ *  - Hydrated [LocalFile]s
  * @param settings
  * @param userName
  * @param token
  * @param ignored
  * @param locked
  */
-export async function retrieveLocalFilesAsLibraryEntries(settings: Settings, userName: Nullish<string>, token: string, {
-    ignored,
-    locked,
-}: { ignored: string[], locked: string[] }) {
+export async function scanLocalFiles(
+    settings: Settings,
+    userName: Nullish<string>,
+    token: string,
+    { ignored, locked }: { ignored: string[], locked: string[] },
+) {
 
-    logger("repository/retrieveLocalFilesAsLibraryEntries").info("Fetching user media list")
+    logger("repository/scanLocalFiles").info("Fetching user media list")
     const data = await useAniListAsyncQuery(AnimeCollectionDocument, { userName })
     const watchListMediaIds = new Set(data.MediaListCollection?.lists?.filter(n => n?.entries).flatMap(n => n?.entries?.map(n => n?.media)).map(n => n?.id).filter(Boolean))
 
-    logger("repository/retrieveLocalFilesAsLibraryEntries").info("Start library entry creation")
+    logger("repository/scanLocalFiles").info("Retrieving hydrated local files")
     const files = await retrieveHydratedLocalFiles(settings, userName, data, { ignored, locked })
 
     if (files && files.length > 0) {
@@ -48,11 +50,11 @@ export async function retrieveLocalFilesAsLibraryEntries(settings: Settings, use
         const allMedia = _.uniqBy(files.map(n => n.media), n => n?.id)
 
         /** Values to be returned **/
-        let entries: Deprecated_LibraryEntry[] = []
         let checkedFiles: LocalFile[] = [...filesWithNoMedia.map(f => _.omit(f, "media"))]
 
         const groupedByMediaId = _.groupBy(localFilesWithMedia, n => n.media!.id)
 
+        logger("repository/scanLocalFiles").info("Inspecting prospective library entry")
         for (let i = 0; i < Object.keys(groupedByMediaId).length; i++) {
             const mediaId = Object.keys(groupedByMediaId)[i]
             const mediaIdAsNumber = Number(mediaId)
@@ -61,13 +63,10 @@ export async function retrieveLocalFilesAsLibraryEntries(settings: Settings, use
                 const lFiles = localFilesWithMedia.filter(f => f.media?.id === mediaIdAsNumber)
 
                 if (currentMedia) {
-                    const { acceptedFiles, rejectedFiles, ...newEntry } = await createLibraryEntry({
+                    const { acceptedFiles, rejectedFiles } = await inspectProspectiveLibraryEntry({
                         media: currentMedia,
                         files: lFiles,
                     })
-                    if (newEntry.filePaths.length > 0) {
-                        entries = [...entries, newEntry] // Return new entry only if it has files
-                    }
                     checkedFiles = [
                         ...checkedFiles,
                         // Set media id for accepted files
@@ -85,7 +84,7 @@ export async function retrieveLocalFilesAsLibraryEntries(settings: Settings, use
                                 status: "PLANNING", //MediaListStatus
                             }, token)
                         } catch (e) {
-                            logger("repository/retrieveLocalFilesAsLibraryEntries").error("Couldn't add media to watch list")
+                            logger("repository/scanLocalFiles").error("Couldn't add media to watch list")
                         }
                     }
                 }
@@ -93,14 +92,8 @@ export async function retrieveLocalFilesAsLibraryEntries(settings: Settings, use
             }
         }
 
-        logger("repository/retrieveLocalFilesAsLibraryEntries").success("Library entry creation successful")
+        logger("repository/scanLocalFiles").success("Library scanned successfully", checkedFiles.length)
         return {
-            /**
-             * All entries found with up-to-date paths
-             * @deprecated Will be replaced by just sending down the ids
-             */
-            entries,
-            // mediaIds: entries.map(entry => entry.media.id),
             /**
              * Non-locked and non-ignored retrieved files with up-to-date meta (mediaIds, paths...)
              */
@@ -139,15 +132,16 @@ export async function retrieveHydratedLocalFiles(
             let allUserMedia = data.MediaListCollection?.lists?.map(n => n?.entries).flat().filter(Boolean).map(entry => entry.media) ?? [] as AnilistMedia[]
             logger("repository/retrieveHydratedLocalFiles").info("Formatting related media")
 
-            // Get sequels, prequels... from each media as [ShowcaseMediaFragment]
+            // Get sequels, prequels... from each media as [AnilistSimpleMedia]
             let relatedMedia = allUserMedia.filter(Boolean)
-                .flatMap(media => media.relations?.edges?.filter(edge => edge?.relationType === "PREQUEL"
-                    || edge?.relationType === "SEQUEL"
-                    || edge?.relationType === "SPIN_OFF"
-                    || edge?.relationType === "SIDE_STORY"
-                    || edge?.relationType === "ALTERNATIVE"
-                    || edge?.relationType === "PARENT")
-                    .flatMap(edge => edge?.node).filter(Boolean),
+                .flatMap(media => media.relations?.edges?.filter(edge => (edge?.relationType === "PREQUEL"
+                        || edge?.relationType === "SEQUEL"
+                        || edge?.relationType === "SPIN_OFF"
+                        || edge?.relationType === "SIDE_STORY"
+                        || edge?.relationType === "ALTERNATIVE"
+                        || edge?.relationType === "PARENT"),
+                    )
+                        .flatMap(edge => edge?.node).filter(Boolean),
                 ) as AnilistSimpleMedia[]
 
             allUserMedia = allUserMedia.map(media => _.omit(media, "streamingEpisodes", "relations", "studio", "description", "format", "source", "isAdult", "genres", "trailer", "countryOfOrigin", "studios"))
@@ -156,34 +150,25 @@ export async function retrieveHydratedLocalFiles(
             const mediaEngTitles = allMedia.map(media => media.title?.english).filter(Boolean)
             const mediaRomTitles = allMedia.map(media => media.title?.romaji).filter(Boolean)
             const mediaPreferredTitles = allMedia.map(media => media.title?.userPreferred).filter(Boolean)
+            const seasonTitles = allMedia.flatMap(media => media.synonyms?.filter(syn => {
+                return (
+                    syn?.toLowerCase()?.includes("season") ||
+                    syn?.toLowerCase()?.match(/\d(st|nd|rd|th) [Ss].*/)
+                ) && !syn?.toLowerCase().includes("episode") && !syn?.toLowerCase().includes("第") && !syn?.toLowerCase().match(/\b(ova|special|special)\b/i)
+            })).filter(Boolean)
+
+            // console.log(seasonTitles)
 
             logger("repository/retrieveHydratedLocalFiles").info("Hydrating local files")
             let localFilesWithMedia: LocalFileWithMedia[] = []
 
             const matchingCache = new Map<string, AnilistSimpleMedia | undefined>()
 
-            /** This ignores the cache **/
-            // localFilesWithMedia = (
-            //     await PromiseBatch(
-            //         createLocalFileWithMedia,
-            //         localFiles,
-            //         allMedia,
-            //         { eng: mediaEngTitles, rom: mediaRomTitles, preferred: mediaPreferredTitles  },
-            //         matchingCache,
-            //         100
-            //     )
-            // ) as LocalFileWithMedia[]
-
-            /** This ignores the cache **/
-            // localFilesWithMedia = (await Promise.all(
-            //     localFiles.map((item) => createLocalFileWithMedia(item, allMedia, { eng: mediaEngTitles, rom: mediaRomTitles, preferred: mediaPreferredTitles  }, matchingCache))
-            // )).filter(Boolean)
-
             for (let i = 0; i < localFiles.length; i++) {
                 const created = await createLocalFileWithMedia(
                     localFiles[i],
                     allMedia,
-                    { eng: mediaEngTitles, rom: mediaRomTitles, preferred: mediaPreferredTitles },
+                    { eng: mediaEngTitles, rom: mediaRomTitles, preferred: mediaPreferredTitles, season: seasonTitles },
                     matchingCache,
                 )
                 if (created) {

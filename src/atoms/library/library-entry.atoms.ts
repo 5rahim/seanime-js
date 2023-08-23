@@ -86,3 +86,13 @@ export const useLibraryEntryAtoms = () => {
 export const useLibraryEntryByMediaId = (mediaId: number): LibraryEntry | undefined => {
     return useSelectAtom(libraryEntriesAtom, entries => entries.find(entry => entry.media.id === mediaId))
 }
+
+export const entryLastEpisodeFileSelector = (entry: LibraryEntry | undefined) => {
+    const files = entry?.files?.filter(file => file.parsedInfo?.episode)?.filter(Boolean)
+    if (files && files.length > 1) {
+        return files.reduce((prev, curr) => {
+            return Number(prev!.parsedInfo!.episode!) > Number(curr!.parsedInfo!.episode!) ? prev : curr
+        })
+    } else
+        return files?.[0] ?? undefined
+}
