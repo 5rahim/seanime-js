@@ -79,6 +79,7 @@ export default function Page() {
                             <Field.Text
                                 label={"Password"}
                                 name={"vlcPassword"}
+                                type={"password"}
                             />
                         </div>
 

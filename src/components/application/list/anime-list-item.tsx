@@ -125,6 +125,8 @@ export const AnimeListItem = ((props: { mediaId: number }) => {
                     </Tooltip>
                 </div>}
 
+
+                <ProgressBadge mediaId={media.id}/>
                 <ScoreBadge mediaId={media.id}/>
 
                 <Image
@@ -244,6 +246,23 @@ const ScoreBadge = (props: { mediaId: number }) => {
             )}>
                 <BiStar/> {(score === 0) ? "-" : score}
             </div>
+        </div>
+    )
+}
+
+const ProgressBadge = (props: { mediaId: number }) => {
+
+    const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(props.mediaId)
+    const progress = !!collectionEntryAtom ? useSelectAtom(collectionEntryAtom, entry => entry?.progress) : undefined
+    const episodes = !!collectionEntryAtom ? useSelectAtom(collectionEntryAtom, entry => entry?.media?.episodes) : undefined
+
+    if (!collectionEntryAtom || !progress) return null
+
+    return (
+        <div className={"absolute z-10 left-1 bottom-1"}>
+            <Badge size={"lg"}>
+                {progress}/{episodes}
+            </Badge>
         </div>
     )
 }

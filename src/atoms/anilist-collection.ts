@@ -138,7 +138,7 @@ export const allUserMediaAtoms = splitAtom(allUserMediaAtom, media => media.id)
 
 /** Read **/
 
-export const getUserMediaByIdAtom = atom(null,
+export const getUserMediaAtomByIdAtom = atom(null,
     (get, set, mediaId: number) => get(allUserMediaAtoms).find((media) => get(media).id === mediaId),
 )
 
@@ -171,7 +171,7 @@ export const useAnilistUserMedia = (mediaId: number) => {
  * )
  */
 export const useAnilistUserMediaAtom = (mediaId: number) => {
-    const [, get] = useAtom(getUserMediaByIdAtom)
+    const [, get] = useAtom(getUserMediaAtomByIdAtom)
     return useMemo(() => get(mediaId), []) as PrimitiveAtom<AnilistSimpleMedia> | undefined
 }
 

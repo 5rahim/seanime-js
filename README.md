@@ -65,4 +65,6 @@ npm run tauri:dev
 ## TODO
 
 - [x] Improve performance
+- [ ] Better matching for Specials/OVA
+- [ ] Prohibit scanning when directory doesn't exist
 - Video

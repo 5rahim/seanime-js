@@ -1,0 +1,90 @@
+import RssParser from "rss-parser"
+import { decode } from "html-entities"
+
+import { getParams } from "./lib/get-params"
+import { Awaited, RSSFile, SearchQuery } from "./types"
+import { URL, URLSearchParams } from "url"
+
+const parser = new RssParser({
+    customFields: {
+        item: [
+            "nyaa:seeders",
+            "nyaa:leechers",
+            "nyaa:downloads",
+            "nyaa:infoHash",
+            "nyaa:categoryId",
+            "nyaa:category",
+            "nyaa:size",
+            "nyaa:trusted",
+            "nyaa:remake",
+            "nyaa:comments",
+            "description",
+            "guid",
+            "title",
+        ],
+    },
+})
+
+const parseItems = (
+    items: Awaited<ReturnType<typeof parser.parseURL>>["items"],
+): RSSFile[] =>
+    items.map((el: any) => ({
+        id: Number.parseInt(el.guid.split("/").pop()),
+        title: decode(el.title),
+        guid: el.guid,
+        description: el.description,
+        pubDate: new Date(el.pubDate),
+        seeders: parseInt(el["nyaa:seeders"]),
+        leechers: parseInt(el["nyaa:leechers"]),
+        downloads: parseInt(el["nyaa:downloads"]),
+        infoHash: el["nyaa:infoHash"],
+        categoryId: el["nyaa:categoryId"],
+        category: el["nyaa:category"],
+        size: el["nyaa:size"],
+        comments: parseInt(el["nyaa:comments"]),
+        trusted: el["nyaa:trusted"],
+        remake: el["nyaa:remake"],
+    }))
+
+export interface NyaaRssOptions {
+    host?: string
+}
+
+export class NyaaRss {
+    constructor(private options?: NyaaRssOptions) {
+    }
+
+    static async getHome(options: NyaaRssOptions = {}): Promise<RSSFile[]> {
+        const { host = "https://nyaa.si/" } = options
+        const searchParams = new URLSearchParams([["page", "rss"]])
+        const data = await parser.parseURL(`${host}?${searchParams.toString()}`)
+
+        return parseItems(data.items)
+    }
+
+    static async search(
+        query: string | SearchQuery,
+        options: NyaaRssOptions = {},
+    ): Promise<RSSFile[]> {
+        const { host = "https://nyaa.si/" } = options
+        const searchParams = new URLSearchParams(
+            getParams(query) as unknown as Record<string, string | readonly string[]>,
+        )
+
+        searchParams.append("page", "rss")
+
+        const url = new URL(`${host}?${searchParams.toString()}`)
+
+        const data = await parser.parseURL(url.toString())
+
+        return parseItems(data.items)
+    }
+
+    async getHome(): Promise<RSSFile[]> {
+        return NyaaRss.getHome(this.options)
+    }
+
+    async search(query: string | SearchQuery): Promise<RSSFile[]> {
+        return NyaaRss.search(query, this.options)
+    }
+}

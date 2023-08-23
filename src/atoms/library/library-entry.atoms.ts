@@ -61,7 +61,7 @@ export const getLibraryEntryAtomsByMediaIdAtom = atom(null,
  */
 export const useLibraryEntryAtomByMediaId = (mediaId: number) => {
     // Refresh atom when its file count changes
-    const fileCount = useSelectAtom(localFilesAtom, files => files.filter(file => file.mediaId === mediaId).length ?? 0)
+    const fileCount = useSelectAtom(localFilesAtom, files => files.filter(file => file.mediaId === mediaId).filter(Boolean).map(file => file.path))
     const [, get] = useAtom(getLibraryEntryAtomsByMediaIdAtom)
     return useMemo(() => get(mediaId), [fileCount]) as PrimitiveAtom<LibraryEntry> | undefined
 }
@@ -71,7 +71,7 @@ export const useLibraryEntryAtomByMediaId = (mediaId: number) => {
  */
 export const useLibraryEntryAtoms = () => {
     // Refresh entry atom list when number of entries changes
-    const entryCount = useSelectAtom(libraryEntriesAtom, entries => entries.length)
+    const entryCount = useSelectAtom(libraryEntriesAtom, entries => entries.flatMap(entry => entry.id))
     const value = useAtomValue(libraryEntryAtoms)
     return useMemo(() => value, [entryCount]) as Array<PrimitiveAtom<LibraryEntry>>
 }

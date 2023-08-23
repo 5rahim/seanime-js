@@ -4,7 +4,7 @@ import { VerticalNav } from "@/components/ui/vertical-nav"
 import React from "react"
 import { usePathname } from "next/navigation"
 import { BiPlay } from "@react-icons/all-files/bi/BiPlay"
-import { ImConnection } from "@react-icons/all-files/im/ImConnection"
+import { BiDownload } from "@react-icons/all-files/bi/BiDownload"
 
 export function SettingsSidebar() {
 
@@ -27,7 +27,7 @@ export function SettingsSidebar() {
                 },
                 {
                     href: "/settings/qbittorrent",
-                    icon: ImConnection,
+                    icon: BiDownload,
                     isCurrent: pathname === "/settings/qbittorrent",
                     name: "qBittorent",
                 },

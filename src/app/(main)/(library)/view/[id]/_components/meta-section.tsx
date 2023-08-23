@@ -3,12 +3,10 @@ import React from "react"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
 import { BiCalendarAlt } from "@react-icons/all-files/bi/BiCalendarAlt"
 import _ from "lodash"
-import { AnilistCollectionEntry, useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist-collection"
-import { Tooltip } from "@/components/ui/tooltip"
-import { Badge } from "@/components/ui/badge"
-import { addSeconds, formatDistanceToNow } from "date-fns"
-import { useSelectAtom } from "@/atoms/helpers"
-import { PrimitiveAtom } from "jotai"
+import { useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist-collection"
+import { ProgressBadge } from "@/app/(main)/(library)/view/[id]/_components/meta/progress-badge"
+import { NextAiringEpisode } from "@/app/(main)/(library)/view/[id]/_components/meta/next-airing-episode"
+import { DownloadPageButton } from "@/app/(main)/(library)/view/[id]/_components/meta/download-page-button"
 
 interface MetaSectionProps {
     children?: React.ReactNode
@@ -47,62 +45,16 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
                         <ProgressBadge collectionEntryAtom={collectionEntryAtom} episodes={detailedMedia.episodes}/>}
 
                     <p className={"max-h-24 overflow-y-auto"}>{detailedMedia.description?.replace(/(<([^>]+)>)/ig, "")}</p>
-                    <div>tags</div>
                 </div>
 
-                {/*/!*TODO !!detailedMedia.nextAiringEpisode && episodeNotDownloaded*!/*/}
-                {/*{detailedMedia.status !== "FINISHED" && <div className={"space-y-2"}>*/}
-                {/*    /!*TODO Fetch info from torrent - If next episode is available and not in library*!/*/}
-                {/*    <h4>*/}
-                {/*        {!!mediaListEntry?.progress && mediaListEntry.progress > 0 ? "Episode X" : "Start watching!"}*/}
-                {/*    </h4>*/}
-                {/*    <Button intent={"white"} className={"w-full"} size={"lg"} leftIcon={<BiDownload/>}>Download next*/}
-                {/*        episode (7)</Button>*/}
-                {/*</div>}*/}
+                <DownloadPageButton collectionEntryAtom={collectionEntryAtom} detailedMedia={detailedMedia}/>
 
-                {/*{(detailedMedia.status === "FINISHED" && !entry) && <div className={"space-y-2"}>*/}
-                {/*    /!*TODO Fetch info from torrent - If no episodes in library*!/*/}
-                {/*    <h4>{!!mediaListEntry?.status && (mediaListEntry.status === "PLANNING" ? "First watch!" : mediaListEntry.status === "COMPLETED" ? "Re-watch" : "Watch")}</h4>*/}
-                {/*    <Button intent={"white"} className={"w-full"} size={"lg"}>Download batch</Button>*/}
-                {/*</div>}*/}
+                <NextAiringEpisode detailedMedia={detailedMedia}/>
 
-
-                {!!detailedMedia.nextAiringEpisode && (
-                    <div className={"flex gap-2 items-center justify-center"}>
-                        <p className={"text-xl min-[2000px]:text-xl"}>Next episode:</p>
-                        <Tooltip
-                            tooltipClassName={"bg-gray-200 text-gray-800 font-semibold mb-1"}
-                            trigger={
-                                <p className={"text-justify font-normal text-xl min-[2000px]:text-xl"}>
-                                    <Badge
-                                        size={"lg"}>{detailedMedia.nextAiringEpisode?.episode}</Badge>
-                                </p>
-                            }>{formatDistanceToNow(addSeconds(new Date(), detailedMedia.nextAiringEpisode?.timeUntilAiring), { addSuffix: true })}{}</Tooltip>
-                    </div>
-                )}
+                {/*TODO: Sequels Prequels*/}
 
             </div>
         </>
     )
 
-}
-
-export function ProgressBadge({ collectionEntryAtom, episodes }: {
-    collectionEntryAtom: PrimitiveAtom<AnilistCollectionEntry>,
-    episodes: number | null | undefined
-}) {
-
-    const progress = useSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress)
-
-    if (!progress) return null
-
-    return (
-        <>
-            <div
-                className={"text-3xl font-bold text-yellow-100"}
-            >
-                {`${progress}/${episodes || "-"}`}
-            </div>
-        </>
-    )
 }

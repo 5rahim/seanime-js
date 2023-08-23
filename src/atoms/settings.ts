@@ -32,6 +32,15 @@ export const settingsSchema = createTypesafeFormSchema(({ z }) => z.object({
         audioLng: z.string(),
         subtitleLng: z.string(),
     }),
+    qbittorrent: z.object({
+        host: z.string(),
+        port: z.number(),
+        username: z.string().default(""),
+        password: z.string().default(""),
+    }),
+    torrent: z.object({
+        nyaaUrl: z.string(),
+    }),
 }))
 
 export type Settings = InferType<typeof settingsSchema>
@@ -52,6 +61,15 @@ export const initialSettings: Settings = {
         pauseAfterOpening: true,
         audioLng: "jpn",
         subtitleLng: "eng",
+    },
+    qbittorrent: {
+        host: "127.0.0.1",
+        port: 8080,
+        username: "admin",
+        password: "adminadmin",
+    },
+    torrent: {
+        nyaaUrl: "nyaa.si",
     },
 }
 

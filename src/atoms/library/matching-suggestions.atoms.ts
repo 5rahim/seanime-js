@@ -1,6 +1,6 @@
 import { atomWithStorage } from "jotai/utils"
 import { LocalFile } from "@/lib/local-library/local-file"
-import { atom } from "jotai/index"
+import { atom } from "jotai"
 import { logger } from "@/lib/helpers/debug"
 import _ from "lodash"
 import { fetchMALMatchingSuggestions } from "@/lib/mal/fetch-matching-suggestions"
