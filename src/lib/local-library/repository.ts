@@ -19,6 +19,7 @@ import { AnimeCollectionDocument, AnimeCollectionQuery, UpdateEntryDocument } fr
 import _ from "lodash"
 import { inspectProspectiveLibraryEntry } from "@/lib/local-library/library-entry"
 import { logger } from "@/lib/helpers/debug"
+import { isSeasonTitle } from "@/lib/local-library/media-matching"
 
 /**
  *  Goes through non-locked and non-ignored [LocalFile]s and returns
@@ -150,14 +151,7 @@ export async function retrieveHydratedLocalFiles(
             const mediaEngTitles = allMedia.map(media => media.title?.english).filter(Boolean)
             const mediaRomTitles = allMedia.map(media => media.title?.romaji).filter(Boolean)
             const mediaPreferredTitles = allMedia.map(media => media.title?.userPreferred).filter(Boolean)
-            const seasonTitles = allMedia.flatMap(media => media.synonyms?.filter(syn => {
-                return (
-                    syn?.toLowerCase()?.includes("season") ||
-                    syn?.toLowerCase()?.match(/\d(st|nd|rd|th) [Ss].*/)
-                ) && !syn?.toLowerCase().includes("episode") && !syn?.toLowerCase().includes("第") && !syn?.toLowerCase().match(/\b(ova|special|special)\b/i)
-            })).filter(Boolean)
-
-            // console.log(seasonTitles)
+            const mediaSynonymsWithSeason = allMedia.flatMap(media => media.synonyms?.filter(isSeasonTitle)).filter(Boolean)
 
             logger("repository/retrieveHydratedLocalFiles").info("Hydrating local files")
             let localFilesWithMedia: LocalFileWithMedia[] = []
@@ -168,7 +162,12 @@ export async function retrieveHydratedLocalFiles(
                 const created = await createLocalFileWithMedia(
                     localFiles[i],
                     allMedia,
-                    { eng: mediaEngTitles, rom: mediaRomTitles, preferred: mediaPreferredTitles, season: seasonTitles },
+                    {
+                        eng: mediaEngTitles,
+                        rom: mediaRomTitles,
+                        preferred: mediaPreferredTitles,
+                        synonymsWithSeason: mediaSynonymsWithSeason,
+                    },
                     matchingCache,
                 )
                 if (created) {
