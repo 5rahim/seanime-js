@@ -132,6 +132,12 @@ export function DownloadPage(props: DownloadPageProps) {
                 }}
                 tdClassName={"py-4"}
                 tableBodyClassName={"bg-transparent"}
+                enableRowSelection={true}
+                rowSelectionPrimaryKey={"id"}
+                onRowSelect={event => {
+                    console.log(event.data)
+                }}
+                enablePersistentRowSelection={true}
                 // isLoading={!clientData}
             />
         </div>

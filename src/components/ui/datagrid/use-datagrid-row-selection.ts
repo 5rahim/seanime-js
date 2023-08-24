@@ -1,6 +1,6 @@
 import { startTransition, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { Row, Table } from "@tanstack/react-table"
-import _ from "lodash"
+import deepEquals from "fast-deep-equal"
 
 /**
  * DataGrid Prop
@@ -121,7 +121,7 @@ export function useDataGridRowSelection<T extends Record<string, any>>(props: Pr
             if (selectedIndices.length > 0) {
 
                 onRowSelect && onRowSelect({
-                    data: data.filter((v, i) => selectedIndices.includes(i)) ?? [],
+                    data: data.filter((v: any, i: number) => selectedIndices.includes(i)) ?? [],
                 })
 
             }
@@ -132,26 +132,21 @@ export function useDataGridRowSelection<T extends Record<string, any>>(props: Pr
         /** Server-side row selection **/
         if (persistent && data && data?.length > 0 && canSelect.current && key) {
             const selectedIndices = Object.keys(rowSelection).map(v => parseInt(v))
-
-            if ((+(Object.keys(rowSelection).length) + (nonexistentSelectedRows.length)) > 0) {
-
-                startTransition(() => {
-                    const result = {
-                        data: [
-                            ...data.filter((v, i) => selectedIndices.includes(i)),
-                            ...nonexistentSelectedRows.map(nr => nr.row.original),
-                        ],
-                    }
-                    // Compare current selection with previous
-                    if (!isArrayEqual(result.data, previousSelectionEvent.current.data)) {
-                        onRowSelect && onRowSelect(result)
-                        previousSelectionEvent.current = result
-                    }
-                })
-
-            }
+            startTransition(() => {
+                const result = {
+                    data: [
+                        ...data.filter((v: any, i: number) => selectedIndices.includes(i)),
+                        ...nonexistentSelectedRows.map(nr => nr.row.original),
+                    ],
+                }
+                // Compare current selection with previous
+                if (!isArrayEqual(result.data, previousSelectionEvent.current.data)) {
+                    onRowSelect && onRowSelect(result)
+                    previousSelectionEvent.current = result
+                }
+            })
         }
-    }, [rowSelection])
+    }, [rowSelection, previousSelectionEvent.current])
 
 
     return {
@@ -163,5 +158,5 @@ export function useDataGridRowSelection<T extends Record<string, any>>(props: Pr
 
 
 const isArrayEqual = function (x: Array<Record<string, any>>, y: Array<Record<string, any>>) {
-    return _(x).differenceWith(y, _.isEqual).isEmpty()
+    return deepEquals(x, y)
 }
