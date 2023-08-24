@@ -69,13 +69,7 @@ export const _mediaFragment = gql`
             edges {
                 relationType(version: 2)
                 node {
-                    id
-                    title {
-                        romaji
-                        native
-                        english
-                    }
-                    siteUrl
+                    ...showcaseMedia
                 }
             }
         }

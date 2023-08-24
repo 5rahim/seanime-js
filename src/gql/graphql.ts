@@ -4565,8 +4565,27 @@ export type MediaFragment = {
             relationType?: MediaRelation | null,
             node?: {
                 id: number,
+                idMal?: number | null,
                 siteUrl?: string | null,
-                title?: { romaji?: string | null, native?: string | null, english?: string | null } | null
+                status?: MediaStatus | null,
+                season?: MediaSeason | null,
+                bannerImage?: string | null,
+                episodes?: number | null,
+                synonyms?: Array<string | null> | null,
+                title?: {
+                    userPreferred?: string | null,
+                    romaji?: string | null,
+                    english?: string | null,
+                    native?: string | null
+                } | null,
+                coverImage?: {
+                    extraLarge?: string | null,
+                    large?: string | null,
+                    medium?: string | null,
+                    color?: string | null
+                } | null,
+                startDate?: { year?: number | null, month?: number | null, day?: number | null } | null,
+                nextAiringEpisode?: { airingAt: number, timeUntilAiring: number, episode: number } | null
             } | null
         } | null> | null
     } | null
@@ -4894,8 +4913,27 @@ export type AnimeByIdQuery = {
                 relationType?: MediaRelation | null,
                 node?: {
                     id: number,
+                    idMal?: number | null,
                     siteUrl?: string | null,
-                    title?: { romaji?: string | null, native?: string | null, english?: string | null } | null
+                    status?: MediaStatus | null,
+                    season?: MediaSeason | null,
+                    bannerImage?: string | null,
+                    episodes?: number | null,
+                    synonyms?: Array<string | null> | null,
+                    title?: {
+                        userPreferred?: string | null,
+                        romaji?: string | null,
+                        english?: string | null,
+                        native?: string | null
+                    } | null,
+                    coverImage?: {
+                        extraLarge?: string | null,
+                        large?: string | null,
+                        medium?: string | null,
+                        color?: string | null
+                    } | null,
+                    startDate?: { year?: number | null, month?: number | null, day?: number | null } | null,
+                    nextAiringEpisode?: { airingAt: number, timeUntilAiring: number, episode: number } | null
                 } | null
             } | null> | null
         } | null
@@ -4918,6 +4956,80 @@ export type UpdateEntryMutationVariables = Exact<{
 
 export type UpdateEntryMutation = { SaveMediaListEntry?: { id: number } | null };
 
+export const ShowcaseMediaFragmentDoc = {
+    "kind": "Document", "definitions": [{
+        "kind": "FragmentDefinition",
+        "name": { "kind": "Name", "value": "showcaseMedia" },
+        "typeCondition": { "kind": "NamedType", "name": { "kind": "Name", "value": "Media" } },
+        "selectionSet": {
+            "kind": "SelectionSet",
+            "selections": [{ "kind": "Field", "name": { "kind": "Name", "value": "id" } }, {
+                "kind": "Field",
+                "name": { "kind": "Name", "value": "idMal" },
+            }, { "kind": "Field", "name": { "kind": "Name", "value": "siteUrl" } }, {
+                "kind": "Field",
+                "name": { "kind": "Name", "value": "status" },
+                "arguments": [{
+                    "kind": "Argument",
+                    "name": { "kind": "Name", "value": "version" },
+                    "value": { "kind": "IntValue", "value": "2" },
+                }],
+            }, { "kind": "Field", "name": { "kind": "Name", "value": "season" } }, {
+                "kind": "Field",
+                "name": { "kind": "Name", "value": "title" },
+                "selectionSet": {
+                    "kind": "SelectionSet",
+                    "selections": [{
+                        "kind": "Field",
+                        "name": { "kind": "Name", "value": "userPreferred" },
+                    }, { "kind": "Field", "name": { "kind": "Name", "value": "romaji" } }, {
+                        "kind": "Field",
+                        "name": { "kind": "Name", "value": "english" },
+                    }, { "kind": "Field", "name": { "kind": "Name", "value": "native" } }],
+                },
+            }, {
+                "kind": "Field",
+                "name": { "kind": "Name", "value": "coverImage" },
+                "selectionSet": {
+                    "kind": "SelectionSet",
+                    "selections": [{
+                        "kind": "Field",
+                        "name": { "kind": "Name", "value": "extraLarge" },
+                    }, { "kind": "Field", "name": { "kind": "Name", "value": "large" } }, {
+                        "kind": "Field",
+                        "name": { "kind": "Name", "value": "medium" },
+                    }, { "kind": "Field", "name": { "kind": "Name", "value": "color" } }],
+                },
+            }, { "kind": "Field", "name": { "kind": "Name", "value": "bannerImage" } }, {
+                "kind": "Field",
+                "name": { "kind": "Name", "value": "episodes" },
+            }, { "kind": "Field", "name": { "kind": "Name", "value": "synonyms" } }, {
+                "kind": "Field",
+                "name": { "kind": "Name", "value": "startDate" },
+                "selectionSet": {
+                    "kind": "SelectionSet",
+                    "selections": [{ "kind": "Field", "name": { "kind": "Name", "value": "year" } }, {
+                        "kind": "Field",
+                        "name": { "kind": "Name", "value": "month" },
+                    }, { "kind": "Field", "name": { "kind": "Name", "value": "day" } }],
+                },
+            }, {
+                "kind": "Field",
+                "name": { "kind": "Name", "value": "nextAiringEpisode" },
+                "selectionSet": {
+                    "kind": "SelectionSet",
+                    "selections": [{
+                        "kind": "Field",
+                        "name": { "kind": "Name", "value": "airingAt" },
+                    }, { "kind": "Field", "name": { "kind": "Name", "value": "timeUntilAiring" } }, {
+                        "kind": "Field",
+                        "name": { "kind": "Name", "value": "episode" },
+                    }],
+                },
+            }],
+        },
+    }],
+} as unknown as DocumentNode<ShowcaseMediaFragment, unknown>
 export const MediaFragmentDoc = {
     "kind": "Document", "definitions": [{
         "kind": "FragmentDefinition",
@@ -5082,22 +5194,9 @@ export const MediaFragmentDoc = {
                                 "selectionSet": {
                                     "kind": "SelectionSet",
                                     "selections": [{
-                                        "kind": "Field",
-                                        "name": { "kind": "Name", "value": "id" },
-                                    }, {
-                                        "kind": "Field",
-                                        "name": { "kind": "Name", "value": "title" },
-                                        "selectionSet": {
-                                            "kind": "SelectionSet",
-                                            "selections": [{
-                                                "kind": "Field",
-                                                "name": { "kind": "Name", "value": "romaji" },
-                                            }, {
-                                                "kind": "Field",
-                                                "name": { "kind": "Name", "value": "native" },
-                                            }, { "kind": "Field", "name": { "kind": "Name", "value": "english" } }],
-                                        },
-                                    }, { "kind": "Field", "name": { "kind": "Name", "value": "siteUrl" } }],
+                                        "kind": "FragmentSpread",
+                                        "name": { "kind": "Name", "value": "showcaseMedia" },
+                                    }],
                                 },
                             }],
                         },
@@ -5105,10 +5204,7 @@ export const MediaFragmentDoc = {
                 },
             }],
         },
-    }],
-} as unknown as DocumentNode<MediaFragment, unknown>
-export const ShowcaseMediaFragmentDoc = {
-    "kind": "Document", "definitions": [{
+    }, {
         "kind": "FragmentDefinition",
         "name": { "kind": "Name", "value": "showcaseMedia" },
         "typeCondition": { "kind": "NamedType", "name": { "kind": "Name", "value": "Media" } },
@@ -5180,7 +5276,7 @@ export const ShowcaseMediaFragmentDoc = {
             }],
         },
     }],
-} as unknown as DocumentNode<ShowcaseMediaFragment, unknown>
+} as unknown as DocumentNode<MediaFragment, unknown>
 export const ShortMediaFragmentDoc = {
     "kind": "Document", "definitions": [{
         "kind": "FragmentDefinition",
@@ -6040,6 +6136,77 @@ export const AnimeByIdDocument = {
         },
     }, {
         "kind": "FragmentDefinition",
+        "name": { "kind": "Name", "value": "showcaseMedia" },
+        "typeCondition": { "kind": "NamedType", "name": { "kind": "Name", "value": "Media" } },
+        "selectionSet": {
+            "kind": "SelectionSet",
+            "selections": [{ "kind": "Field", "name": { "kind": "Name", "value": "id" } }, {
+                "kind": "Field",
+                "name": { "kind": "Name", "value": "idMal" },
+            }, { "kind": "Field", "name": { "kind": "Name", "value": "siteUrl" } }, {
+                "kind": "Field",
+                "name": { "kind": "Name", "value": "status" },
+                "arguments": [{
+                    "kind": "Argument",
+                    "name": { "kind": "Name", "value": "version" },
+                    "value": { "kind": "IntValue", "value": "2" },
+                }],
+            }, { "kind": "Field", "name": { "kind": "Name", "value": "season" } }, {
+                "kind": "Field",
+                "name": { "kind": "Name", "value": "title" },
+                "selectionSet": {
+                    "kind": "SelectionSet",
+                    "selections": [{
+                        "kind": "Field",
+                        "name": { "kind": "Name", "value": "userPreferred" },
+                    }, { "kind": "Field", "name": { "kind": "Name", "value": "romaji" } }, {
+                        "kind": "Field",
+                        "name": { "kind": "Name", "value": "english" },
+                    }, { "kind": "Field", "name": { "kind": "Name", "value": "native" } }],
+                },
+            }, {
+                "kind": "Field",
+                "name": { "kind": "Name", "value": "coverImage" },
+                "selectionSet": {
+                    "kind": "SelectionSet",
+                    "selections": [{
+                        "kind": "Field",
+                        "name": { "kind": "Name", "value": "extraLarge" },
+                    }, { "kind": "Field", "name": { "kind": "Name", "value": "large" } }, {
+                        "kind": "Field",
+                        "name": { "kind": "Name", "value": "medium" },
+                    }, { "kind": "Field", "name": { "kind": "Name", "value": "color" } }],
+                },
+            }, { "kind": "Field", "name": { "kind": "Name", "value": "bannerImage" } }, {
+                "kind": "Field",
+                "name": { "kind": "Name", "value": "episodes" },
+            }, { "kind": "Field", "name": { "kind": "Name", "value": "synonyms" } }, {
+                "kind": "Field",
+                "name": { "kind": "Name", "value": "startDate" },
+                "selectionSet": {
+                    "kind": "SelectionSet",
+                    "selections": [{ "kind": "Field", "name": { "kind": "Name", "value": "year" } }, {
+                        "kind": "Field",
+                        "name": { "kind": "Name", "value": "month" },
+                    }, { "kind": "Field", "name": { "kind": "Name", "value": "day" } }],
+                },
+            }, {
+                "kind": "Field",
+                "name": { "kind": "Name", "value": "nextAiringEpisode" },
+                "selectionSet": {
+                    "kind": "SelectionSet",
+                    "selections": [{
+                        "kind": "Field",
+                        "name": { "kind": "Name", "value": "airingAt" },
+                    }, { "kind": "Field", "name": { "kind": "Name", "value": "timeUntilAiring" } }, {
+                        "kind": "Field",
+                        "name": { "kind": "Name", "value": "episode" },
+                    }],
+                },
+            }],
+        },
+    }, {
+        "kind": "FragmentDefinition",
         "name": { "kind": "Name", "value": "media" },
         "typeCondition": { "kind": "NamedType", "name": { "kind": "Name", "value": "Media" } },
         "selectionSet": {
@@ -6201,22 +6368,9 @@ export const AnimeByIdDocument = {
                                 "selectionSet": {
                                     "kind": "SelectionSet",
                                     "selections": [{
-                                        "kind": "Field",
-                                        "name": { "kind": "Name", "value": "id" },
-                                    }, {
-                                        "kind": "Field",
-                                        "name": { "kind": "Name", "value": "title" },
-                                        "selectionSet": {
-                                            "kind": "SelectionSet",
-                                            "selections": [{
-                                                "kind": "Field",
-                                                "name": { "kind": "Name", "value": "romaji" },
-                                            }, {
-                                                "kind": "Field",
-                                                "name": { "kind": "Name", "value": "native" },
-                                            }, { "kind": "Field", "name": { "kind": "Name", "value": "english" } }],
-                                        },
-                                    }, { "kind": "Field", "name": { "kind": "Name", "value": "siteUrl" } }],
+                                        "kind": "FragmentSpread",
+                                        "name": { "kind": "Name", "value": "showcaseMedia" },
+                                    }],
                                 },
                             }],
                         },

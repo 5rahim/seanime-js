@@ -46,32 +46,14 @@ export class Nyaa {
         return parseTorrent(id, result.data) as any
     }
 
-    // async getTorrent(
-    //   id: number,
-    //   options: GetTorrentOptions = { withComments: false }
-    // ): Promise<ViewTorrent> {
-    //   const result = await this.agent.callApi<ViewTorrent>(`info/${id}`)
-    //   if (options.withComments) {
-    //     const comments = await this.agent.call(`view/${id}`)
-
-    //     result.comments = parseComments(comments)
-    //   }
-    //   return result
-    // }
-
-    // static async getTorrent(
-    //   id: number,
-    //   options: GetTorrentOptions = { withComments: false },
-    //   params: NyaaRequestOptions<'json'> = {}
-    // ): Promise<ViewTorrent> {
-    //   const result = await Agent.callApi<ViewTorrent>(`info/${id}`, params)
-    //   if (options.withComments) {
-    //     const comments = await Agent.call(`view/${id}`, params)
-
-    //     result.comments = parseComments(comments.data as string)
-    //   }
-    //   return result
-    // }
+    static async getTorrent(
+        id: number,
+        options: GetTorrentOptions = { withComments: false },
+        params: NyaaRequestOptions<"json"> = {},
+    ): Promise<ViewTorrent> {
+        const result = await Agent.callApi<ViewTorrent>(`info/${id}`, params)
+        return result
+    }
 
     async search(
         query: string | SearchQuery,

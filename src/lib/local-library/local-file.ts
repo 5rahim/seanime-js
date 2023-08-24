@@ -10,6 +10,7 @@ export type AnimeFileInfo = {
     releaseGroup?: string
     season?: string
     part?: string
+    cour?: string
     episode?: string
 }
 
@@ -50,6 +51,7 @@ export const createLocalFile = async (settings: Settings, props: Pick<LocalFile,
                     releaseGroup: obj.subber,
                     season: obj.season,
                     part: obj.part,
+                    cour: obj.cour,
                     episode: obj.episode,
                 })
             }
@@ -66,6 +68,7 @@ export const createLocalFile = async (settings: Settings, props: Pick<LocalFile,
                 releaseGroup: parsed.subber,
                 season: parsed.season,
                 part: parsed.part,
+                cour: parsed.cour,
                 episode: parsed.episode,
             } : undefined,
             parsedFolderInfo,

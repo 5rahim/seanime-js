@@ -78,6 +78,20 @@ export default {
         },
     },
 
+    //Cour
+    cour: {
+        range: {
+            extract: [],
+            keep: [],
+        },
+        single: {
+            extract: [
+                /\b[Cc]our[-._ ](?<cour>\d)\b/,
+            ],
+            keep: [],
+        },
+    },
+
     //Season
     season: {
         range: {

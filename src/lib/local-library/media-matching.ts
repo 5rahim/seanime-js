@@ -63,6 +63,9 @@ export async function findBestCorrespondingMedia(
     const seasonAsNumber = (parsed.season && _.isNumber(parseInt(parsed.season)))
         ? parseInt(parsed.season)
         : undefined
+    const courAsNumber = (folderParsed?.cour && _.isNumber(parseInt(folderParsed.cour)))
+        ? parseInt(folderParsed.cour)
+        : (parsed.cour && _.isNumber(parseInt(parsed.cour))) ? parseInt(parsed.cour) : undefined
 
     /* Get all variations of title */
 
@@ -89,6 +92,8 @@ export async function findBestCorrespondingMedia(
     let titleVariations = [
         (noSeasons && _folderTitle) ? _folderTitle : undefined,
         (noSeasons && parsed.title) ? parsed.title : undefined,
+        (!!courAsNumber && _folderTitle) ? `${_folderTitle} Cour ${courAsNumber}` : undefined, // Cour
+        (!!courAsNumber && parsed.title) ? `${parsed.title} Cour ${courAsNumber}` : undefined, // Cour
         ((_folderTitle && !parsed.title) || (!bothTitlesAreSimilar && eitherSeasonExists)) ? `${_folderTitle} Season ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
         ((_folderTitle && !parsed.title) || (!bothTitlesAreSimilar && eitherSeasonExists)) ? `${_folderTitle} Part ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
         ((_folderTitle && !parsed.title) || (!bothTitlesAreSimilar && eitherSeasonExists)) ? `${_folderTitle} Cour ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
@@ -207,10 +212,7 @@ export async function findBestCorrespondingMedia(
     const best_english = eliminateLeastSimilarElement(differentFoundMedia.map(n => n.title?.english?.toLowerCase()).filter(Boolean))
     const best_romaji = eliminateLeastSimilarElement(differentFoundMedia.map(n => n.title?.romaji?.toLowerCase()).filter(Boolean))
     const best_syn = eliminateLeastSimilarElement(differentFoundMedia.flatMap(n => n.synonyms?.filter(Boolean).filter(syn => isSeasonTitle(syn.toLowerCase()))).map(n => n?.toLowerCase()).filter(Boolean))
-    // debug(best_userPreferred, "preferred")
-    // debug(best_english, "english")
-    // debug(best_romaji, "romaji")
-    // debug(best_syn, "season synonym")
+    // debug(best_userPreferred, "preferred")// debug(best_english, "english")// debug(best_romaji, "romaji")// debug(best_syn, "season synonym")
 
     // Compare each title variation with the best titles from different sources
     let bestTitleComparisons = titleVariations.filter(Boolean).map(title => {
