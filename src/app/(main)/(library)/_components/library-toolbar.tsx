@@ -34,9 +34,7 @@ export function LibraryToolbar() {
     const setLocalFiles = useSetLocalFiles()
 
     const unresolvedFileCount = useSelectAtom(localFilesAtom, files => files.filter(file => !file.mediaId && !file.ignored).length)
-
     const lockedPaths = useSelectAtom(localFilesAtom, files => files.filter(file => file.locked).map(file => file.path))
-
     const ignoredPaths = useSelectAtom(localFilesAtom, files => files.filter(file => file.ignored).map(file => file.path))
 
     const [isLoading, setIsLoading] = useState(false)
@@ -54,18 +52,15 @@ export function LibraryToolbar() {
     }
 
     const handleRefreshEntries = async () => {
-        const lockedPathsSet = new Set([...lockedPaths])
-        const ignoredPathsSet = new Set([...ignoredPaths])
-
         if (user && token) {
             const tID = toast.loading("Loading")
             setIsLoading(true)
 
             const result = await scanLocalFiles(settings, user?.name, token, {
-                ignored: Array.from(lockedPathsSet),
-                locked: Array.from(ignoredPathsSet),
+                ignored: lockedPaths,
+                locked: ignoredPaths,
             })
-            if (result) {
+            if (result && result.checkedFiles && !result.error) {
                 const incomingFiles = result.checkedFiles
 
                 /**
@@ -78,8 +73,10 @@ export function LibraryToolbar() {
                     return [...keptFiles, ...incomingFiles.filter(file => !keptFilesPaths.has(file.path))]
                 })
 
+                toast.success("Your local library is up to date")
+            } else if (result && result.error) {
+                toast.error(result.error)
             }
-            toast.success("Your local library is up to date")
             toast.remove(tID)
             setIsLoading(false)
         }
@@ -94,23 +91,25 @@ export function LibraryToolbar() {
                 ignored: [],
                 locked: [],
             })
-            if (result) {
-                setLocalFiles(result.checkedFiles)
+            if (result && result.checkedFiles) {
+                if (result.checkedFiles.length > 0) {
+                    setLocalFiles(result.checkedFiles)
+                }
+                toast.success("Your local library is up to date")
+            } else if (result.error) {
+                toast.error(result.error)
             }
 
-            toast.success("Your local library is up to date")
             toast.remove(tID)
             setIsLoading(false)
         }
     }
 
     const handleCleanRepository = async () => {
-        const lockedPathsSet = new Set([...lockedPaths])
-        const ignoredPathsSet = new Set([...ignoredPaths])
 
         const { pathsToClean } = await cleanupFiles(settings, {
-            ignored: Array.from(lockedPathsSet),
-            locked: Array.from(ignoredPathsSet),
+            ignored: lockedPaths,
+            locked: ignoredPaths,
         })
         const pathsToCleanSet = new Set(pathsToClean)
         // Delete local files

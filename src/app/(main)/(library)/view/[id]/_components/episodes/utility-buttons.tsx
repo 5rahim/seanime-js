@@ -1,4 +1,4 @@
-import { PrimitiveAtom } from "jotai/index"
+import { PrimitiveAtom } from "jotai"
 import { LibraryEntry } from "@/atoms/library/library-entry.atoms"
 import { useSettings } from "@/atoms/settings"
 import { useSelectAtom } from "@/atoms/helpers"
@@ -11,12 +11,17 @@ import toast from "react-hot-toast"
 import { openDirectoryInExplorer } from "@/lib/helpers/directory"
 import { type } from "@tauri-apps/api/os"
 import React from "react"
+import { useSetLocalFiles } from "@/atoms/library/local-file.atoms"
+import { DropdownMenu } from "@/components/ui/dropdown-menu"
+import { BiDotsVerticalRounded } from "@react-icons/all-files/bi/BiDotsVerticalRounded"
 
 export const UtilityButtons = (props: { entryAtom: PrimitiveAtom<LibraryEntry> }) => {
 
     const { settings } = useSettings()
 
     const sharedPath = useSelectAtom(props.entryAtom, entry => entry.sharedPath)
+    const mediaId = useSelectAtom(props.entryAtom, entry => entry.media.id)
+    const setLocalFiles = useSetLocalFiles()
 
     return (
         <>
@@ -44,6 +49,24 @@ export const UtilityButtons = (props: { entryAtom: PrimitiveAtom<LibraryEntry> }
                     }, 1000)
                 }}
             />
+            <DropdownMenu trigger={<IconButton icon={<BiDotsVerticalRounded/>} intent={"gray-basic"} size={"xl"}/>}>
+                <DropdownMenu.Item
+                    onClick={() => {
+                        setLocalFiles(draft => {
+                            for (const draftFile of draft) {
+                                if (draftFile.mediaId === mediaId) {
+                                    draftFile.locked = false
+                                    draftFile.ignored = false
+                                    draftFile.mediaId = null
+                                }
+                            }
+                            return
+                        })
+                    }}
+                >
+                    Un-match all files
+                </DropdownMenu.Item>
+            </DropdownMenu>
         </>
     )
 }

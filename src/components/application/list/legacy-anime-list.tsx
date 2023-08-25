@@ -7,7 +7,7 @@ import { IoLibrarySharp } from "@react-icons/all-files/io5/IoLibrarySharp"
 import { Tooltip } from "@/components/ui/tooltip"
 import { cn } from "@/components/ui/core"
 import { BiStar } from "@react-icons/all-files/bi/BiStar"
-import { AnilistMedia } from "@/lib/anilist/fragment"
+import { AnilistShortMedia } from "@/lib/anilist/fragment"
 import { Nullish } from "@/types/common"
 import { BiCalendarAlt } from "@react-icons/all-files/bi/BiCalendarAlt"
 import { Button, IconButton } from "@/components/ui/button"
@@ -25,7 +25,7 @@ type AnimeListItem = {
     // title: string
     // imageSrc: string
     // isAiring: boolean
-    media: Nullish<AnilistMedia>
+    media: Nullish<AnilistShortMedia>
     isInLocalLibrary?: boolean
     progress?: { watched: number, total: Nullish<number> }
     score?: Nullish<number>

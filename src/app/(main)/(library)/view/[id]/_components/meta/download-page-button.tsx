@@ -30,7 +30,8 @@ export const DownloadPageButton = (
         status: collectionEntryStatus,
     })
 
-    if (downloadInfo.toDownload === 0) return null
+    if (downloadInfo.toDownload === 0) return <Link href={`/view/${detailedMedia.id}/download`}>Nothing to download
+        REMOVE</Link>
 
     return (
         <div>

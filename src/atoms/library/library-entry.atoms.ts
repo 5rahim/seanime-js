@@ -5,7 +5,7 @@ import { logger } from "@/lib/helpers/debug"
 import { splitAtom } from "jotai/utils"
 import { localFilesAtom } from "@/atoms/library/local-file.atoms"
 import { atom, PrimitiveAtom } from "jotai"
-import { AnilistSimpleMedia } from "@/lib/anilist/fragment"
+import { AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import { LocalFile } from "@/lib/local-library/local-file"
 import { useSelectAtom } from "@/atoms/helpers"
 
@@ -16,7 +16,7 @@ import { useSelectAtom } from "@/atoms/helpers"
 
 export type LibraryEntry = {
     id: number // Media ID
-    media: AnilistSimpleMedia,
+    media: AnilistShowcaseMedia,
     files: LocalFile[]
     sharedPath: string
 }

@@ -1,7 +1,7 @@
 "use server"
 import rakun from "@/lib/rakun/rakun"
 import { Settings } from "@/atoms/settings"
-import { AnilistSimpleMedia } from "@/lib/anilist/fragment"
+import { AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import { findBestCorrespondingMedia } from "@/lib/local-library/media-matching"
 
 export type AnimeFileInfo = {
@@ -19,6 +19,12 @@ export type LocalFile = {
     path: string // File path
     parsedFolderInfo: AnimeFileInfo[]
     parsedInfo: AnimeFileInfo | undefined // Parsed anime info
+    metadata: {
+        episode?: number
+        isVersion?: boolean
+        isOVA?: boolean
+        isNC?: boolean
+    }
     locked: boolean
     ignored: boolean
     mediaId: number | null
@@ -72,6 +78,7 @@ export const createLocalFile = async (settings: Settings, props: Pick<LocalFile,
                 episode: parsed.episode,
             } : undefined,
             parsedFolderInfo,
+            metadata: {},
             locked: false, // Default values, will be hydrated later
             ignored: false, // Default values, will be hydrated later
             mediaId: null, // Default values, will be hydrated later
@@ -84,6 +91,7 @@ export const createLocalFile = async (settings: Settings, props: Pick<LocalFile,
             name: props.name,
             parsedInfo: undefined,
             parsedFolderInfo: [],
+            metadata: {},
             locked: false,
             ignored: false,
             mediaId: null,
@@ -97,23 +105,23 @@ export const createLocalFile = async (settings: Settings, props: Pick<LocalFile,
  * -----------------------------------------------------------------------------------------------*/
 
 export type LocalFileWithMedia = LocalFile & {
-    media: AnilistSimpleMedia | undefined
+    media: AnilistShowcaseMedia | undefined
 }
 
 /**
- * This method take a [LocalFile] and an array of [AnilistMedia] fetched from AniList.
+ * This method take a [LocalFile] and an array of [AnilistShortMedia] fetched from AniList.
  * We compare the filenames, anime title, folder title to get the exact media.
  */
 export const createLocalFileWithMedia = async (
     file: LocalFile,
-    allMedia: AnilistSimpleMedia[],
+    allMedia: AnilistShowcaseMedia[],
     mediaTitles: { eng: string[], rom: string[], preferred: string[], synonymsWithSeason: string[] },
-    matchingCache: Map<string, AnilistSimpleMedia | undefined>,
+    matchingCache: Map<string, AnilistShowcaseMedia | undefined>,
 ): Promise<LocalFileWithMedia | undefined> => {
 
     if (allMedia.length > 0) {
 
-        let correspondingMedia: AnilistSimpleMedia | undefined = undefined
+        let correspondingMedia: AnilistShowcaseMedia | undefined = undefined
 
         // Find the corresponding media only if:
         // The file has been parsed AND it has an anime title OR one of its folders has an anime title

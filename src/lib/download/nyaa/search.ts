@@ -6,6 +6,7 @@ import rakun from "@/lib/rakun/rakun"
 import { logger } from "@/lib/helpers/debug"
 import { isPast } from "date-fns"
 import { Nyaa } from "@/lib/download/nyaa/api"
+import { getAnilistMediaTitleList } from "@/lib/anilist/helpers.shared"
 
 
 export async function unstable_findNyaaTorrents(props: {
@@ -74,7 +75,7 @@ export async function unstable_findNyaaTorrents(props: {
     /* Format title */
 
     // eg: [jujutsu kaisen, ...]
-    let prospectiveTitleArr = [media.title?.english, media.title?.userPreferred, media.title?.romaji, ...(media.synonyms?.filter(isSeasonTitle) || [])]
+    let prospectiveTitleArr = getAnilistMediaTitleList(media) ?? [media.title?.english, media.title?.userPreferred, media.title?.romaji, ...(media.synonyms?.filter(isSeasonTitle) || [])]
     prospectiveTitleArr = [
         ...(new Set(
                 prospectiveTitleArr

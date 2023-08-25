@@ -11,7 +11,7 @@ import { addSeconds, formatDistanceToNow } from "date-fns"
 import { RiSignalTowerLine } from "@react-icons/all-files/ri/RiSignalTowerLine"
 import Link from "next/link"
 import { Button, IconButton } from "@/components/ui/button"
-import { AnilistSimpleMedia } from "@/lib/anilist/fragment"
+import { AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import { BiPlay } from "@react-icons/all-files/bi/BiPlay"
 import { BiBookmarkPlus } from "@react-icons/all-files/bi/BiBookmarkPlus"
 import { VscVerified } from "@react-icons/all-files/vsc/VscVerified"
@@ -157,7 +157,7 @@ export const AnimeListItem = ((props: { mediaId: number }) => {
     )
 })
 
-const MainActionButton = (props: { media: AnilistSimpleMedia }) => {
+const MainActionButton = (props: { media: AnilistShowcaseMedia }) => {
     const entryAtom = useLibraryEntryAtomByMediaId(props.media.id)
     return (
         <>
@@ -193,7 +193,7 @@ const MainActionButton = (props: { media: AnilistSimpleMedia }) => {
     )
 }
 
-const LockFilesButton = (props: { media: AnilistSimpleMedia }) => {
+const LockFilesButton = (props: { media: AnilistShowcaseMedia }) => {
 
     const files = useLocalFilesByMediaId(props.media.id)
     const allFilesLocked = files.every(file => file.locked)

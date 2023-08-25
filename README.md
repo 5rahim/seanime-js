@@ -69,7 +69,8 @@ npm run tauri:dev
     - 10x faster scanning with cache system
     - No excessive re-rendering
 - [ ] Better matching for Specials/OVA
-- [ ] Prohibit scanning when directory doesn't exist
+- [ ] Edit file metadata
+- [x] Unmatch entire media
 - [ ] Preliminary scan to hydrate AniList (for users without anilist data)
     - Use matching recommendation system
 - Video

@@ -10,7 +10,7 @@ import { atomWithStorage, selectAtom, splitAtom } from "jotai/utils"
 import toast from "react-hot-toast"
 import { useCallback, useMemo } from "react"
 import deepEquals from "fast-deep-equal"
-import { AnilistMedia, AnilistSimpleMedia } from "@/lib/anilist/fragment"
+import { AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 
 export type AnilistCollection = AnimeCollectionQuery["MediaListCollection"]
 // Typescript's being annoying, so I had to extract the type myself
@@ -23,7 +23,7 @@ export type AnilistCollectionEntry = {
     private?: boolean | null,
     startedAt?: { year?: number | null, month?: number | null, day?: number | null } | null,
     completedAt?: { year?: number | null, month?: number | null, day?: number | null } | null,
-    media?: AnilistMedia | null
+    media?: AnilistShortMedia | null
 } | null | undefined
 
 /**
@@ -52,11 +52,11 @@ export const getAnilistCollectionAtom = atom(null, async (get, set) => {
 
                 // Set all user media
                 const collectionEntries = res.MediaListCollection?.lists?.map(n => n?.entries).flat() ?? []
-                // Get media from user's watchlist as [AnilistMedia]
+                // Get media from user's watchlist as [AnilistShortMedia]
                 const userMedia = collectionEntries.filter(Boolean).map(entry => entry.media)
-                // Normalize [AnilistMedia] to [AnilistSimpleMedia]
+                // Normalize [AnilistShortMedia] to [AnilistShowcaseMedia]
                 const watchListMedia = userMedia.map(media => _.omit(media, "streamingEpisodes", "relations", "studio", "description", "format", "source", "isAdult", "genres", "trailer", "countryOfOrigin", "studios")) ?? []
-                // Get related [AnilistSimpleMedia]
+                // Get related [AnilistShowcaseMedia]
                 const relatedMedia = userMedia
                     .filter(Boolean)
                     .flatMap(media => media.relations?.edges?.filter(edge => edge?.relationType === "PREQUEL"
@@ -66,7 +66,7 @@ export const getAnilistCollectionAtom = atom(null, async (get, set) => {
                         || edge?.relationType === "ALTERNATIVE"
                         || edge?.relationType === "PARENT")
                         .flatMap(edge => edge?.node).filter(Boolean),
-                    ) as AnilistSimpleMedia[]
+                    ) as AnilistShowcaseMedia[]
 
                 // Set all media
                 set(allUserMediaAtom, _.uniqBy([...watchListMedia, ...relatedMedia], media => media.id))
@@ -132,7 +132,7 @@ export const useAnilistCollectionEntryByMediaId = (mediaId: number) => {
  * All media
  * -----------------------------------------------------------------------------------------------*/
 
-export const allUserMediaAtom = atomWithStorage<AnilistSimpleMedia[]>("sea-anilist-media", [], undefined, { unstable_getOnInit: true })
+export const allUserMediaAtom = atomWithStorage<AnilistShowcaseMedia[]>("sea-anilist-media", [], undefined, { unstable_getOnInit: true })
 
 export const allUserMediaAtoms = splitAtom(allUserMediaAtom, media => media.id)
 
@@ -172,12 +172,12 @@ export const useAnilistUserMedia = (mediaId: number) => {
  */
 export const useAnilistUserMediaAtom = (mediaId: number) => {
     const [, get] = useAtom(getUserMediaAtomByIdAtom)
-    return useMemo(() => get(mediaId), []) as PrimitiveAtom<AnilistSimpleMedia> | undefined
+    return useMemo(() => get(mediaId), []) as PrimitiveAtom<AnilistShowcaseMedia> | undefined
 }
 
 export const useAnilistUserMediaAtoms = () => {
     const value = useAtomValue(allUserMediaAtoms)
-    return useMemo(() => value, []) as Array<PrimitiveAtom<AnilistSimpleMedia>>
+    return useMemo(() => value, []) as Array<PrimitiveAtom<AnilistShowcaseMedia>>
 }
 
 

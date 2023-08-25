@@ -1,8 +1,8 @@
 import gql from "graphql-tag"
 import { MediaFragment, ShortMediaFragment, ShowcaseMediaFragment } from "@/gql/graphql"
 
-export type AnilistMedia = ShortMediaFragment
-export type AnilistSimpleMedia = ShowcaseMediaFragment
+export type AnilistShortMedia = ShortMediaFragment
+export type AnilistShowcaseMedia = ShowcaseMediaFragment
 export type AnilistDetailedMedia = MediaFragment
 
 export const _mediaFragment = gql`
@@ -83,6 +83,8 @@ export const _shortMediaFragment = gql`
         siteUrl
         status(version: 2)
         season
+        type
+        format
         title {
             userPreferred
             romaji
@@ -149,6 +151,8 @@ export const _shortMediaWithoutRelationsFragment = gql`
         siteUrl
         status(version: 2)
         season
+        type
+        format
         title {
             userPreferred
             romaji

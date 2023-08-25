@@ -1,5 +1,5 @@
 "use server"
-import { AnilistMedia, AnilistSimpleMedia } from "@/lib/anilist/fragment"
+import { AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import _ from "lodash"
 import { ordinalize } from "inflection"
 import similarity from "string-similarity"
@@ -21,7 +21,7 @@ import { logger } from "@/lib/helpers/debug"
  * - Compare the best match titles (===) to a media
  */
 export async function findBestCorrespondingMedia(
-    allMedia: AnilistMedia[],
+    allMedia: AnilistShortMedia[],
     mediaTitles: {
         eng: string[],
         rom: string[],
@@ -30,7 +30,7 @@ export async function findBestCorrespondingMedia(
     },
     parsed: AnimeFileInfo,
     parsedFolders: AnimeFileInfo[],
-    matchingCache: Map<string, AnilistSimpleMedia | undefined>,
+    matchingCache: Map<string, AnilistShowcaseMedia | undefined>,
 ) {
 
     function debug(...value: any[]) {
@@ -163,7 +163,7 @@ export async function findBestCorrespondingMedia(
      * Using levenshtein
      */
 
-    let correspondingMediaFromDistance: AnilistMedia | undefined
+    let correspondingMediaFromDistance: AnilistShortMedia | undefined
 
     // Calculate Levenshtein distances and find the lowest for all title variations
     const distances = allMedia.flatMap(media => {
@@ -176,7 +176,7 @@ export async function findBestCorrespondingMedia(
 
     /* Using MAL */
 
-    let correspondingMediaFromMAL: AnilistSimpleMedia | undefined
+    let correspondingMediaFromMAL: AnilistShowcaseMedia | undefined
 
     try {
         if (_title) {
@@ -235,15 +235,11 @@ export async function findBestCorrespondingMedia(
 
     // Initialize variables to store the final rating and corresponding media
     let rating: number = 0
-    let bestMedia: AnilistSimpleMedia | undefined
+    let bestMedia: AnilistShowcaseMedia | undefined
 
     if (bestTitleMatching) {
         // Find the media with matching title
         bestMedia = allMedia.find(media => {
-            // Sometimes torrents are released by episode number and not grouped by season
-            if (!eitherSeasonExists && !!media.episodes && !!episodeAsNumber && !!media.format && media.format !== "MOVIE") {
-                if (episodeAsNumber > media.episodes) return false
-            }
             if (media.title?.userPreferred?.toLowerCase() === bestTitleMatching!.bestMatch.target.toLowerCase()
                 || media.title?.english?.toLowerCase() === bestTitleMatching!.bestMatch.target.toLowerCase()
                 || media.title?.romaji?.toLowerCase() === bestTitleMatching!.bestMatch.target.toLowerCase()
@@ -272,7 +268,7 @@ export const isSeasonTitle = (syn: string | null | undefined) => (
     syn?.toLowerCase()?.match(/\d(st|nd|rd|th) [Ss].*/)
 ) && !syn?.toLowerCase().includes("episode") && !syn?.toLowerCase().includes("第") && !syn?.toLowerCase().match(/\b(ova|special|special)\b/i)
 
-function getDistanceFromTitle(media: AnilistSimpleMedia, values: string[]) {
+function getDistanceFromTitle(media: AnilistShowcaseMedia, values: string[]) {
     if (media && media.title) {
 
         const titles = Object.values(media.title).filter(Boolean).flatMap(title => values.map(unit => lavenshtein(title!.toLowerCase(), unit!.toLowerCase())))

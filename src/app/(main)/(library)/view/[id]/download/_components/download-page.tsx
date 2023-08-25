@@ -69,6 +69,10 @@ export function DownloadPage(props: DownloadPageProps) {
         setSelectedTorrents([])
     }, [])
 
+    useEffect(() => {
+        console.log(downloadInfo)
+    }, [downloadInfo]) //TODO Remove
+
 
     // useEffect(() => {
     //     (async () => {
@@ -189,7 +193,7 @@ export function DownloadPage(props: DownloadPageProps) {
                 {/*    console.log(await torrentManager.current.getAllTorrents())*/}
                 {/*}}>Test add magnet</Button>*/}
 
-                <EpisodeList aniZipData={props.aniZipData}/>
+                <EpisodeList aniZipData={props.aniZipData} media={props.media}/>
 
                 <DataGrid<SearchTorrentData>
                     columns={columns}
@@ -233,11 +237,12 @@ export function DownloadPage(props: DownloadPageProps) {
 interface EpisodeListProps {
     children?: React.ReactNode
     aniZipData?: AniZipData
+    media: AnilistDetailedMedia
 }
 
 export const EpisodeList: React.FC<EpisodeListProps> = (props) => {
 
-    const { children, ...rest } = props
+    const { children, media, ...rest } = props
 
     const selectedTorrents = useAtomValue(sortedSelectedTorrentsAtom)
 
@@ -247,6 +252,7 @@ export const EpisodeList: React.FC<EpisodeListProps> = (props) => {
         <h3>Preview:</h3>
         <div className={"grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4"}>
             {selectedTorrents.map(torrent => {
+                // const episode = useNormalizedEpisodeNumber(torrent.parsed, media)
                 const episodeData = props.aniZipData?.episodes[torrent.parsed.episode || "0"]
                 return (
                     <div key={torrent.name}

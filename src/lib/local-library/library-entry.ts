@@ -1,16 +1,23 @@
 "use server"
 import { LocalFileWithMedia } from "@/lib/local-library/local-file"
-import { AnilistSimpleMedia } from "@/lib/anilist/fragment"
+import { AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import similarity from "string-similarity"
 import { logger } from "@/lib/helpers/debug"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
-import { AnimeByMalIdDocument, AnimeCollectionDocument, UpdateEntryDocument } from "@/gql/graphql"
+import {
+    AnimeByMalIdDocument,
+    AnimeCollectionDocument,
+    AnimeShortMediaByIdDocument,
+    UpdateEntryDocument,
+} from "@/gql/graphql"
 import fs from "fs"
 import { ANIDB_RX } from "@/lib/series-scanner/regex"
+import { findMediaEdge } from "@/lib/anilist/helpers.shared"
+import { resolveSeason } from "@/lib/anilist/helpers.server"
+import { getLocalFileParsedEpisode, getLocalFileParsedSeason } from "@/lib/local-library/helpers.shared"
 
 export type ProspectiveLibraryEntry = {
-    filePaths: Array<string>
-    media: AnilistSimpleMedia
+    media: AnilistShowcaseMedia
     accuracy: number
     sharedPath: string
     acceptedFiles: LocalFileWithMedia[],
@@ -18,19 +25,22 @@ export type ProspectiveLibraryEntry = {
 }
 
 /**
- *
+ * This function inspects all the files that were grouped under a same media
+ * It rates them and reject files with certain parameters
  */
 export const inspectProspectiveLibraryEntry = async (props: {
-    media: AnilistSimpleMedia,
-    files: LocalFileWithMedia[]
+    media: AnilistShowcaseMedia,
+    files: LocalFileWithMedia[],
+    _queriedMediaCache: Map<number, AnilistShortMedia>
 }): Promise<ProspectiveLibraryEntry> => {
 
+    const { _queriedMediaCache } = props
     const currentMedia = props.media
-    const lFiles = props.files.filter(f => f.media?.id === currentMedia?.id)
+    const files = props.files.filter(f => f.media?.id === currentMedia?.id)
 
-    if (lFiles.length && lFiles.length > 0) {
+    if (files.length && files.length > 0) {
         // Return each file with a rating
-        const lFilesWithRating = lFiles.map(f => {
+        const lFilesWithRating = files.map(f => {
             // Select the file's media titles
             const mediaTitles = [currentMedia?.title?.english, currentMedia?.title?.romaji, currentMedia?.title?.userPreferred].filter(Boolean).map(n => n.toLowerCase())
             // Get the file's parent folder anime title
@@ -66,9 +76,12 @@ export const inspectProspectiveLibraryEntry = async (props: {
                 ratingByFolderName,
             }
         })
+        // Find the highest ratings, that will be the base
         const highestRating = Math.max(...lFilesWithRating.map(item => item.rating))
         const highestRatingByFolderName = Math.max(...lFilesWithRating.map(item => item.ratingByFolderName))
 
+        // We will keep these OVAs, NC,... files even if they don't meet all parameters
+        // Why? the folder rating might be very low because they are in a folder named "Specials"
         const isNotMain = (file: LocalFileWithMedia) => {
             return (
                 ANIDB_RX[0].test(file.path) ||
@@ -83,9 +96,9 @@ export const inspectProspectiveLibraryEntry = async (props: {
 
         // This is meant to filter out files that differ from the best matches
         // For example this can help avoid having different season episodes under the same Anime
-        const mostAccurateFiles = lFilesWithRating
-            // Keep files with a rating greater than 0.4
-            .filter(item => item.rating >= 0.4 || isNotMain(item.file))
+        let mostAccurateFiles = lFilesWithRating
+            // Keep files with a rating greater than 0.3 - This might be meaningless
+            .filter(item => item.rating >= 0.3 || isNotMain(item.file))
             // If a file has a lower rating than the highest, filter it out
             .filter(item => item.rating.toFixed(3) === highestRating.toFixed(3) || isNotMain(item.file))
             //
@@ -99,10 +112,63 @@ export const inspectProspectiveLibraryEntry = async (props: {
             )
             .map(item => item.file)
 
+        // Resolve absolute episode
+        if (currentMedia.format !== "MOVIE") {
+            // Get the highest episode number
+            const highestEp = currentMedia?.nextAiringEpisode?.episode || currentMedia?.episodes
 
-        const rejectedFiles = lFiles.filter(n => !mostAccurateFiles.find(f => f.path === n.path))
+            for (let i = 0; i < mostAccurateFiles.length; i++) {
+                const file = mostAccurateFiles[i]
+                const season = getLocalFileParsedSeason(file.parsedInfo, file.parsedFolderInfo)
+                const episode = getLocalFileParsedEpisode(file.parsedInfo)
 
-        const firstFile = mostAccurateFiles[0]
+                // The parser got an absolute episode number, we will normalize it and give the file the correct ID
+                if (!!highestEp && !!episode && episode > highestEp) {
+
+                    logger("library-entry/inspectProspectiveLibraryEntry").warning(currentMedia.title?.userPreferred, `-> Absolute episode number detected`)
+
+                    // Fetch the same media but with all necessary info (relations prop) to find the relative episode
+                    let fetchedMedia: AnilistShortMedia | null | undefined
+                    if (!_queriedMediaCache.has(currentMedia.id)) {
+                        logger("library-entry/inspectProspectiveLibraryEntry").warning(`    -> Fetching necessary details (Cache MISS)`)
+                        fetchedMedia = (await useAniListAsyncQuery(AnimeShortMediaByIdDocument, { id: currentMedia.id })).Media
+                        if (fetchedMedia) _queriedMediaCache.set(currentMedia.id, fetchedMedia)
+                    } else {
+                        logger("library-entry/inspectProspectiveLibraryEntry").warning(`    -> Fetching necessary details (Cache HIT)`)
+                        fetchedMedia = _queriedMediaCache.get(currentMedia.id)
+                    }
+
+                    const prequel = !season ? (
+                        findMediaEdge(fetchedMedia, "PREQUEL")?.node
+                        || ((fetchedMedia?.format === "OVA" || fetchedMedia?.format === "ONA")
+                            ? findMediaEdge(fetchedMedia, "PARENT")?.node
+                            : undefined)
+                    ) : undefined
+
+                    // value bigger than episode count
+                    const result = await resolveSeason({
+                        media: prequel || fetchedMedia,
+                        episode: episode,
+                        increment: !season ? null : true,
+                        // force: true
+                    })
+                    logger("library-entry/inspectProspectiveLibraryEntry").warning(`    -> Normalized episode ${episode} to ${result?.episode}`)
+                    if (result?.episode && result?.episode > 0) {
+                        // Replace episode and mediaId
+                        mostAccurateFiles[i].metadata = { ...mostAccurateFiles[i].metadata, episode: result.episode }
+                        mostAccurateFiles[i].mediaId = result.rootMedia.id
+                    }
+                } else {
+                    mostAccurateFiles[i].metadata = { ...mostAccurateFiles[i].metadata, episode: episode }
+                }
+
+            }
+
+        }
+
+        const rejectedFiles = files.filter(n => !mostAccurateFiles.find(f => f.path === n.path))
+
+        const firstFile = mostAccurateFiles?.[0]
 
         if (rejectedFiles.map(n => n.path).length > 0) {
             logger("library-entry/inspectProspectiveLibraryEntry").warning(
@@ -119,12 +185,12 @@ export const inspectProspectiveLibraryEntry = async (props: {
         logger("library-entry/inspectProspectiveLibraryEntry").info(`${currentMedia.title?.english} |`, "Accuracy", Number(highestRating.toFixed(3)))
 
         return {
-            media: currentMedia,
-            filePaths: mostAccurateFiles.map(file => file.path),
+            media: currentMedia, // Unused
             acceptedFiles: mostAccurateFiles,
             rejectedFiles: rejectedFiles,
-            accuracy: Number(highestRating.toFixed(3)),
-            sharedPath: firstFile?.path?.replace("\\" + firstFile?.parsedInfo?.original || "", "") || "", // MAY NOT BE ACCURATE
+            accuracy: Number(highestRating.toFixed(3)), // Unused
+            sharedPath: firstFile?.path?.replace("\\" + firstFile?.parsedInfo?.original || "", "") || "", // Unused
+            // /\ MAY NOT BE ACCURATE as some files might have different folders
         }
     }
 
@@ -132,7 +198,6 @@ export const inspectProspectiveLibraryEntry = async (props: {
         media: currentMedia,
         acceptedFiles: [],
         rejectedFiles: [],
-        filePaths: [],
         accuracy: 0,
         sharedPath: "",
     }
@@ -148,7 +213,7 @@ export async function manuallyMatchFiles(
     userName: string,
     token: string,
     malID?: string | undefined,
-): Promise<{ error?: string, media?: AnilistSimpleMedia }> {
+): Promise<{ error?: string, media?: AnilistShowcaseMedia }> {
 
     logger("library-entry/manuallyMatchFiles").info("1) Fetching user collection")
     const collectionQuery = await useAniListAsyncQuery(AnimeCollectionDocument, { userName })
@@ -156,7 +221,7 @@ export async function manuallyMatchFiles(
     logger("library-entry/manuallyMatchFiles").info("2) Verifying that all files exist")
     if (filePaths.some(path => !(fs.existsSync(path)))) {
         logger("library-entry/manuallyMatchFiles").error("File does not exist", filePaths.filter(path => !(fs.existsSync(path))))
-        return { error: "An error occurred. Refresh your library entries" }
+        return { error: "An error has occurred. Refresh your library entries." }
     }
 
     if (type === "match") {
@@ -186,7 +251,7 @@ export async function manuallyMatchFiles(
                     }
                 }
 
-                // Return media so that the client updates [sea-library-entries] and [sea-local-files-with-no-match]
+                // Return media so that the client updates the [LocalFile]s
                 return { media: data.Media }
 
                 // return { error: animeExistsInUsersWatchList ? "Anime exists in list" : "Anime doesn't exist in list" }
