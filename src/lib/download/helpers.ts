@@ -1,6 +1,5 @@
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
 import { LocalFile } from "@/lib/local-library/local-file"
-import { useNormalizedEpisodeNumber } from "@/app/(main)/(library)/view/[id]/_components/normalize-episode-number"
 import { MediaListStatus } from "@/gql/graphql"
 
 /**
@@ -26,11 +25,10 @@ export const getMediaDownloadInfo = (
         status: MediaListStatus | null | undefined,
     },
 ) => {
-    const normalizedLastEpisodeNumber = useNormalizedEpisodeNumber(lastEpisodeFile?.parsedInfo, media)
 
     const nextEpisodeHasAired = (media.nextAiringEpisode?.timeUntilAiring) ? media.nextAiringEpisode?.timeUntilAiring <= 0 : undefined
 
-    const downloadedEpisodeNumber = (lastEpisodeFile && lastEpisodeFile.parsedInfo?.episode) ? (normalizedLastEpisodeNumber ?? Number(lastEpisodeFile.parsedInfo.episode)) : undefined
+    const downloadedEpisodeNumber = (lastEpisodeFile && lastEpisodeFile.metadata.episode) ? lastEpisodeFile.metadata.episode : undefined
 
     const progressOrEpisodeNumber = !libraryEntryExists ? progress : (downloadedEpisodeNumber ?? progress)
 

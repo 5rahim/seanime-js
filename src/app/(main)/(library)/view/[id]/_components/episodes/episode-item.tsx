@@ -1,9 +1,8 @@
-import React, { startTransition } from "react"
+import React, { startTransition, useMemo, useState } from "react"
 import { PrimitiveAtom } from "jotai/index"
 import { LocalFile } from "@/lib/local-library/local-file"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
 import { useFocusSetAtom, useSelectAtom } from "@/atoms/helpers"
-import { useNormalizedEpisodeNumber } from "@/app/(main)/(library)/view/[id]/_components/normalize-episode-number"
 import Image from "next/image"
 import { DropdownMenu } from "@/components/ui/dropdown-menu"
 import { IconButton } from "@/components/ui/button"
@@ -21,19 +20,21 @@ export const EpisodeItem = React.memo((props: {
     const { fileAtom, aniZipData, onPlayFile, media } = props
 
     const mediaID = useSelectAtom(fileAtom, file => file.mediaId) // Listen to changes in order to unmount when we unmatch
+    const metadata = useSelectAtom(fileAtom, file => file.metadata)
     const parsedInfo = useSelectAtom(fileAtom, file => file.parsedInfo)
     const path = useSelectAtom(fileAtom, file => file.path)
     const setFileLocked = useFocusSetAtom(fileAtom, "locked")
     const setFileMediaId = useFocusSetAtom(fileAtom, "mediaId")
 
-    const normalizedEpisodeNumber = useNormalizedEpisodeNumber(parsedInfo, media)
+    const [episodeData] = useState(aniZipData?.episodes[String(metadata.episode)])
+    const fileTitle = useMemo(() => parsedInfo?.original?.replace(/.(mkv|mp4)/, "")?.replaceAll(/(\[)[a-zA-Z0-9 ._~-]+(\])/ig, "")?.replaceAll(/[_,-]/g, " "), [parsedInfo])
 
-    const episodeData = aniZipData?.episodes[String(normalizedEpisodeNumber ?? Number(parsedInfo?.episode))]
-    const fileTitle = parsedInfo?.original?.replace(/.(mkv|mp4)/, "")?.replaceAll(/(\[)[a-zA-Z0-9 ._~-]+(\])/ig, "")?.replaceAll(/[_,-]/g, " ")
-
-    let title = parsedInfo?.title || fileTitle || "???"
-    if (episodeData?.episodeNumber || parsedInfo?.episode) title = `Episode ${episodeData?.episodeNumber ?? parsedInfo?.episode}`
-    if (media.format === "MOVIE" && parsedInfo?.title) title = parsedInfo.title
+    let title = useMemo(() => {
+        let _output = parsedInfo?.title || fileTitle || "???"
+        if (!!metadata.episode) _output = `Episode ${metadata.episode}`
+        if (media.format === "MOVIE" && parsedInfo?.title) _output = parsedInfo.title
+        return _output
+    }, [parsedInfo])
 
     if (mediaID !== media.id) return null
 
@@ -47,7 +48,7 @@ export const EpisodeItem = React.memo((props: {
                     className="h-24 w-24 flex-none rounded-md object-cover object-center relative overflow-hidden">
                     <Image
                         src={episodeData?.image}
-                        alt={""}
+                        alt={"episode image"}
                         fill
                         quality={60}
                         priority
