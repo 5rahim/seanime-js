@@ -237,13 +237,35 @@ export default abstract class Parser {
                             }
                         }
                     }
+
+                    // Trying to account for titles like "Zoom 100" "Mob Psycho 100"
+                    const matches = value.match(/- (?<episode>0\d+)(?: |$)/)
+                    if (matches?.groups?.episode) {
+                        result["episode"] = Number(matches.groups.episode).toString()
+                        value = Parser.clean({
+                            value,
+                            removes: [/- (?<episode>0\d+)(?: |$)/],
+                        })
+                    }
+
+                    if (!result.episode) {
+                        const matches = value.match(/(?<=[a-zA-Z]) \b(?<episode>\d{2})\b (?=[a-zA-Z]+)/)
+                        if (matches?.groups?.episode) {
+                            result["episode"] = Number(matches.groups.episode).toString()
+                            value = Parser.clean({
+                                value,
+                                removes: [/(?<=[a-zA-Z]) \b(?<episode>\d{2})\b (?=[a-zA-Z]+)/],
+                            })
+                        }
+                    }
                 }
+
                 // Remove leftover episode titles
                 // eg: Cowboy Bebop - - Stray dog strut -> Cowboy Bebop
                 value = value.replace(/\s?-\s?-\s?(.*)(?: |$)/g, "")
                 // Remove leftover movie mention
                 // eg: Cowboy Bebop +Movie
-                value = value.replace(/[+-][Mm]ovies?/g, "")
+                value = value.replace(/[+_-][Mm]ovies?/g, "")
 
                 //Replace special characters with spaces if needed
                 for (const regex of [...regexs.processors.post.name.special_to_space, ...regexs.processors.post.name.isolated])
@@ -383,23 +405,35 @@ export default abstract class Parser {
             { key: "movie", collection: regexs.serie.movie.single.keep, get: "value", mode: "skip" },
 
             // key was "part"
-            { key: "season", collection: regexs.serie.part.range.extract, get: "value" },
+            // { key: "season", collection: regexs.serie.part.range.extract, get: "value" },
             { key: "season", collection: regexs.serie.part.single.extract, get: "value" },
-            { key: "season", collection: regexs.serie.part.range.keep, get: "value", mode: "skip" },
+            // { key: "season", collection: regexs.serie.part.range.keep, get: "value", mode: "skip" },
             { key: "season", collection: regexs.serie.part.single.keep, get: "value", mode: "skip" },
 
             // NEW cour
             { key: "cour", collection: regexs.serie.cour.single.extract, get: "value" },
 
-            { key: "none", collection: regexs.serie.season.range.extract, get: "value", clean: true, mode: "skip" },
-            // { key: "season", collection: regexs.serie.season.range.extract, get: "value" },
+            // { key: "none", collection: regexs.serie.season.range.extract, get: "value", clean: true, mode: "skip" },
+            { key: "seasonRange", collection: regexs.serie.season.range.extract, get: "value" },
             { key: "season", collection: regexs.serie.season.single.extract, get: "value" },
-            { key: "season", collection: regexs.serie.season.range.keep, get: "value", clean: false, mode: "skip" },
+            {
+                key: "seasonRange",
+                collection: regexs.serie.season.range.keep,
+                get: "value",
+                clean: false,
+                mode: "skip",
+            },
             { key: "season", collection: regexs.serie.season.single.keep, get: "value", clean: false, mode: "skip" },
 
-            { key: "none", collection: regexs.serie.episode.range.extract, get: "value", clean: true, mode: "skip" },
+            { key: "episodeRange", collection: regexs.serie.episode.range.extract, get: "value" },
             { key: "episode", collection: regexs.serie.episode.single.extract, get: "value" },
-            //////////////////////// { key: "episode", collection: regexs.serie.episode.range.keep, get: "value", clean: false, mode: "skip" },
+            {
+                key: "episodeRange",
+                collection: regexs.serie.episode.range.keep,
+                get: "value",
+                clean: false,
+                mode: "skip",
+            },
             { key: "episode", collection: regexs.serie.episode.single.keep, get: "value", clean: false, mode: "skip" },
             { key: "meta", collection: regexs.meta.data },
             { cleaners: regexs.cleaners.misc },

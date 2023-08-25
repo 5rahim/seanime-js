@@ -129,3 +129,13 @@ export async function unstable_findNyaaTorrents(props: {
 function zeropad(v: string | number = 1, l = 2) {
     return (typeof v === "string" ? v : v.toString()).padStart(l, "0")
 }
+
+
+export async function unstable_handleSearchTorrents(search: string) {
+    const searchResult = await Nyaa.search({
+        title: search,
+        category: "1_2",
+    })
+
+    return searchResult.torrents
+}

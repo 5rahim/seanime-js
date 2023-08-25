@@ -35,6 +35,8 @@ interface TorrentInfos {
     //Episode (or episode range)
     readonly episode?: string
     readonly cour?: string
+    readonly episodeRange?: string
+    readonly seasonRange?: string
 }
 
 /** Parser data. */

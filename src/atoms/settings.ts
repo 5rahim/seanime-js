@@ -33,7 +33,7 @@ export const settingsSchema = createTypesafeFormSchema(({ z }) => z.object({
         subtitleLng: z.string(),
     }),
     qbittorrent: z.object({
-        host: z.string(),
+        host: z.string().transform(value => value?.replace("http://", "").replaceAll("/", "")),
         port: z.number(),
         username: z.string().default(""),
         password: z.string().default(""),

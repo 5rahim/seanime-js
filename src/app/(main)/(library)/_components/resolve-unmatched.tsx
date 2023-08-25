@@ -106,6 +106,7 @@ export function ResolveUnmatched(props: { isOpen: boolean, close: () => void }) 
                 return
             })
             setIndex(0)
+            getMatchingSuggestions(groupBy)
         }
     }
 

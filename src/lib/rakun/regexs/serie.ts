@@ -11,8 +11,11 @@ export default {
                 /\b[-._ ]?[Vv]ol[-._ ]?(?<a>\d+)-(?<b>\d+)\b/,
                 /[Ee][Pp][Ss]?\.? (?<a>\d{2,})-(?<b>\d{2,})/,
                 /E(?<a>\d{2,})-E(?<b>\d{2,})/,
-                /(?<a>\d{2,}) ~ (?<b>\d{2,})/,
-                /[Ee]pisodio\s(?<a>\d+)\s?[-~&]\s?(?<b>\d+)/,
+                /(?<a>\d{2,}) ?~ ?(?<b>\d{2,})/,
+                /[Ee]pisodes\s(?<a>\d+)\s?[-~&]\s?(?<b>\d+)/,
+                /(\()(?<a>\d{2,}) ?- ?(?<b>\d{2,})(\))/,
+                /\b(?<a>\d{2,}) ?- ?(?<b>\d{2,})\b/,
+                /\b[(\[)]?[Ee](pisode)?s? ?E?(?<a>0?\d+) ?[-~&] ?(?<b>0?\d+)[)\]]?\b/,
             ],
             keep: [
                 /(?<!\d)(?<a>\d{1,3})\s?[-~&]\s?(?<b>\d{1,3})/,
@@ -21,20 +24,20 @@ export default {
         //Single episode
         single: {
             extract: [
+                /[-._](?<episode>\d{1,2})[-._]/,
                 /(?<episode>\d{2,})\s+END(?: |$)/,
                 /#(?<episode>\d+)(?: |$)/,
-                /\s(?<episode>0\d+)'(?: |$)/, // 01'
-                /\s(?<episode>\d+)'(?: |$)/, // 1234'
-                /\s(?<episode>\d+)[.v](\d{0,2})(?: |$)/, // ` 01v2` `01v2 `
-                /(?<=[a-zA-Z])\s(?<episode>\d+)\s(?=[a-zA-Z])/, // KEEP `Mieruko-chan [10] She sees`
+                /\s(?<episode>0?\d+)'(?: |$)/, // 01'
+                // /\s(?<episode>\d+)[.v](\d{1,2})(?: |$)/, // ` 01v2` `01v2 `
+                /\s(?<episode>\d+)[.v]([1-9]|0\d|2[0-9])(?: |$)/,
             ],
             keep: [
+                /- \b(?<episode>\d+)(?= |$)\b/, // KEEP `This - 01 - [02]`, NOT `Not this - 01 Text here`
                 /\bS\d+E(?<episode>\d+)\b/,
                 /\bE(?<episode>0\d+)\b/,
                 /\bE(?<episode>\d{2,3})\b/,
                 /\b(?<episode>0\d+)\b/,
                 /\s(?<episode>0\d+)$/,
-                /- \b(?<episode>\d+)(?= |$)\b/, // KEEP `This - 01 - [02]`, NOT `Not this - 01 Text here`
                 // /\s(?<episode>0\d+)[.v](?<version>\d{0,2})?(?: |$)/,
                 // /\s(?<episode>\d{1,3})[.v](?<version>\d{0,2})?(?: |$)/,
             ],
@@ -72,7 +75,8 @@ export default {
         },
         single: {
             extract: [
-                /\b[Pp]art[-._ ](?<part>\d)\b/,
+                /\b[Pp]art[-._ ](?<part>0?\d)\b/,
+                /\b[-_( ][Pp]art[-._ ](?<part>0?\d)[ )_-]\b/,
             ],
             keep: [],
         },
@@ -106,7 +110,9 @@ export default {
                  * Test `S01-04` Text
                  * Golden Kamuy S1 - 04 <-- Nope
                  */
-                /\b[(\[)]?[Ss](eason)?s? ?S?(?<a>0?\d+)[-~&]S?(?<b>0?\d+)[)\]]?\b/,
+                /\b[(\[)]?[Ss](eason)?s? ?S?(?<a>0?\d+) ?[~&+] ?S?(?<b>0?\d+)[)\]]?\b/, // S01 ~ 02
+                /[ +_-][(\[)]?[Ss](eason)?s? ?S?(?<a>0?\d+) ?[~&+] ?S?(?<b>0?\d+)[)\]]?[ +_-]/,
+                /[ +_-][(\[)]?[Ss](eason)?s? ?S?(?<a>0?\d+)[-~&+]S?(?<b>0?\d+)[)\]]?[ +_-]/, //S01-02
             ],
             keep: [],
         },

@@ -81,13 +81,18 @@ export const EpisodeItem = React.memo((props: {
                             })
                         }}
                     >Un-match</DropdownMenu.Item>
+                    <DropdownMenu.Item
+                        onClick={() => {
+                            // TODO: Open metadata modal
+                        }}
+                    >Update metadata</DropdownMenu.Item>
                 </DropdownMenu>
             </div>
         </div>
     )
 })
 
-export const EpisodeItemLockButton = (props: { fileAtom: PrimitiveAtom<LocalFile> }) => {
+const EpisodeItemLockButton = (props: { fileAtom: PrimitiveAtom<LocalFile> }) => {
     const locked = useSelectAtom(props.fileAtom, file => file.locked)
     const setFileLocked = useFocusSetAtom(props.fileAtom, "locked")
 

@@ -261,7 +261,7 @@ const ProgressBadge = (props: { mediaId: number }) => {
     return (
         <div className={"absolute z-10 left-1 bottom-1"}>
             <Badge size={"lg"}>
-                {progress}/{episodes}
+                {progress}/{episodes ?? "-"}
             </Badge>
         </div>
     )

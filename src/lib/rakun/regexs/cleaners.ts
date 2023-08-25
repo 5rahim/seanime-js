@@ -25,6 +25,7 @@ export default {
 
     //Miscelleanous cleaners
     misc: [
+        /[(]?WEB/,
         /\bNHKG\b/,
         /\b(?<size>\d+GB)\b/,
     ],

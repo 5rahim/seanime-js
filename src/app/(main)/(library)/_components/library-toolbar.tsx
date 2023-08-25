@@ -2,7 +2,7 @@
 
 import React, { useState } from "react"
 import { useSettings } from "@/atoms/settings"
-import { Button } from "@/components/ui/button"
+import { Button, IconButton } from "@/components/ui/button"
 import { openLocalDirectoryInExplorer } from "@/lib/helpers/directory"
 import { type } from "@tauri-apps/api/os"
 import toast from "react-hot-toast"
@@ -16,12 +16,13 @@ import { Modal } from "@/components/ui/modal"
 import { IoReload } from "@react-icons/all-files/io5/IoReload"
 import { RiFolderDownloadFill } from "@react-icons/all-files/ri/RiFolderDownloadFill"
 import { RiFileSearchLine } from "@react-icons/all-files/ri/RiFileSearchLine"
-import { parseLocalFilesToLibraryEntry } from "@/lib/gpt/config"
 import { useAuthed } from "@/atoms/auth"
 import { useMatchingSuggestions } from "@/atoms/library/matching-suggestions.atoms"
 import { localFilesAtom, useSetLocalFiles } from "@/atoms/library/local-file.atoms"
 import { logger } from "@/lib/helpers/debug"
 import { useSelectAtom } from "@/atoms/helpers"
+import { DropdownMenu } from "@/components/ui/dropdown-menu"
+import { BiDotsVerticalRounded } from "@react-icons/all-files/bi/BiDotsVerticalRounded"
 
 export function LibraryToolbar() {
 
@@ -143,24 +144,26 @@ export function LibraryToolbar() {
                     </div>
 
                     <div className={"inline-flex gap-2 items-center"}>
-                        <Button onClick={rescanModal.open} intent={"warning-subtle"} leftIcon={<RiFolderDownloadFill/>}>
-                            Re-scan library
-                        </Button>
 
                         <Button onClick={handleOpenLocalDirectory} intent={"gray-basic"} leftIcon={<BiFolder/>}>
                             Open folder
                         </Button>
 
-                        <Button
-                            onClick={async () => {
-                                console.log((await parseLocalFilesToLibraryEntry()))
-                            }}
-                            intent={"gray-basic"}
-                        >Mock</Button>
+                        <DropdownMenu trigger={<IconButton icon={<BiDotsVerticalRounded/>} intent={"gray-basic"}/>}>
+                            <DropdownMenu.Item onClick={rescanModal.open}>
+                                <RiFolderDownloadFill/>
+                                <span>Re-scan library</span>
+                            </DropdownMenu.Item>
+                            <DropdownMenu.Item>
+                                <span>Manage ignored files</span>
+                            </DropdownMenu.Item>
+                        </DropdownMenu>
                     </div>
 
                 </div>
             </div>
+
+
             <ResolveUnmatched
                 isOpen={matchingRecommendationDisclosure.isOpen}
                 close={matchingRecommendationDisclosure.close}
