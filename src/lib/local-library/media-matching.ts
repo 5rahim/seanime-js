@@ -4,8 +4,9 @@ import _ from "lodash"
 import { ordinalize } from "inflection"
 import similarity from "string-similarity"
 import lavenshtein from "js-levenshtein"
-import { AnimeFileInfo } from "@/lib/local-library/local-file"
+import { AnimeFileInfo, LocalFile } from "@/lib/local-library/local-file"
 import { logger } from "@/lib/helpers/debug"
+import { ScanLogging } from "@/lib/local-library/logs"
 
 /**
  * This method employs 3 comparison algorithms: Dice's coefficient (string-similarity), Levenshtein's algorithm, and MAL's elastic search algorithm
@@ -20,7 +21,16 @@ import { logger } from "@/lib/helpers/debug"
  * - From these 2 best matches, find the most similar to the title using Dice's coefficient
  * - Compare the best match titles (===) to a media
  */
-export async function findBestCorrespondingMedia(
+export async function findBestCorrespondingMedia({
+                                                     file,
+                                                     allMedia,
+                                                     mediaTitles,
+                                                     parsed,
+                                                     parsedFolderInfo,
+                                                     _matchingCache,
+                                                     _scanLogging,
+                                                 }: {
+    file: LocalFile,
     allMedia: AnilistShortMedia[],
     mediaTitles: {
         eng: string[],
@@ -29,20 +39,23 @@ export async function findBestCorrespondingMedia(
         synonymsWithSeason: string[]
     },
     parsed: AnimeFileInfo,
-    parsedFolders: AnimeFileInfo[],
-    matchingCache: Map<string, AnilistShowcaseMedia | undefined>,
-) {
+    parsedFolderInfo: AnimeFileInfo[],
+    _matchingCache: Map<string, AnilistShowcaseMedia | undefined>,
+    _scanLogging: ScanLogging
+}) {
 
     function debug(...value: any[]) {
         // if (parsed.original.toLowerCase().includes("(not)")) console.log(...value)
     }
 
+    _scanLogging.add(file.path, ">>> [media-matching]")
+
     let folderParsed: AnimeFileInfo | undefined
     let rootFolderParsed: AnimeFileInfo | undefined
 
-    if (parsedFolders.length > 0) {
-        folderParsed = parsedFolders[parsedFolders.length - 1]
-        rootFolderParsed = parsedFolders[parsedFolders.length - 2]
+    if (parsedFolderInfo.length > 0) {
+        folderParsed = parsedFolderInfo[parsedFolderInfo.length - 1]
+        rootFolderParsed = parsedFolderInfo[parsedFolderInfo.length - 2]
         // console.log(rootFolderParsed)
     }
 
@@ -117,14 +130,20 @@ export async function findBestCorrespondingMedia(
         (parsed.title && eitherSeasonIsFirst) ? parsed.title : undefined,
     ].filter(Boolean)
 
+
     // Remove duplicates and convert to lowercase
     titleVariations = [...(new Set(titleVariations.map(value => value.toLowerCase())))]
 
+    _scanLogging.add(file.path, "Created title variations")
+    _scanLogging.add(file.path, "   -> " + JSON.stringify(titleVariations))
+
     // Check if titleVariations are already cached
-    if (matchingCache.has(JSON.stringify(titleVariations))) {
+    if (_matchingCache.has(JSON.stringify(titleVariations))) {
         logger("media-matching").success("Cache HIT:", _title, (seasonAsNumber || folderSeasonAsNumber) || "")
+        _scanLogging.add(file.path, `Cache HIT`)
+        _scanLogging.add(file.path, `   -> Media ID: ${_matchingCache.get(JSON.stringify(titleVariations))?.id}`)
         return {
-            correspondingMedia: matchingCache.get(JSON.stringify(titleVariations)),
+            correspondingMedia: _matchingCache.get(JSON.stringify(titleVariations)),
         }
     }
 
@@ -155,6 +174,10 @@ export async function findBestCorrespondingMedia(
             || !!media.synonyms?.filter(Boolean).find(synonym => synonym.toLowerCase() === bestTitle.bestMatch.target.toLowerCase())
     }) : undefined
 
+    _scanLogging.add(file.path, "Title matching using string-similarity")
+    _scanLogging.add(file.path, "   -> Found " + JSON.stringify(correspondingMediaUsingSimilarity?.title))
+    _scanLogging.add(file.path, "   -> Rating " + bestTitle?.bestMatch.rating)
+
     if (correspondingMediaUsingSimilarity) { // Unnecessary?
         delete correspondingMediaUsingSimilarity?.relations
     }
@@ -165,6 +188,8 @@ export async function findBestCorrespondingMedia(
 
     let correspondingMediaFromDistance: AnilistShortMedia | undefined
 
+    _scanLogging.add(file.path, "Title matching using levenshtein")
+
     // Calculate Levenshtein distances and find the lowest for all title variations
     const distances = allMedia.flatMap(media => {
         return getDistanceFromTitle(media, titleVariations)
@@ -172,7 +197,12 @@ export async function findBestCorrespondingMedia(
     if (distances) {
         const lowest = distances.reduce((prev, curr) => prev.distance <= curr.distance ? prev : curr) // Lower distance
         correspondingMediaFromDistance = lowest.media // Find the corresponding media from the title with the lower distance
+        _scanLogging.add(file.path, "   -> Found " + JSON.stringify(correspondingMediaFromDistance?.title))
+        _scanLogging.add(file.path, "   -> Distance " + lowest.distance)
+    } else {
+        _scanLogging.add(file.path, `   -> Could not calculate distances`)
     }
+
 
     /* Using MAL */
 
@@ -189,8 +219,14 @@ export async function findBestCorrespondingMedia(
             const anime = body?.categories?.find((category: any) => category?.type === "anime")?.items?.[0]
             // Check if the corresponding media exists in the user's list
             const correspondingInUserList = allMedia.find(media => media.idMal === anime.id)
+            _scanLogging.add(file.path, "Title matching using MAL")
+            _scanLogging.add(file.path, `   -> Title used for search: ` + titleVariations[0])
             if (anime && !!correspondingInUserList) {
                 correspondingMediaFromMAL = correspondingInUserList
+                _scanLogging.add(file.path, "   -> Found " + JSON.stringify(correspondingMediaFromMAL.title))
+            } else {
+                _scanLogging.add(file.path, "   -> warning - Could not find the MAL media in user watch list")
+                _scanLogging.add(file.path, "   -> Found " + JSON.stringify(anime))
             }
         }
     } catch {
@@ -207,6 +243,8 @@ export async function findBestCorrespondingMedia(
     // debug(differentFoundMedia.map(n => n.title?.romaji?.toLowerCase()).filter(Boolean))
     // debug("------------------------------------------------------")
 
+    _scanLogging.add(file.path, "Eliminating the least similar title from each language")
+
     // Eliminate duplicate and least similar elements from each langages
     const best_userPreferred = eliminateLeastSimilarElement(differentFoundMedia.map(n => n.title?.userPreferred?.toLowerCase()).filter(Boolean))
     const best_english = eliminateLeastSimilarElement(differentFoundMedia.map(n => n.title?.english?.toLowerCase()).filter(Boolean))
@@ -214,6 +252,12 @@ export async function findBestCorrespondingMedia(
     const best_syn = eliminateLeastSimilarElement(differentFoundMedia.flatMap(n => n.synonyms?.filter(Boolean).filter(syn => isSeasonTitle(syn.toLowerCase()))).map(n => n?.toLowerCase()).filter(Boolean))
     // debug(best_userPreferred, "preferred")// debug(best_english, "english")// debug(best_romaji, "romaji")// debug(best_syn, "season synonym")
 
+    _scanLogging.add(file.path, "   -> Determined best titles from 'userPreferred' -> " + JSON.stringify(best_userPreferred))
+    _scanLogging.add(file.path, "   -> Determined best titles from 'english' -> " + JSON.stringify(best_english))
+    _scanLogging.add(file.path, "   -> Determined best titles from 'romaji' -> " + JSON.stringify(best_romaji))
+    _scanLogging.add(file.path, "   -> Determined best titles from 'synonyms' -> " + JSON.stringify(best_syn))
+
+    _scanLogging.add(file.path, "Comparing best titles from all languages using string-similarity")
     // Compare each title variation with the best titles from different sources
     let bestTitleComparisons = titleVariations.filter(Boolean).map(title => {
         const matchingUserPreferred = best_userPreferred.length > 0 ? similarity.findBestMatch(title.toLowerCase(), best_userPreferred) : undefined
@@ -232,6 +276,8 @@ export async function findBestCorrespondingMedia(
     let bestTitleMatching = bestTitleComparisons.length > 0 ? bestTitleComparisons.reduce((prev, val) => {
         return val.bestMatch.rating >= prev.bestMatch.rating ? val : prev
     }) : undefined
+    _scanLogging.add(file.path, "   -> Comparison " + JSON.stringify(bestTitleMatching))
+    _scanLogging.add(file.path, "   -> Found " + JSON.stringify(bestTitleMatching?.bestMatch?.target))
 
     // Initialize variables to store the final rating and corresponding media
     let rating: number = 0
@@ -254,9 +300,18 @@ export async function findBestCorrespondingMedia(
     }
     debug(bestTitleMatching?.bestMatch, "best", bestMedia)
 
+    _scanLogging.add(file.path, `Found media`)
+    _scanLogging.add(file.path, `   -> Media ID: ` + bestMedia?.id)
+    _scanLogging.add(file.path, `   -> ` + JSON.stringify(bestMedia?.title))
+    _scanLogging.add(file.path, `   -> Rating: ${rating}`)
+
     logger("media-matching").error("Cache MISS: [File title]", _title, `(${(seasonAsNumber || folderSeasonAsNumber || "-")})`, "| [Media title]", bestMedia?.title?.english, "| [Rating]", rating)
     // Adding it to the cache
-    matchingCache.set(JSON.stringify(titleVariations), bestMedia)
+    _matchingCache.set(JSON.stringify(titleVariations), bestMedia)
+
+    if (+rating < 0.5) {
+        _scanLogging.add(file.path, "warning - Rating is below the threshold, un-matched")
+    }
 
     return {
         correspondingMedia: +rating >= 0.5 ? bestMedia : undefined,

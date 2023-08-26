@@ -29,7 +29,7 @@ export const EpisodeItem = React.memo((props: {
     const [episodeData] = useState(aniZipData?.episodes[String(metadata.episode)])
     const fileTitle = useMemo(() => parsedInfo?.original?.replace(/.(mkv|mp4)/, "")?.replaceAll(/(\[)[a-zA-Z0-9 ._~-]+(\])/ig, "")?.replaceAll(/[_,-]/g, " "), [parsedInfo])
 
-    let title = useMemo(() => {
+    const title = useMemo(() => {
         let _output = parsedInfo?.title || fileTitle || "???"
         if (!!metadata.episode) _output = `Episode ${metadata.episode}`
         if (media.format === "MOVIE" && parsedInfo?.title) _output = parsedInfo.title

@@ -3,6 +3,7 @@ import rakun from "@/lib/rakun/rakun"
 import { Settings } from "@/atoms/settings"
 import { AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import { findBestCorrespondingMedia } from "@/lib/local-library/media-matching"
+import { ScanLogging } from "@/lib/local-library/logs"
 
 export type AnimeFileInfo = {
     original: string
@@ -40,11 +41,23 @@ export type LocalFile = {
  * - parsedFolderInfo: Parsed info from each parent folder
  *      - Is undefined if we can't parse a title or a season
  */
-export const createLocalFile = async (settings: Settings, props: Pick<LocalFile, "name" | "path">): Promise<LocalFile> => {
+export const createLocalFile = async (settings: Settings, props: Pick<LocalFile, "name" | "path">, _scanLogging: ScanLogging): Promise<LocalFile> => {
+
+    _scanLogging.add(props.path, ">>> [local-file]")
 
     try {
         const folderPath = props.path.replace(props.name, "").replace(settings.library.localDirectory || "", "")
         const parsed = rakun.parse(props.name)
+        const parsedInfo = {
+            original: parsed.filename,
+            title: parsed.name,
+            releaseGroup: parsed.subber,
+            season: parsed.season,
+            part: parsed.part,
+            cour: parsed.cour,
+            episode: parsed.episode,
+        }
+        _scanLogging.add(props.path, `  -> Parsed from file name ` + JSON.stringify(parsedInfo))
 
         const folders = folderPath.split("\\").filter(value => !!value && value.length > 0)
         const parsedFolderInfo = folders.map(folder => {
@@ -62,21 +75,16 @@ export const createLocalFile = async (settings: Settings, props: Pick<LocalFile,
                 })
             }
         }).filter(Boolean)
+        _scanLogging.add(props.path, `  -> Parsed from parent folders ` + JSON.stringify(parsedFolderInfo))
 
         const branchHasTitle = !!parsed.name || parsedFolderInfo.some(obj => !!obj.title)
+        _scanLogging.add(props.path, `  -> Branch has title? ` + branchHasTitle)
+
 
         return {
             path: props.path,
             name: props.name,
-            parsedInfo: (branchHasTitle) ? {
-                original: parsed.filename,
-                title: parsed.name,
-                releaseGroup: parsed.subber,
-                season: parsed.season,
-                part: parsed.part,
-                cour: parsed.cour,
-                episode: parsed.episode,
-            } : undefined,
+            parsedInfo: (branchHasTitle) ? parsedInfo : undefined,
             parsedFolderInfo,
             metadata: {},
             locked: false, // Default values, will be hydrated later
@@ -84,6 +92,8 @@ export const createLocalFile = async (settings: Settings, props: Pick<LocalFile,
             mediaId: null, // Default values, will be hydrated later
         }
     } catch (e) {
+        _scanLogging.add(props.path, `  -> error - Parsing error`)
+
         console.error("[LocalFile] Parsing error", e)
 
         return {
@@ -116,7 +126,8 @@ export const createLocalFileWithMedia = async (
     file: LocalFile,
     allMedia: AnilistShowcaseMedia[],
     mediaTitles: { eng: string[], rom: string[], preferred: string[], synonymsWithSeason: string[] },
-    matchingCache: Map<string, AnilistShowcaseMedia | undefined>,
+    _matchingCache: Map<string, AnilistShowcaseMedia | undefined>,
+    _scanLogging: ScanLogging,
 ): Promise<LocalFileWithMedia | undefined> => {
 
     if (allMedia.length > 0) {
@@ -127,15 +138,19 @@ export const createLocalFileWithMedia = async (
         // The file has been parsed AND it has an anime title OR one of its folders has an anime title
         if (!!file.parsedInfo && (!!file.parsedInfo?.title || file.parsedFolderInfo.some(n => !!n.title))) {
 
-            const { correspondingMedia: media } = await findBestCorrespondingMedia(
+            const { correspondingMedia: media } = await findBestCorrespondingMedia({
+                file,
                 allMedia,
                 mediaTitles,
-                file.parsedInfo,
-                file.parsedFolderInfo,
-                matchingCache,
-            )
+                parsed: file.parsedInfo,
+                parsedFolderInfo: file.parsedFolderInfo,
+                _matchingCache,
+                _scanLogging,
+            })
             correspondingMedia = media
 
+        } else {
+            _scanLogging.add(file.path, "error - Could not parse any info")
         }
 
         return {

@@ -37,26 +37,28 @@ export async function scanLocalFiles(
     token: string,
     { ignored, locked }: { ignored: string[], locked: string[] },
 ) {
+    const _scanLogging = new ScanLogging()
 
     // Check if the library exists
     if (!settings.library.localDirectory || !_fs.existsSync(settings.library.localDirectory)) {
         logger("repository/scanLocalFiles").error("Directory does not exist")
+        _scanLogging.add("repository/scanLocalFiles", "Directory does not exist")
         return { error: "Couldn't find the local directory." }
     }
 
     // Get the user watch list data
     logger("repository/scanLocalFiles").info("Fetching user media list")
+    _scanLogging.add("repository/scanLocalFiles", "Fetching user media list")
     const data = await useAniListAsyncQuery(AnimeCollectionDocument, { userName })
     const watchListMediaIds = new Set(data.MediaListCollection?.lists?.filter(n => n?.entries).flatMap(n => n?.entries?.map(n => n?.media)).map(n => n?.id).filter(Boolean))
 
     // Get the hydrated files
     logger("repository/scanLocalFiles").info("Retrieving hydrated local files")
-    const files = await retrieveHydratedLocalFiles(settings, userName, data, { ignored, locked })
+    _scanLogging.add("repository/scanLocalFiles", "Retrieving hydrated local files")
+    const files = await retrieveHydratedLocalFiles(settings, userName, data, { ignored, locked }, _scanLogging)
+    _scanLogging.add("repository/scanLocalFiles", `Retrieved ${files?.length} files`)
 
     if (files && files.length > 0) {
-
-        // Start logging
-        const scanLogging = new ScanLogging()
 
         /** Constants **/
         const filesWithNoMedia: LocalFileWithMedia[] = files.filter(n => !n.media) // Get files with no media
@@ -72,6 +74,7 @@ export async function scanLocalFiles(
         // We group all the hydrated files we got by their media, so we can check them by group (entry)
         const _groupedByMediaId = _.groupBy(localFilesWithMedia, n => n.media!.id)
         logger("repository/scanLocalFiles").info("Inspecting prospective library entry")
+        _scanLogging.add("repository/scanLocalFiles", "Inspecting prospective library entry")
         for (let i = 0; i < Object.keys(_groupedByMediaId).length; i++) {
             const mediaId = Object.keys(_groupedByMediaId)[i]
             const mediaIdAsNumber = Number(mediaId)
@@ -86,6 +89,7 @@ export async function scanLocalFiles(
                         media: currentMedia,
                         files: filesToBeInspected,
                         _queriedMediaCache,
+                        _scanLogging,
                     })
 
                     checkedFiles = [
@@ -122,7 +126,8 @@ export async function scanLocalFiles(
         }
 
 
-        scanLogging.clear()
+        await _scanLogging.writeSnapshot()
+        _scanLogging.clear()
 
         logger("repository/scanLocalFiles").success("Library scanned successfully", checkedFiles.length)
         return {
@@ -132,6 +137,8 @@ export async function scanLocalFiles(
             checkedFiles,
         }
     }
+
+    _scanLogging.clear()
 
     return { checkedFiles: [] }
 }
@@ -151,6 +158,7 @@ export async function retrieveHydratedLocalFiles(
         ignored: string[],
         locked: string[],
     },
+    _scanLogging: ScanLogging,
 ) {
     const currentPath = settings.library.localDirectory
 
@@ -158,11 +166,12 @@ export async function retrieveHydratedLocalFiles(
 
 
         const localFiles: LocalFile[] = []
-        await getAllFilesRecursively(settings, currentPath, localFiles, { ignored, locked }) // <-----------------
+        await getAllFilesRecursively(settings, currentPath, localFiles, { ignored, locked }, _scanLogging) // <-----------------
 
         if (localFiles.length > 0) {
             let allUserMedia = data.MediaListCollection?.lists?.map(n => n?.entries).flat().filter(Boolean).map(entry => entry.media) ?? [] as AnilistShortMedia[]
             logger("repository/retrieveHydratedLocalFiles").info("Formatting related media")
+            _scanLogging.add("repository/retrieveHydratedLocalFiles", "Getting related media from user watch list")
 
             // Get sequels, prequels... from each media as [AnilistShowcaseMedia]
             let relatedMedia = allUserMedia.filter(Boolean)
@@ -185,9 +194,11 @@ export async function retrieveHydratedLocalFiles(
             const mediaSynonymsWithSeason = allMedia.flatMap(media => media.synonyms?.filter(isSeasonTitle)).filter(Boolean)
 
             logger("repository/retrieveHydratedLocalFiles").info("Hydrating local files")
+            _scanLogging.add("repository/retrieveHydratedLocalFiles", "Hydrating local files")
             let localFilesWithMedia: LocalFileWithMedia[] = []
 
-            const matchingCache = new Map<string, AnilistShowcaseMedia | undefined>()
+            // Cache previous matches, key: title variations
+            const _matchingCache = new Map<string, AnilistShowcaseMedia | undefined>()
 
             for (let i = 0; i < localFiles.length; i++) {
                 const created = await createLocalFileWithMedia(
@@ -199,14 +210,16 @@ export async function retrieveHydratedLocalFiles(
                         preferred: mediaPreferredTitles,
                         synonymsWithSeason: mediaSynonymsWithSeason,
                     },
-                    matchingCache,
+                    _matchingCache,
+                    _scanLogging,
                 )
                 if (created) {
                     localFilesWithMedia.push(created)
                 }
             }
-            matchingCache.clear()
+            _matchingCache.clear()
             logger("repository/retrieveHydratedLocalFiles").success("Finished hydrating")
+            _scanLogging.add("repository/retrieveHydratedLocalFiles", "Finished hydrating files")
 
             return localFilesWithMedia
         }
@@ -236,18 +249,13 @@ export async function retrieveLocalFilesFrom(settings: Settings) {
 /**
  * Recursively get the files as [LocalFile] type
  * This method modifies the `files` argument
- * @param settings
- * @param directoryPath
- * @param files
- * @param ignored
- * @param locked
- * @param allowedTypes
  */
 async function getAllFilesRecursively(
     settings: Settings,
     directoryPath: string,
     files: LocalFile[],
     { ignored, locked }: { ignored: string[], locked: string[] },
+    _scanLogging: ScanLogging,
     allowedTypes: string[] = ["mkv", "mp4"],
 ): Promise<void> {
     try {
@@ -266,13 +274,13 @@ async function getAllFilesRecursively(
                 files.push(await createLocalFile(settings, {
                     name: item.name,
                     path: itemPath,
-                }))
+                }, _scanLogging))
             } else if (stats.isDirectory()) {
 
                 const dirents = await fs.readdir(itemPath, { withFileTypes: true })
                 const fileNames = dirents.filter(dirent => dirent.isFile()).map(dirent => dirent.name)
                 if (!fileNames.find(name => name === ".unsea" || name === ".seaignore")) {
-                    await getAllFilesRecursively(settings, itemPath, files, { ignored, locked })
+                    await getAllFilesRecursively(settings, itemPath, files, { ignored, locked }, _scanLogging)
                 }
 
             }
