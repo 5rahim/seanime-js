@@ -29,7 +29,7 @@ function refresh(settings: Settings) {
     ).toString("base64")}`
 }
 
-export async function openVideoWithVlc(path: string, settings: Settings) {
+export async function _vlc_openVideo(path: string, settings: Settings) {
 
     refresh(settings)
 

@@ -39,32 +39,15 @@ export const EpisodeItem = React.memo((props: {
     if (mediaID !== media.id) return null
 
     return (
-        <div className={"border border-[--border] p-4 pr-12 rounded-lg relative transition hover:bg-gray-900"}>
-            <div
-                className={"flex gap-4 relative cursor-pointer"}
-                onClick={async () => onPlayFile(path)}
-            >
-                {episodeData?.image && <div
-                    className="h-24 w-24 flex-none rounded-md object-cover object-center relative overflow-hidden">
-                    <Image
-                        src={episodeData?.image}
-                        alt={"episode image"}
-                        fill
-                        quality={60}
-                        priority
-                        sizes="10rem"
-                        className="object-cover object-center"
-                    />
-                </div>}
-
-                <div>
-                    <h4 className={"font-medium"}>{title}</h4>
-                    {!!episodeData && <p className={"text-sm text-[--muted]"}>{episodeData?.title?.en}</p>}
-                    <p className={"text-sm text-gray-600"}>{parsedInfo?.original?.replace(/.(mkv|mp4)/, "")?.replaceAll(/(\[)[a-zA-Z0-9 ._~-]+(\])/ig, "")?.replaceAll(/[_,-]/g, " ")}</p>
-                </div>
-            </div>
-
-            <div className={"absolute right-1 top-1 flex flex-col items-center"}>
+        <EpisodeItemSkeleton
+            media={media}
+            image={episodeData?.image}
+            onClick={async () => onPlayFile(path)}
+            title={title}
+            showImagePlaceholder
+            episodeTitle={episodeData?.title?.en}
+            fileName={parsedInfo?.original?.replace(/.(mkv|mp4)/, "")?.replaceAll(/(\[)[a-zA-Z0-9 ._~-]+(\])/ig, "")?.replaceAll(/[_,-]/g, " ")}
+            action={<>
                 <EpisodeItemLockButton fileAtom={fileAtom}/>
 
                 <DropdownMenu trigger={
@@ -88,8 +71,8 @@ export const EpisodeItem = React.memo((props: {
                         }}
                     >Update metadata</DropdownMenu.Item>
                 </DropdownMenu>
-            </div>
-        </div>
+            </>}
+        />
     )
 })
 
@@ -108,4 +91,69 @@ const EpisodeItemLockButton = (props: { fileAtom: PrimitiveAtom<LocalFile> }) =>
             />
         </>
     )
+}
+
+interface EpisodeItemSkeletonProps {
+    media: AnilistDetailedMedia,
+    children?: React.ReactNode
+    action?: React.ReactNode
+    image?: string | null
+    onClick?: () => void
+    title: string,
+    episodeTitle?: string | null
+    fileName?: string
+    showImagePlaceholder?: boolean
+}
+
+export const EpisodeItemSkeleton: React.FC<EpisodeItemSkeletonProps> = (props) => {
+
+    const { children, action, image, onClick, episodeTitle, title, fileName, ...rest } = props
+
+    return <>
+        <div className={"border border-[--border] p-4 pr-12 rounded-lg relative transition hover:bg-gray-900"}>
+            <div
+                className={"flex gap-4 relative cursor-pointer"}
+                onClick={onClick}
+            >
+                {image && <div
+                    className="h-24 w-24 flex-none rounded-md object-cover object-center relative overflow-hidden">
+                    <Image
+                        src={image}
+                        alt={"episode image"}
+                        fill
+                        quality={60}
+                        priority
+                        sizes="10rem"
+                        className="object-cover object-center"
+                    />
+                </div>}
+
+                {(props.showImagePlaceholder && !image) && (
+                    <div className={"h-24 w-24 rounded-md flex-none bg-gray-800 relative overflow-hidden"}>
+                        {props.media.coverImage?.medium && <Image
+                            src={props.media.coverImage?.medium}
+                            alt={"episode image"}
+                            fill
+                            quality={60}
+                            priority
+                            sizes="10rem"
+                            className="object-cover object-center"
+                        />}
+                    </div>
+                )}
+
+                <div className={"relative overflow-hidden"}>
+                    <h4 className={"font-medium"}>{title}</h4>
+                    {!!episodeTitle && <p className={"text-sm text-[--muted]"}>{episodeTitle}</p>}
+                    {!!fileName && <p className={"text-sm text-gray-600 truncate text-ellipsis"}>{fileName}</p>}
+                    {children && children}
+                </div>
+            </div>
+
+            {action && <div className={"absolute right-1 top-1 flex flex-col items-center"}>
+                {action}
+            </div>}
+        </div>
+    </>
+
 }

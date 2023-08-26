@@ -8,6 +8,7 @@ import deepEquals from "fast-deep-equal"
 import _ from "lodash"
 import { ANIDB_RX } from "@/lib/series-scanner/regex"
 import { anilistCollectionEntryAtoms, useAnilistCollectionEntryByMediaId } from "@/atoms/anilist-collection"
+import { valueContainsNC, valueContainsOVA } from "@/lib/anilist/helpers.shared"
 
 /* -------------------------------------------------------------------------------------------------
  * Main atoms
@@ -77,12 +78,7 @@ const get_OVA_LocalFileAtomsByMediaIdAtom = atom(null,
         const fileAtoms = get(localFileAtoms).filter((fileAtom) => get(fileAtom).mediaId === mediaId)
         return _.sortBy(fileAtoms, fileAtom => Number(get(fileAtom).parsedInfo?.episode)).filter(fileAtom => {
             const file = get(fileAtom)
-            return (ANIDB_RX[0].test(file.path) ||
-                ANIDB_RX[5].test(file.path) ||
-                ANIDB_RX[6].test(file.path)) && !(ANIDB_RX[1].test(file.path) ||
-                ANIDB_RX[2].test(file.path) ||
-                ANIDB_RX[3].test(file.path) ||
-                ANIDB_RX[4].test(file.path))
+            return valueContainsOVA(file.path)
         }) ?? []
     },
 )
@@ -92,10 +88,7 @@ const get_NC_LocalFileAtomsByMediaIdAtom = atom(null,
         const fileAtoms = get(localFileAtoms).filter((fileAtom) => get(fileAtom).mediaId === mediaId)
         return _.sortBy(fileAtoms, fileAtom => Number(get(fileAtom).parsedInfo?.episode)).filter(fileAtom => {
             const file = get(fileAtom)
-            return (ANIDB_RX[1].test(file.path) ||
-                ANIDB_RX[2].test(file.path) ||
-                ANIDB_RX[3].test(file.path) ||
-                ANIDB_RX[4].test(file.path))
+            return valueContainsNC(file.path)
         }) ?? []
     },
 )

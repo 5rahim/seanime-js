@@ -5,7 +5,7 @@
 import { Settings } from "@/atoms/settings"
 import path from "path"
 import fs from "fs/promises"
-import _fs, { Dirent } from "fs"
+import _fs, { Dirent, existsSync } from "fs"
 import {
     createLocalFile,
     createLocalFileWithMedia,
@@ -19,8 +19,8 @@ import { AnimeCollectionDocument, AnimeCollectionQuery, UpdateEntryDocument } fr
 import _ from "lodash"
 import { inspectProspectiveLibraryEntry } from "@/lib/local-library/library-entry"
 import { logger } from "@/lib/helpers/debug"
-import { isSeasonTitle } from "@/lib/local-library/media-matching"
 import { ScanLogging } from "@/lib/local-library/logs"
+import { valueContainsSeason } from "@/lib/anilist/helpers.shared"
 
 /**
  *  Goes through non-locked and non-ignored [LocalFile]s and returns
@@ -191,7 +191,7 @@ export async function retrieveHydratedLocalFiles(
             const mediaEngTitles = allMedia.map(media => media.title?.english).filter(Boolean)
             const mediaRomTitles = allMedia.map(media => media.title?.romaji).filter(Boolean)
             const mediaPreferredTitles = allMedia.map(media => media.title?.userPreferred).filter(Boolean)
-            const mediaSynonymsWithSeason = allMedia.flatMap(media => media.synonyms?.filter(isSeasonTitle)).filter(Boolean)
+            const mediaSynonymsWithSeason = allMedia.flatMap(media => media.synonyms?.filter(valueContainsSeason)).filter(Boolean)
 
             logger("repository/retrieveHydratedLocalFiles").info("Hydrating local files")
             _scanLogging.add("repository/retrieveHydratedLocalFiles", "Hydrating local files")
@@ -302,7 +302,7 @@ export async function cleanupFiles(settings: Settings, { ignored, locked }: { ig
 
         const directoryPath = settings.library.localDirectory
 
-        if (directoryPath) {
+        if (directoryPath && existsSync(directoryPath)) {
 
             for (const path of ignored) {
                 try {
@@ -318,6 +318,8 @@ export async function cleanupFiles(settings: Settings, { ignored, locked }: { ig
                     pathsToClean.push(path)
                 }
             }
+        } else {
+            throw new Error("Directory does not exist")
         }
 
         return {

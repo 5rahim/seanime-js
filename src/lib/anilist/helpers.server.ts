@@ -193,7 +193,7 @@ async function PromiseBatch(task: any, items: any, batchSize: number) {
 //         const titles = Object.values(media.title).filter(Boolean).flatMap(title => values.map(unit => lavenshtein(title!.toLowerCase(), unit!.toLowerCase())))
 //
 //         const synonymsWithSeason = media.synonyms?.filter(Boolean)
-//             .filter(isSeasonTitle)
+//             .filter(valueContainsSeason)
 //             .flatMap(title => values.map(unit => lavenshtein(title.toLowerCase(), unit.toLowerCase()))) // If synonym has "season", remove padding
 //
 //         const distances = [...(synonymsWithSeason || []), ...titles]

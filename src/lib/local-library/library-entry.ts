@@ -11,12 +11,10 @@ import {
     UpdateEntryDocument,
 } from "@/gql/graphql"
 import fs from "fs"
-import { ANIDB_RX } from "@/lib/series-scanner/regex"
-import { findMediaEdge } from "@/lib/anilist/helpers.shared"
+import { findMediaEdge, valueContainsNC, valueContainsOVA, valueContainsSeason } from "@/lib/anilist/helpers.shared"
 import { resolveSeason } from "@/lib/anilist/helpers.server"
 import { getLocalFileParsedEpisode, getLocalFileParsedSeason } from "@/lib/local-library/helpers.shared"
 import { ScanLogging } from "@/lib/local-library/logs"
-import { isSeasonTitle } from "@/lib/local-library/media-matching"
 
 export type ProspectiveLibraryEntry = {
     media: AnilistShowcaseMedia
@@ -49,7 +47,7 @@ export const inspectProspectiveLibraryEntry = async (props: {
                 currentMedia?.title?.english,
                 currentMedia?.title?.romaji,
                 currentMedia?.title?.userPreferred,
-                ...(currentMedia.synonyms?.filter(isSeasonTitle) || []),
+                ...(currentMedia.synonyms?.filter(valueContainsSeason) || []),
             ].filter(Boolean).map(n => n.toLowerCase())
             // Get the file's parent folder anime title
             const fileFolderTitle = f.parsedFolderInfo.findLast(n => !!n.title)?.title
@@ -99,14 +97,7 @@ export const inspectProspectiveLibraryEntry = async (props: {
         // We will keep these OVAs, NC,... files even if they don't meet all parameters
         // Why? the folder rating might be very low because they are in a folder named "Specials"
         const isNotMain = (file: LocalFileWithMedia) => {
-            return (
-                ANIDB_RX[0].test(file.path) ||
-                ANIDB_RX[1].test(file.path) ||
-                ANIDB_RX[2].test(file.path) ||
-                ANIDB_RX[4].test(file.path) ||
-                ANIDB_RX[5].test(file.path) ||
-                ANIDB_RX[6].test(file.path)
-            )
+            return valueContainsOVA(file.path) || valueContainsNC(file.path)
         }
 
 

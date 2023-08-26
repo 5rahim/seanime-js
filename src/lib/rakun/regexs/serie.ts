@@ -28,8 +28,7 @@ export default {
                 /(?<episode>\d{2,})\s+END(?: |$)/,
                 /#(?<episode>\d+)(?: |$)/,
                 /\s(?<episode>0?\d+)'(?: |$)/, // 01'
-                // /\s(?<episode>\d+)[.v](\d{1,2})(?: |$)/, // ` 01v2` `01v2 `
-                /\s(?<episode>\d+)[.v]([1-9]|0\d|2[0-9])(?: |$)/,
+                /\s(?<episode>\d+)[.v]([1-9]|0\d|2[0-9])(?: |$)/, //` 01v2` `01v2 `
             ],
             keep: [
                 /- \b(?<episode>\d+)(?= |$)\b/, // KEEP `This - 01 - [02]`, NOT `Not this - 01 Text here`
@@ -110,9 +109,9 @@ export default {
                  * Test `S01-04` Text
                  * Golden Kamuy S1 - 04 <-- Nope
                  */
-                /\b[(\[)]?[Ss](eason)?s? ?S?(?<a>0?\d+) ?[~&+] ?S?(?<b>0?\d+)[)\]]?\b/, // S01 ~ 02
-                /[ +_-][(\[)]?[Ss](eason)?s? ?S?(?<a>0?\d+) ?[~&+] ?S?(?<b>0?\d+)[)\]]?[ +_-]/,
-                /[ +_-][(\[)]?[Ss](eason)?s? ?S?(?<a>0?\d+)[-~&+]S?(?<b>0?\d+)[)\]]?[ +_-]/, //S01-02
+                /\b[(\[)]?[Ss](eason)?s? ?S?(?<a>0?\d+) ?[~&+] ?S?(?<b>0?\d+)[)\]]?\b/, // S01 ~ 02 - with word boundary
+                /[ +_-][(\[)]?[Ss](eason)?s? ?S?(?<a>0?\d+) ?[~&+] ?S?(?<b>0?\d+)[)\]]?[ +_-]/, // S01 ~ 02 without
+                /[ +_-][(\[)]?[Ss](eason)?s? ?S?(?<a>0?\d+)[-~&+]S?(?<b>0?\d+)[)\]]?[ +_-]/, //S01-02 S01~02
             ],
             keep: [],
         },
@@ -121,13 +120,8 @@ export default {
                 /\b(?<season>1)st [Ss]eason\b/,
                 /\b(?<season>2)nd [Ss]eason\b/,
                 /\b(?<season>3)rd [Ss]eason\b/,
-                /\b(?<season>4)th [Ss]eason\b/,
-                /\b(?<season>5)th [Ss]eason\b/,
-                /\b(?<season>6)th [Ss]eason\b/,
-                /\b(?<season>7)th [Ss]eason\b/,
-                /\b(?<season>8)th [Ss]eason\b/,
-                /\b(?<season>9)th [Ss]eason\b/,
-                /\b(?<season>10)th [Ss]eason\b/,
+                /\b(?<season>\d)th [Ss]eason\b/,
+                /\b(?<season>\d{2})th [Ss]eason\b/,
                 /\b[\(\[)]?[Ss]eason (?<season>\d+)[\)\]]?\b/,
                 /\b[\(\[)]?[Ss]aison (?<season>\d+)[\)\]]?\b/,
 

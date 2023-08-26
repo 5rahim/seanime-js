@@ -111,7 +111,8 @@ export const DataGridAnatomy = defineStyleAnatomy({
  * -----------------------------------------------------------------------------------------------*/
 
 export interface DataGridProps<T extends Record<string, any>> extends ComponentWithAnatomy<typeof DataGridAnatomy>, DataGridInstanceProps<T> {
-    tableApi?: DataGridApi<T>
+    tableApi?: DataGridApi<T>,
+    globalSearchInputProps?: Partial<DataGridSearchInputProps & TextInputProps>
 }
 
 export function DataGrid<T extends Record<string, any>>(props: DataGridProps<T>) {
@@ -137,6 +138,7 @@ export function DataGrid<T extends Record<string, any>>(props: DataGridProps<T>)
         footerPaginationInputContainerClassName,
         filterDropdownButtonClassName,
         tableApi,
+        globalSearchInputProps,
         ...rest
     } = props
 
@@ -225,6 +227,7 @@ export function DataGrid<T extends Record<string, any>>(props: DataGridProps<T>)
                         <DataGridSearchInput
                             value={globalFilter ?? ""}
                             onChange={value => handleGlobalFilterChange(String(value))}
+                            {...globalSearchInputProps}
                         />
                     )}
                     {/* Filter dropdown */}
@@ -640,8 +643,8 @@ function DataGridSearchInput(props: DataGridSearchInputProps & TextInputProps) {
                 <circle cx="11" cy="11" r="8"/>
                 <path d="m21 21-4.3-4.3"/>
             </svg>}
-            size={"sm"}
-            fieldClassName={"md:max-w-[15rem]"}
+            size={"md"}
+            fieldClassName={"md:max-w-[30rem]"}
         />
     )
 }

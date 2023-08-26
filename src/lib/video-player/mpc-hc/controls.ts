@@ -10,7 +10,7 @@ function refresh(settings: Settings) {
     mpcApi.port = settings.player.mpcPort
 }
 
-export async function openVideoWithMpc(path: string, settings: Settings) {
+export async function _mpc_openVideo(path: string, settings: Settings) {
 
     refresh(settings)
 

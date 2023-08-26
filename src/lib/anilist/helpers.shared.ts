@@ -1,5 +1,6 @@
 import { AnilistDetailedMedia, AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import { MediaRelation } from "@/gql/graphql"
+import { ANIDB_RX } from "@/lib/series-scanner/regex"
 
 type _Edge = { relationType: MediaRelation, node: AnilistShowcaseMedia | null | undefined }
 
@@ -54,4 +55,27 @@ export function getAnilistMediaTitleList(media: AnilistShortMedia | AnilistDetai
         }
     }
     return titles
+}
+
+export const valueContainsSeason = (value: string | null | undefined) => (
+    value?.toLowerCase()?.includes("season") ||
+    value?.toLowerCase()?.match(/\d(st|nd|rd|th) [Ss].*/)
+) && !value?.toLowerCase().includes("episode") && !value?.toLowerCase().includes("第") && !value?.toLowerCase().match(/\b(ova|special|special)\b/i)
+
+export function valueContainsOVA(value: string | null | undefined) {
+    if (!value) return false
+    return (ANIDB_RX[0].test(value) ||
+        ANIDB_RX[5].test(value) ||
+        ANIDB_RX[6].test(value)) && !(ANIDB_RX[1].test(value) ||
+        ANIDB_RX[2].test(value) ||
+        ANIDB_RX[3].test(value) ||
+        ANIDB_RX[4].test(value))
+}
+
+export function valueContainsNC(value: string | null | undefined) {
+    if (!value) return false
+    return (ANIDB_RX[1].test(value) ||
+        ANIDB_RX[2].test(value) ||
+        ANIDB_RX[3].test(value) ||
+        ANIDB_RX[4].test(value))
 }

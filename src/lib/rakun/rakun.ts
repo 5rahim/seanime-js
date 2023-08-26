@@ -404,16 +404,14 @@ export default abstract class Parser {
             { key: "movie", collection: regexs.serie.movie.range.keep, get: "value", mode: "skip" },
             { key: "movie", collection: regexs.serie.movie.single.keep, get: "value", mode: "skip" },
 
-            // key was "part"
-            // { key: "season", collection: regexs.serie.part.range.extract, get: "value" },
+            { key: "partRange", collection: regexs.serie.part.range.extract, get: "value" },
             { key: "part", collection: regexs.serie.part.single.extract, get: "value" },
-            // { key: "season", collection: regexs.serie.part.range.keep, get: "value", mode: "skip" },
+            { key: "partRange", collection: regexs.serie.part.range.keep, get: "value", mode: "skip" },
             { key: "part", collection: regexs.serie.part.single.keep, get: "value", mode: "skip" },
 
             // NEW cour
             { key: "cour", collection: regexs.serie.cour.single.extract, get: "value" },
 
-            // { key: "none", collection: regexs.serie.season.range.extract, get: "value", clean: true, mode: "skip" },
             { key: "seasonRange", collection: regexs.serie.season.range.extract, get: "value" },
             { key: "season", collection: regexs.serie.season.single.extract, get: "value" },
             {

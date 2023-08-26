@@ -1,11 +1,7 @@
 "use client"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
 import { useSelectAtom } from "@/atoms/helpers"
-import { useLibraryEntryAtomByMediaId } from "@/atoms/library/library-entry.atoms"
-import { useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist-collection"
 import React, { startTransition, useEffect, useMemo, useRef, useState } from "react"
-import { useLocalFilesByMediaId } from "@/atoms/library/local-file.atoms"
-import { getMediaDownloadInfo } from "@/lib/download/helpers"
 import { unstable_findNyaaTorrents, unstable_handleSearchTorrents } from "@/lib/download/nyaa/search"
 import { SearchTorrent } from "@/lib/download/nyaa/api/types"
 import { createDataGridColumns, DataGrid } from "@/components/ui/datagrid"
@@ -16,8 +12,9 @@ import Image from "next/image"
 import { atom } from "jotai"
 import { useAtomValue, useSetAtom } from "jotai/react"
 import { useSettings } from "@/atoms/settings"
-import { TorrentManager } from "@/lib/download/qbittorrent"
+import { TorrentManager } from "@/lib/download"
 import { Divider } from "@/components/ui/divider"
+import { useDownloadPageData } from "@/app/(main)/(library)/view/[id]/download/_components/use-download-page-data"
 
 interface DownloadPageProps {
     media: AnilistDetailedMedia,
@@ -39,31 +36,20 @@ const sortedSelectedTorrentsAtom = atom((get) => {
 export function DownloadPage(props: DownloadPageProps) {
     const { settings } = useSettings()
 
-    const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(props.media.id)
-    const collectionEntryProgress = !!collectionEntryAtom ? useSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress) : undefined
-    const collectionEntryStatus = !!collectionEntryAtom ? useSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.status) : undefined
-    const entryAtom = useLibraryEntryAtomByMediaId(props.media.id)
+    const {
+        entryAtom,
+        lastFile,
+        downloadInfo,
+    } = useDownloadPageData(props.media)
 
     const sharedPath = !!entryAtom ? useSelectAtom(entryAtom, entry => entry.sharedPath) : undefined // TODO: Create a shared path based on title
 
     const [isLoading, setIsLoading] = useState(false)
     const [isFetching, setIsFetching] = useState(false)
 
-    const files = useLocalFilesByMediaId(props.media.id)
-    const [episodeFiles] = useState(files.filter(file => !!file.parsedInfo?.episode).filter(Boolean))
-    const [lastFile] = useState(episodeFiles.length > 1 ? episodeFiles.reduce((prev, curr) => Number(prev!.parsedInfo!.episode!) > Number(curr!.parsedInfo!.episode!) ? prev : curr) : episodeFiles[0] ?? undefined)
-
     const [torrents, setTorrents] = useState<SearchTorrentData[]>([])
     const [globalFilter, setGlobalFilter] = useState<string>("")
     const setSelectedTorrents = useSetAtom(selectedTorrentsAtom)
-
-    const [downloadInfo] = useState(getMediaDownloadInfo({
-        media: props.media,
-        lastEpisodeFile: lastFile,
-        progress: collectionEntryProgress,
-        libraryEntryExists: !!entryAtom,
-        status: collectionEntryStatus,
-    }))
 
     useEffect(() => {
         setSelectedTorrents([])
@@ -72,13 +58,6 @@ export function DownloadPage(props: DownloadPageProps) {
     useEffect(() => {
         console.log(downloadInfo)
     }, [downloadInfo]) //TODO Remove
-
-
-    // useEffect(() => {
-    //     (async () => {
-    //         console.log(await __testNyaa())
-    //     })()
-    // }, [])
 
     const handleFindNyaaTorrents = async () => {
         setIsLoading(true)
@@ -225,6 +204,9 @@ export function DownloadPage(props: DownloadPageProps) {
                     onGlobalFilterChange={setGlobalFilter}
                     isLoading={isLoading && !isFetching}
                     isDataMutating={isFetching}
+                    globalSearchInputProps={{
+                        // placeholder:
+                    }}
                 />
 
 
@@ -252,7 +234,6 @@ export const EpisodeList: React.FC<EpisodeListProps> = (props) => {
         <h3>Preview:</h3>
         <div className={"grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4"}>
             {selectedTorrents.map(torrent => {
-                // const episode = useNormalizedEpisodeNumber(torrent.parsed, media)
                 const episodeData = props.aniZipData?.episodes[torrent.parsed.episode || "0"]
                 return (
                     <div key={torrent.name}

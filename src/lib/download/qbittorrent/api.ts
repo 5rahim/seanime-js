@@ -45,3 +45,16 @@ export async function _qBit_addMagnet(settings: Settings, options: TorrentManage
         },
     )
 }
+
+
+// Future<List<Torrent>> getTorrents();
+//
+// Future<Torrent> addTorrent(String magnet);
+//
+// Future<bool> stopTorrent(Torrent torrent);
+//
+// Future<bool> startTorrent(Torrent torrent);
+//
+// Future<bool> removeTorrent(Torrent torrent, [bool deleteLocal = false]);
+//
+// Future<bool> streamTorrent(Torrent torrent);

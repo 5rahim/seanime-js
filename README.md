@@ -72,5 +72,6 @@ npm run tauri:dev
 - [ ] Edit file metadata
 - [x] Unmatch entire media
 - [ ] Preliminary scan to hydrate AniList (for users without anilist data)
+    - Get unique titles from files and folders
     - Use matching recommendation system
 - Video

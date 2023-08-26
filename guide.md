@@ -202,29 +202,13 @@ Caveats: This will only work if it does not contain locked files.
 ```
 
 #### Edge cases
-
-```text
-├── %LIBRARY_FOLDER%           
-    └── JJK                                     <- Captures "JJK" \/
-        └── Jujustu Kaisen S01E01.mkv           <- Captures "Jujustu Kaisen" and season
-
----> Will try [JJK, Jujustu Kaisen, JJK Jujutsu Kaisen]
-```
-
-```text
-├── %LIBRARY_FOLDER%                              
-    └── Jujustu Kaisen S1-2
-        └── JJK S2                              <- Captures "JJK", captures season \/
-            └── Jujustu Kaisen S01E01.mkv       <- Captures "Jujustu Kaisen"
-
----> Will try [JJK Season 2, ..., Jujustu Kaisen Season 2, ..., JJK Jujutsu Kaisen Season 2, ...]
 ```
 
 ```text
 ├── %LIBRARY_FOLDER%                              
     └── Fruits Basket S1-3                      <- Captures title (ignores range)
         └── Fruits Basket S2                    <- Overrides previous title, captures season \/
-            └── S2E1 - Spring comes.mkv         <- Captures "Spring comes"
+            └── S02E01 - Spring comes.mkv       <- Captures "Spring comes"
 
 ---> Will try [Fruits Basket Season 2, ..., Spring comes Season 2, ..., Fruits Basket Spring comes Season 2, ...]
 ---> However, since the folder's title is prioritized the episode title might not negatively impact the matching process
@@ -277,7 +261,7 @@ Seanime will search the file title for the episode number
 │   │   │   ├── Jujutsu Kaisen 2 - 05 - Episode title.mkv   
 │   │   │   ├── S01E05 - Episode title.mkv   
 │   │   │   │
-│   │   │   ├── Jujutsu Kaisen 5.mkv.......................<- This will be IGNORED, rename to "Jujutsu Kaisen E05"
+│   │   │   ├── Jujutsu Kaisen 5.mkv.......................<- This will be IGNORED, rename to "Jujutsu Kaisen 05"
 │   │   │   ├── Jujutsu Kaisen 2 05 Episode title.mkv......<- This will be IGNORED
 │   │   │   ├── Jujutsu Kaisen 1-5.mkv.....................<- This will be IGNORED as it is considered as a range
 │   │   │   ├── Jujutsu Kaisen S1-5.mkv....................<- This will be IGNORED as it is considered as a range
@@ -285,6 +269,17 @@ Seanime will search the file title for the episode number
 │   │   │   ├── Jujutsu Kaisen 05x02.mkv...................<- This will return 2 - Avoid versioning with "x"
 │   │   │   └── ...
 │   │   └── ...
+```
+
+### Absolute episode number
+
+Absolute episode numbers will be normalized to relative episode number and will not impact the matching process.
+
+```text
+├── %LIBRARY_FOLDER%
+│   ├── Jujutsu Kaisen
+│   │   ├── Jujutsu Kaisen 01.mkv           <- Matched to Jujutsu Kaisen Season 1, Episode 1
+│   │   ├── Jujutsu Kaisen 29.mkv           <- Matched to Jujutsu Kaisen Season 2, Episode 5
 ```
 
 ### Finding movie

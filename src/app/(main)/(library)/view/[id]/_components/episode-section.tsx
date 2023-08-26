@@ -13,6 +13,9 @@ import { Divider } from "@/components/ui/divider"
 import { ToggleLockStatusButton } from "@/app/(main)/(library)/view/[id]/_components/episodes/toggle-lock-status-button"
 import { UtilityButtons } from "@/app/(main)/(library)/view/[id]/_components/episodes/utility-buttons"
 import { EpisodeList } from "@/app/(main)/(library)/view/[id]/_components/episodes/episode-list"
+import {
+    UndownloadedEpisodeList,
+} from "@/app/(main)/(library)/view/[id]/download/_components/undownloaded-episode-list"
 
 interface EpisodeSectionProps {
     children?: React.ReactNode
@@ -42,8 +45,9 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = React.memo((props) 
     }, [videoPlayer.current])
 
     if (!entryAtom) {
-        return <div>
-            Not in your library
+        return <div className={"space-y-10"}>
+            <p>Not in your library</p>
+            <UndownloadedEpisodeList media={detailedMedia} aniZipData={aniZipData}/>
         </div>
     }
 
@@ -83,6 +87,8 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = React.memo((props) 
                         aniZipData={aniZipData}
                     />
                 </>}
+
+                <UndownloadedEpisodeList media={detailedMedia} aniZipData={aniZipData}/>
 
                 {ovaFileAtoms.length > 0 && <>
                     <Divider/>

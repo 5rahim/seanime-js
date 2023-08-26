@@ -7,6 +7,7 @@ import lavenshtein from "js-levenshtein"
 import { AnimeFileInfo, LocalFile } from "@/lib/local-library/local-file"
 import { logger } from "@/lib/helpers/debug"
 import { ScanLogging } from "@/lib/local-library/logs"
+import { valueContainsSeason } from "@/lib/anilist/helpers.shared"
 
 /**
  * This method employs 3 comparison algorithms: Dice's coefficient (string-similarity), Levenshtein's algorithm, and MAL's elastic search algorithm
@@ -66,7 +67,6 @@ export async function findBestCorrespondingMedia({
     const mediaPreferredTitles = mediaTitles.preferred
     const mediaSynonymsWithSeason = mediaTitles.synonymsWithSeason
 
-    // Convert parsed.episode and folderParsed.season to numbers if possible
     const episodeAsNumber = (parsed.episode && _.isNumber(parseInt(parsed.episode)))
         ? parseInt(parsed.episode)
         : undefined
@@ -108,20 +108,37 @@ export async function findBestCorrespondingMedia({
     let titleVariations = [
         (noSeasonsOrParts && _folderTitle) ? _folderTitle : undefined,
         (noSeasonsOrParts && parsed.title) ? parsed.title : undefined,
-        (!!courAsNumber && _folderTitle) ? `${_folderTitle} Cour ${courAsNumber}` : undefined, // Cour
-        (!!courAsNumber && parsed.title) ? `${parsed.title} Cour ${courAsNumber}` : undefined, // Cour
         (!!courAsNumber && _folderTitle) ? `${_folderTitle} Part ${courAsNumber}` : undefined, // Cour
         (!!courAsNumber && parsed.title) ? `${parsed.title} Part ${courAsNumber}` : undefined, // Cour
-        (!!partAsNumber && _folderTitle) ? `${_folderTitle} Cour ${partAsNumber}` : undefined, // Part
-        (!!partAsNumber && parsed.title) ? `${parsed.title} Cour ${partAsNumber}` : undefined, // Part
+        (!!courAsNumber && _folderTitle) ? `${_folderTitle} Cour ${courAsNumber}` : undefined, // Cour
+        (!!courAsNumber && parsed.title) ? `${parsed.title} Cour ${courAsNumber}` : undefined, // Cour
+        (!!courAsNumber && _folderTitle) ? `${_folderTitle} Cour ${romanize(courAsNumber)}` : undefined, // Cour
+        (!!courAsNumber && parsed.title) ? `${parsed.title} Cour ${romanize(courAsNumber)}` : undefined, // Cour
+        (!!courAsNumber && _folderTitle) ? `${_folderTitle} Part ${romanize(courAsNumber)}` : undefined, // Cour
+        (!!courAsNumber && parsed.title) ? `${parsed.title} Part ${romanize(courAsNumber)}` : undefined, // Cour
+
         (!!partAsNumber && _folderTitle) ? `${_folderTitle} Part ${partAsNumber}` : undefined, // Part
         (!!partAsNumber && parsed.title) ? `${parsed.title} Part ${partAsNumber}` : undefined, // Part
+        (!!partAsNumber && _folderTitle) ? `${_folderTitle} Cour ${partAsNumber}` : undefined, // Part
+        (!!partAsNumber && parsed.title) ? `${parsed.title} Cour ${partAsNumber}` : undefined, // Part
+        (!!partAsNumber && _folderTitle) ? `${_folderTitle} Cour ${romanize(partAsNumber)}` : undefined, // Part
+        (!!partAsNumber && parsed.title) ? `${parsed.title} Cour ${romanize(partAsNumber)}` : undefined, // Part
+        (!!partAsNumber && _folderTitle) ? `${_folderTitle} Part ${romanize(partAsNumber)}` : undefined, // Part
+        (!!partAsNumber && parsed.title) ? `${parsed.title} Part ${romanize(partAsNumber)}` : undefined, // Part
+
+        (!!partAsNumber && _folderTitle && eitherSeasonExists) ? `${_folderTitle} Season ${seasonAsNumber || folderSeasonAsNumber} Cour ${partAsNumber}` : undefined, // Part + Season
+        (!!partAsNumber && parsed.title && eitherSeasonExists) ? `${parsed.title} Season ${seasonAsNumber || folderSeasonAsNumber} Cour ${partAsNumber}` : undefined, // Part + Season
+        (!!partAsNumber && _folderTitle && eitherSeasonExists) ? `${_folderTitle} Season ${seasonAsNumber || folderSeasonAsNumber} Part ${partAsNumber}` : undefined, // Part + Season
+        (!!partAsNumber && parsed.title && eitherSeasonExists) ? `${parsed.title} Season ${seasonAsNumber || folderSeasonAsNumber} Part ${partAsNumber}` : undefined, // Part + Season
+
         ((_folderTitle && !parsed.title) || (!bothTitlesAreSimilar && eitherSeasonExists)) ? `${_folderTitle} Season ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
         ((_folderTitle && !parsed.title) || (!bothTitlesAreSimilar && eitherSeasonExists)) ? `${_folderTitle} S${seasonAsNumber || folderSeasonAsNumber}` : undefined,
         ((_folderTitle && !parsed.title) || (!bothTitlesAreSimilar && eitherSeasonExists)) ? `${_folderTitle} ${ordinalize(String(seasonAsNumber || folderSeasonAsNumber))} Season` : undefined,
+
         (parsed.title && eitherSeasonExists) ? `${parsed.title} Season ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
         (parsed.title && eitherSeasonExists) ? `${parsed.title} S${seasonAsNumber || folderSeasonAsNumber}` : undefined,
         (parsed.title && eitherSeasonExists) ? `${parsed.title} ${ordinalize(String(seasonAsNumber || folderSeasonAsNumber))} Season` : undefined,
+
         (bothTitles && !bothTitlesAreSimilar && eitherSeasonExists) ? `${_folderTitle} ${parsed.title} Season ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
         (bothTitles && !bothTitlesAreSimilar && eitherSeasonExists) ? `${_folderTitle} ${parsed.title} S${seasonAsNumber || folderSeasonAsNumber}` : undefined,
         (bothTitles && !bothTitlesAreSimilar && eitherSeasonExists) ? `${_folderTitle} ${parsed.title} ${ordinalize(String(seasonAsNumber || folderSeasonAsNumber))} Season` : undefined,
@@ -243,13 +260,13 @@ export async function findBestCorrespondingMedia({
     // debug(differentFoundMedia.map(n => n.title?.romaji?.toLowerCase()).filter(Boolean))
     // debug("------------------------------------------------------")
 
-    _scanLogging.add(file.path, "Eliminating the least similar title from each language")
+    _scanLogging.add(file.path, "Eliminating the least similar title from each language from each method")
 
     // Eliminate duplicate and least similar elements from each langages
     const best_userPreferred = eliminateLeastSimilarElement(differentFoundMedia.map(n => n.title?.userPreferred?.toLowerCase()).filter(Boolean))
     const best_english = eliminateLeastSimilarElement(differentFoundMedia.map(n => n.title?.english?.toLowerCase()).filter(Boolean))
     const best_romaji = eliminateLeastSimilarElement(differentFoundMedia.map(n => n.title?.romaji?.toLowerCase()).filter(Boolean))
-    const best_syn = eliminateLeastSimilarElement(differentFoundMedia.flatMap(n => n.synonyms?.filter(Boolean).filter(syn => isSeasonTitle(syn.toLowerCase()))).map(n => n?.toLowerCase()).filter(Boolean))
+    const best_syn = eliminateLeastSimilarElement(differentFoundMedia.flatMap(n => n.synonyms?.filter(Boolean).filter(syn => valueContainsSeason(syn.toLowerCase()))).map(n => n?.toLowerCase()).filter(Boolean))
     // debug(best_userPreferred, "preferred")// debug(best_english, "english")// debug(best_romaji, "romaji")// debug(best_syn, "season synonym")
 
     _scanLogging.add(file.path, "   -> Determined best titles from 'userPreferred' -> " + JSON.stringify(best_userPreferred))
@@ -318,18 +335,13 @@ export async function findBestCorrespondingMedia({
     }
 }
 
-export const isSeasonTitle = (syn: string | null | undefined) => (
-    syn?.toLowerCase()?.includes("season") ||
-    syn?.toLowerCase()?.match(/\d(st|nd|rd|th) [Ss].*/)
-) && !syn?.toLowerCase().includes("episode") && !syn?.toLowerCase().includes("第") && !syn?.toLowerCase().match(/\b(ova|special|special)\b/i)
-
 function getDistanceFromTitle(media: AnilistShowcaseMedia, values: string[]) {
     if (media && media.title) {
 
         const titles = Object.values(media.title).filter(Boolean).flatMap(title => values.map(unit => lavenshtein(title!.toLowerCase(), unit!.toLowerCase())))
 
         const synonymsWithSeason = media.synonyms?.filter(Boolean)
-            .filter(isSeasonTitle)
+            .filter(valueContainsSeason)
             .flatMap(title => values.map(unit => lavenshtein(title.toLowerCase(), unit.toLowerCase()))) // If synonym has "season", remove padding
 
         const distances = [...(synonymsWithSeason || []), ...titles]
