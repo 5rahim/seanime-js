@@ -406,9 +406,9 @@ export default abstract class Parser {
 
             // key was "part"
             // { key: "season", collection: regexs.serie.part.range.extract, get: "value" },
-            { key: "season", collection: regexs.serie.part.single.extract, get: "value" },
+            { key: "part", collection: regexs.serie.part.single.extract, get: "value" },
             // { key: "season", collection: regexs.serie.part.range.keep, get: "value", mode: "skip" },
-            { key: "season", collection: regexs.serie.part.single.keep, get: "value", mode: "skip" },
+            { key: "part", collection: regexs.serie.part.single.keep, get: "value", mode: "skip" },
 
             // NEW cour
             { key: "cour", collection: regexs.serie.cour.single.extract, get: "value" },

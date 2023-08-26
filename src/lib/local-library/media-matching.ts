@@ -79,6 +79,9 @@ export async function findBestCorrespondingMedia({
     const courAsNumber = (folderParsed?.cour && _.isNumber(parseInt(folderParsed.cour)))
         ? parseInt(folderParsed.cour)
         : (parsed.cour && _.isNumber(parseInt(parsed.cour))) ? parseInt(parsed.cour) : undefined
+    const partAsNumber = (folderParsed?.part && _.isNumber(parseInt(folderParsed.part)))
+        ? parseInt(folderParsed.part)
+        : (parsed.part && _.isNumber(parseInt(parsed.part))) ? parseInt(parsed.part) : undefined
 
     /* Get all variations of title */
 
@@ -93,7 +96,7 @@ export async function findBestCorrespondingMedia({
     const _title = _folderTitle || parsed.title
 
     const bothTitles = !!parsed.title && !!_folderTitle
-    const noSeasons = !seasonAsNumber && !folderSeasonAsNumber
+    const noSeasonsOrParts = !seasonAsNumber && !folderSeasonAsNumber && !courAsNumber && !partAsNumber
     const bothTitlesAreSimilar = bothTitles && _folderTitle!.toLowerCase().includes(parsed.title!.toLowerCase())
     const eitherSeasonExists = !!seasonAsNumber || !!folderSeasonAsNumber
     const eitherSeasonIsFirst = (!!seasonAsNumber && seasonAsNumber <= 1) || (!!folderSeasonAsNumber && folderSeasonAsNumber <= 1)
@@ -103,29 +106,26 @@ export async function findBestCorrespondingMedia({
     // The following code creates an array of potential title variations.
     // Each variation is created based on different conditions and combinations of title elements (seasons, etc...).
     let titleVariations = [
-        (noSeasons && _folderTitle) ? _folderTitle : undefined,
-        (noSeasons && parsed.title) ? parsed.title : undefined,
+        (noSeasonsOrParts && _folderTitle) ? _folderTitle : undefined,
+        (noSeasonsOrParts && parsed.title) ? parsed.title : undefined,
         (!!courAsNumber && _folderTitle) ? `${_folderTitle} Cour ${courAsNumber}` : undefined, // Cour
         (!!courAsNumber && parsed.title) ? `${parsed.title} Cour ${courAsNumber}` : undefined, // Cour
+        (!!courAsNumber && _folderTitle) ? `${_folderTitle} Part ${courAsNumber}` : undefined, // Cour
+        (!!courAsNumber && parsed.title) ? `${parsed.title} Part ${courAsNumber}` : undefined, // Cour
+        (!!partAsNumber && _folderTitle) ? `${_folderTitle} Cour ${partAsNumber}` : undefined, // Part
+        (!!partAsNumber && parsed.title) ? `${parsed.title} Cour ${partAsNumber}` : undefined, // Part
+        (!!partAsNumber && _folderTitle) ? `${_folderTitle} Part ${partAsNumber}` : undefined, // Part
+        (!!partAsNumber && parsed.title) ? `${parsed.title} Part ${partAsNumber}` : undefined, // Part
         ((_folderTitle && !parsed.title) || (!bothTitlesAreSimilar && eitherSeasonExists)) ? `${_folderTitle} Season ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
-        ((_folderTitle && !parsed.title) || (!bothTitlesAreSimilar && eitherSeasonExists)) ? `${_folderTitle} Part ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
-        ((_folderTitle && !parsed.title) || (!bothTitlesAreSimilar && eitherSeasonExists)) ? `${_folderTitle} Cour ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
-        ((_folderTitle && !parsed.title) || (!bothTitlesAreSimilar && eitherSeasonExists)) ? `${_folderTitle} Part ${romanize(seasonAsNumber || folderSeasonAsNumber!)}` : undefined,
         ((_folderTitle && !parsed.title) || (!bothTitlesAreSimilar && eitherSeasonExists)) ? `${_folderTitle} S${seasonAsNumber || folderSeasonAsNumber}` : undefined,
         ((_folderTitle && !parsed.title) || (!bothTitlesAreSimilar && eitherSeasonExists)) ? `${_folderTitle} ${ordinalize(String(seasonAsNumber || folderSeasonAsNumber))} Season` : undefined,
         (parsed.title && eitherSeasonExists) ? `${parsed.title} Season ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
-        (parsed.title && eitherSeasonExists) ? `${parsed.title} Part ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
-        (parsed.title && eitherSeasonExists) ? `${parsed.title} Cour ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
-        (parsed.title && eitherSeasonExists) ? `${parsed.title} Part ${romanize(seasonAsNumber || folderSeasonAsNumber!)}` : undefined,
         (parsed.title && eitherSeasonExists) ? `${parsed.title} S${seasonAsNumber || folderSeasonAsNumber}` : undefined,
         (parsed.title && eitherSeasonExists) ? `${parsed.title} ${ordinalize(String(seasonAsNumber || folderSeasonAsNumber))} Season` : undefined,
         (bothTitles && !bothTitlesAreSimilar && eitherSeasonExists) ? `${_folderTitle} ${parsed.title} Season ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
-        (bothTitles && !bothTitlesAreSimilar && eitherSeasonExists) ? `${_folderTitle} ${parsed.title} Part ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
-        (bothTitles && !bothTitlesAreSimilar && eitherSeasonExists) ? `${_folderTitle} ${parsed.title} Cour ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
-        (bothTitles && !bothTitlesAreSimilar && eitherSeasonExists) ? `${_folderTitle} ${parsed.title} Part ${romanize(seasonAsNumber || folderSeasonAsNumber!)}` : undefined,
         (bothTitles && !bothTitlesAreSimilar && eitherSeasonExists) ? `${_folderTitle} ${parsed.title} S${seasonAsNumber || folderSeasonAsNumber}` : undefined,
         (bothTitles && !bothTitlesAreSimilar && eitherSeasonExists) ? `${_folderTitle} ${parsed.title} ${ordinalize(String(seasonAsNumber || folderSeasonAsNumber))} Season` : undefined,
-        (bothTitles && !bothTitlesAreSimilar && noSeasons) ? `${_folderTitle} ${parsed.title}` : undefined,
+        (bothTitles && !bothTitlesAreSimilar && noSeasonsOrParts) ? `${_folderTitle} ${parsed.title}` : undefined,
         (_folderTitle && eitherSeasonIsFirst) ? _folderTitle : undefined,
         (parsed.title && eitherSeasonIsFirst) ? parsed.title : undefined,
     ].filter(Boolean)
