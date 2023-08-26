@@ -8,7 +8,6 @@ import deepEquals from "fast-deep-equal"
 import _ from "lodash"
 import { ANIDB_RX } from "@/lib/series-scanner/regex"
 import { anilistCollectionEntryAtoms, useAnilistCollectionEntryByMediaId } from "@/atoms/anilist-collection"
-import { valueContainsNC, valueContainsOVA } from "@/lib/anilist/helpers.shared"
 
 /* -------------------------------------------------------------------------------------------------
  * Main atoms
@@ -78,7 +77,7 @@ const get_OVA_LocalFileAtomsByMediaIdAtom = atom(null,
         const fileAtoms = get(localFileAtoms).filter((fileAtom) => get(fileAtom).mediaId === mediaId)
         return _.sortBy(fileAtoms, fileAtom => Number(get(fileAtom).parsedInfo?.episode)).filter(fileAtom => {
             const file = get(fileAtom)
-            return valueContainsOVA(file.path)
+            return file.metadata.isSpecial
         }) ?? []
     },
 )
@@ -88,7 +87,7 @@ const get_NC_LocalFileAtomsByMediaIdAtom = atom(null,
         const fileAtoms = get(localFileAtoms).filter((fileAtom) => get(fileAtom).mediaId === mediaId)
         return _.sortBy(fileAtoms, fileAtom => Number(get(fileAtom).parsedInfo?.episode)).filter(fileAtom => {
             const file = get(fileAtom)
-            return valueContainsNC(file.path)
+            return file.metadata.isNC
         }) ?? []
     },
 )
@@ -124,7 +123,7 @@ export const useMainLocalFileAtomsByMediaId = (mediaId: number) => {
         watched: Array<PrimitiveAtom<LocalFile>>
     }
 }
-export const useOVALocalFileAtomsByMediaId = (mediaId: number) => {
+export const useSpecialsLocalFileAtomsByMediaId = (mediaId: number) => {
     // Actualize file list when collection entry changes
     const collectionEntry = useAnilistCollectionEntryByMediaId(mediaId)
     const [, get] = useAtom(get_OVA_LocalFileAtomsByMediaIdAtom)
@@ -152,6 +151,15 @@ export const useLocalFilesByMediaId = (mediaId: number) => {
         selectAtom(
             localFilesAtom,
             useCallback(files => files.filter(file => file.mediaId === mediaId), []), // Stable reference
+            deepEquals, // Equality check
+        ),
+    )
+}
+export const useLocalEpisodeFilesByMediaId = (mediaId: number) => {
+    return useAtomValue(
+        selectAtom(
+            localFilesAtom,
+            useCallback(files => files.filter(file => file.mediaId === mediaId && !!file.metadata.episode && !file.metadata.isSpecial && !file.metadata.isNC), []), // Stable reference
             deepEquals, // Equality check
         ),
     )

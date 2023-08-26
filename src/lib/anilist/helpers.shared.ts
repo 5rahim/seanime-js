@@ -62,7 +62,7 @@ export const valueContainsSeason = (value: string | null | undefined) => (
     value?.toLowerCase()?.match(/\d(st|nd|rd|th) [Ss].*/)
 ) && !value?.toLowerCase().includes("episode") && !value?.toLowerCase().includes("第") && !value?.toLowerCase().match(/\b(ova|special|special)\b/i)
 
-export function valueContainsOVA(value: string | null | undefined) {
+export function valueContainsSpecials(value: string | null | undefined) {
     if (!value) return false
     return (ANIDB_RX[0].test(value) ||
         ANIDB_RX[5].test(value) ||

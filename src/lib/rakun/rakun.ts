@@ -43,7 +43,8 @@ export default abstract class Parser {
                 if (key) {
                     //Search for matches
                     //console.debug(`${key} > process`)
-                    const matches = Parser.test({ collection, value: cleaned, get })
+                    let matches = Parser.test({ collection, value: cleaned, get })
+
                     if (matches.length) {
                         //Retrieve group names (or values) and remove leading underscore
                         //console.debug(`${key} > process > ${matches.length} regex matches`)
@@ -68,8 +69,16 @@ export default abstract class Parser {
                                 break
                             }
                         }
+                        if (key !== "episodeTitle") {
+                            removes.push(...matches.regexs)
+                        } else {
+                            const match = cleaned.match(matches.regexs[0])
+                            const episodeTitle = match?.groups?.episodeTitle
+                            if (episodeTitle) {
+                                cleaned = cleaned.replace(episodeTitle, "")
+                            }
+                        }
                         //Put matching regex in queue for removal
-                        removes.push(...matches.regexs)
                     }
                     //No matches
                     else {
@@ -262,7 +271,7 @@ export default abstract class Parser {
 
                 // Remove leftover episode titles
                 // eg: Cowboy Bebop - - Stray dog strut -> Cowboy Bebop
-                value = value.replace(/\s?-\s?-\s?(.*)(?: |$)/g, "")
+                // value = value.replace(/\s?-\s?-\s?(.*)(?: |$)/g, "")
                 // Remove leftover movie mention
                 // eg: Cowboy Bebop +Movie
                 value = value.replace(/[+_-][Mm]ovies?/g, "")
@@ -398,6 +407,11 @@ export default abstract class Parser {
             { key: "subtitles", collection: regexs.lang.subtitles.extract },
             { key: "subtitles", collection: regexs.lang.subtitles.keep, clean: false },
             { key: "subber", collection: regexs.meta.subber, get: "value", mode: "skip" },
+            {
+                key: "episodeTitle", collection: regexs.meta.episodeTitle,
+                get: "value",
+                clean: false,
+            },
 
             { key: "movie", collection: regexs.serie.movie.range.extract, get: "value" },
             { key: "movie", collection: regexs.serie.movie.single.extract, get: "value" },

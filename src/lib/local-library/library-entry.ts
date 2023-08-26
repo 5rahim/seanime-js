@@ -11,7 +11,12 @@ import {
     UpdateEntryDocument,
 } from "@/gql/graphql"
 import fs from "fs"
-import { findMediaEdge, valueContainsNC, valueContainsOVA, valueContainsSeason } from "@/lib/anilist/helpers.shared"
+import {
+    findMediaEdge,
+    valueContainsNC,
+    valueContainsSeason,
+    valueContainsSpecials,
+} from "@/lib/anilist/helpers.shared"
 import { resolveSeason } from "@/lib/anilist/helpers.server"
 import { getLocalFileParsedEpisode, getLocalFileParsedSeason } from "@/lib/local-library/helpers.shared"
 import { ScanLogging } from "@/lib/local-library/logs"
@@ -53,7 +58,7 @@ export const inspectProspectiveLibraryEntry = async (props: {
             const fileFolderTitle = f.parsedFolderInfo.findLast(n => !!n.title)?.title
             // Get the file's anime title
             const fileTitle = f.parsedInfo?.title
-            // Get the file's parent folder original name
+            // Get the file's parent folder name
             const fileFolderOriginal = f.parsedFolderInfo.findLast(n => !!n.title)?.original
 
             let rating = 0
@@ -67,22 +72,22 @@ export const inspectProspectiveLibraryEntry = async (props: {
             if (fileFolderTitle && mediaTitles.length > 0) {
                 const bestMatch = similarity.findBestMatch(fileFolderTitle.toLowerCase(), mediaTitles)
                 rating = bestMatch.bestMatch.rating
-                _scanLogging.add(f.path, `   -> Rating parent folder parsed anime title (${fileFolderTitle}) ` + rating)
+                _scanLogging.add(f.path, `   -> Rating title from parent folder (${fileFolderTitle}) ` + rating)
             }
             // Rate the file's anime title
             if (fileTitle && mediaTitles.length > 0) {
                 const bestMatch = similarity.findBestMatch(fileTitle.toLowerCase(), mediaTitles)
                 rating = bestMatch.bestMatch.rating > rating ? bestMatch.bestMatch.rating : rating
-                _scanLogging.add(f.path, `   -> Rating file parsed anime title (${fileTitle}) ` + rating)
+                _scanLogging.add(f.path, `   -> Rating title from file (${fileTitle}) ` + rating)
             }
             // Rate the file's parent folder original name
             if (fileFolderOriginal) {
                 const bestMatch = similarity.findBestMatch(fileFolderOriginal.toLowerCase(), mediaTitles)
                 ratingByFolderName = bestMatch.bestMatch.rating
-                _scanLogging.add(f.path, `   -> Rating parent folder original name (${fileFolderOriginal}) ` + rating)
+                _scanLogging.add(f.path, `   -> Rating parent folder name (${fileFolderOriginal}) ` + rating)
             }
 
-            _scanLogging.add(f.path, "   -> Final title rating " + rating + " | Final folder original name rating " + ratingByFolderName)
+            _scanLogging.add(f.path, "   -> Final title rating = " + rating + " | Final folder name rating = " + ratingByFolderName)
 
             return {
                 file: f,
@@ -96,8 +101,8 @@ export const inspectProspectiveLibraryEntry = async (props: {
 
         // We will keep these OVAs, NC,... files even if they don't meet all parameters
         // Why? the folder rating might be very low because they are in a folder named "Specials"
-        const isNotMain = (file: LocalFileWithMedia) => {
-            return valueContainsOVA(file.path) || valueContainsNC(file.path)
+        const containsSpecialsOrNC = (file: LocalFileWithMedia) => {
+            return valueContainsSpecials(file.path) || valueContainsNC(file.path)
         }
 
 
@@ -105,9 +110,9 @@ export const inspectProspectiveLibraryEntry = async (props: {
         // For example this can help avoid having different season episodes under the same Anime
         let mostAccurateFiles = lFilesWithRating
             // Keep files with a rating greater than 0.3 - This might be meaningless
-            .filter(item => item.rating >= 0.3 || isNotMain(item.file))
+            .filter(item => item.rating >= 0.3 || containsSpecialsOrNC(item.file))
             // If a file has a lower rating than the highest, filter it out
-            .filter(item => item.rating.toFixed(3) === highestRating.toFixed(3) || isNotMain(item.file))
+            .filter(item => item.rating.toFixed(3) === highestRating.toFixed(3) || containsSpecialsOrNC(item.file))
             //
             .filter(item =>
                 // Keep files with the highest folder rating
@@ -115,7 +120,7 @@ export const inspectProspectiveLibraryEntry = async (props: {
                 // OR files with folder rating deviation from the highest that is lower than 0.1
                 || Math.abs(+item.ratingByFolderName.toFixed(3) - +highestRatingByFolderName.toFixed(3)) < 0.1 // deviation is lower than 0.1
                 // OR files that are specials, ova...
-                || isNotMain(item.file),
+                || containsSpecialsOrNC(item.file),
             )
             .map(item => item.file)
 
@@ -139,13 +144,13 @@ export const inspectProspectiveLibraryEntry = async (props: {
 
                     // Fetch the same media but with all necessary info (relations prop) to find the relative episode
                     let fetchedMedia: AnilistShortMedia | null | undefined
+                    _scanLogging.add(file.path, "   -> Fetching necessary relations details [AnimeShortMediaByIdDocument]")
                     if (!_queriedMediaCache.has(currentMedia.id)) {
-                        _scanLogging.add(file.path, "    -> Fetching necessary relations details by querying [AnimeShortMediaByIdDocument] (Cache MISS)")
-                        logger("library-entry/inspectProspectiveLibraryEntry").warning(`    -> Fetching necessary details (Cache MISS)`)
+                        logger("library-entry/inspectProspectiveLibraryEntry").warning(`    -> Cache MISS - Querying necessary relations details for media`)
                         fetchedMedia = (await useAniListAsyncQuery(AnimeShortMediaByIdDocument, { id: currentMedia.id })).Media
                         if (fetchedMedia) _queriedMediaCache.set(currentMedia.id, fetchedMedia)
                     } else {
-                        _scanLogging.add(file.path, "    -> Fetching necessary details (Cache HIT)")
+                        _scanLogging.add(file.path, "   -> Cache HIT - Retrieving necessary relations details for media")
                         logger("library-entry/inspectProspectiveLibraryEntry").warning(`    -> Fetching necessary relations details (Cache HIT)`)
                         fetchedMedia = _queriedMediaCache.get(currentMedia.id)
                     }
@@ -165,20 +170,39 @@ export const inspectProspectiveLibraryEntry = async (props: {
                         // increment: !season ? null : true,
                         // force: true
                     })
-                    _scanLogging.add(file.path, `    -> Normalized episode ${episode} to ${result?.episode}`)
+                    _scanLogging.add(file.path, `   -> Normalized episode ${episode} to ${result?.episode}`)
                     logger("library-entry/inspectProspectiveLibraryEntry").warning(`    -> Normalized episode ${episode} to ${result?.episode}`)
                     if (result?.episode && result?.episode > 0) {
                         // Replace episode and mediaId
-                        mostAccurateFiles[i].metadata = { ...mostAccurateFiles[i].metadata, episode: result.episode }
+                        mostAccurateFiles[i].metadata.episode = result.episode
+                        mostAccurateFiles[i].metadata.aniDBEpisodeNumber = String(result.episode)
                         mostAccurateFiles[i].mediaId = result.rootMedia.id
 
-                        _scanLogging.add(file.path, `    -> Overriding Media ID ${currentMedia.id} to ${result.rootMedia.id}`)
+                        _scanLogging.add(file.path, `   -> Overriding Media ID ${currentMedia.id} to ${result.rootMedia.id}`)
                     } else {
-                        _scanLogging.add(file.path, `    -> error - Could not normalize the episode number`)
+                        mostAccurateFiles[i].metadata.episode = episode
+                        mostAccurateFiles[i].metadata.aniDBEpisodeNumber = String(episode)
+                        _scanLogging.add(file.path, `   -> error - Could not normalize the episode number`)
                     }
                 } else {
-                    mostAccurateFiles[i].metadata = { ...mostAccurateFiles[i].metadata, episode: episode }
+                    mostAccurateFiles[i].metadata.episode = episode
+                    mostAccurateFiles[i].metadata.aniDBEpisodeNumber = String(episode)
                     _scanLogging.add(file.path, `   -> Did not detect absolute episode number`)
+                }
+
+                _scanLogging.add(file.path, `Hydrating Specials/NC metadata if needed`)
+                // We already know the media isn't a movie
+                // eg: One Punch Man > One Punch Man OVA 01.mkv -> Matched with "One Punch Man" whose format is TV -> isSpecial = true
+                // Marking an episode as Special will allow better mapping with AniDB -> episodes[aniDBEpisodeNumber]
+                if (valueContainsSpecials(file.path)) {
+                    mostAccurateFiles[i].metadata.isSpecial = true
+                    mostAccurateFiles[i].metadata.aniDBEpisodeNumber = "S" + String(mostAccurateFiles[i].metadata.episode ?? 1)
+                    _scanLogging.add(file.path, `   -> isSpecial = true`)
+                    _scanLogging.add(file.path, `   -> aniDBEpisodeNumber = S${String(mostAccurateFiles[i].metadata.episode ?? 1)}`)
+                }
+                if (valueContainsNC(file.path)) {
+                    mostAccurateFiles[i].metadata.isNC = true
+                    _scanLogging.add(file.path, `   -> isNC = true`)
                 }
 
             }
@@ -190,16 +214,15 @@ export const inspectProspectiveLibraryEntry = async (props: {
         const firstFile = mostAccurateFiles?.[0]
 
         rejectedFiles.map(f => {
-            _scanLogging.add(f.path, `warning - File was rejected because it was below the threshold`)
-            _scanLogging.add(f.path, `   -> Rating ${lFilesWithRating.find(n => n.file.path === f.path)?.rating} | Highest rating ${highestRating}`)
-            _scanLogging.add(f.path, `   -> Folder rating ${lFilesWithRating.find(n => n.file.path === f.path)?.ratingByFolderName} | Highest folder rating ${highestRatingByFolderName}`)
+            _scanLogging.add(f.path, `warning - File was un-matched because its parameters were below the thresholds`)
+            _scanLogging.add(f.path, `   -> Title rating = ${lFilesWithRating.find(n => n.file.path === f.path)?.rating} | Threshold = ${highestRating}`)
+            _scanLogging.add(f.path, `   -> Folder name rating = ${lFilesWithRating.find(n => n.file.path === f.path)?.ratingByFolderName} | Threshold = ${highestRatingByFolderName}`)
         })
         mostAccurateFiles.map(f => {
             _scanLogging.add(f.path, `File was accepted`)
-            _scanLogging.add(f.path, `   -> Rating ${lFilesWithRating.find(n => n.file.path === f.path)?.rating} | Highest rating ${highestRating}`)
-            _scanLogging.add(f.path, `   -> Folder rating ${lFilesWithRating.find(n => n.file.path === f.path)?.ratingByFolderName} | Highest folder rating ${highestRatingByFolderName}`)
-            _scanLogging.add(f.path, `   -> Main file? ${!isNotMain(f)}`)
-            _scanLogging.add(f.path, `   -> Media ID: ` + (f.mediaId || currentMedia.id))
+            _scanLogging.add(f.path, `   -> Title rating = ${lFilesWithRating.find(n => n.file.path === f.path)?.rating} | Threshold = ${highestRating}`)
+            _scanLogging.add(f.path, `   -> Folder name rating = ${lFilesWithRating.find(n => n.file.path === f.path)?.ratingByFolderName} | Threshold = ${highestRatingByFolderName}`)
+            _scanLogging.add(f.path, `   -> Media ID = ` + (f.mediaId || currentMedia.id))
         })
 
         logger("library-entry/inspectProspectiveLibraryEntry").info(`${currentMedia.title?.english} |`, "Accuracy", Number(highestRating.toFixed(3)))

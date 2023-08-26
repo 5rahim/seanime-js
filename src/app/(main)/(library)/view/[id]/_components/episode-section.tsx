@@ -5,7 +5,7 @@ import { useLibraryEntryAtomByMediaId } from "@/atoms/library/library-entry.atom
 import {
     useMainLocalFileAtomsByMediaId,
     useNCLocalFileAtomsByMediaId,
-    useOVALocalFileAtomsByMediaId,
+    useSpecialsLocalFileAtomsByMediaId,
 } from "@/atoms/library/local-file.atoms"
 import { VideoPlayer } from "@/lib/video-player"
 import { useSettings } from "@/atoms/settings"
@@ -30,7 +30,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = React.memo((props) 
 
     const entryAtom = useLibraryEntryAtomByMediaId(detailedMedia.id)
     const { toWatch, watched } = useMainLocalFileAtomsByMediaId(detailedMedia.id)
-    const ovaFileAtoms = useOVALocalFileAtomsByMediaId(detailedMedia.id)
+    const ovaFileAtoms = useSpecialsLocalFileAtomsByMediaId(detailedMedia.id)
     const ncFileAtoms = useNCLocalFileAtomsByMediaId(detailedMedia.id)
 
     useEffect(() => {

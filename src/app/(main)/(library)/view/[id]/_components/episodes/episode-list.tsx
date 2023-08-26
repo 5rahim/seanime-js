@@ -1,5 +1,5 @@
 import React from "react"
-import { PrimitiveAtom } from "jotai/index"
+import { PrimitiveAtom } from "jotai"
 import { LocalFile } from "@/lib/local-library/local-file"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
 import { EpisodeItem } from "@/app/(main)/(library)/view/[id]/_components/episodes/episode-item"

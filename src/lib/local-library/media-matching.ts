@@ -101,55 +101,49 @@ export async function findBestCorrespondingMedia({
     const eitherSeasonExists = !!seasonAsNumber || !!folderSeasonAsNumber
     const eitherSeasonIsFirst = (!!seasonAsNumber && seasonAsNumber <= 1) || (!!folderSeasonAsNumber && folderSeasonAsNumber <= 1)
 
+    let _titleVariations: (string | undefined)[] = []
 
-    // Determine possible title variations based on different scenarios
-    // The following code creates an array of potential title variations.
-    // Each variation is created based on different conditions and combinations of title elements (seasons, etc...).
-    let titleVariations = [
-        (noSeasonsOrParts && _folderTitle) ? _folderTitle : undefined,
-        (noSeasonsOrParts && parsed.title) ? parsed.title : undefined,
-        (!!courAsNumber && _folderTitle) ? `${_folderTitle} Part ${courAsNumber}` : undefined, // Cour
-        (!!courAsNumber && parsed.title) ? `${parsed.title} Part ${courAsNumber}` : undefined, // Cour
-        (!!courAsNumber && _folderTitle) ? `${_folderTitle} Cour ${courAsNumber}` : undefined, // Cour
-        (!!courAsNumber && parsed.title) ? `${parsed.title} Cour ${courAsNumber}` : undefined, // Cour
-        (!!courAsNumber && _folderTitle) ? `${_folderTitle} Cour ${romanize(courAsNumber)}` : undefined, // Cour
-        (!!courAsNumber && parsed.title) ? `${parsed.title} Cour ${romanize(courAsNumber)}` : undefined, // Cour
-        (!!courAsNumber && _folderTitle) ? `${_folderTitle} Part ${romanize(courAsNumber)}` : undefined, // Cour
-        (!!courAsNumber && parsed.title) ? `${parsed.title} Part ${romanize(courAsNumber)}` : undefined, // Cour
-
-        (!!partAsNumber && _folderTitle) ? `${_folderTitle} Part ${partAsNumber}` : undefined, // Part
-        (!!partAsNumber && parsed.title) ? `${parsed.title} Part ${partAsNumber}` : undefined, // Part
-        (!!partAsNumber && _folderTitle) ? `${_folderTitle} Cour ${partAsNumber}` : undefined, // Part
-        (!!partAsNumber && parsed.title) ? `${parsed.title} Cour ${partAsNumber}` : undefined, // Part
-        (!!partAsNumber && _folderTitle) ? `${_folderTitle} Cour ${romanize(partAsNumber)}` : undefined, // Part
-        (!!partAsNumber && parsed.title) ? `${parsed.title} Cour ${romanize(partAsNumber)}` : undefined, // Part
-        (!!partAsNumber && _folderTitle) ? `${_folderTitle} Part ${romanize(partAsNumber)}` : undefined, // Part
-        (!!partAsNumber && parsed.title) ? `${parsed.title} Part ${romanize(partAsNumber)}` : undefined, // Part
-
-        (!!partAsNumber && _folderTitle && eitherSeasonExists) ? `${_folderTitle} Season ${seasonAsNumber || folderSeasonAsNumber} Cour ${partAsNumber}` : undefined, // Part + Season
-        (!!partAsNumber && parsed.title && eitherSeasonExists) ? `${parsed.title} Season ${seasonAsNumber || folderSeasonAsNumber} Cour ${partAsNumber}` : undefined, // Part + Season
-        (!!partAsNumber && _folderTitle && eitherSeasonExists) ? `${_folderTitle} Season ${seasonAsNumber || folderSeasonAsNumber} Part ${partAsNumber}` : undefined, // Part + Season
-        (!!partAsNumber && parsed.title && eitherSeasonExists) ? `${parsed.title} Season ${seasonAsNumber || folderSeasonAsNumber} Part ${partAsNumber}` : undefined, // Part + Season
-
-        ((_folderTitle && !parsed.title) || (!bothTitlesAreSimilar && eitherSeasonExists)) ? `${_folderTitle} Season ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
-        ((_folderTitle && !parsed.title) || (!bothTitlesAreSimilar && eitherSeasonExists)) ? `${_folderTitle} S${seasonAsNumber || folderSeasonAsNumber}` : undefined,
-        ((_folderTitle && !parsed.title) || (!bothTitlesAreSimilar && eitherSeasonExists)) ? `${_folderTitle} ${ordinalize(String(seasonAsNumber || folderSeasonAsNumber))} Season` : undefined,
-
-        (parsed.title && eitherSeasonExists) ? `${parsed.title} Season ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
-        (parsed.title && eitherSeasonExists) ? `${parsed.title} S${seasonAsNumber || folderSeasonAsNumber}` : undefined,
-        (parsed.title && eitherSeasonExists) ? `${parsed.title} ${ordinalize(String(seasonAsNumber || folderSeasonAsNumber))} Season` : undefined,
-
-        (bothTitles && !bothTitlesAreSimilar && eitherSeasonExists) ? `${_folderTitle} ${parsed.title} Season ${seasonAsNumber || folderSeasonAsNumber}` : undefined,
-        (bothTitles && !bothTitlesAreSimilar && eitherSeasonExists) ? `${_folderTitle} ${parsed.title} S${seasonAsNumber || folderSeasonAsNumber}` : undefined,
-        (bothTitles && !bothTitlesAreSimilar && eitherSeasonExists) ? `${_folderTitle} ${parsed.title} ${ordinalize(String(seasonAsNumber || folderSeasonAsNumber))} Season` : undefined,
-        (bothTitles && !bothTitlesAreSimilar && noSeasonsOrParts) ? `${_folderTitle} ${parsed.title}` : undefined,
-        (_folderTitle && eitherSeasonIsFirst) ? _folderTitle : undefined,
-        (parsed.title && eitherSeasonIsFirst) ? parsed.title : undefined,
-    ].filter(Boolean)
-
+    if (noSeasonsOrParts || eitherSeasonIsFirst) {
+        _titleVariations.push(_folderTitle) // Title
+        _titleVariations.push(parsed.title) // Title
+    }
+    if (!!courAsNumber) {
+        [_folderTitle, parsed.title].filter(Boolean).map(value => {
+            _titleVariations.push(`${value} Part ${courAsNumber}`) // Title Part 2
+            _titleVariations.push(`${value} Part ${romanize(courAsNumber)}`) // Title Part II
+            _titleVariations.push(`${value} Cour ${courAsNumber}`) // Title Cour 2
+            _titleVariations.push(`${value} Cour ${romanize(courAsNumber)}`) // Title Cour II
+        })
+    }
+    if (!!partAsNumber) {
+        [_folderTitle, parsed.title].filter(Boolean).map(value => {
+            _titleVariations.push(`${value} Part ${partAsNumber}`) // Title Part 2
+            _titleVariations.push(`${value} Part ${romanize(partAsNumber)}`) // Title Part II
+            _titleVariations.push(`${value} Cour ${partAsNumber}`) // Title Cour 2
+            _titleVariations.push(`${value} Cour ${romanize(partAsNumber)}`) // Title Cour II
+        })
+    }
+    if (!!partAsNumber && eitherSeasonExists) {
+        [_folderTitle, parsed.title].filter(Boolean).map(value => {
+            _titleVariations.push(`${value} Season ${seasonAsNumber || folderSeasonAsNumber} Part ${partAsNumber}`) // Title Season 1 Part 2
+            _titleVariations.push(`${value} Season ${seasonAsNumber || folderSeasonAsNumber} Cour ${partAsNumber}`) // Title Season 1 Cour 2
+        })
+    }
+    if (eitherSeasonExists) {
+        [
+            (bothTitlesAreSimilar ? _folderTitle : undefined), // Both titles are the same
+            ...(bothTitles && !bothTitlesAreSimilar ? [_folderTitle, parsed.title, `${_folderTitle} ${parsed.title}`] : []), // Both titles are different
+            (!!_folderTitle && !parsed.title ? _folderTitle : undefined), // One title but not the other
+            (!_folderTitle && !!parsed.title ? parsed.title : undefined), // One title but not the other
+        ].filter(Boolean).map(value => {
+            _titleVariations.push(`${value} Season ${seasonAsNumber || folderSeasonAsNumber}`) // Title Season 2
+            _titleVariations.push(`${value} S${seasonAsNumber || folderSeasonAsNumber}`) // Title S2
+            _titleVariations.push(`${value} ${ordinalize(String(seasonAsNumber || folderSeasonAsNumber))} Season`) // Title 2nd Season
+        })
+    }
 
     // Remove duplicates and convert to lowercase
-    titleVariations = [...(new Set(titleVariations.map(value => value.toLowerCase())))]
+    let titleVariations: string[] = [...(new Set(_titleVariations.filter(Boolean).map(value => value.toLowerCase())))]
 
     _scanLogging.add(file.path, "Created title variations")
     _scanLogging.add(file.path, "   -> " + JSON.stringify(titleVariations))
@@ -157,11 +151,13 @@ export async function findBestCorrespondingMedia({
     // Check if titleVariations are already cached
     if (_matchingCache.has(JSON.stringify(titleVariations))) {
         logger("media-matching").success("Cache HIT:", _title, (seasonAsNumber || folderSeasonAsNumber) || "")
-        _scanLogging.add(file.path, `Cache HIT`)
-        _scanLogging.add(file.path, `   -> Media ID: ${_matchingCache.get(JSON.stringify(titleVariations))?.id}`)
+        _scanLogging.add(file.path, `Cache HIT - File with same title variations found`)
+        _scanLogging.add(file.path, `   -> Media ID = ${_matchingCache.get(JSON.stringify(titleVariations))?.id}`)
         return {
             correspondingMedia: _matchingCache.get(JSON.stringify(titleVariations)),
         }
+    } else {
+        _scanLogging.add(file.path, `Cache MISS - No file with same title variations found`)
     }
 
     /* Using string-similarity */
@@ -192,8 +188,8 @@ export async function findBestCorrespondingMedia({
     }) : undefined
 
     _scanLogging.add(file.path, "Title matching using string-similarity")
-    _scanLogging.add(file.path, "   -> Found " + JSON.stringify(correspondingMediaUsingSimilarity?.title))
-    _scanLogging.add(file.path, "   -> Rating " + bestTitle?.bestMatch.rating)
+    _scanLogging.add(file.path, "   -> Result = " + JSON.stringify(correspondingMediaUsingSimilarity?.title))
+    _scanLogging.add(file.path, "   -> Rating = " + bestTitle?.bestMatch.rating)
 
     if (correspondingMediaUsingSimilarity) { // Unnecessary?
         delete correspondingMediaUsingSimilarity?.relations
@@ -214,8 +210,8 @@ export async function findBestCorrespondingMedia({
     if (distances) {
         const lowest = distances.reduce((prev, curr) => prev.distance <= curr.distance ? prev : curr) // Lower distance
         correspondingMediaFromDistance = lowest.media // Find the corresponding media from the title with the lower distance
-        _scanLogging.add(file.path, "   -> Found " + JSON.stringify(correspondingMediaFromDistance?.title))
-        _scanLogging.add(file.path, "   -> Distance " + lowest.distance)
+        _scanLogging.add(file.path, "   -> Result = " + JSON.stringify(correspondingMediaFromDistance?.title))
+        _scanLogging.add(file.path, "   -> Distance = " + lowest.distance)
     } else {
         _scanLogging.add(file.path, `   -> Could not calculate distances`)
     }
@@ -225,6 +221,7 @@ export async function findBestCorrespondingMedia({
 
     let correspondingMediaFromMAL: AnilistShowcaseMedia | undefined
 
+    _scanLogging.add(file.path, "Title matching using MAL")
     try {
         if (_title) {
             const url = new URL("https://myanimelist.net/search/prefix.json")
@@ -236,18 +233,17 @@ export async function findBestCorrespondingMedia({
             const anime = body?.categories?.find((category: any) => category?.type === "anime")?.items?.[0]
             // Check if the corresponding media exists in the user's list
             const correspondingInUserList = allMedia.find(media => media.idMal === anime.id)
-            _scanLogging.add(file.path, "Title matching using MAL")
-            _scanLogging.add(file.path, `   -> Title used for search: ` + titleVariations[0])
+            _scanLogging.add(file.path, `   -> Title used for search = ` + JSON.stringify(titleVariations[0]))
             if (anime && !!correspondingInUserList) {
                 correspondingMediaFromMAL = correspondingInUserList
-                _scanLogging.add(file.path, "   -> Found " + JSON.stringify(correspondingMediaFromMAL.title))
+                _scanLogging.add(file.path, "   -> Result = " + JSON.stringify(correspondingMediaFromMAL.title))
             } else {
                 _scanLogging.add(file.path, "   -> warning - Could not find the MAL media in user watch list")
-                _scanLogging.add(file.path, "   -> Found " + JSON.stringify(anime))
+                _scanLogging.add(file.path, "   -> Result = " + JSON.stringify(anime))
             }
         }
     } catch {
-
+        _scanLogging.add(file.path, "   -> error - Could not access MAL")
     }
 
     // Create an array of different media sources for comparison
@@ -260,7 +256,7 @@ export async function findBestCorrespondingMedia({
     // debug(differentFoundMedia.map(n => n.title?.romaji?.toLowerCase()).filter(Boolean))
     // debug("------------------------------------------------------")
 
-    _scanLogging.add(file.path, "Eliminating the least similar title from each language from each method")
+    _scanLogging.add(file.path, "Eliminating the least similar candidate title using string-similarity")
 
     // Eliminate duplicate and least similar elements from each langages
     const best_userPreferred = eliminateLeastSimilarElement(differentFoundMedia.map(n => n.title?.userPreferred?.toLowerCase()).filter(Boolean))
@@ -269,12 +265,12 @@ export async function findBestCorrespondingMedia({
     const best_syn = eliminateLeastSimilarElement(differentFoundMedia.flatMap(n => n.synonyms?.filter(Boolean).filter(syn => valueContainsSeason(syn.toLowerCase()))).map(n => n?.toLowerCase()).filter(Boolean))
     // debug(best_userPreferred, "preferred")// debug(best_english, "english")// debug(best_romaji, "romaji")// debug(best_syn, "season synonym")
 
-    _scanLogging.add(file.path, "   -> Determined best titles from 'userPreferred' -> " + JSON.stringify(best_userPreferred))
-    _scanLogging.add(file.path, "   -> Determined best titles from 'english' -> " + JSON.stringify(best_english))
-    _scanLogging.add(file.path, "   -> Determined best titles from 'romaji' -> " + JSON.stringify(best_romaji))
-    _scanLogging.add(file.path, "   -> Determined best titles from 'synonyms' -> " + JSON.stringify(best_syn))
+    _scanLogging.add(file.path, "   -> Remaining candidate titles from 'userPreferred' = " + JSON.stringify(best_userPreferred))
+    _scanLogging.add(file.path, "   -> Remaining candidate titles from 'english' = " + JSON.stringify(best_english))
+    _scanLogging.add(file.path, "   -> Remaining candidate titles from 'romaji' = " + JSON.stringify(best_romaji))
+    _scanLogging.add(file.path, "   -> Remaining candidate titles from 'synonyms' = " + JSON.stringify(best_syn))
 
-    _scanLogging.add(file.path, "Comparing best titles from all languages using string-similarity")
+    _scanLogging.add(file.path, "Comparing remaining candidate titles with title variations using string-similarity")
     // Compare each title variation with the best titles from different sources
     let bestTitleComparisons = titleVariations.filter(Boolean).map(title => {
         const matchingUserPreferred = best_userPreferred.length > 0 ? similarity.findBestMatch(title.toLowerCase(), best_userPreferred) : undefined
@@ -293,12 +289,14 @@ export async function findBestCorrespondingMedia({
     let bestTitleMatching = bestTitleComparisons.length > 0 ? bestTitleComparisons.reduce((prev, val) => {
         return val.bestMatch.rating >= prev.bestMatch.rating ? val : prev
     }) : undefined
-    _scanLogging.add(file.path, "   -> Comparison " + JSON.stringify(bestTitleMatching))
-    _scanLogging.add(file.path, "   -> Found " + JSON.stringify(bestTitleMatching?.bestMatch?.target))
+    _scanLogging.add(file.path, "   -> Result = " + JSON.stringify(bestTitleMatching?.bestMatch?.target))
+    _scanLogging.add(file.path, "   -> Rating = " + JSON.stringify(bestTitleMatching?.bestMatch?.rating))
 
     // Initialize variables to store the final rating and corresponding media
     let rating: number = 0
     let bestMedia: AnilistShowcaseMedia | undefined
+
+    _scanLogging.add(file.path, `Match found using ` + JSON.stringify(bestTitleMatching!.bestMatch.target))
 
     if (bestTitleMatching) {
         // Find the media with matching title
@@ -317,17 +315,19 @@ export async function findBestCorrespondingMedia({
     }
     debug(bestTitleMatching?.bestMatch, "best", bestMedia)
 
-    _scanLogging.add(file.path, `Found media`)
-    _scanLogging.add(file.path, `   -> Media ID: ` + bestMedia?.id)
-    _scanLogging.add(file.path, `   -> ` + JSON.stringify(bestMedia?.title))
-    _scanLogging.add(file.path, `   -> Rating: ${rating}`)
-
     logger("media-matching").error("Cache MISS: [File title]", _title, `(${(seasonAsNumber || folderSeasonAsNumber || "-")})`, "| [Media title]", bestMedia?.title?.english, "| [Rating]", rating)
     // Adding it to the cache
     _matchingCache.set(JSON.stringify(titleVariations), bestMedia)
 
     if (+rating < 0.5) {
-        _scanLogging.add(file.path, "warning - Rating is below the threshold, un-matched")
+        _scanLogging.add(file.path, "warning - Rating is below the threshold (0.5)")
+        _scanLogging.add(file.path, `   -> Rating = ${rating}`)
+        _scanLogging.add(file.path, "   -> File was not matched")
+    } else {
+        _scanLogging.add(file.path, `Match found using ` + JSON.stringify(bestTitleMatching!.bestMatch.target))
+        _scanLogging.add(file.path, `   -> Media ID = ` + bestMedia?.id)
+        _scanLogging.add(file.path, `   -> ` + JSON.stringify(bestMedia?.title))
+        _scanLogging.add(file.path, `   -> Rating = ${rating}`)
     }
 
     return {

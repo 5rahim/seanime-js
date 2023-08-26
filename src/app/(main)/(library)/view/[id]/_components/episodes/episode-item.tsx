@@ -1,4 +1,4 @@
-import React, { startTransition, useMemo, useState } from "react"
+import React, { startTransition, useMemo } from "react"
 import { PrimitiveAtom } from "jotai/index"
 import { LocalFile } from "@/lib/local-library/local-file"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
@@ -26,10 +26,10 @@ export const EpisodeItem = React.memo((props: {
     const setFileLocked = useFocusSetAtom(fileAtom, "locked")
     const setFileMediaId = useFocusSetAtom(fileAtom, "mediaId")
 
-    const [episodeData] = useState(aniZipData?.episodes[String(metadata.episode)])
+    const episodeData = useMemo(() => aniZipData?.episodes[metadata.aniDBEpisodeNumber || String(metadata.episode)], [])
     const fileTitle = useMemo(() => parsedInfo?.original?.replace(/.(mkv|mp4)/, "")?.replaceAll(/(\[)[a-zA-Z0-9 ._~-]+(\])/ig, "")?.replaceAll(/[_,-]/g, " "), [parsedInfo])
 
-    const title = useMemo(() => {
+    const displayedTitle = useMemo(() => {
         let _output = parsedInfo?.title || fileTitle || "???"
         if (!!metadata.episode) _output = `Episode ${metadata.episode}`
         if (media.format === "MOVIE" && parsedInfo?.title) _output = parsedInfo.title
@@ -43,8 +43,8 @@ export const EpisodeItem = React.memo((props: {
             media={media}
             image={episodeData?.image}
             onClick={async () => onPlayFile(path)}
-            title={title}
-            showImagePlaceholder
+            title={displayedTitle}
+            showImagePlaceholder={!metadata.isNC}
             episodeTitle={episodeData?.title?.en}
             fileName={parsedInfo?.original?.replace(/.(mkv|mp4)/, "")?.replaceAll(/(\[)[a-zA-Z0-9 ._~-]+(\])/ig, "")?.replaceAll(/[_,-]/g, " ")}
             action={<>

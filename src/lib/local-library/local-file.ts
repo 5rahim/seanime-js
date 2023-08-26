@@ -23,7 +23,8 @@ export type LocalFile = {
     metadata: {
         episode?: number
         isVersion?: boolean
-        isOVA?: boolean
+        isSpecial?: boolean
+        aniDBEpisodeNumber?: string
         isNC?: boolean
     }
     locked: boolean
@@ -56,8 +57,9 @@ export const createLocalFile = async (settings: Settings, props: Pick<LocalFile,
             part: parsed.part,
             cour: parsed.cour,
             episode: parsed.episode,
+            episodeTitle: parsed.episodeTitle,
         }
-        _scanLogging.add(props.path, `  -> Parsed from file name ` + JSON.stringify(parsedInfo))
+        _scanLogging.add(props.path, `   -> Parsed from file name ` + JSON.stringify(parsedInfo))
 
         const folders = folderPath.split("\\").filter(value => !!value && value.length > 0)
         const parsedFolderInfo = folders.map(folder => {
@@ -72,13 +74,17 @@ export const createLocalFile = async (settings: Settings, props: Pick<LocalFile,
                     part: obj.part,
                     cour: obj.cour,
                     episode: obj.episode,
+                    episodeTitle: parsed.episodeTitle,
                 })
             }
         }).filter(Boolean)
-        _scanLogging.add(props.path, `  -> Parsed from parent folders ` + JSON.stringify(parsedFolderInfo))
+        _scanLogging.add(props.path, `   -> Parsed from parent folders ` + JSON.stringify(parsedFolderInfo))
 
         const branchHasTitle = !!parsed.name || parsedFolderInfo.some(obj => !!obj.title)
-        _scanLogging.add(props.path, `  -> Branch has title? ` + branchHasTitle)
+
+        if (!branchHasTitle) {
+            _scanLogging.add(props.path, `   -> warning - Could not parse anime title`)
+        }
 
 
         return {
@@ -92,7 +98,7 @@ export const createLocalFile = async (settings: Settings, props: Pick<LocalFile,
             mediaId: null, // Default values, will be hydrated later
         }
     } catch (e) {
-        _scanLogging.add(props.path, `  -> error - Parsing error`)
+        _scanLogging.add(props.path, `   -> error - Parsing error`)
 
         console.error("[LocalFile] Parsing error", e)
 

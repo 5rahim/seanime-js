@@ -25,7 +25,7 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
         <>
             <div className={"space-y-8"}>
                 <div className={"space-y-2"}>
-                    <h1 className={"[text-shadow:_0_1px_10px_rgb(0_0_0_/_20%)]"}>{detailedMedia.title?.english}</h1>
+                    <h1 className={"[text-shadow:_0_1px_10px_rgb(0_0_0_/_20%)]"}>{detailedMedia.title?.userPreferred}</h1>
 
                     {!!detailedMedia.season ? (
                             <div>

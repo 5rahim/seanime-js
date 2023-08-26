@@ -20,10 +20,9 @@ export default {
             /(?<fr>\bFRENCH\b)(?!-[Ss][Uu][Bb])/,
             /(?<jp>\bJP\b(?!-[Ss][Uu][Bb]))/,
             /(?<sp>\bSpa\b)(?!-[Ss][Uu][Bb])/,
-        ],
-        keep: [
             /(?<vo>\bVOSTFR\b|\b[Vv]ostfr\b)/,
         ],
+        keep: [],
     },
 
     //Subtitles

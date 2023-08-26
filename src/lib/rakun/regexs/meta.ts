@@ -17,7 +17,7 @@ export default {
         /(?<extended>\bEXTENDED\b)/,
         /(?<pack>\bCoffret\b)/,
         /(?<v2>\b[Vv]2\b)/,
-        /(?<high_quality>\bHQ\b)/,
+        /(?<high_quality>\bHQ\b)/i,
         /[+]\s?(?<has_ovas>OVAs?)/,
         /[+]\s?(?<has_specials>Specials?)/,
         /(?<has_specials>[Oo]ne [Ss]pecials?)/,
@@ -26,6 +26,12 @@ export default {
         /(?<has_specials>[Ff]our [Ss]pecials?)/,
         /(?<has_specials>[Ff]ive [Ss]pecials?)/,
         /(?<has_specials>[Ss]ix [Ss]pecials?)/,
+    ],
+
+    episodeTitle: [
+        // `S01E1 - Episode title`
+        // /(^|\b|[_-])?(?:S\d+E\d{1,3}) ?-? ?(?<episodeTitle>[a-zA-Z _'`,.…!?()\d-]+)(?: |$)/
+        /(^|\b|[_-])?(?:S\d+E\d{1,3}) ?[ -] ?(?<episodeTitle>[a-zA-Z][a-zA-Z _'`,.…!?()\d-]+)(?: |$)/,
     ],
 
     //Subber, translation groups
