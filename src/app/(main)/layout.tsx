@@ -7,7 +7,8 @@ import { NavigationTabs } from "@/components/ui/tabs"
 import Image from "next/image"
 import { IoReload } from "@react-icons/all-files/io5/IoReload"
 import { Button } from "@/components/ui/button"
-import { useRefreshAnilistCollection } from "@/atoms/anilist-collection"
+
+import { useRefreshAnilistCollection } from "@/atoms/anilist/collection.atoms"
 
 export default function Layout({ children }: {
     children: React.ReactNode,

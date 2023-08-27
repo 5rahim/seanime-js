@@ -1,19 +1,11 @@
-import { _mpc_openVideo } from "@/lib/video-player/mpc-hc/controls"
-import { _vlc_openVideo } from "@/lib/video-player/vlc/controls"
+import { _mpc_getPlaybackStatus, _mpc_openVideo } from "@/lib/video-player/mpc-hc/controls"
+import { _vlc_getPlaybackStatus, _vlc_openVideo } from "@/lib/video-player/vlc/controls"
 import { runCommand } from "@/lib/helpers/child-process"
 import { Settings } from "@/atoms/settings"
 import toast from "react-hot-toast"
+import { VideoPlayerRepositoryApiCallResult } from "@/lib/video-player/types"
 
-export const enum SupportedVideoPlayers {
-    "mpc-hc" = "mpc-hc",
-    "vlc" = "vlc"
-}
-
-export type SupportedVideoPlayer = keyof typeof SupportedVideoPlayers
-
-export const VideoPlayer = (settings: Settings) => {
-
-    let tries = 0
+export const VideoPlayerRepository = (settings: Settings) => {
 
     return {
         async start() {
@@ -25,26 +17,41 @@ export const VideoPlayer = (settings: Settings) => {
                 toast.error("Could not open the player")
             }
         },
-        async openVideo(path: string) {
-            let res: any
-            try {
-                switch (settings.player.defaultPlayer) {
-                    case "mpc-hc":
-                        res = await _mpc_openVideo(path, settings)
-                        break
-                    case "vlc":
-                        res = await _vlc_openVideo(path, settings)
-                        break
-                }
-                if (res?.error) {
-                    toast.error("Could not open video. Verify player is running and settings are correct.")
-                }
-            } catch (e) {
-
+        async openVideo(path: string, options?: { muteAlert?: boolean }) {
+            const muteAlert = options?.muteAlert || false
+            let res
+            switch (settings.player.defaultPlayer) {
+                case "mpc-hc":
+                    res = await _mpc_openVideo(path, settings)
+                    break
+                case "vlc":
+                    res = await _vlc_openVideo(path, settings)
+                    break
+            }
+            !muteAlert && this._onError(res)
+            return res?.data !== undefined ? res.data : false
+        },
+        async getPlaybackStatus() {
+            let res
+            switch (settings.player.defaultPlayer) {
+                case "mpc-hc":
+                    res = await _mpc_getPlaybackStatus(settings)
+                    break
+                case "vlc":
+                    res = await _vlc_getPlaybackStatus(settings)
+                    break
+            }
+            // this._onError(res)
+            return res?.data
+        },
+        _onError(result: VideoPlayerRepositoryApiCallResult<any>) {
+            if (result?.error) {
+                toast.error(result.error)
+                toast.error("Verify player is running and settings are correct.")
             }
         },
     }
 
 }
 
-export type VideoPlayer = typeof VideoPlayer
+export type VideoPlayerRepository = typeof VideoPlayerRepository

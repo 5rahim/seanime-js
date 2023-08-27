@@ -5,7 +5,7 @@ import rakun from "@/lib/rakun/rakun"
 import { logger } from "@/lib/helpers/debug"
 import { isPast } from "date-fns"
 import { Nyaa } from "@/lib/download/nyaa/api"
-import { getAnilistMediaTitleList, valueContainsSeason } from "@/lib/anilist/helpers.shared"
+import { valueContainsSeason } from "@/lib/anilist/helpers.shared"
 
 
 export async function unstable_findNyaaTorrents(props: {
@@ -68,13 +68,14 @@ export async function unstable_findNyaaTorrents(props: {
 
     // Get the absolute episode only if:
     // - There is a prequel, and we are at least at Season 2 or Cour 2
-    const absoluteEpisode = (!!prequel && !!prequel.episodes && (SPLIT_COUR || (season && season > 1))) ? (+prequel.episodes + episode) : undefined
+    // const absoluteEpisode = (!!prequel && !!prequel.episodes && (SPLIT_COUR || (season && season > 1))) ? (+prequel.episodes + episode) : undefined
+    const absoluteEpisode = undefined
 
     // ---------------------------------------------------
     /* Format title */
 
     // eg: [jujutsu kaisen, ...]
-    let prospectiveTitleArr = getAnilistMediaTitleList(media) ?? [media.title?.english, media.title?.userPreferred, media.title?.romaji, ...(media.synonyms?.filter(valueContainsSeason) || [])]
+    let prospectiveTitleArr = [media.title?.english, media.title?.userPreferred, media.title?.romaji, ...(media.synonyms?.filter(valueContainsSeason) || [])]
     prospectiveTitleArr = [
         ...(new Set(
                 prospectiveTitleArr
@@ -117,12 +118,17 @@ export async function unstable_findNyaaTorrents(props: {
         absoluteEpisode,
     })
 
-    const searchResult = await Nyaa.search({
-        title: _search_string,
-        category: "1_2",
-    })
+    try {
+        const searchResult = await Nyaa.search({
+            title: _search_string,
+            category: "1_2",
+        })
 
-    return searchResult.torrents
+        return searchResult.torrents
+    } catch (e) {
+        console.warn("Could not fetch torrents")
+        return []
+    }
 
 }
 

@@ -7,7 +7,8 @@ import { atom, PrimitiveAtom } from "jotai"
 import deepEquals from "fast-deep-equal"
 import _ from "lodash"
 import { ANIDB_RX } from "@/lib/series-scanner/regex"
-import { anilistCollectionEntryAtoms, useAnilistCollectionEntryByMediaId } from "@/atoms/anilist-collection"
+import { focusAtom } from "jotai-optics"
+import { anilistCollectionEntryAtoms, useAnilistCollectionEntryByMediaId } from "@/atoms/anilist/entries.atoms"
 
 /* -------------------------------------------------------------------------------------------------
  * Main atoms
@@ -36,11 +37,18 @@ const localFilesAtomWithImmer = withImmer(localFilesAtom)
  * // export const getLocalFileAtomsByMediaIdAtom = atom(null,
  * //     (get, set, mediaId: number) => get(localFileAtoms).filter((itemAtom) => get(atom((get) => get(itemAtom).mediaId === mediaId)))
  * // )
+ * @return PrimitiveAtom<LocalFile>[]
  */
 export const getLocalFileAtomsByMediaIdAtom = atom(null,
     (get, set, mediaId: number) => get(localFileAtoms).filter((fileAtom) => get(fileAtom).mediaId === mediaId),
 )
 
+/**
+ * @return {
+ *     toWatch: PrimitiveAtom<LocalFile>[],
+ *     watched: PrimitiveAtom<LocalFile>[]
+ * }
+ */
 const get_Main_LocalFileAtomsByMediaIdAtom = atom(null,
     // Get the local files from a specific media, split the `watched` and `to watch` files by listening to a specific `anilistCollectionEntryAtom`
     (get, set, mediaId: number) => {
@@ -71,7 +79,9 @@ const get_Main_LocalFileAtomsByMediaIdAtom = atom(null,
     },
 )
 
-
+/**
+ * @return PrimitiveAtom<LocalFile>[]
+ */
 const get_OVA_LocalFileAtomsByMediaIdAtom = atom(null,
     (get, set, mediaId: number) => {
         const fileAtoms = get(localFileAtoms).filter((fileAtom) => get(fileAtom).mediaId === mediaId)
@@ -82,6 +92,9 @@ const get_OVA_LocalFileAtomsByMediaIdAtom = atom(null,
     },
 )
 
+/**
+ * @return <PrimitiveAtom<LocalFile>[]
+ */
 const get_NC_LocalFileAtomsByMediaIdAtom = atom(null,
     (get, set, mediaId: number) => {
         const fileAtoms = get(localFileAtoms).filter((fileAtom) => get(fileAtom).mediaId === mediaId)
@@ -93,11 +106,42 @@ const get_NC_LocalFileAtomsByMediaIdAtom = atom(null,
 )
 
 /**
- * Get [LocalFile] atom by `path`
+ * @return PrimitiveAtom<LocalFile>
  */
 export const getLocalFileAtomByPathAtom = atom(null,
     (get, set, path: string) => get(localFileAtoms).find((itemAtom) => get(itemAtom).path === path),
 )
+
+
+/**
+ * @return LocalFile
+ * @example
+ * const getFile = useSetAtom(getLocalFileByNameAtom)
+ */
+export const getLocalFileByNameAtom = atom(null,
+    (get, set, name: string) => get(focusAtom(localFilesAtom, optic => optic.find(file => file.name === name))),
+)
+
+
+/**
+ * Get latest [LocalFile] by `mediaId` sorted by episode number
+ * @return LocalFile
+ */
+export const getLastMainLocalFileByMediaIdAtom = atom(null,
+    (get, set, mediaId: number) => {
+        const fileAtoms = get(localFileAtoms).filter((fileAtom) => get(fileAtom).mediaId === mediaId && !get(fileAtom).metadata.isSpecial && !get(fileAtom).metadata.isNC)
+        const fileAtom = _.sortBy(fileAtoms, fileAtom => get(fileAtom).metadata.episode)[fileAtoms.length - 1]
+        return !!fileAtom ? get(fileAtom) : undefined
+    },
+)
+
+/**
+ * @return LocalFile[]
+ */
+export const getLocalFilesByMediaIdAtom = atom(null,
+    (get, set, mediaId: number) => get(focusAtom(localFilesAtom, optic => optic.filter(file => file.mediaId === mediaId))),
+)
+
 
 /**
  * Useful for mapping. When you want the children to modify a specific [LocalFile]
@@ -155,24 +199,11 @@ export const useLocalFilesByMediaId = (mediaId: number) => {
         ),
     )
 }
-export const useLocalEpisodeFilesByMediaId = (mediaId: number) => {
-    return useAtomValue(
-        selectAtom(
-            localFilesAtom,
-            useCallback(files => files.filter(file => file.mediaId === mediaId && !!file.metadata.episode && !file.metadata.isSpecial && !file.metadata.isNC), []), // Stable reference
-            deepEquals, // Equality check
-        ),
-    )
-}
 
 export const useLocalFileAtomByPath = (path: string) => {
     const [, get] = useAtom(getLocalFileAtomByPathAtom)
     return useMemo(() => get(path), []) as (PrimitiveAtom<LocalFile> | undefined)
 }
-
-/**
- * Locked, ignored paths
- */
 
 /* -------------------------------------------------------------------------------------------------
  * Write

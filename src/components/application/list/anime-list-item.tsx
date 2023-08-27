@@ -1,5 +1,4 @@
 import { useLibraryEntryAtomByMediaId } from "@/atoms/library/library-entry.atoms"
-import { useAnilistCollectionEntryAtomByMediaId, useAnilistUserMedia } from "@/atoms/anilist-collection"
 import React from "react"
 import { cn } from "@/components/ui/core"
 import Image from "next/image"
@@ -19,12 +18,19 @@ import { BiLockOpenAlt } from "@react-icons/all-files/bi/BiLockOpenAlt"
 import { useLocalFilesByMediaId, useSetLocalFiles } from "@/atoms/library/local-file.atoms"
 import { BiStar } from "@react-icons/all-files/bi/BiStar"
 import { useSelectAtom } from "@/atoms/helpers"
+import { useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist/entries.atoms"
+import { useAnilistUserMedia } from "@/atoms/anilist/media.atoms"
+import { IoLibrarySharp } from "@react-icons/all-files/io5/IoLibrarySharp"
 
-export const AnimeListItem = ((props: { mediaId: number }) => {
+export const AnimeListItem = ((props: { mediaId: number, showLibraryBadge?: boolean }) => {
 
     const { mediaId } = props
 
     const media = useAnilistUserMedia(mediaId)
+    const entryAtom = useLibraryEntryAtomByMediaId(mediaId)
+    const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(mediaId)
+    const status = !!collectionEntryAtom ? useSelectAtom(collectionEntryAtom, entry => entry?.status) : undefined
+    const showLibraryBadge = !!entryAtom && !!props.showLibraryBadge
 
     if (!media) return <></>
 
@@ -87,6 +93,9 @@ export const AnimeListItem = ((props: { mediaId: number }) => {
 
                         <MainActionButton media={media}/>
 
+                        {(status && props.showLibraryBadge === undefined) &&
+                            <p className={"text-center"}>{_.capitalize(status ?? "")}</p>}
+
                     </div>
                     <div className={"space-y-2"}>
                         <LockFilesButton media={media}/>
@@ -100,7 +109,14 @@ export const AnimeListItem = ((props: { mediaId: number }) => {
 
                 {/*BOTTOM GRADIENT*/}
                 <div
-                    className={"z-[5] absolute bottom-0 w-full h-[50%] bg-gradient-to-t from-black to-transparent"}/>
+                    className={"z-[5] absolute bottom-0 w-full h-[50%] bg-gradient-to-t from-black to-transparent"}
+                />
+
+                {(showLibraryBadge) &&
+                    <div className={"absolute z-10 left-0 top-0"}>
+                        <Badge size={"xl"} intent={"warning-solid"}
+                               className={"rounded-md rounded-bl-none rounded-tr-none text-orange-900"}><IoLibrarySharp/></Badge>
+                    </div>}
 
                 {/*RELEASING BADGE*/}
                 {media.status === "RELEASING" && <div className={"absolute z-10 right-1 top-1"}>

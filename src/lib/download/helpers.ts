@@ -33,7 +33,7 @@ export const getMediaDownloadInfo = (
     const progressOrEpisodeNumber = !libraryEntryExists ? progress : (downloadedEpisodeNumber ?? progress)
 
     let result = undefined
-    let rewatch = false
+    let rewatch = status && status === "COMPLETED"
     let batch = false
 
     // If the media is finished
@@ -60,7 +60,6 @@ export const getMediaDownloadInfo = (
     if (status && status === "COMPLETED" && result === 0) {
         result = media.episodes ?? result // Reset the nb of episodes to download
         if ((downloadedEpisodeNumber && downloadedEpisodeNumber >= result) || (!downloadedEpisodeNumber && libraryEntryExists)) result = 0 // UNLESS it's already downloaded
-        rewatch = true // Will re-watch
         batch = !!media.episodes // Can batch
     }
     // Movie case: couldn't find episodes but library entry exists
@@ -73,7 +72,7 @@ export const getMediaDownloadInfo = (
     let episodeNumbers: number[] = []
 
     if (result && result > 0) {
-        const lastEpisodeWatched = status === "COMPLETED" ? 0 : (progressOrEpisodeNumber ?? 0)
+        const lastEpisodeWatched = status === "COMPLETED" ? (downloadedEpisodeNumber ?? 0) : (progressOrEpisodeNumber ?? 0)
         for (let i = 0; i < result; i++) {
             episodeNumbers.push(lastEpisodeWatched + (i + 1))
         }

@@ -9,7 +9,6 @@ import {
 import { LocalFile } from "@/lib/local-library/local-file"
 import { PrimitiveAtom } from "jotai"
 import { useEffect } from "react"
-import { useLibraryEntryByMediaId } from "@/atoms/library/library-entry.atoms"
 import { useFocusSetAtom, useSelectAtom } from "@/atoms/helpers"
 
 export default function Page() {
@@ -24,12 +23,6 @@ export default function Page() {
 }
 
 const LibraryTest = () => {
-
-    const value = useLibraryEntryByMediaId(21)
-
-    useEffect(() => {
-        console.log(value)
-    }, [value])
 
 
     return (

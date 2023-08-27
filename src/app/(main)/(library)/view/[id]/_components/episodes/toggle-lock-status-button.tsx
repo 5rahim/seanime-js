@@ -1,4 +1,4 @@
-import { PrimitiveAtom } from "jotai/index"
+import { PrimitiveAtom } from "jotai"
 import { LibraryEntry } from "@/atoms/library/library-entry.atoms"
 import { useSelectAtom } from "@/atoms/helpers"
 import { useSetLocalFiles } from "@/atoms/library/local-file.atoms"

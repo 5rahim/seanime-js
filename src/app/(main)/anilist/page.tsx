@@ -4,18 +4,18 @@ import React, { useTransition } from "react"
 import { useSettings } from "@/atoms/settings"
 import { TabPanels } from "@/components/ui/tabs"
 import { cn } from "@/components/ui/core"
-import {
-    AnilistCollectionEntry,
-    anilistCompletedListAtom,
-    anilistCurrentlyWatchingListAtom,
-    anilistPausedListAtom,
-    anilistPlanningListAtom,
-} from "@/atoms/anilist-collection"
 import { Atom, atom } from "jotai"
 import { useAtom } from "jotai/react"
 import { useSelectAtom } from "@/atoms/helpers"
 import { AnimeListItem } from "@/components/application/list/anime-list-item"
 import { LoadingOverlay } from "@/components/ui/loading-spinner"
+import { AnilistCollectionEntry } from "@/atoms/anilist/entries.atoms"
+import {
+    anilistCompletedListAtom,
+    anilistCurrentlyWatchingListAtom,
+    anilistPausedListAtom,
+    anilistPlanningListAtom,
+} from "@/atoms/anilist/watch-list.atoms"
 
 const selectedIndexAtom = atom(0)
 
@@ -87,7 +87,7 @@ const WatchList = React.memo(({ collectionEntriesAtom }: { collectionEntriesAtom
     return (
         <div className={"px-4 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4"}>
             {collectionEntriesMedia.map(media => (
-                <AnimeListItem key={`${media.id}`} mediaId={media.id}/>
+                <AnimeListItem key={`${media.id}`} mediaId={media.id} showLibraryBadge={true}/>
             ))}
         </div>
     )

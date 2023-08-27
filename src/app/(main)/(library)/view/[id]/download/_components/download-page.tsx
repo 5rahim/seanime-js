@@ -1,6 +1,5 @@
 "use client"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
-import { useSelectAtom } from "@/atoms/helpers"
 import React, { startTransition, useEffect, useMemo, useRef, useState } from "react"
 import { unstable_findNyaaTorrents, unstable_handleSearchTorrents } from "@/lib/download/nyaa/search"
 import { SearchTorrent } from "@/lib/download/nyaa/api/types"
@@ -10,11 +9,21 @@ import { Badge } from "@/components/ui/badge"
 import { formatDistanceToNow } from "date-fns"
 import Image from "next/image"
 import { atom } from "jotai"
-import { useAtomValue, useSetAtom } from "jotai/react"
+import { useAtom, useAtomValue } from "jotai/react"
 import { useSettings } from "@/atoms/settings"
 import { TorrentManager } from "@/lib/download"
 import { Divider } from "@/components/ui/divider"
 import { useDownloadPageData } from "@/app/(main)/(library)/view/[id]/download/_components/use-download-page-data"
+import { Switch } from "@/components/ui/switch"
+import { NumberInput } from "@/components/ui/number-input"
+import { useDebounce } from "@/hooks/use-debounce"
+import { Button } from "@/components/ui/button"
+import { cn } from "@/components/ui/core"
+import { useSearchParams } from "next/navigation"
+import { useMount, useUpdateEffect } from "react-use"
+import { Drawer } from "@/components/ui/modal"
+import { useDisclosure } from "@/hooks/use-disclosure"
+
 
 interface DownloadPageProps {
     media: AnilistDetailedMedia,
@@ -28,7 +37,7 @@ const selectedTorrentsAtom = atom<SearchTorrentData[]>([])
 const sortedSelectedTorrentsAtom = atom((get) => {
     const torrents = get(selectedTorrentsAtom)
     if (torrents.every(torrent => !!torrent.parsed.episode)) {
-        return get(selectedTorrentsAtom).sort((a, b) => Number(a.parsed.episode!) - Number(b.parsed.episode!))
+        return get(selectedTorrentsAtom)?.sort((a, b) => Number(a.parsed.episode!) - Number(b.parsed.episode!))
     }
     return torrents
 })
@@ -40,34 +49,54 @@ export function DownloadPage(props: DownloadPageProps) {
         entryAtom,
         lastFile,
         downloadInfo,
+        sharedPath,
     } = useDownloadPageData(props.media)
 
-    const sharedPath = !!entryAtom ? useSelectAtom(entryAtom, entry => entry.sharedPath) : undefined // TODO: Create a shared path based on title
+    const searchParams = useSearchParams()
+    const episode = searchParams.get("episode")
 
     const [isLoading, setIsLoading] = useState(false)
     const [isFetching, setIsFetching] = useState(false)
 
     const [torrents, setTorrents] = useState<SearchTorrentData[]>([])
     const [globalFilter, setGlobalFilter] = useState<string>("")
-    const setSelectedTorrents = useSetAtom(selectedTorrentsAtom)
 
-    useEffect(() => {
+    const [selectedTorrents, setSelectedTorrents] = useAtom(selectedTorrentsAtom)
+    const [quickSearchIsBatch, setQuickSearchIsBatch] = useState(downloadInfo.batch || downloadInfo.canBatch)
+    const [quickSearchEpisode, setQuickSearchEpisode] = useState(episode ? Number(episode) : downloadInfo.episodeNumbers[0])
+    const debouncedEpisode = useDebounce(quickSearchEpisode, 500)
+
+    const drawer = useDisclosure(false)
+
+    // const sharedPath = useMemo(() => {
+    //     return !!entryAtom ? useSelectAtom(entryAtom, entry => entry.sharedPath) : (
+    //         settings.library.localDirectory + "\\" + props.media.title?.userPreferred
+    //     )
+    // }, [entryAtom])
+
+    useMount(() => {
         setSelectedTorrents([])
-    }, [])
+        handleFindNyaaTorrents()
+    })
 
     useEffect(() => {
         console.log(downloadInfo)
     }, [downloadInfo]) //TODO Remove
 
+    useUpdateEffect(() => {
+        startTransition(() => {
+            handleFindNyaaTorrents()
+        })
+    }, [quickSearchIsBatch, debouncedEpisode])
+
     const handleFindNyaaTorrents = async () => {
         setIsLoading(true)
-        // console.log(downloadInfo)
         const torrents = await unstable_findNyaaTorrents({
             media: props.media,
             aniZipData: props.aniZipData,
-            episode: downloadInfo.episodeNumbers[0],
+            episode: quickSearchEpisode,
             lastFile: lastFile,
-            batch: downloadInfo.batch || downloadInfo.canBatch,
+            batch: quickSearchIsBatch,
         })
         console.log(torrents)
         setTorrents(torrents.map(torrent => {
@@ -77,7 +106,7 @@ export function DownloadPage(props: DownloadPageProps) {
         setIsLoading(false)
     }
 
-    useEffect(() => {
+    useUpdateEffect(() => {
         (async () => {
             if (globalFilter.length > 0) {
                 setIsFetching(true)
@@ -100,8 +129,19 @@ export function DownloadPage(props: DownloadPageProps) {
             accessorKey: "name",
             header: "Name",
             cell: info => <div
-                className={"text-[.95rem] truncate text-ellipsis cursor-pointer"}
-                // onClick={() => window.open(info.row.original.links.magnet, "_blank")}
+                className={cn(
+                    "text-[.95rem] truncate text-ellipsis cursor-pointer",
+                    {
+                        "text-brand-300": selectedTorrents.some(torrent => torrent.id === info.row.original.id),
+                    },
+                )}
+                onClick={() => setSelectedTorrents(draft => {
+                    if (!draft.find(torrent => torrent.id === info.row.original.id)) {
+                        return [...draft, info.row.original]
+                    } else {
+                        return draft.filter(torrent => torrent.id !== info.row.original.id)
+                    }
+                })}
                 // onClick={async () => {
                 //     if(sharedPath) {
                 //         await torrentManager.current.addMagnets({
@@ -160,19 +200,43 @@ export function DownloadPage(props: DownloadPageProps) {
             </div>,
             size: 30,
         },
-    ]), [torrents])
+    ]), [torrents, selectedTorrents])
 
 
     return (
         <>
-            <div className={"space-y-4 mt-8"}>
+            <div className={"space-y-4 mt-8 relative"}>
 
                 {/*<Button onClick={handleFindNyaaTorrents}>Search torrents</Button>*/}
                 {/*<Button onClick={async () => {*/}
                 {/*    console.log(await torrentManager.current.getAllTorrents())*/}
                 {/*}}>Test add magnet</Button>*/}
 
-                <EpisodeList aniZipData={props.aniZipData} media={props.media}/>
+                {selectedTorrents.length > 0 && <div className={"absolute top-0 right-0 z-10"}>
+                    <Button onClick={drawer.open}>View selected torrents ({selectedTorrents.length})</Button>
+                </div>}
+
+                <div>
+                    Episode to
+                    download: {downloadInfo.episodeNumbers.slice(0, 12).join(", ")}{downloadInfo.episodeNumbers.length > 12 ? ", ..." : " ."}
+                </div>
+
+                <div className={"space-y-2"}>
+                    <h4>Quick search parameters</h4>
+                    <div className={"inline-flex gap-4 items-center"}>
+                        <Switch label={"Look for batches"} checked={quickSearchIsBatch}
+                                onChange={setQuickSearchIsBatch} labelClassName={"text-md"}/>
+                        <NumberInput label={"Episode number"} value={quickSearchEpisode} onChange={(value) => {
+                            startTransition(() => {
+                                setQuickSearchEpisode(value)
+                            })
+                        }} discrete size="sm" fieldClassName={"flex items-center justify-center gap-3 space-y-0"}
+                                     fieldLabelClassName={"flex-none self-center font-normal !text-md sm:text-md lg:text-md"}/>
+                    </div>
+                </div>
+
+                <Divider/>
+                {/*<EpisodeList aniZipData={props.aniZipData} media={props.media}/>*/}
 
                 <DataGrid<SearchTorrentData>
                     columns={columns}
@@ -187,16 +251,6 @@ export function DownloadPage(props: DownloadPageProps) {
                     tdClassName={"py-4 data-[row-selected=true]:bg-gray-900"}
                     tableBodyClassName={"bg-transparent"}
                     footerClassName={"hidden"}
-                    enableRowSelection={true}
-                    rowSelectionPrimaryKey={"name"}
-                    onRowSelect={event => {
-                        startTransition(() => {
-                            console.log(event.data)
-                            setSelectedTorrents(event.data)
-                            // setSelectedTorrents(event.data)
-                        })
-                    }}
-                    enablePersistentRowSelection={true}
                     state={{
                         globalFilter,
                     }}
@@ -211,6 +265,17 @@ export function DownloadPage(props: DownloadPageProps) {
 
 
             </div>
+
+            <Drawer isOpen={drawer.isOpen} onClose={drawer.close} size={"xl"} isClosable title={"Torrents"}>
+                <div>
+                    <p className={"flex-none"}>{sharedPath}</p>
+                    {selectedTorrents.map(torrent => (
+                        <div className={"flex flex-none pl-6"}>
+                            <p className={"truncate text-ellipsis"}>{torrent.name}</p>
+                        </div>
+                    ))}
+                </div>
+            </Drawer>
         </>
     )
 }
@@ -232,7 +297,7 @@ export const EpisodeList: React.FC<EpisodeListProps> = (props) => {
 
     return <>
         <h3>Preview:</h3>
-        <div className={"grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4"}>
+        <div className={"grid grid-cols-1 sm:grid-cols-2 gap-4"}>
             {selectedTorrents.map(torrent => {
                 const episodeData = props.aniZipData?.episodes[torrent.parsed.episode || "0"]
                 return (

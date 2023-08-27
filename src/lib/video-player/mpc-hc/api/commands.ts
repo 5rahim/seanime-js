@@ -64,6 +64,17 @@ export abstract class AbstractPlayerController {
         }
     }
 
+    async getPlaybackStats(): Promise<IPositionInfo & { filePath: string, fileName: string, state: string }> {
+        const variables = await this.getVariables()
+        return {
+            duration: variables.duration,
+            position: variables.position,
+            fileName: variables.file,
+            filePath: variables.filepath,
+            state: variables.statestring,
+        }
+    }
+
     play(): Promise<void> {
         this.onTop()
         return this.execute("PLAY")

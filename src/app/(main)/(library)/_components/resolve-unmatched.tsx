@@ -21,8 +21,8 @@ import { libraryMatchingSuggestionGroupsAtom, useMatchingSuggestions } from "@/a
 import { libraryEntriesAtom } from "@/atoms/library/library-entry.atoms"
 import { useSetLocalFiles } from "@/atoms/library/local-file.atoms"
 import { useSelectAtom } from "@/atoms/helpers"
-import { useRefreshAnilistCollection } from "@/atoms/anilist-collection"
 import { useAtomValue } from "jotai/react"
+import { useRefreshAnilistCollection } from "@/atoms/anilist/collection.atoms"
 
 /* -------------------------------------------------------------------------------------------------
  * ClassificationRecommendationHub

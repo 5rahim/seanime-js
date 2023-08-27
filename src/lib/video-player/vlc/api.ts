@@ -412,6 +412,13 @@ export class VlcApi extends EventEmitter {
     }
 
     /**
+     *
+     */
+    public getStatus(): Promise<Status> {
+        return this._sendCommand(CommandScope.STATUS)
+    }
+
+    /**
      * Add subtitle to currently playing file.
      */
     public addSubtitle(uri: fs.PathLike): Promise<Status> {

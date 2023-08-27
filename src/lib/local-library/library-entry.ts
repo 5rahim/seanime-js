@@ -207,6 +207,11 @@ export const inspectProspectiveLibraryEntry = async (props: {
 
             }
 
+        } else {
+            for (let i = 0; i < mostAccurateFiles.length; i++) {
+                mostAccurateFiles[i].metadata.episode = 1
+                mostAccurateFiles[i].metadata.aniDBEpisodeNumber = "1"
+            }
         }
 
         const rejectedFiles = files.filter(n => !mostAccurateFiles.find(f => f.path === n.path))

@@ -2,6 +2,7 @@
 
 import { VlcApi } from "@/lib/video-player/vlc/api"
 import { Settings } from "@/atoms/settings"
+import { VideoPlayerRepositoryApiCallResult, VideoPlayerRepositoryPlaybackStatus } from "@/lib/video-player/types"
 
 const vlc = new VlcApi({
     host: "127.0.0.1",
@@ -29,19 +30,46 @@ function refresh(settings: Settings) {
     ).toString("base64")}`
 }
 
-export async function _vlc_openVideo(path: string, settings: Settings) {
+/* -------------------------------------------------------------------------------------------------
+ * Open a video
+ * -----------------------------------------------------------------------------------------------*/
 
+export async function _vlc_openVideo(path: string, settings: Settings): Promise<VideoPlayerRepositoryApiCallResult<boolean>> {
     refresh(settings)
 
     try {
-        await vlc.addToQueueAndPlay(path)
+        const res = await vlc.addToQueueAndPlay(path)
 
         if (settings.player.pauseAfterOpening) {
             setTimeout(() => {
                 vlc.forcePause()
             }, 500)
         }
+        return { data: res.state === "paused" || res.state === "playing" || res.state === "stopped" }
     } catch (e) {
-        return { error: "Could not open video" }
+        return { data: false, error: "Could not open video." }
+    }
+}
+
+
+/* -------------------------------------------------------------------------------------------------
+ * Experimental
+ * -----------------------------------------------------------------------------------------------*/
+
+export async function _vlc_getPlaybackStatus(settings: Settings): Promise<VideoPlayerRepositoryApiCallResult<VideoPlayerRepositoryPlaybackStatus>> {
+    refresh(settings)
+
+    try {
+        const status = await vlc.getStatus()
+
+        return {
+            data: {
+                percentageComplete: Number(status.position.toFixed(2)),
+                fileName: status.information.category.meta.filename,
+                state: status.state,
+            },
+        }
+    } catch (e) {
+        return { error: "Could not open video." }
     }
 }

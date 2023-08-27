@@ -1,5 +1,5 @@
 import React, { startTransition, useMemo } from "react"
-import { PrimitiveAtom } from "jotai/index"
+import { PrimitiveAtom } from "jotai"
 import { LocalFile } from "@/lib/local-library/local-file"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
 import { useFocusSetAtom, useSelectAtom } from "@/atoms/helpers"
@@ -9,6 +9,7 @@ import { IconButton } from "@/components/ui/button"
 import { BiDotsHorizontal } from "@react-icons/all-files/bi/BiDotsHorizontal"
 import { VscVerified } from "@react-icons/all-files/vsc/VscVerified"
 import { BiLockOpenAlt } from "@react-icons/all-files/bi/BiLockOpenAlt"
+import { cn } from "@/components/ui/core"
 
 export const EpisodeItem = React.memo((props: {
     fileAtom: PrimitiveAtom<LocalFile>,
@@ -112,7 +113,12 @@ export const EpisodeItemSkeleton: React.FC<EpisodeItemSkeletonProps> = (props) =
     return <>
         <div className={"border border-[--border] p-4 pr-12 rounded-lg relative transition hover:bg-gray-900"}>
             <div
-                className={"flex gap-4 relative cursor-pointer"}
+                className={cn(
+                    "flex gap-4 relative",
+                    {
+                        "cursor-pointer": !!onClick,
+                    },
+                )}
                 onClick={onClick}
             >
                 {image && <div

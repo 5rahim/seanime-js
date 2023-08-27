@@ -6,6 +6,7 @@ import { Divider } from "@/components/ui/divider"
 import { EpisodeItemSkeleton } from "@/app/(main)/(library)/view/[id]/_components/episodes/episode-item"
 import { BiCalendarAlt } from "@react-icons/all-files/bi/BiCalendarAlt"
 import { BiDownload } from "@react-icons/all-files/bi/BiDownload"
+import Link from "next/link"
 
 interface UndownloadedEpisodeListProps {
     children?: React.ReactNode
@@ -13,16 +14,11 @@ interface UndownloadedEpisodeListProps {
     aniZipData?: AniZipData
 }
 
-export const UndownloadedEpisodeList: React.FC<UndownloadedEpisodeListProps> = (props) => {
+export const UndownloadedEpisodeList: React.FC<UndownloadedEpisodeListProps> = React.memo((props) => {
 
     const { children, media, aniZipData, ...rest } = props
 
     const {
-        entryAtom,
-        collectionEntryAtom,
-        collectionEntryStatus,
-        collectionEntryProgress,
-        lastFile,
         downloadInfo,
     } = useDownloadPageData(media)
 
@@ -46,17 +42,20 @@ export const UndownloadedEpisodeList: React.FC<UndownloadedEpisodeListProps> = (
                             key={epNumber + index}
                             title={media.format !== "MOVIE" ? `Episode ${epNumber}` : media.title?.userPreferred || ""}
                             showImagePlaceholder
-                            episodeTitle={aniZipData?.episodes[String(epNumber)]?.title?.en ?? "Title not available yet"}
+                            episodeTitle={aniZipData?.episodes[String(epNumber)]?.title?.en}
                             image={aniZipData?.episodes[String(epNumber)]?.image}
                             action={
-                                <div
+                                <Link
+                                    href={`/view/${media.id}/download?episode=${epNumber}`}
                                     className={"text-orange-200 absolue top-1 right-1 text-3xl absolute animate-pulse"}>
-                                    <BiDownload/></div>
+                                    <BiDownload/>
+                                </Link>
                             }
                         >
                             <div className={"mt-1"}>
-                                {airDate && <p className={"flex gap-1 items-center text-sm text-[--muted]"}>
-                                    <BiCalendarAlt/> Aired on {new Date(airDate).toLocaleDateString()}</p>}
+                                <p className={"flex gap-1 items-center text-sm text-[--muted]"}>
+                                    <BiCalendarAlt/> {airDate ? `Aired on ${new Date(airDate).toLocaleDateString()}` : "Aired recently"}
+                                </p>
                             </div>
                         </EpisodeItemSkeleton>
                     )
@@ -65,4 +64,4 @@ export const UndownloadedEpisodeList: React.FC<UndownloadedEpisodeListProps> = (
         </>
     )
 
-}
+})

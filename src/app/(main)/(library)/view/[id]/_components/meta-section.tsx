@@ -3,11 +3,11 @@ import React from "react"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
 import { BiCalendarAlt } from "@react-icons/all-files/bi/BiCalendarAlt"
 import _ from "lodash"
-import { useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist-collection"
 import { ProgressBadge } from "@/app/(main)/(library)/view/[id]/_components/meta/progress-badge"
 import { NextAiringEpisode } from "@/app/(main)/(library)/view/[id]/_components/meta/next-airing-episode"
 import { DownloadPageButton } from "@/app/(main)/(library)/view/[id]/_components/meta/download-page-button"
 import { useLibraryEntryAtomByMediaId } from "@/atoms/library/library-entry.atoms"
+import { useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist/entries.atoms"
 
 interface MetaSectionProps {
     children?: React.ReactNode
@@ -44,7 +44,8 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
                         )}
 
                     {collectionEntryAtom &&
-                        <ProgressBadge collectionEntryAtom={collectionEntryAtom} episodes={detailedMedia.episodes}/>}
+                        <ProgressBadge collectionEntryAtom={collectionEntryAtom} episodes={detailedMedia.episodes}/>
+                    }
 
                     <p className={"max-h-24 overflow-y-auto"}>{detailedMedia.description?.replace(/(<([^>]+)>)/ig, "")}</p>
                 </div>

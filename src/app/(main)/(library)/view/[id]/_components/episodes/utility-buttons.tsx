@@ -2,10 +2,8 @@ import { PrimitiveAtom } from "jotai"
 import { LibraryEntry } from "@/atoms/library/library-entry.atoms"
 import { useSettings } from "@/atoms/settings"
 import { useSelectAtom } from "@/atoms/helpers"
-import { Tooltip } from "@/components/ui/tooltip"
 import { IconButton } from "@/components/ui/button"
-import { SiVlcmediaplayer } from "@react-icons/all-files/si/SiVlcmediaplayer"
-import { VideoPlayer } from "@/lib/video-player"
+import { VideoPlayerRepository } from "@/lib/video-player"
 import { BiFolder } from "@react-icons/all-files/bi/BiFolder"
 import toast from "react-hot-toast"
 import { openDirectoryInExplorer } from "@/lib/helpers/directory"
@@ -25,17 +23,6 @@ export const UtilityButtons = (props: { entryAtom: PrimitiveAtom<LibraryEntry> }
 
     return (
         <>
-            <Tooltip trigger={<IconButton
-                icon={<SiVlcmediaplayer/>}
-                intent={"warning-basic"}
-                size={"xl"}
-                className={"hover:opacity-60"}
-                onClick={async () => {
-                    await VideoPlayer(settings).start()
-                }}
-            />}>
-                Start video player
-            </Tooltip>
             <IconButton
                 icon={<BiFolder/>}
                 intent={"gray-basic"}
@@ -50,6 +37,13 @@ export const UtilityButtons = (props: { entryAtom: PrimitiveAtom<LibraryEntry> }
                 }}
             />
             <DropdownMenu trigger={<IconButton icon={<BiDotsVerticalRounded/>} intent={"gray-basic"} size={"xl"}/>}>
+                <DropdownMenu.Item
+                    onClick={async () => {
+                        await VideoPlayerRepository(settings).start()
+                    }}
+                >
+                    Start video player
+                </DropdownMenu.Item>
                 <DropdownMenu.Item
                     onClick={() => {
                         setLocalFiles(draft => {

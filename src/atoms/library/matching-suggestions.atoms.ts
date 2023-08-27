@@ -1,9 +1,8 @@
-import { atomWithStorage } from "jotai/utils"
 import { LocalFile } from "@/lib/local-library/local-file"
 import { atom } from "jotai"
 import { logger } from "@/lib/helpers/debug"
 import _ from "lodash"
-import { fetchMALMatchingSuggestions } from "@/lib/mal/fetch-matching-suggestions"
+import { fetchMALMatchingSuggestions } from "@/lib/mal/actions"
 import { useAtom, useAtomValue } from "jotai/react"
 
 import { localFilesAtom } from "@/atoms/library/local-file.atoms"
@@ -13,7 +12,7 @@ export type MatchingSuggestionGroups = {
     folderPath: string,
     recommendations: any // From MAL
 }
-export const libraryMatchingSuggestionGroupsAtom = atomWithStorage<MatchingSuggestionGroups[]>("sea-library-matching-recommendation-groups", [])
+export const libraryMatchingSuggestionGroupsAtom = atom<MatchingSuggestionGroups[]>([])
 
 const _isCurrentlyFetchingSuggestions = atom(false)
 

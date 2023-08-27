@@ -1,5 +1,4 @@
 import { useAtom, useAtomValue } from "jotai/react"
-import { allUserMediaAtom } from "@/atoms/anilist-collection"
 import { useMemo } from "react"
 import { logger } from "@/lib/helpers/debug"
 import { splitAtom } from "jotai/utils"
@@ -8,6 +7,9 @@ import { atom, PrimitiveAtom } from "jotai"
 import { AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import { LocalFile } from "@/lib/local-library/local-file"
 import { useSelectAtom } from "@/atoms/helpers"
+import { allUserMediaAtom } from "@/atoms/anilist/media.atoms"
+import _ from "lodash"
+import { anilistCollectionEntriesAtom, AnilistCollectionEntry } from "@/atoms/anilist/entries.atoms"
 
 /* -------------------------------------------------------------------------------------------------
  * LibraryEntry
@@ -16,8 +18,9 @@ import { useSelectAtom } from "@/atoms/helpers"
 
 export type LibraryEntry = {
     id: number // Media ID
-    media: AnilistShowcaseMedia,
+    media: AnilistShowcaseMedia
     files: LocalFile[]
+    collectionEntry: AnilistCollectionEntry
     sharedPath: string
 }
 export const libraryEntriesAtom = atom(get => {
@@ -33,6 +36,7 @@ export const libraryEntriesAtom = atom(get => {
                 id: mediaId,
                 media: get(allUserMediaAtom).filter(Boolean).find(media => media.id === mediaId)!,
                 files: get(localFilesAtom).filter(file => file.mediaId === mediaId),
+                collectionEntry: get(anilistCollectionEntriesAtom).find(entry => entry?.media?.id === mediaId),
                 sharedPath: firstFile.path.replace("\\" + firstFile.name, ""),
             } satisfies LibraryEntry
         }
@@ -43,8 +47,22 @@ export const libraryEntriesAtom = atom(get => {
  * Read
  * -----------------------------------------------------------------------------------------------*/
 
-export const libraryEntryAtoms = splitAtom(libraryEntriesAtom, entry => entry.id)
+const sortedLibraryEntriesAtom = atom(get => {
+    return _.orderBy(get(libraryEntriesAtom), [
+        n => n.collectionEntry?.status === "CURRENT",
+        n => n.collectionEntry?.status === "PAUSED",
+        n => n.collectionEntry?.status === "PLANNING",
+        n => n.media.title?.userPreferred,
+    ], ["desc", "desc", "desc", "asc"])
+})
 
+export const libraryEntryAtoms = splitAtom(sortedLibraryEntriesAtom, entry => entry.id)
+
+/**
+ * @example
+ * const getLastFile = useSetAtom(getLibraryEntryAtomsByMediaIdAtom)
+ * const lastFile = getLastFile(21)
+ */
 export const getLibraryEntryAtomsByMediaIdAtom = atom(null,
     (get, set, mediaId: number) => get(libraryEntryAtoms).find((fileAtom) => get(fileAtom).id === mediaId),
 )
@@ -74,25 +92,4 @@ export const useLibraryEntryAtoms = () => {
     const entryCount = useSelectAtom(libraryEntriesAtom, entries => entries.flatMap(entry => entry.id))
     const value = useAtomValue(libraryEntryAtoms)
     return useMemo(() => value, [entryCount]) as Array<PrimitiveAtom<LibraryEntry>>
-}
-
-/**
- * @example
- * const entry = useLibraryEntryByMediaId(21)
- *
- * const title = entry?.media?.title?.english //=> One Piece
- * const files = entry?.files //=> [{...}, ...]
- */
-export const useLibraryEntryByMediaId = (mediaId: number): LibraryEntry | undefined => {
-    return useSelectAtom(libraryEntriesAtom, entries => entries.find(entry => entry.media.id === mediaId))
-}
-
-export const entryLastEpisodeFileSelector = (entry: LibraryEntry | undefined) => {
-    const files = entry?.files?.filter(file => file.parsedInfo?.episode)?.filter(Boolean)
-    if (files && files.length > 1) {
-        return files.reduce((prev, curr) => {
-            return Number(prev!.parsedInfo!.episode!) > Number(curr!.parsedInfo!.episode!) ? prev : curr
-        })
-    } else
-        return files?.[0] ?? undefined
 }

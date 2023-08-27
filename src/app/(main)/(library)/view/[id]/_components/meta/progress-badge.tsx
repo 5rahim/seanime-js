@@ -1,7 +1,7 @@
-import { PrimitiveAtom } from "jotai/index"
-import { AnilistCollectionEntry } from "@/atoms/anilist-collection"
+import { PrimitiveAtom } from "jotai"
 import { useSelectAtom } from "@/atoms/helpers"
 import React from "react"
+import { AnilistCollectionEntry } from "@/atoms/anilist/entries.atoms"
 
 export function ProgressBadge({ collectionEntryAtom, episodes }: {
     collectionEntryAtom: PrimitiveAtom<AnilistCollectionEntry>,
