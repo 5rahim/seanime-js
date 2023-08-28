@@ -20,7 +20,7 @@ import _ from "lodash"
 import { inspectProspectiveLibraryEntry } from "@/lib/local-library/library-entry"
 import { logger } from "@/lib/helpers/debug"
 import { ScanLogging } from "@/lib/local-library/logs"
-import { valueContainsSeason } from "@/lib/anilist/helpers.shared"
+import { valueContainsSeason } from "@/lib/anilist/utils"
 
 /**
  *  Goes through non-locked and non-ignored [LocalFile]s and returns

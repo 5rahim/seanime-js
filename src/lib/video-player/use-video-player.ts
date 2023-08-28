@@ -4,9 +4,6 @@ import { useSettings } from "@/atoms/settings"
 import { useInterval, useToggle, useUpdateEffect } from "react-use"
 import { logger } from "@/lib/helpers/debug"
 import { VideoPlayerRepositoryPlaybackStatus } from "@/lib/video-player/types"
-import { useSetAtom } from "jotai/react"
-import { getFilePlaybackPositionAtom, useUpdatePlaybackPosition } from "@/atoms/video-player.atoms"
-import { getLocalFileByPathAtom } from "@/atoms/library/local-file.atoms"
 
 export function useVideoPlayer(props?: {
     onPlayerClosed?: () => void
@@ -25,10 +22,6 @@ export function useVideoPlayer(props?: {
 
     const [tracking, toggleTracking] = useToggle(false)
 
-    const { updatePlaybackPosition, cleanPlaybackPosition } = useUpdatePlaybackPosition()
-    const getFilePlaybackPosition = useSetAtom(getFilePlaybackPositionAtom)
-    const getLocalFileByPath = useSetAtom(getLocalFileByPathAtom)
-
     useUpdateEffect(() => {
         videoPlayerRepository.current = VideoPlayerRepository(settings)
     }, [settings])
@@ -39,20 +32,11 @@ export function useVideoPlayer(props?: {
             console.log(status)
             props?.onTick && props.onTick(status)
 
-            if ((!isNaN(status.percentageComplete) || (status.state as any) !== "n/a") && status.percentageComplete < threshold.current.complete) {
-                updatePlaybackPosition(status)
-            }
-
-            if (status.percentageComplete >= threshold.current.complete) {
-                cleanPlaybackPosition(status)
-            }
-
             if (
                 !watched.current // File was not watched
-                && (status.percentageComplete >= threshold.current.complete) // Completion is above the threshold
+                && (status.completionPercentage >= threshold.current.complete) // Completion is above the threshold
                 && (playbackFileName.current === status.fileName) // Latest file is the same as the one being tracked
             ) {
-                cleanPlaybackPosition(status)
                 props?.onVideoComplete && props.onVideoComplete(playbackFileName.current)
                 watched.current = true
             }
@@ -82,16 +66,10 @@ export function useVideoPlayer(props?: {
     return {
         videoPlayer: videoPlayerRepository.current,
         playFile: useCallback(async (path: string) => {
-            const file = getLocalFileByPath(path)
-            const playbackPosition = getFilePlaybackPosition(file?.name || "")
-            console.log(playbackPosition)
 
             logger("use-video-player").info("Opening video")
 
-            const success = await videoPlayerRepository.current.openVideo(path, {
-                muteAlert: true,
-                seek: playbackPosition?.seek,
-            })
+            const success = await videoPlayerRepository.current.openVideo(path, { muteAlert: true })
             if (!success) {
                 logger("use-video-player").warning("Could not open video, starting player")
 
@@ -105,10 +83,10 @@ export function useVideoPlayer(props?: {
                         (async () => {
                             logger("use-video-player").info("Opening video again")
 
-                            const success = await videoPlayerRepository.current.openVideo(path, { seek: playbackPosition?.seek })
+                            const success = await videoPlayerRepository.current.openVideo(path)
 
                             if (!success) {
-                                logger("use-video-player").error("Could not open video. Abort")
+                                logger("use-video-player").error("Could not open video. Abort.")
                             } else {
                                 logger("use-video-player").info("Video opened, tracking started")
 

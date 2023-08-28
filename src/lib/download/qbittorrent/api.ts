@@ -12,10 +12,18 @@ const client = new QBittorrent({
     password: "adminadmin",
 })
 
-function refresh(settings: Settings) {
+export async function _qBit_refreshSettings(settings: Settings) {
     client.config.baseUrl = "http://" + settings.qbittorrent.host + ":" + settings.qbittorrent.port
     client.config.username = settings.qbittorrent.username
     client.config.password = settings.qbittorrent.password
+}
+
+export async function _qBit_getClient() {
+    return {
+        getAllData: client.getAllData,
+        addMagnet: client.addMagnet,
+        pauseTorrent: client.pauseTorrent,
+    }
 }
 
 /* -------------------------------------------------------------------------------------------------
@@ -23,7 +31,7 @@ function refresh(settings: Settings) {
  * -----------------------------------------------------------------------------------------------*/
 
 export async function _qBit_getAllTorrents(settings: Settings) {
-    refresh(settings)
+    await _qBit_refreshSettings(settings)
     return await client.getAllData()
 }
 
@@ -37,7 +45,7 @@ export type TorrentManager_AddMagnetOptions = {
 }
 
 export async function _qBit_addMagnet(settings: Settings, options: TorrentManager_AddMagnetOptions) {
-    refresh(settings)
+    await _qBit_refreshSettings(settings)
     return await client.addMagnet(
         options.magnets.join("\n"),
         {
@@ -46,6 +54,18 @@ export async function _qBit_addMagnet(settings: Settings, options: TorrentManage
     )
 }
 
+/* -------------------------------------------------------------------------------------------------
+ * Stop torrent
+ * -----------------------------------------------------------------------------------------------*/
+
+export type TorrentManager_StopTorrentOptions = {
+    hashes: string[] | "all",
+}
+
+export async function _qBit_stopTorrent(settings: Settings, options: TorrentManager_StopTorrentOptions) {
+    await _qBit_refreshSettings(settings)
+    return await client.pauseTorrent(options.hashes)
+}
 
 // Future<List<Torrent>> getTorrents();
 //

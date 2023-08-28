@@ -3,7 +3,7 @@
 <h4 align="center">Scan your local library, keep track of progress with AniList integration. Download new episodes or
 batches.</h4>
 
-![img_2.png](img_2.png)
+![img_2.png](docs/img_2.png)
 
 ``
 Windows, Tauri, Typescript, Next.js 13, Jotai, AniList API, Chalk UI Components
@@ -15,7 +15,7 @@ Like the design? [Chalk UI](https://github.com/5rahim/chalk-ui)
 
 ## Why?
 
-![img_1.png](img_1.png)
+![img_1.png](docs/img_1.png)
 
 ## Features
 

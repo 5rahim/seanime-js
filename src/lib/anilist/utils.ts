@@ -5,7 +5,10 @@ import { ANIDB_RX } from "@/lib/series-scanner/regex"
 type _Edge = { relationType: MediaRelation, node: AnilistShowcaseMedia | null | undefined }
 
 /**
- * Will not work with [AnilistShowcaseMedia]
+ * @description
+ * Returns an [AnilistShowcaseMedia] with the specified [MediaRelation] to the given media.
+ * If the specified [MediaRelation] is "SEQUEL", it will look for OVAs if it can't find on first try.
+ * /!\ Will not work with [AnilistShowcaseMedia].
  */
 export function findMediaEdge(media: AnilistShortMedia | null | undefined, relation: MediaRelation, formats = ["TV", "TV_SHORT"], skip: boolean = false): _Edge | undefined {
     let res = (media?.relations?.edges as _Edge[])?.find(edge => {

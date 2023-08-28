@@ -24,6 +24,8 @@ import { useMount, useUpdateEffect } from "react-use"
 import { Drawer } from "@/components/ui/modal"
 import { useDisclosure } from "@/hooks/use-disclosure"
 
+import { resolveSeason } from "@/lib/anilist/actions"
+
 
 interface DownloadPageProps {
     media: AnilistDetailedMedia,
@@ -66,6 +68,8 @@ export function DownloadPage(props: DownloadPageProps) {
     const [quickSearchEpisode, setQuickSearchEpisode] = useState(episode ? Number(episode) : downloadInfo.episodeNumbers[0])
     const debouncedEpisode = useDebounce(quickSearchEpisode, 500)
 
+    const [episodeOffset, setEpisodeOffset] = useState(0)
+
     const drawer = useDisclosure(false)
 
     // const sharedPath = useMemo(() => {
@@ -74,9 +78,11 @@ export function DownloadPage(props: DownloadPageProps) {
     //     )
     // }, [entryAtom])
 
-    useMount(() => {
+    useMount(async () => {
         setSelectedTorrents([])
-        handleFindNyaaTorrents()
+        const object = await resolveSeason({ media: props.media, force: true })
+        setEpisodeOffset(object?.offset ?? 0)
+        await handleFindNyaaTorrents(object?.offset ?? 0)
     })
 
     useEffect(() => {
@@ -89,7 +95,7 @@ export function DownloadPage(props: DownloadPageProps) {
         })
     }, [quickSearchIsBatch, debouncedEpisode])
 
-    const handleFindNyaaTorrents = async () => {
+    const handleFindNyaaTorrents = async (offset?: number) => {
         setIsLoading(true)
         const torrents = await unstable_findNyaaTorrents({
             media: props.media,
@@ -97,12 +103,13 @@ export function DownloadPage(props: DownloadPageProps) {
             episode: quickSearchEpisode,
             lastFile: lastFile,
             batch: quickSearchIsBatch,
+            offset: offset ?? episodeOffset,
         })
         console.log(torrents)
-        setTorrents(torrents.map(torrent => {
+        setTorrents(torrents?.map(torrent => {
             const parsed = rakun.parse(torrent.name)
             return { ...torrent, parsed }
-        }))
+        }) ?? [])
         setIsLoading(false)
     }
 

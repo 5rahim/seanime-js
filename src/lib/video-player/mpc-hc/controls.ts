@@ -26,13 +26,10 @@ export async function _mpc_openVideo(path: string, seek: Nullish<number>, settin
     try {
         await mpcApi.openFile(path)
 
-        if (seek) {
-            await new Promise(done => setTimeout(() => done(""), 500))
-            await mpcApi.seek(seek)
-        }
         if (settings.player.pauseAfterOpening) {
-            await new Promise(done => setTimeout(() => done(""), 500))
-            await mpcApi.pause()
+            setTimeout(() => {
+                mpcApi.togglePlay()
+            }, 2000)
         }
 
         return { data: true }
@@ -54,7 +51,7 @@ export async function _mpc_getPlaybackStatus(settings: Settings): Promise<VideoP
 
         return {
             data: {
-                percentageComplete: Number((playbackStatus.position / playbackStatus.duration).toFixed(2)),
+                completionPercentage: Number((playbackStatus.position / playbackStatus.duration).toFixed(2)),
                 state: playbackStatus.state.toLowerCase() as VideoPlayerRepositoryPlaybackState,
                 fileName: playbackStatus.fileName,
                 duration: playbackStatus.duration,

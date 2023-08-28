@@ -7,7 +7,7 @@ import lavenshtein from "js-levenshtein"
 import { AnimeFileInfo, LocalFile } from "@/lib/local-library/local-file"
 import { logger } from "@/lib/helpers/debug"
 import { ScanLogging } from "@/lib/local-library/logs"
-import { valueContainsSeason } from "@/lib/anilist/helpers.shared"
+import { valueContainsSeason } from "@/lib/anilist/utils"
 
 /**
  * This method employs 3 comparison algorithms: Dice's coefficient (string-similarity), Levenshtein's algorithm, and MAL's elastic search algorithm
@@ -62,10 +62,10 @@ export async function findBestCorrespondingMedia({
 
     /* Get constants */
 
-    const mediaEngTitles = mediaTitles.eng
-    const mediaRomTitles = mediaTitles.rom
-    const mediaPreferredTitles = mediaTitles.preferred
-    const mediaSynonymsWithSeason = mediaTitles.synonymsWithSeason
+    const mediaEngTitles = mediaTitles.eng.map(value => value.toLowerCase())
+    const mediaRomTitles = mediaTitles.rom.map(value => value.toLowerCase())
+    const mediaPreferredTitles = mediaTitles.preferred.map(value => value.toLowerCase())
+    const mediaSynonymsWithSeason = mediaTitles.synonymsWithSeason.map(value => value.toLowerCase())
 
     const episodeAsNumber = (parsed.episode && _.isNumber(parseInt(parsed.episode)))
         ? parseInt(parsed.episode)
@@ -166,10 +166,10 @@ export async function findBestCorrespondingMedia({
     // This section calculates the similarity of the title variations with media titles
     let similarTitleMatching = titleVariations.map((tValue) => {
         // Calculate best match for English titles, Romaji titles, preferred titles, and season titles
-        const engResult = similarity.findBestMatch(tValue, mediaEngTitles.map(value => value.toLowerCase()))
-        const romResult = similarity.findBestMatch(tValue, mediaRomTitles.map(value => value.toLowerCase()))
-        const preferredResult = similarity.findBestMatch(tValue, mediaPreferredTitles.map(value => value.toLowerCase()))
-        const seasonResult = similarity.findBestMatch(tValue, mediaSynonymsWithSeason.map(value => value.toLowerCase()))
+        const engResult = similarity.findBestMatch(tValue, mediaEngTitles)
+        const romResult = similarity.findBestMatch(tValue, mediaRomTitles)
+        const preferredResult = similarity.findBestMatch(tValue, mediaPreferredTitles)
+        const seasonResult = similarity.findBestMatch(tValue, mediaSynonymsWithSeason)
         // Choose the best match out of the calculated results
         const bestResult = [engResult, romResult, preferredResult, seasonResult].reduce((prev, curr) => {
             return prev.bestMatch.rating >= curr.bestMatch.rating ? prev : curr // Higher rating
@@ -296,7 +296,7 @@ export async function findBestCorrespondingMedia({
     let rating: number = 0
     let bestMedia: AnilistShowcaseMedia | undefined
 
-    _scanLogging.add(file.path, `Match found using ` + JSON.stringify(bestTitleMatching!.bestMatch.target))
+    _scanLogging.add(file.path, `Retrieving media using ` + JSON.stringify(bestTitleMatching!.bestMatch.target))
 
     if (bestTitleMatching) {
         // Find the media with matching title

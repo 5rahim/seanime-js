@@ -11,15 +11,10 @@ import {
     UpdateEntryDocument,
 } from "@/gql/graphql"
 import fs from "fs"
-import {
-    findMediaEdge,
-    valueContainsNC,
-    valueContainsSeason,
-    valueContainsSpecials,
-} from "@/lib/anilist/helpers.shared"
-import { resolveSeason } from "@/lib/anilist/helpers.server"
-import { getLocalFileParsedEpisode, getLocalFileParsedSeason } from "@/lib/local-library/helpers.shared"
+import { findMediaEdge, valueContainsNC, valueContainsSeason, valueContainsSpecials } from "@/lib/anilist/utils"
+import { getLocalFileParsedEpisode, getLocalFileParsedSeason } from "@/lib/local-library/utils"
 import { ScanLogging } from "@/lib/local-library/logs"
+import { resolveSeason } from "@/lib/anilist/actions"
 
 export type ProspectiveLibraryEntry = {
     media: AnilistShowcaseMedia

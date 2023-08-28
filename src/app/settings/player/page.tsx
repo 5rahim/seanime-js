@@ -37,7 +37,7 @@ export default function Page() {
 
                         <Field.Switch
                             name={"pauseAfterOpening"}
-                            label={"No auto-play"}
+                            label={"Disable auto-play"}
                         />
 
                         <Divider/>

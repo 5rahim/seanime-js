@@ -3,7 +3,7 @@ import { existsSync, promises as fs } from "fs"
 
 export class ScanLogging {
 
-    private _scanLogs
+    private readonly _scanLogs
 
     constructor() {
         // Key: file path, value: logs
@@ -33,6 +33,19 @@ export class ScanLogging {
         return _output
     }
 
+    outputWithTime() {
+        let _output = ""
+        for (const [key, value] of this._scanLogs) {
+            let previousTimestamp = (new Date()).getTime()
+            _output += `\n>>> ${key}\n`
+            value.forEach(obj => {
+                _output += `[${obj.timestamp}] ${obj.log} (${(obj.timestamp - previousTimestamp)}ms)\n`
+                previousTimestamp = obj.timestamp
+            })
+        }
+        return _output
+    }
+
     async writeSnapshot() {
         const snapshotDir = path.resolve("snapshot")
         if (!existsSync(snapshotDir)) {
@@ -43,7 +56,7 @@ export class ScanLogging {
         const snapshotFilename = `scan_${timestamp}.txt`
         const snapshotPath = path.join(snapshotDir, snapshotFilename)
 
-        await fs.writeFile(snapshotPath, this.output(), { encoding: "utf-8" })
+        await fs.writeFile(snapshotPath, this.outputWithTime(), { encoding: "utf-8" })
     }
 
 }

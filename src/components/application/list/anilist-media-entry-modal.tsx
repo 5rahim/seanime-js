@@ -75,11 +75,11 @@ export const AnilistMediaEntryModal: React.FC<AnilistMediaEntryModalProps> = (pr
                     className="h-24 w-full flex-none object-cover object-center overflow-hidden absolute left-0 top-0 z-[-1]">
                     <Image
                         src={media.bannerImage!}
-                        alt={""}
+                        alt={"banner"}
                         fill
                         quality={80}
                         priority
-                        sizes="10rem"
+                        sizes="20rem"
                         className="object-cover object-center opacity-30"
                     />
                     <div

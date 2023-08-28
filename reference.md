@@ -2,4 +2,4 @@
 
 ## Refresh entries
 
-![img.png](img.png)
+![img.png](docs/img.png)

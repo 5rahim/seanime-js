@@ -156,7 +156,7 @@ export const createLocalFileWithMedia = async (
             correspondingMedia = media
 
         } else {
-            _scanLogging.add(file.path, "error - Could not parse any info")
+            _scanLogging.add(file.path, "error - Could not parse any info, file will not be matched")
         }
 
         return {

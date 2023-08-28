@@ -1,3 +1,6 @@
+/* -------------------------------------------------------------------------------------------------
+ * Unused
+ * -----------------------------------------------------------------------------------------------*/
 import { atomWithStorage } from "jotai/utils"
 import { withImmer } from "jotai-immer"
 import { atom } from "jotai"
@@ -26,16 +29,16 @@ export function useUpdatePlaybackPosition() {
         updatePlaybackPosition: (status: VideoPlayerRepositoryPlaybackStatus) => {
             setter(draft => {
                 const index = draft.findIndex(n => n?.fileName === status.fileName)
-                if (index !== -1 && status.percentageComplete !== 0) {
-                    draft[index].completionPercentage = status.percentageComplete
-                    draft[index].seek = Math.round(status.duration * status.percentageComplete)
+                if (index !== -1 && status.completionPercentage !== 0) {
+                    draft[index].completionPercentage = status.completionPercentage
+                    draft[index].seek = Math.round(status.duration * status.completionPercentage)
                     return
                 }
                 if (index === -1) {
                     draft.push({
                         fileName: status.fileName,
-                        completionPercentage: status.percentageComplete,
-                        seek: Math.round(status.duration * status.percentageComplete),
+                        completionPercentage: status.completionPercentage,
+                        seek: Math.round(status.duration * status.completionPercentage),
                     })
                     return
                 }

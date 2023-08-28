@@ -3,8 +3,9 @@
 import React, { useEffect } from "react"
 import { useAniListClientQuery } from "@/hooks/graphql-client-helpers"
 import { AnimeShortMediaByIdDocument } from "@/gql/graphql"
-import { findMediaEdge } from "@/lib/anilist/helpers.shared"
-import { resolveSeason } from "@/lib/anilist/helpers.server"
+import { findMediaEdge } from "@/lib/anilist/utils"
+
+import { resolveSeason } from "@/lib/anilist/actions"
 
 export default function Page() {
 

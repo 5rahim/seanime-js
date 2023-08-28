@@ -5,7 +5,7 @@ import rakun from "@/lib/rakun/rakun"
 import { logger } from "@/lib/helpers/debug"
 import { isPast } from "date-fns"
 import { Nyaa } from "@/lib/download/nyaa/api"
-import { valueContainsSeason } from "@/lib/anilist/helpers.shared"
+import { valueContainsSeason } from "@/lib/anilist/utils"
 
 
 export async function unstable_findNyaaTorrents(props: {
@@ -14,10 +14,14 @@ export async function unstable_findNyaaTorrents(props: {
     episode: number,
     batch: boolean,
     lastFile: LocalFile | undefined
+    offset: number
 }) {
-    const { media, aniZipData, episode, lastFile, batch } = props
+    const { media, aniZipData, episode, lastFile, batch, offset } = props
 
     const parsed = rakun.parse(media.title?.english ?? media.title?.romaji ?? "")
+
+    const _splitName = parsed.name.split(":").filter(Boolean).map(n => n.trim())
+    // const _splitName2 = parsed.name.split("|").filter(Boolean).map(n => n.trim())
 
     /* Constants */
     const IS_MOVIE = media.format === "MOVIE"
@@ -66,16 +70,27 @@ export async function unstable_findNyaaTorrents(props: {
         }
     }
 
+
+    // \/ Incorrect
     // Get the absolute episode only if:
     // - There is a prequel, and we are at least at Season 2 or Cour 2
     // const absoluteEpisode = (!!prequel && !!prequel.episodes && (SPLIT_COUR || (season && season > 1))) ? (+prequel.episodes + episode) : undefined
-    const absoluteEpisode = undefined
+    const absoluteEpisode = +offset + episode
 
     // ---------------------------------------------------
     /* Format title */
 
     // eg: [jujutsu kaisen, ...]
-    let prospectiveTitleArr = [media.title?.english, media.title?.userPreferred, media.title?.romaji, ...(media.synonyms?.filter(valueContainsSeason) || [])]
+    let prospectiveTitleArr = [
+        media.title?.english,
+        media.title?.english?.split(":")[0],
+        media.title?.english?.split(":")[1],
+        media.title?.userPreferred,
+        media.title?.userPreferred?.split(":")[0],
+        media.title?.userPreferred?.split(":")[1],
+        media.title?.romaji,
+        ...(media.synonyms?.filter(valueContainsSeason) || []),
+    ]
     prospectiveTitleArr = [
         ...(new Set(
                 prospectiveTitleArr
@@ -87,36 +102,48 @@ export async function unstable_findNyaaTorrents(props: {
 
     // eg: "((jujutsu kaisen)|(jjk))"
     let _search_string = `((${prospectiveTitleArr.join(")|(")}))`
+    let _search_string_without_seasons = `((${prospectiveTitleArr.join(")|(")}))`
 
     if (!IS_MOVIE) {
         let _seasons_string = `(season ${season}|season ${zeropad(season)}|s${zeropad(season)}|s${season})`
+
+        // >>> Batch search terms
         if (batch) {
             const digits = Math.max(2, Math.log(media.episodes ?? 0) * Math.LOG10E + 1 | 0)
-            let _rest = `(${zeropad(1, digits)}-${zeropad(media.episodes ?? 0, digits)}|${zeropad(1, digits)} ~ ${zeropad(media.episodes ?? 0, digits)}|Batch|Complete)`
-            if (season && season > 1) _search_string += _seasons_string
-            _search_string += _rest
+
+            let _rest = `(${zeropad(1, digits)} - ${zeropad(media.episodes ?? 0, digits)}|${zeropad(1, digits)}-${zeropad(media.episodes ?? 0, digits)}|${zeropad(1, digits)} ~ ${zeropad(media.episodes ?? 0, digits)}`
+            _rest += `|Batch|Complete|+ OVA|+ Movie|+ Specials)`
+
+            if (season) _search_string += _seasons_string // Increment
+
+            _search_string += _rest // Increment
+            _search_string_without_seasons += _rest // Increment
+
         } else {
+            // >>> Episode search terms
             // eg: ((jujustu kaisen)|(jjk))(01|e01|...)
             if (season) _search_string += _seasons_string
             let _episodes_string = `(${zeropad(episode)}|e${zeropad(episode)}|e${zeropad(episode)}v|${zeropad(episode)}v|ep${episode})`
             _search_string += _episodes_string
-
+            _search_string_without_seasons += _episodes_string
 
             if (absoluteEpisode && parsed.name) {
                 // _search_string = "(" + _search_string + ")" // Enclose the previous titles with episodes
                 // eg: ...|(jujutsu kaisen 27)
-                _search_string += "|(" + (`${parsed.name} ${absoluteEpisode}`.toLowerCase()) + ")"
+                _search_string += "|(" + (`${parsed.name} ${zeropad(absoluteEpisode)}`.toLowerCase()) + ")"
+                if (_splitName[0]) _search_string += "|(" + (`${_splitName[0]} ${zeropad(absoluteEpisode)}`.toLowerCase()) + ")"
+                if (_splitName[1]) _search_string += "|(" + (`${_splitName[1]} ${zeropad(absoluteEpisode)}`.toLowerCase()) + ")"
             }
         }
     }
 
-    console.log({
-        titles: _search_string,
-        season,
-        cour: parsed.cour,
-        prequel: prequel?.title?.english,
-        absoluteEpisode,
-    })
+    // console.log({
+    //     titles: _search_string,
+    //     season,
+    //     cour: parsed.cour,
+    //     prequel: prequel?.title?.english,
+    //     absoluteEpisode,
+    // })
 
     try {
         const searchResult = await Nyaa.search({
@@ -124,7 +151,17 @@ export async function unstable_findNyaaTorrents(props: {
             category: "1_2",
         })
 
-        return searchResult.torrents
+        if (searchResult.torrents && searchResult.torrents.length > 0) {
+            logger("lib/nyaa/search").info("Found torrents for", _search_string)
+            return searchResult.torrents
+        } else {
+            const searchResult2 = await Nyaa.search({
+                title: _search_string_without_seasons,
+                category: "1_2",
+            })
+            logger("lib/nyaa/search").info("Couldn't find torrents with season, found torrents for", _search_string_without_seasons)
+            return searchResult2.torrents
+        }
     } catch (e) {
         console.warn("Could not fetch torrents")
         return []

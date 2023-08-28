@@ -41,17 +41,13 @@ export async function _vlc_openVideo(path: string, seek: Nullish<number>, settin
     try {
         const res = await vlc.addToQueueAndPlay(path)
 
-        if (seek) {
-            setTimeout(() => {
-                vlc.seek(Math.round(seek / 1000))
-            }, 500)
-        }
         if (settings.player.pauseAfterOpening) {
             setTimeout(() => {
                 vlc.forcePause()
             }, 600)
         }
-        return { data: res.state === "paused" || res.state === "playing" || res.state === "stopped" }
+
+        return { data: true }
     } catch (e) {
         return { data: false, error: "Could not open video." }
     }
@@ -70,7 +66,7 @@ export async function _vlc_getPlaybackStatus(settings: Settings): Promise<VideoP
 
         return {
             data: {
-                percentageComplete: Number(status.position.toFixed(2)),
+                completionPercentage: Number(status.position.toFixed(2)),
                 fileName: status.information.category.meta.filename,
                 state: status.state,
                 duration: status.length * 1000, // Convert to ms

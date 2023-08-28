@@ -4,7 +4,7 @@ export type VideoPlayerRepositoryApiCallResult<T = any> = T extends void ? { err
 } | undefined
 
 export type VideoPlayerRepositoryPlaybackStatus = {
-    percentageComplete: number,
+    completionPercentage: number,
     state: VideoPlayerRepositoryPlaybackState,
     fileName: string
     duration: number // In ms
