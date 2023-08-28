@@ -163,9 +163,9 @@ export const AnimeListItem = ((props: { mediaId: number, showLibraryBadge?: bool
                 <div>
                     <div>
                         <p className={"text-sm text-[--muted] inline-flex gap-1 items-center"}>
-                            <BiCalendarAlt/>{_.capitalize(media.season ?? "")} {new Intl.DateTimeFormat("en-US", {
+                            <BiCalendarAlt/>{_.capitalize(media.season ?? "")} {media.startDate?.year ? new Intl.DateTimeFormat("en-US", {
                             year: "numeric",
-                        }).format(new Date(media.startDate?.year || 0, media.startDate?.month || 0))}
+                        }).format(new Date(media.startDate?.year || 0, media.startDate?.month || 0)) : "Not yet released"}
                         </p>
                     </div>
                 </div>

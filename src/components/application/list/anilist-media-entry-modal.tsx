@@ -12,6 +12,8 @@ import { useSelectAtom } from "@/atoms/helpers"
 import { BiStar } from "@react-icons/all-files/bi/BiStar"
 import { BiListPlus } from "@react-icons/all-files/bi/BiListPlus"
 import { AiFillEdit } from "@react-icons/all-files/ai/AiFillEdit"
+import Image from "next/image"
+import { cn } from "@/components/ui/core"
 
 interface AnilistMediaEntryModalProps {
     children?: React.ReactNode
@@ -58,8 +60,31 @@ export const AnilistMediaEntryModal: React.FC<AnilistMediaEntryModalProps> = (pr
 
             {/*TODO: Add to watching button*/}
 
-            <Modal isOpen={open} onClose={toggle} title={media.title?.userPreferred ?? undefined} isClosable
-                   size={"xl"}>
+
+            <Modal
+                isOpen={open}
+                onClose={toggle}
+                title={media.title?.userPreferred ?? undefined}
+                isClosable
+                size={"xl"}
+                titleClassName={"text-xl"}
+            >
+
+                {media.bannerImage && <div
+                    className="h-24 w-full flex-none object-cover object-center overflow-hidden absolute left-0 top-0 z-[-1]">
+                    <Image
+                        src={media.bannerImage!}
+                        alt={""}
+                        fill
+                        quality={80}
+                        priority
+                        sizes="10rem"
+                        className="object-cover object-center opacity-30"
+                    />
+                    <div
+                        className={"z-[5] absolute bottom-0 w-full h-[80%] bg-gradient-to-t from-gray-900 to-transparent"}
+                    />
+                </div>}
 
                 {(!!collectionEntryAtom && !!state) && <TypesafeForm
                     schema={entrySchema}
@@ -73,6 +98,11 @@ export const AnilistMediaEntryModal: React.FC<AnilistMediaEntryModalProps> = (pr
                             completedAt: data.endDate,
                         })
                     }}
+                    className={cn(
+                        {
+                            "mt-16": !!media.bannerImage,
+                        },
+                    )}
                     onError={console.log}
                     defaultValues={{
                         status: state.status,
@@ -89,37 +119,48 @@ export const AnilistMediaEntryModal: React.FC<AnilistMediaEntryModalProps> = (pr
                             label={"Status"}
                             name={"status"}
                             options={[
-                                { value: "CURRENT", label: "Watching" },
+                                media.status !== "NOT_YET_RELEASED" ? {
+                                    value: "CURRENT",
+                                    label: "Watching",
+                                } : undefined,
                                 { value: "PLANNING", label: "Planning" },
-                                { value: "PAUSED", label: "Paused" },
-                                { value: "COMPLETED", label: "Completed" },
-                                { value: "DROPPED", label: "Dropped" },
-                            ]}
+                                media.status !== "NOT_YET_RELEASED" ? { value: "PAUSED", label: "Paused" } : undefined,
+                                media.status !== "NOT_YET_RELEASED" ? {
+                                    value: "COMPLETED",
+                                    label: "Completed",
+                                } : undefined,
+                                media.status !== "NOT_YET_RELEASED" ? {
+                                    value: "DROPPED",
+                                    label: "Dropped",
+                                } : undefined,
+                            ].filter(Boolean)}
                         />
-                        <Field.Number
-                            label={"Score"}
-                            name={"score"}
-                            discrete
-                            min={0}
-                            max={10}
-                            maxFractionDigits={0}
-                            minFractionDigits={0}
-                            precision={1}
-                            rightIcon={<BiStar/>}
-                        />
-                        <Field.Number
-                            label={"Progress"}
-                            name={"progress"}
-                            discrete
-                            min={0}
-                            max={(media.nextAiringEpisode?.episode ? media.nextAiringEpisode?.episode - 1 : undefined) || media.episodes || 0}
-                            maxFractionDigits={0}
-                            minFractionDigits={0}
-                            precision={1}
-                            rightIcon={<BiListPlus/>}
-                        />
+                        {media.status !== "NOT_YET_RELEASED" && <>
+                            <Field.Number
+                                label={"Score"}
+                                name={"score"}
+                                discrete
+                                min={0}
+                                max={10}
+                                maxFractionDigits={0}
+                                minFractionDigits={0}
+                                precision={1}
+                                rightIcon={<BiStar/>}
+                            />
+                            <Field.Number
+                                label={"Progress"}
+                                name={"progress"}
+                                discrete
+                                min={0}
+                                max={(media.nextAiringEpisode?.episode ? media.nextAiringEpisode?.episode - 1 : undefined) || media.episodes || 0}
+                                maxFractionDigits={0}
+                                minFractionDigits={0}
+                                precision={1}
+                                rightIcon={<BiListPlus/>}
+                            />
+                        </>}
                     </div>
-                    <div className={"flex flex-col sm:flex-row gap-4"}>
+                    {media.status !== "NOT_YET_RELEASED" && <div className={"flex flex-col sm:flex-row gap-4"}>
                         <Field.DatePicker
                             label={"Start date"}
                             name={"startDate"}
@@ -130,7 +171,7 @@ export const AnilistMediaEntryModal: React.FC<AnilistMediaEntryModalProps> = (pr
                             name={"endDate"}
                             // defaultValue={(state.completedAt && state.completedAt.year) ? parseAbsoluteToLocal(new Date(state.completedAt.year, (state.completedAt.month || 1)-1, state.completedAt.day || 1).toISOString()) : undefined}
                         />
-                    </div>
+                    </div>}
                     <Field.Submit role={"save"}/>
                 </TypesafeForm>}
 

@@ -129,3 +129,16 @@ export const _SaveOrUpdateEntry = gql`
         }
     }
 `
+
+
+export const _DeleteEntry = gql`
+    mutation DeleteEntry (
+        $mediaId: Int
+    ) {
+        DeleteMediaListEntry(
+            mediaId: $mediaId
+        ) {
+            deleted
+        }
+    }
+`
