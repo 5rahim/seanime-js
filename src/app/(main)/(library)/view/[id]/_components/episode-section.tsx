@@ -192,26 +192,34 @@ export const ProgressTrackingModal: React.FC<ProgressTrackingModalProps> = (prop
                             watched: <Badge size={"lg"}>{latestFile.metadata.episode}</Badge></p>
                     )}
                 </div>
-                <Button
-                    intent={"success"}
-                    size={"lg"}
-                    isDisabled={state.filesWatched.length === 0}
-                    onClick={() => {
+                <div className={"flex gap-2 justify-center items-center"}>
+                    <Button
+                        intent={"success"}
+                        isDisabled={state.filesWatched.length === 0}
+                        onClick={() => {
+                            setState(draft => {
+                                draft.open = false
+                                draft.filesWatched = []
+                                return
+                            })
+                            startTransition(() => {
+                                watchedEntry({
+                                    mediaId: media.id,
+                                    episode: latestFile.metadata.episode || 1,
+                                })
+                            })
+                        }}
+                    >
+                        Confirm
+                    </Button>
+                    <Button intent={"warning-subtle"} onClick={() => {
                         setState(draft => {
                             draft.open = false
                             draft.filesWatched = []
                             return
                         })
-                        startTransition(() => {
-                            watchedEntry({
-                                mediaId: media.id,
-                                episode: latestFile.metadata.episode || 1,
-                            })
-                        })
-                    }}
-                >
-                    Confirm
-                </Button>
+                    }}>Cancel</Button>
+                </div>
             </div>
         </Modal>
     </>

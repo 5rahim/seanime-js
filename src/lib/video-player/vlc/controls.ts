@@ -3,6 +3,7 @@
 import { VlcApi } from "@/lib/video-player/vlc/api"
 import { Settings } from "@/atoms/settings"
 import { VideoPlayerRepositoryApiCallResult, VideoPlayerRepositoryPlaybackStatus } from "@/lib/video-player/types"
+import { Nullish } from "@/types/common"
 
 const vlc = new VlcApi({
     host: "127.0.0.1",
@@ -34,16 +35,21 @@ function refresh(settings: Settings) {
  * Open a video
  * -----------------------------------------------------------------------------------------------*/
 
-export async function _vlc_openVideo(path: string, settings: Settings): Promise<VideoPlayerRepositoryApiCallResult<boolean>> {
+export async function _vlc_openVideo(path: string, seek: Nullish<number>, settings: Settings): Promise<VideoPlayerRepositoryApiCallResult<boolean>> {
     refresh(settings)
 
     try {
         const res = await vlc.addToQueueAndPlay(path)
 
+        if (seek) {
+            setTimeout(() => {
+                vlc.seek(Math.round(seek / 1000))
+            }, 500)
+        }
         if (settings.player.pauseAfterOpening) {
             setTimeout(() => {
                 vlc.forcePause()
-            }, 500)
+            }, 600)
         }
         return { data: res.state === "paused" || res.state === "playing" || res.state === "stopped" }
     } catch (e) {
@@ -67,6 +73,7 @@ export async function _vlc_getPlaybackStatus(settings: Settings): Promise<VideoP
                 percentageComplete: Number(status.position.toFixed(2)),
                 fileName: status.information.category.meta.filename,
                 state: status.state,
+                duration: status.length * 1000, // Convert to ms
             },
         }
     } catch (e) {

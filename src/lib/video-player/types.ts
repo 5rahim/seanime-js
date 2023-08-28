@@ -7,6 +7,7 @@ export type VideoPlayerRepositoryPlaybackStatus = {
     percentageComplete: number,
     state: VideoPlayerRepositoryPlaybackState,
     fileName: string
+    duration: number // In ms
 }
 
 export type VideoPlayerRepositoryPlaybackState = "paused" | "playing" | "stopped"

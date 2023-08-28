@@ -59,6 +59,7 @@ export const AnilistMediaEntryModal: React.FC<AnilistMediaEntryModalProps> = (pr
             />}
 
             {/*TODO: Add to watching button*/}
+            {/*TODO: Remove from lists button*/}
 
 
             <Modal

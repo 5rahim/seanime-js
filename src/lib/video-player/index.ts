@@ -17,15 +17,16 @@ export const VideoPlayerRepository = (settings: Settings) => {
                 toast.error("Could not open the player")
             }
         },
-        async openVideo(path: string, options?: { muteAlert?: boolean }) {
+        async openVideo(path: string, options?: { muteAlert?: boolean, seek?: number | null | undefined }) {
             const muteAlert = options?.muteAlert || false
+            const seek = options?.seek
             let res
             switch (settings.player.defaultPlayer) {
                 case "mpc-hc":
-                    res = await _mpc_openVideo(path, settings)
+                    res = await _mpc_openVideo(path, seek, settings)
                     break
                 case "vlc":
-                    res = await _vlc_openVideo(path, settings)
+                    res = await _vlc_openVideo(path, seek, settings)
                     break
             }
             !muteAlert && this._onError(res)

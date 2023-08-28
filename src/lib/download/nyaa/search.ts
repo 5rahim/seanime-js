@@ -93,7 +93,7 @@ export async function unstable_findNyaaTorrents(props: {
         if (batch) {
             const digits = Math.max(2, Math.log(media.episodes ?? 0) * Math.LOG10E + 1 | 0)
             let _rest = `(${zeropad(1, digits)}-${zeropad(media.episodes ?? 0, digits)}|${zeropad(1, digits)} ~ ${zeropad(media.episodes ?? 0, digits)}|Batch|Complete)`
-            if (season) _search_string += _seasons_string
+            if (season && season > 1) _search_string += _seasons_string
             _search_string += _rest
         } else {
             // eg: ((jujustu kaisen)|(jjk))(01|e01|...)

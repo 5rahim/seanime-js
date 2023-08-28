@@ -122,6 +122,15 @@ export const getLocalFileByNameAtom = atom(null,
     (get, set, name: string) => get(focusAtom(localFilesAtom, optic => optic.find(file => file.name === name))),
 )
 
+/**
+ * @return LocalFile
+ * @example
+ * const getFile = useSetAtom(getLocalFileByPathAtom)
+ */
+export const getLocalFileByPathAtom = atom(null,
+    (get, set, path: string) => get(focusAtom(localFilesAtom, optic => optic.find(file => file.path === path))),
+)
+
 
 /**
  * Get latest [LocalFile] by `mediaId` sorted by episode number

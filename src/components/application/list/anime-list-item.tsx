@@ -95,7 +95,7 @@ export const AnimeListItem = ((props: { mediaId: number, showLibraryBadge?: bool
                         <MainActionButton media={media}/>
 
                         {(status && props.showLibraryBadge === undefined) &&
-                            <p className={"text-center"}>{_.capitalize(status ?? "")}</p>}
+                            <p className={"text-center"}>{status === "CURRENT" ? "Watching" : _.capitalize(status ?? "")}</p>}
 
                     </div>
                     <div className={"flex gap-2"}>

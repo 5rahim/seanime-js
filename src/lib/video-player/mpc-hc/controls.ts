@@ -7,6 +7,7 @@ import {
     VideoPlayerRepositoryPlaybackState,
     VideoPlayerRepositoryPlaybackStatus,
 } from "@/lib/video-player/types"
+import { Nullish } from "@/types/common"
 
 const mpcApi = new MpcApi("127.0.0.1", 13579)
 
@@ -19,16 +20,19 @@ function refresh(settings: Settings) {
  * Open a video
  * -----------------------------------------------------------------------------------------------*/
 
-export async function _mpc_openVideo(path: string, settings: Settings): Promise<VideoPlayerRepositoryApiCallResult<boolean>> {
+export async function _mpc_openVideo(path: string, seek: Nullish<number>, settings: Settings): Promise<VideoPlayerRepositoryApiCallResult<boolean>> {
     refresh(settings)
 
     try {
         await mpcApi.openFile(path)
 
+        if (seek) {
+            await new Promise(done => setTimeout(() => done(""), 500))
+            await mpcApi.seek(seek)
+        }
         if (settings.player.pauseAfterOpening) {
-            setTimeout(() => {
-                mpcApi.pause()
-            }, 500)
+            await new Promise(done => setTimeout(() => done(""), 500))
+            await mpcApi.pause()
         }
 
         return { data: true }
@@ -53,6 +57,7 @@ export async function _mpc_getPlaybackStatus(settings: Settings): Promise<VideoP
                 percentageComplete: Number((playbackStatus.position / playbackStatus.duration).toFixed(2)),
                 state: playbackStatus.state.toLowerCase() as VideoPlayerRepositoryPlaybackState,
                 fileName: playbackStatus.fileName,
+                duration: playbackStatus.duration,
             },
         }
     } catch (e) {
