@@ -8,6 +8,7 @@ import { NextAiringEpisode } from "@/app/(main)/(library)/view/[id]/_components/
 import { DownloadPageButton } from "@/app/(main)/(library)/view/[id]/_components/meta/download-page-button"
 import { useLibraryEntryAtomByMediaId } from "@/atoms/library/library-entry.atoms"
 import { useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist/entries.atoms"
+import { AnilistMediaEntryModal } from "@/components/application/list/anilist-media-entry-modal"
 
 interface MetaSectionProps {
     children?: React.ReactNode
@@ -43,9 +44,12 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
                             </p>
                         )}
 
-                    {collectionEntryAtom &&
-                        <ProgressBadge collectionEntryAtom={collectionEntryAtom} episodes={detailedMedia.episodes}/>
-                    }
+                    <div className={"flex gap-4 items-center"}>
+                        {collectionEntryAtom &&
+                            <ProgressBadge collectionEntryAtom={collectionEntryAtom} episodes={detailedMedia.episodes}/>
+                        }
+                        <AnilistMediaEntryModal media={detailedMedia}/>
+                    </div>
 
                     <p className={"max-h-24 overflow-y-auto"}>{detailedMedia.description?.replace(/(<([^>]+)>)/ig, "")}</p>
                 </div>

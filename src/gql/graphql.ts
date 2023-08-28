@@ -4559,7 +4559,7 @@ export type MediaFragment = {
     endDate?: { year?: number | null, month?: number | null, day?: number | null } | null,
     mediaListEntry?: { id: number, status?: MediaListStatus | null } | null,
     nextAiringEpisode?: { airingAt: number, timeUntilAiring: number, episode: number } | null,
-    studios?: { edges?: Array<{ isMain: boolean, node?: { id: number, name: string } | null } | null> | null } | null,
+    studios?: { nodes?: Array<{ name: string } | null> | null } | null,
     relations?: {
         edges?: Array<{
             relationType?: MediaRelation | null,
@@ -5003,9 +5003,7 @@ export type AnimeByIdQuery = {
         endDate?: { year?: number | null, month?: number | null, day?: number | null } | null,
         mediaListEntry?: { id: number, status?: MediaListStatus | null } | null,
         nextAiringEpisode?: { airingAt: number, timeUntilAiring: number, episode: number } | null,
-        studios?: {
-            edges?: Array<{ isMain: boolean, node?: { id: number, name: string } | null } | null> | null
-        } | null,
+        studios?: { nodes?: Array<{ name: string } | null> | null } | null,
         relations?: {
             edges?: Array<{
                 relationType?: MediaRelation | null,
@@ -5331,23 +5329,10 @@ export const MediaFragmentDoc = {
                     "kind": "SelectionSet",
                     "selections": [{
                         "kind": "Field",
-                        "name": { "kind": "Name", "value": "edges" },
+                        "name": { "kind": "Name", "value": "nodes" },
                         "selectionSet": {
                             "kind": "SelectionSet",
-                            "selections": [{
-                                "kind": "Field",
-                                "name": { "kind": "Name", "value": "isMain" },
-                            }, {
-                                "kind": "Field",
-                                "name": { "kind": "Name", "value": "node" },
-                                "selectionSet": {
-                                    "kind": "SelectionSet",
-                                    "selections": [{
-                                        "kind": "Field",
-                                        "name": { "kind": "Name", "value": "id" },
-                                    }, { "kind": "Field", "name": { "kind": "Name", "value": "name" } }],
-                                },
-                            }],
+                            "selections": [{ "kind": "Field", "name": { "kind": "Name", "value": "name" } }],
                         },
                     }],
                 },
@@ -6857,23 +6842,10 @@ export const AnimeByIdDocument = {
                     "kind": "SelectionSet",
                     "selections": [{
                         "kind": "Field",
-                        "name": { "kind": "Name", "value": "edges" },
+                        "name": { "kind": "Name", "value": "nodes" },
                         "selectionSet": {
                             "kind": "SelectionSet",
-                            "selections": [{
-                                "kind": "Field",
-                                "name": { "kind": "Name", "value": "isMain" },
-                            }, {
-                                "kind": "Field",
-                                "name": { "kind": "Name", "value": "node" },
-                                "selectionSet": {
-                                    "kind": "SelectionSet",
-                                    "selections": [{
-                                        "kind": "Field",
-                                        "name": { "kind": "Name", "value": "id" },
-                                    }, { "kind": "Field", "name": { "kind": "Name", "value": "name" } }],
-                                },
-                            }],
+                            "selections": [{ "kind": "Field", "name": { "kind": "Name", "value": "name" } }],
                         },
                     }],
                 },

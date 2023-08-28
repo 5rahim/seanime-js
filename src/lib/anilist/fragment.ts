@@ -57,12 +57,8 @@ export const _mediaFragment = gql`
             episode
         }
         studios(isMain: true) {
-            edges {
-                isMain
-                node {
-                    id
-                    name
-                }
+            nodes {
+                name
             }
         }
         relations {

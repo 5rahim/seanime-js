@@ -9,6 +9,7 @@ import { AnilistShortMedia } from "@/lib/anilist/fragment"
 import { updateEntry } from "@/lib/anilist/actions"
 import { aniListTokenAtom } from "@/atoms/auth"
 import { allUserMediaAtoms } from "@/atoms/anilist/media.atoms"
+import toast from "react-hot-toast"
 
 // Typescript's being annoying, so I had to extract the type myself
 export type AnilistCollectionEntry = {
@@ -61,7 +62,11 @@ export const useAnilistCollectionEntryByMediaId = (mediaId: number) => {
 
 export const updateAnilistEntryAtom = atom(null,
     async (get, set, payload: UpdateEntryMutationVariables) => {
-        await updateEntry(payload, get(aniListTokenAtom))
+        const success = await updateEntry(payload, get(aniListTokenAtom))
+
+        if (success) toast.success("Entry updated")
+        else toast.error("Could not update entry")
+        return success
     },
 )
 export const watchedAnilistEntryAtom = atom(null,
@@ -73,11 +78,15 @@ export const watchedAnilistEntryAtom = atom(null,
         if (mediaAtom) {
             const media = get(mediaAtom)
             const maxEp = media.nextAiringEpisode?.episode || media.episodes!
-            await updateEntry({
+            const success = await updateEntry({
                 mediaId: media.id,
                 progress: payload.episode <= maxEp ? payload.episode : maxEp,
                 status: payload.episode === 1 && media.episodes !== 1 ? "CURRENT" : undefined,
             }, get(aniListTokenAtom))
+
+            if (success) toast.success("Entry updated")
+            else toast.error("Could not update entry")
+            return success
         }
     },
 )
@@ -90,8 +99,20 @@ export function useWatchedAnilistEntry() {
             mediaId: number,
             episode: number,
         }) => {
-            await watchedEntry(payload)
-            await refetchCollection()
+            const success = await watchedEntry(payload)
+            if (success) await refetchCollection()
+        }, []),
+    }
+}
+
+
+export function useUpdateAnilistEntry() {
+    const refetchCollection = useRefreshAnilistCollection()
+    const updateEntry = useSetAtom(updateAnilistEntryAtom)
+    return {
+        updateEntry: useCallback(async (payload: UpdateEntryMutationVariables) => {
+            const success = await updateEntry(payload)
+            if (success) await refetchCollection()
         }, []),
     }
 }

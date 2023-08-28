@@ -21,6 +21,7 @@ import { useSelectAtom } from "@/atoms/helpers"
 import { useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist/entries.atoms"
 import { useAnilistUserMedia } from "@/atoms/anilist/media.atoms"
 import { IoLibrarySharp } from "@react-icons/all-files/io5/IoLibrarySharp"
+import { AnilistMediaEntryModal } from "@/components/application/list/anilist-media-entry-modal"
 
 export const AnimeListItem = ((props: { mediaId: number, showLibraryBadge?: boolean }) => {
 
@@ -97,8 +98,9 @@ export const AnimeListItem = ((props: { mediaId: number, showLibraryBadge?: bool
                             <p className={"text-center"}>{_.capitalize(status ?? "")}</p>}
 
                     </div>
-                    <div className={"space-y-2"}>
+                    <div className={"flex gap-2"}>
                         <LockFilesButton media={media}/>
+                        <AnilistMediaEntryModal media={media}/>
                     </div>
                 </div>
             </div>

@@ -16,7 +16,7 @@ import {
     DateRangePicker,
     DateRangePickerProps,
     TimeInput,
-    TimeInputProps
+    TimeInputProps,
 } from "../date-time"
 import { Select, SelectProps } from "../select"
 import { NumberInput, NumberInputProps } from "../number-input"
@@ -196,10 +196,10 @@ const DatePickerField = React.memo(withControlledInput(forwardRef<HTMLDivElement
         granularity={"day"}
         {...props}
         value={value ? toCalendarDate(value) : undefined}
+        defaultValue={defaultValue ? toCalendarDate(defaultValue) : undefined}
         onChange={value => {
             controller.field.onChange(value?.toDate(getLocalTimeZone()))
         }}
-        defaultValue={defaultValue ? toCalendarDate(defaultValue) : undefined}
         ref={ref}
     />
 })))
