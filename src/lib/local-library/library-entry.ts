@@ -11,10 +11,16 @@ import {
     UpdateEntryDocument,
 } from "@/gql/graphql"
 import fs from "fs"
-import { findMediaEdge, valueContainsNC, valueContainsSeason, valueContainsSpecials } from "@/lib/anilist/utils"
-import { getLocalFileParsedEpisode, getLocalFileParsedSeason } from "@/lib/local-library/utils"
+import { findMediaEdge } from "@/lib/anilist/utils"
+import {
+    getLocalFileParsedEpisode,
+    getLocalFileParsedSeason,
+    valueContainsNC,
+    valueContainsSeason,
+    valueContainsSpecials,
+} from "@/lib/local-library/utils"
 import { ScanLogging } from "@/lib/local-library/logs"
-import { resolveSeason } from "@/lib/anilist/actions"
+import { normalizeMediaEpisode } from "@/lib/anilist/actions"
 
 export type ProspectiveLibraryEntry = {
     media: AnilistShowcaseMedia
@@ -158,7 +164,7 @@ export const inspectProspectiveLibraryEntry = async (props: {
                     ) : undefined
 
                     // value bigger than episode count
-                    const result = await resolveSeason({
+                    const result = await normalizeMediaEpisode({
                         media: prequel || fetchedMedia,
                         episode: episode,
                         increment: null,

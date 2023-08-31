@@ -1,4 +1,4 @@
-import { useSelectAtom } from "@/atoms/helpers"
+import { useStableSelectAtom } from "@/atoms/helpers"
 import { useLibraryEntryAtomByMediaId } from "@/atoms/library/library-entry.atoms"
 import { getLastMainLocalFileByMediaIdAtom } from "@/atoms/library/local-file.atoms"
 import { useMemo } from "react"
@@ -11,10 +11,10 @@ import { useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist/entries.
 export function useDownloadPageData(media: AnilistDetailedMedia) {
     const { settings } = useSettings()
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(media.id)
-    const collectionEntryProgress = !!collectionEntryAtom ? useSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress) : undefined
-    const collectionEntryStatus = !!collectionEntryAtom ? useSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.status) : undefined
+    const collectionEntryProgress = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress)
+    const collectionEntryStatus = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.status)
     const entryAtom = useLibraryEntryAtomByMediaId(media.id)
-    const sharedPath = !!entryAtom ? useSelectAtom(entryAtom, entry => entry.sharedPath) : (settings.library.localDirectory + "\\" + media.title?.userPreferred)
+    const sharedPath = useStableSelectAtom(entryAtom, entry => entry.sharedPath) || (settings.library.localDirectory + "\\" + media.title?.userPreferred)
 
     const getLastFile = useSetAtom(getLastMainLocalFileByMediaIdAtom)
     const lastFile = getLastFile(media.id)

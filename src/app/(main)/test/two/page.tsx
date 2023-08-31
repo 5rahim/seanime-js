@@ -9,7 +9,7 @@ import {
 import { LocalFile } from "@/lib/local-library/local-file"
 import { PrimitiveAtom } from "jotai"
 import { useEffect } from "react"
-import { useFocusSetAtom, useSelectAtom } from "@/atoms/helpers"
+import { useFocusSetAtom, useSelectAtom, useStableSelectAtom } from "@/atoms/helpers"
 
 export default function Page() {
 
@@ -83,7 +83,7 @@ const ActionSection = ({ fileAtom }: { fileAtom: PrimitiveAtom<LocalFile> }) => 
 
 const LockStatus = ({ path }: { path: string }) => {
     const fileAtom = useLocalFileAtomByPath(path)
-    const locked = fileAtom ? useSelectAtom(fileAtom, file => file.locked) : false
+    const locked = useStableSelectAtom(fileAtom, file => file.locked) || false
     useEffect(() => {
         console.log("locked status re-rendered")
     })
@@ -96,7 +96,7 @@ const LockStatus = ({ path }: { path: string }) => {
 
 const IgnoredStatus = ({ path }: { path: string }) => {
     const fileAtom = useLocalFileAtomByPath(path)
-    const ignored = fileAtom ? useSelectAtom(fileAtom, file => file.ignored) : false
+    const ignored = useStableSelectAtom(fileAtom, file => file.ignored) || false
 
     useEffect(() => {
         console.log("ignored status re-rendered")

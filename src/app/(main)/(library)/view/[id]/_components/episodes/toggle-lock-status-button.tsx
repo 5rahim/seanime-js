@@ -1,4 +1,4 @@
-import { PrimitiveAtom } from "jotai"
+import { Atom } from "jotai"
 import { LibraryEntry } from "@/atoms/library/library-entry.atoms"
 import { useSelectAtom } from "@/atoms/helpers"
 import { useSetLocalFiles } from "@/atoms/library/local-file.atoms"
@@ -8,7 +8,7 @@ import { VscVerified } from "@react-icons/all-files/vsc/VscVerified"
 import { BiLockOpenAlt } from "@react-icons/all-files/bi/BiLockOpenAlt"
 import React, { startTransition } from "react"
 
-export const ToggleLockStatusButton = (props: { entryAtom: PrimitiveAtom<LibraryEntry> }) => {
+export const ToggleLockStatusButton = (props: { entryAtom: Atom<LibraryEntry> }) => {
 
     const files = useSelectAtom(props.entryAtom, entry => entry.files)
     const mediaId = useSelectAtom(props.entryAtom, entry => entry.media.id)

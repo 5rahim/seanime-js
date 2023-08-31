@@ -38,7 +38,7 @@ export default async function Page({ params }: { params: { id: string } }) {
             </div>
             <div className={"-mt-[8rem] relative z-10 max-w-full px-10 grid grid-cols-1 2xl:grid-cols-2 gap-8 "}>
                 <div
-                    className={"-mt-[18rem] h-[fit-content] p-8 rounded-xl bg-gray-900 bg-opacity-80 drop-shadow-md 2xl:sticky top-[5rem]"}>
+                    className={"-mt-[18rem] h-[fit-content] 2xl:sticky top-[5rem]"}>
                     {/*<div className={"-mt-[18rem] p-8 rounded-xl backdrop-blur-2xl bg-gray-900 bg-opacity-50 backdrop-opacity-80 drop-shadow-md"}>*/}
                     <MetaSection detailedMedia={media}/>
                 </div>

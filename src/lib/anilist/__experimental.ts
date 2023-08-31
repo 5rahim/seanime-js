@@ -1,8 +1,12 @@
 "use server"
 
-/* -------------------------------------------------------------------------------------------------
- * Testing code from Miru
- * -----------------------------------------------------------------------------------------------*/
+import { MediaSort, MediaStatus } from "@/gql/graphql"
+import { Dirent } from "fs"
+import fs from "fs/promises"
+import { logger } from "@/lib/helpers/debug"
+import rakun from "@/lib/rakun/rakun"
+import _ from "lodash"
+import { searchWithAnilist } from "@/lib/anilist/actions"
 
 async function PromiseBatch(task: any, items: any, batchSize: number) {
     let position = 0
@@ -15,78 +19,79 @@ async function PromiseBatch(task: any, items: any, batchSize: number) {
     return results
 }
 
-// export async function alSearch ({ name, ...method }: {name: string, method: string, perPage: number, status: MediaStatus[], sort: MediaSort}) {
-//     const res = await useAniListAsyncQuery(SearchAnimeShortMediaDocument, { search: name, ...method })
-//     const media = res.Page?.media?.filter(Boolean).map(media => getDistanceFromTitle(media, [name]))
-//     if (!media?.length) return res
-//     const lowest = media.reduce((prev, curr) => prev.distance <= curr.distance ? prev : curr)
-//     return { Page: { media: [lowest] } }
-// }
-//
-// const relations: any = {}
-//
-// // resolve anime name based on file name and store it
-// const postfix: { [key: number]: string } = {
-//     1: 'st',
-//     2: 'nd',
-//     3: 'rd'
-// }
-//
-//
-// async function resolveTitle (name: string) {
-//     const method = { name, method: 'SearchName', perPage: 10, status: ['RELEASING', 'FINISHED'], sort: 'SEARCH_MATCH' } as {name: string, method: string, perPage: number, status: MediaStatus[], sort: MediaSort}
-//
-//     // inefficient but readable
-//
-//     let media = null
-//     try {
-//         // change S2 into Season 2 or 2nd Season
-//         const match = method.name.match(/ S(\d+)/)
-//         const oldname = method.name
-//         if (match) {
-//             if (Number(match[1]) === 1) { // if this is S1, remove the " S1" or " S01"
-//                 method.name = method.name.replace(/ S(\d+)/, '')
-//                 media = (await alSearch(method))?.Page?.media?.[0]
-//             } else {
-//                 method.name = method.name.replace(/ S(\d+)/, ` ${Number(match[1])}${postfix[Number(match[1])] || 'th'} Season`)
-//                 media = (await alSearch(method))?.Page?.media?.[0]
-//                 if (!media) {
-//                     method.name = oldname.replace(/ S(\d+)/, ` Season ${Number(match[1])}`)
-//                     media = (await alSearch(method))?.Page?.media?.[0]
-//                 }
-//             }
-//         } else {
-//             media = (await alSearch(method))?.Page?.media?.[0]
-//         }
-//
-//         // remove - :
-//         if (!media) {
-//             const match = method.name.match(/[-:]/g)
-//             if (match) {
-//                 method.name = method.name.replace(/[-:]/g, '')
-//                 media = (await alSearch(method))?.Page?.media?.[0]
-//             }
-//         }
-//         // remove (TV)
-//         if (!media) {
-//             const match = method.name.match(/\(TV\)/)
-//             if (match) {
-//                 method.name = method.name.replace('(TV)', '')
-//                 media = (await alSearch(method))?.Page?.media?.[0]
-//             }
-//         }
-//         // remove 2020
-//         if (!media) {
-//             const match = method.name.match(/ (19[5-9]\d|20\d{2})/)
-//             if (match) {
-//                 method.name = method.name.replace(/ (19[5-9]\d|20\d{2})/, '')
-//                 media = (await alSearch(method))?.Page?.media?.[0]
-//             }
-//         }
-//     } catch (e) { }
-//
-//     if (media) relations[name] = media
-// }
+// resolve anime name based on file name and store it
+const postfix: { [key: number]: string } = {
+    1: "st",
+    2: "nd",
+    3: "rd",
+}
+
+/**
+ * From Miru, unused
+ * @deprecated
+ * @param name
+ */
+export async function resolveTitle(name: string) {
+    const method = {
+        name,
+        method: "SearchName",
+        perPage: 10,
+        status: ["RELEASING", "FINISHED"],
+        sort: "SEARCH_MATCH",
+    } as { name: string, method: string, perPage: number, status: MediaStatus[], sort: MediaSort }
+
+    let media = null
+    try {
+        // change S2 into Season 2 or 2nd Season
+        const match = method.name.match(/ S(\d+)/)
+        const oldname = method.name
+        if (match) {
+            if (Number(match[1]) === 1) { // if this is S1, remove the " S1" or " S01"
+                method.name = method.name.replace(/ S(\d+)/, "")
+                media = (await searchWithAnilist(method))?.Page?.media?.[0]
+            } else {
+                method.name = method.name.replace(/ S(\d+)/, ` ${Number(match[1])}${postfix[Number(match[1])] || "th"} Season`)
+                media = (await searchWithAnilist(method))?.Page?.media?.[0]
+                if (!media) {
+                    method.name = oldname.replace(/ S(\d+)/, ` Season ${Number(match[1])}`)
+                    media = (await searchWithAnilist(method))?.Page?.media?.[0]
+                }
+            }
+        } else {
+            media = (await searchWithAnilist(method))?.Page?.media?.[0]
+        }
+
+        // remove - :
+        if (!media) {
+            const match = method.name.match(/[-:]/g)
+            if (match) {
+                method.name = method.name.replace(/[-:]/g, "")
+                media = (await searchWithAnilist(method))?.Page?.media?.[0]
+            }
+        }
+        // remove (TV)
+        if (!media) {
+            const match = method.name.match(/\(TV\)/)
+            if (match) {
+                method.name = method.name.replace("(TV)", "")
+                media = (await searchWithAnilist(method))?.Page?.media?.[0]
+            }
+        }
+        // remove 2020
+        if (!media) {
+            const match = method.name.match(/ (19[5-9]\d|20\d{2})/)
+            if (match) {
+                method.name = method.name.replace(/ (19[5-9]\d|20\d{2})/, "")
+                media = (await searchWithAnilist(method))?.Page?.media?.[0]
+            }
+        }
+    } catch (e) {
+    }
+
+    return media
+
+}
+
 //
 //
 // export async function resolveFileMedia (fileName: any) {
@@ -127,24 +132,43 @@ async function PromiseBatch(task: any, items: any, batchSize: number) {
 //     return fileMedias
 // }
 //
-// function getDistanceFromTitle(media: AnilistShowcaseMedia, values: string[]) {
-//     if (media && media.title) {
-//
-//         const titles = Object.values(media.title).filter(Boolean).flatMap(title => values.map(unit => lavenshtein(title!.toLowerCase(), unit!.toLowerCase())))
-//
-//         const synonymsWithSeason = media.synonyms?.filter(Boolean)
-//             .filter(valueContainsSeason)
-//             .flatMap(title => values.map(unit => lavenshtein(title.toLowerCase(), unit.toLowerCase()))) // If synonym has "season", remove padding
-//
-//         const distances = [...(synonymsWithSeason || []), ...titles]
-//         const min = distances.length > 0 ? distances.reduce((prev, curr) => prev < curr ? prev : curr) : 999999999999999
-//         return {
-//             media,
-//             distance: min,
-//         } // Return the minimum distance
-//     }
-//     return {
-//         media: undefined,
-//         distance: 99999,
-//     }
-// }
+
+export async function getAllFileNames(
+    directoryPath: string,
+    stop: boolean = false,
+) {
+    try {
+        let fileNames = new Set<string>()
+        let titles = new Set<string>()
+        const items: Dirent[] = await fs.readdir(directoryPath, { withFileTypes: true })
+
+        logger("repository/getAllFileNames").info("Getting all file fileNames")
+        for (const item of items) {
+            if (item.name.match(/^(.*\.mkv|.*\.mp4|[^.]+)$/)) {
+
+                fileNames.add(item.name.replace(/(.mkv|.mp4)/, ""))
+                // const itemPath = path.join(directoryPath, item.name)
+                // const stats = await fs.stat(itemPath)
+                // if(stats.isDirectory() && !stop) {
+                //     const res = await getAllFileNames(itemPath, true)
+                //     res?.fileNames?.map(n => {
+                //         titles.add(rakun.parse(n)?.name?.trim() ?? undefined)
+                //     })
+                // }
+
+            }
+        }
+        fileNames.add("[Judas] Jigokuraku (Hell's Paradise) - S01E13 [1080p][HEVC x265 10bit][Multi-Subs] (Weekly)")
+        for (const name of fileNames) {
+            titles.add(rakun.parse(name)?.name?.trim() ?? undefined)
+        }
+        return {
+            fileNames: [...fileNames],
+            titles: _.orderBy([...titles], [n => n, n => n.length], ["asc", "asc"]),
+            // titles: [].reduceRight((prev, curr) => prev.some(n => n.toLowerCase().includes(curr)) ? prev.filter(n => n !== prev.find(n => n.toLowerCase().includes(curr))) : prev, _.orderBy([...titles], [n => n, n => n.length], ["asc", "asc"]))
+        }
+    } catch (e) {
+        logger("repository/getAllFileNames").error("Failed")
+        return undefined
+    }
+}

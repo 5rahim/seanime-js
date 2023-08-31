@@ -69,6 +69,7 @@ const _Accordion = (props: AccordionProps) => {
 interface AccordionItemProps extends React.ComponentPropsWithoutRef<"div">,
     Omit<ComponentWithAnatomy<typeof AccordionAnatomy>, "containerClassName"> {
     title: string,
+    defaultOpen?: boolean
 }
 
 export const AccordionItem: React.FC<AccordionItemProps> = (
@@ -79,11 +80,12 @@ export const AccordionItem: React.FC<AccordionItemProps> = (
         panelClassName,
         itemClassName,
         className,
+        defaultOpen,
         ...rest
     }) => {
 
     return (
-        <Disclosure>
+        <Disclosure defaultOpen={defaultOpen}>
             {({ open }) => (
                 <div className={cn(AccordionAnatomy.item(), itemClassName, className)} {...rest}>
                     <Disclosure.Button className={cn(AccordionAnatomy.trigger(), triggerClassName)}>

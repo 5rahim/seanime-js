@@ -3,7 +3,7 @@ import { useMemo } from "react"
 import { logger } from "@/lib/helpers/debug"
 import { splitAtom } from "jotai/utils"
 import { localFilesAtom } from "@/atoms/library/local-file.atoms"
-import { atom, PrimitiveAtom } from "jotai"
+import { Atom, atom } from "jotai"
 import { AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import { LocalFile } from "@/lib/local-library/local-file"
 import { useSelectAtom } from "@/atoms/helpers"
@@ -56,6 +56,22 @@ const sortedLibraryEntriesAtom = atom(get => {
     ], ["desc", "desc", "desc", "asc"])
 })
 
+export const currentlyWatching_libraryEntryAtoms = splitAtom(atom(get => {
+        return get(libraryEntriesAtom).filter(n => n.collectionEntry?.status === "CURRENT")
+    },
+), entry => entry.id)
+
+
+export const completed_libraryEntryAtoms = splitAtom(atom(get => {
+        return get(sortedLibraryEntriesAtom).filter(n => n.collectionEntry?.status === "COMPLETED")
+    },
+), entry => entry.id)
+
+export const rest_libraryEntryAtoms = splitAtom(atom(get => {
+        return get(sortedLibraryEntriesAtom).filter(n => n.collectionEntry?.status !== "CURRENT" && n.collectionEntry?.status !== "COMPLETED")
+    },
+), entry => entry.id)
+
 export const libraryEntryAtoms = splitAtom(sortedLibraryEntriesAtom, entry => entry.id)
 
 /**
@@ -78,10 +94,10 @@ export const getLibraryEntryAtomsByMediaIdAtom = atom(null,
  * const entry = useAtomValue(entryAtom)
  */
 export const useLibraryEntryAtomByMediaId = (mediaId: number) => {
-    // Refresh atom when its file count changes
-    const fileCount = useSelectAtom(localFilesAtom, files => files.filter(file => file.mediaId === mediaId).filter(Boolean).map(file => file.path))
+    // Refresh atom when its file count changes TODO Replace with better method
+    const fileCount = useSelectAtom(localFilesAtom, files => files.filter(file => file.mediaId === mediaId).filter(Boolean).map(file => file.path).length)
     const [, get] = useAtom(getLibraryEntryAtomsByMediaIdAtom)
-    return useMemo(() => get(mediaId), [fileCount]) as PrimitiveAtom<LibraryEntry> | undefined
+    return useMemo(() => get(mediaId), [fileCount]) as Atom<LibraryEntry> | undefined
 }
 
 /**
@@ -91,5 +107,5 @@ export const useLibraryEntryAtoms = () => {
     // Refresh entry atom list when number of entries changes
     const entryCount = useSelectAtom(libraryEntriesAtom, entries => entries.flatMap(entry => entry.id))
     const value = useAtomValue(libraryEntryAtoms)
-    return useMemo(() => value, [entryCount]) as Array<PrimitiveAtom<LibraryEntry>>
+    return useMemo(() => value, [entryCount]) as Array<Atom<LibraryEntry>>
 }

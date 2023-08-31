@@ -69,6 +69,48 @@ export const _mediaFragment = gql`
                 }
             }
         }
+        meanScore
+        rankings {
+            context
+            type
+            rank
+            year
+            format
+            allTime
+            season
+        }
+        genres
+        studios(isMain: true) {
+            edges {
+                id
+                node {
+                    name
+                    isAnimationStudio
+                }
+            }
+        }
+        recommendations(page: 1, perPage: 8, sort: RATING_DESC) {
+            edges {
+                node {
+                    mediaRecommendation {
+                        id
+                        coverImage {
+                            extraLarge
+                            large
+                            medium
+                            color
+                        }
+                        bannerImage
+                        title {
+                            romaji
+                            english
+                            native
+                            userPreferred
+                        }
+                    }
+                }
+            }
+        }
     }
 `
 

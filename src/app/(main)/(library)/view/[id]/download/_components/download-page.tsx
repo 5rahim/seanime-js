@@ -24,7 +24,7 @@ import { useMount, useUpdateEffect } from "react-use"
 import { Drawer } from "@/components/ui/modal"
 import { useDisclosure } from "@/hooks/use-disclosure"
 
-import { resolveSeason } from "@/lib/anilist/actions"
+import { normalizeMediaEpisode } from "@/lib/anilist/actions"
 
 
 interface DownloadPageProps {
@@ -72,15 +72,13 @@ export function DownloadPage(props: DownloadPageProps) {
 
     const drawer = useDisclosure(false)
 
-    // const sharedPath = useMemo(() => {
-    //     return !!entryAtom ? useSelectAtom(entryAtom, entry => entry.sharedPath) : (
-    //         settings.library.localDirectory + "\\" + props.media.title?.userPreferred
-    //     )
-    // }, [entryAtom])
-
     useMount(async () => {
         setSelectedTorrents([])
-        const object = await resolveSeason({ media: props.media, force: true })
+        const object = await normalizeMediaEpisode({
+            media: props.media,
+            episode: downloadInfo.episodeNumbers[0],
+            force: true,
+        })
         setEpisodeOffset(object?.offset ?? 0)
         await handleFindNyaaTorrents(object?.offset ?? 0)
     })
@@ -139,7 +137,7 @@ export function DownloadPage(props: DownloadPageProps) {
                 className={cn(
                     "text-[.95rem] truncate text-ellipsis cursor-pointer",
                     {
-                        "text-brand-300": selectedTorrents.some(torrent => torrent.id === info.row.original.id),
+                        "text-brand-300 font-semibold": selectedTorrents.some(torrent => torrent.id === info.row.original.id),
                     },
                 )}
                 onClick={() => setSelectedTorrents(draft => {
@@ -225,7 +223,7 @@ export function DownloadPage(props: DownloadPageProps) {
 
                 <div>
                     Episode to
-                    download: {downloadInfo.episodeNumbers.slice(0, 12).join(", ")}{downloadInfo.episodeNumbers.length > 12 ? ", ..." : " ."}
+                    download: {downloadInfo.episodeNumbers.slice(0, 12).join(", ")}{downloadInfo.episodeNumbers.length > 12 ? ", ..." : "."}
                 </div>
 
                 <div className={"space-y-2"}>

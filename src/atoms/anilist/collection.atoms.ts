@@ -12,6 +12,7 @@ import { useAtom } from "jotai/react"
 import { useMemo } from "react"
 
 import { allUserMediaAtom } from "@/atoms/anilist/media.atoms"
+import { shortMediaToShowcaseMedia } from "@/lib/anilist/utils"
 
 /* -------------------------------------------------------------------------------------------------
  * Raw collection
@@ -39,7 +40,7 @@ export const getAnilistCollectionAtom = atom(null, async (get, set) => {
                 // Get media from user's watchlist as [AnilistShortMedia]
                 const userMedia = collectionEntries.filter(Boolean).map(entry => entry.media)
                 // Normalize [AnilistShortMedia] to [AnilistShowcaseMedia]
-                const watchListMedia = userMedia.map(media => _.omit(media, "streamingEpisodes", "relations", "studio", "description", "format", "source", "isAdult", "genres", "trailer", "countryOfOrigin", "studios")) ?? []
+                const watchListMedia = userMedia.filter(Boolean).map(media => shortMediaToShowcaseMedia(media)) ?? []
                 // Get related [AnilistShowcaseMedia]
                 const relatedMedia = userMedia
                     .filter(Boolean)
@@ -58,6 +59,7 @@ export const getAnilistCollectionAtom = atom(null, async (get, set) => {
             }
             toast.success("AniList is up to date")
         } else {
+            toast.error("Unauthenticated")
             // set(anilistCollectionAtom, undefined)
         }
     } catch (e) {

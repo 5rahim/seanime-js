@@ -1,4 +1,4 @@
-import { Atom, PrimitiveAtom } from "jotai"
+import { atom, Atom, PrimitiveAtom } from "jotai"
 import { useAtomValue, useSetAtom } from "jotai/react"
 import { focusAtom } from "jotai-optics"
 import { useCallback } from "react"
@@ -15,6 +15,30 @@ export function useSelectAtom<T, R>(anAtom: PrimitiveAtom<T> | Atom<T>, keyFn: (
             deepEquals,
         ),
     )
+}
+
+const _dummy = atom(null)
+
+/**
+ * Select from an atom that might be undefined.
+ * Ensures that the condition that determines the callback's definition remains stable across renders
+ * @param anAtom
+ * @param keyFn
+ */
+export function useStableSelectAtom<T, R>(anAtom: PrimitiveAtom<T> | Atom<T> | undefined, keyFn: (v: T) => R | undefined) {
+    return (anAtom ? useAtomValue(
+        selectAtom(
+            anAtom,
+            useCallback(keyFn, []),
+            deepEquals,
+        ),
+    ) : useAtomValue(
+        selectAtom(
+            _dummy,
+            useCallback(() => undefined, []),
+            deepEquals,
+        ),
+    )) as R | undefined
 }
 
 export const useFocusSetAtom = <T>(anAtom: PrimitiveAtom<T>, prop: keyof T) => {

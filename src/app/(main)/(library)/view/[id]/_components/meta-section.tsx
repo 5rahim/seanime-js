@@ -9,6 +9,14 @@ import { DownloadPageButton } from "@/app/(main)/(library)/view/[id]/_components
 import { useLibraryEntryAtomByMediaId } from "@/atoms/library/library-entry.atoms"
 import { useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist/entries.atoms"
 import { AnilistMediaEntryModal } from "@/components/application/list/anilist-media-entry-modal"
+import { Badge } from "@/components/ui/badge"
+import { Accordion } from "@/components/ui/accordion"
+import Image from "next/image"
+import Link from "next/link"
+import { BiHeart } from "@react-icons/all-files/bi/BiHeart"
+import { AiFillStar } from "@react-icons/all-files/ai/AiFillStar"
+import { AiOutlineStar } from "@react-icons/all-files/ai/AiOutlineStar"
+import { AiOutlineHeart } from "@react-icons/all-files/ai/AiOutlineHeart"
 
 interface MetaSectionProps {
     children?: React.ReactNode
@@ -22,12 +30,30 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(detailedMedia.id)
     const entryAtom = useLibraryEntryAtomByMediaId(detailedMedia.id)
 
-    return (
-        <>
-            <div className={"space-y-8"}>
-                <div className={"space-y-2"}>
-                    <h1 className={"[text-shadow:_0_1px_10px_rgb(0_0_0_/_20%)]"}>{detailedMedia.title?.userPreferred}</h1>
+    const relations = (detailedMedia.relations?.edges?.map(edge => edge) || [])
+        .filter(Boolean)
+        .filter(n => (n.node?.format === "TV" || n.node?.format === "OVA" || n.node?.format === "MOVIE") && (n.relationType === "PREQUEL" || n.relationType === "SEQUEL" || n.relationType === "PARENT" || n.relationType === "SIDE_STORY" || n.relationType === "ALTERNATIVE" || n.relationType === "ADAPTATION"))
 
+    const seasonMostPopular = detailedMedia.rankings?.find(r => (!!r?.season || !!r?.year) && r?.type === "POPULAR" && r.rank <= 10)
+    const allTimeHighestRated = detailedMedia.rankings?.find(r => !!r?.allTime && r?.type === "RATED" && r.rank <= 100)
+    const seasonHighestRated = detailedMedia.rankings?.find(r => (!!r?.season || !!r?.year) && r?.type === "RATED" && r.rank <= 5)
+    const allTimeMostPopular = detailedMedia.rankings?.find(r => !!r?.allTime && r?.type === "POPULAR" && r.rank <= 100)
+
+    console.log(detailedMedia.rankings)
+
+    return (
+        <div className={"space-y-8 pb-10"}>
+            <div className={"space-y-8 p-8 rounded-xl bg-gray-900 bg-opacity-80 drop-shadow-md relative"}>
+                <div className={"space-y-4"}>
+
+                    {/*TITLE*/}
+                    <div className={"space-y-2"}>
+                        <h1 className={"[text-shadow:_0_1px_10px_rgb(0_0_0_/_20%)]"}>{detailedMedia.title?.userPreferred}</h1>
+                        {detailedMedia.title?.userPreferred?.toLowerCase() !== detailedMedia.title?.english?.toLowerCase() &&
+                            <h4 className={"text-gray-400"}>{detailedMedia.title?.english}</h4>}
+                    </div>
+
+                    {/*SEASON*/}
                     {!!detailedMedia.season ? (
                             <div>
                                 <p className={"text-lg text-gray-200 flex w-full gap-1 items-center"}>
@@ -44,6 +70,7 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
                             </p>
                         )}
 
+                    {/*PROGRESS*/}
                     <div className={"flex gap-4 items-center"}>
                         {collectionEntryAtom &&
                             <ProgressBadge collectionEntryAtom={collectionEntryAtom} episodes={detailedMedia.episodes}/>
@@ -52,20 +79,160 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
                     </div>
 
                     <p className={"max-h-24 overflow-y-auto"}>{detailedMedia.description?.replace(/(<([^>]+)>)/ig, "")}</p>
+
+                    {/*STUDIO*/}
+                    {!!detailedMedia.studios?.edges?.[0] && <div>
+                        <span className={"font-bold"}>Studio </span>
+                        <Badge
+                            className={"ml-2"} size={"lg"}
+                            intent={"gray"}
+                            badgeClassName={"rounded-md"}
+                        >
+                            {detailedMedia.studios?.edges?.[0]?.node?.name}
+                        </Badge>
+                    </div>}
+
+
+                    {/*BADGES*/}
+                    <div className={"items-center flex"}>
+                        {detailedMedia.meanScore && (
+                            <Badge
+                                className={"mr-2"}
+                                size={"lg"}
+                                intent={detailedMedia.meanScore >= 70 ? detailedMedia.meanScore >= 85 ? "primary" : "success" : "warning"}
+                                leftIcon={<BiHeart/>}
+                            >{detailedMedia.meanScore / 10}</Badge>
+                        )}
+                        {detailedMedia.genres?.map(genre => {
+                            return <Badge key={genre!} className={"mr-2"} size={"lg"}>{genre}</Badge>
+                        })}
+                    </div>
+
+                    {/*AWARDS*/}
+                    {(!!allTimeHighestRated || !!seasonMostPopular) && <div className={"flex flex-wrap gap-2"}>
+                        {allTimeHighestRated && <Badge
+                            className={""} size={"lg"}
+                            intent={"gray"}
+                            leftIcon={<AiFillStar/>}
+                            iconClassName={"text-yellow-500"}
+                            badgeClassName={"rounded-md"}
+                        >
+                            #{String(allTimeHighestRated.rank)} Highest Rated of All
+                            Time {allTimeHighestRated.format !== "TV" ? `(${allTimeHighestRated.format})` : ""}
+                        </Badge>}
+                        {seasonHighestRated && <Badge
+                            className={""} size={"lg"}
+                            intent={"gray"}
+                            leftIcon={<AiOutlineStar/>}
+                            iconClassName={"text-yellow-500"}
+                            badgeClassName={"rounded-md"}
+                        >
+                            #{String(seasonHighestRated.rank)} Highest Rated
+                            of {_.capitalize(seasonHighestRated.season!)} {seasonHighestRated.year} {seasonHighestRated.format !== "TV" ? `(${seasonHighestRated.format})` : ""}
+                        </Badge>}
+                        {seasonMostPopular && <Badge
+                            className={""} size={"lg"}
+                            intent={"gray"}
+                            leftIcon={<AiOutlineHeart/>}
+                            iconClassName={"text-pink-500"}
+                            badgeClassName={"rounded-md"}
+                        >
+                            #{(String(seasonMostPopular.rank))} Most
+                            Popular
+                            of {_.capitalize(seasonMostPopular.season!)} {seasonMostPopular.year} {seasonMostPopular.format !== "TV" ? `(${seasonMostPopular.format})` : ""}
+                        </Badge>}
+                        {/*{allTimeMostPopular && <Badge*/}
+                        {/*    className={""} size={"lg"}*/}
+                        {/*    intent={"gray"}*/}
+                        {/*    leftIcon={<AiFillHeart />}*/}
+                        {/*    iconClassName={"text-pink-700"}*/}
+                        {/*    badgeClassName={"rounded-md"}*/}
+                        {/*>*/}
+                        {/*    #{allTimeMostPopular.rank} most popular of all time*/}
+                        {/*</Badge>}*/}
+                    </div>}
+
                 </div>
 
                 {/*Avoid "rendered fewer hooks than expected" error*/}
-                {!!entryAtom && <DownloadPageButton entryAtom={entryAtom} collectionEntryAtom={collectionEntryAtom}
-                                                    detailedMedia={detailedMedia}/>}
-                {!entryAtom && <DownloadPageButton entryAtom={entryAtom} collectionEntryAtom={collectionEntryAtom}
-                                                   detailedMedia={detailedMedia}/>}
+                {detailedMedia.status !== "NOT_YET_RELEASED" && (
+                    <DownloadPageButton
+                        entryAtom={entryAtom}
+                        collectionEntryAtom={collectionEntryAtom}
+                        detailedMedia={detailedMedia}
+                    />
+                )}
 
                 <NextAiringEpisode detailedMedia={detailedMedia}/>
 
-                {/*TODO: Sequels Prequels*/}
-
             </div>
-        </>
+
+            <Accordion
+                triggerClassName={"bg-gray-900 bg-opacity-80 dark:bg-gray-900 dark:bg-opacity-80 hover:bg-gray-800 dark:hover:bg-gray-800 hover:bg-opacity-100 dark:hover:bg-opacity-100"}>
+                {relations.length > 0 && (
+                    <Accordion.Item title={"Relations"} defaultOpen={true}>
+                        <div className={"grid grid-cols-4 gap-4 p-4"}>
+                            {relations.map(edge => {
+                                return <div key={edge.node?.id} className={"col-span-1"}>
+                                    <Link href={`/view/${edge.node?.id}`}>
+                                        {edge.node?.coverImage?.large && <div
+                                            className="h-64 w-full flex-none rounded-md object-cover object-center relative overflow-hidden group/anime-list-item">
+                                            <Image
+                                                src={edge.node?.coverImage.large}
+                                                alt={""}
+                                                fill
+                                                quality={80}
+                                                priority
+                                                sizes="10rem"
+                                                className="object-cover object-center group-hover/anime-list-item:scale-110 transition"
+                                            />
+                                            <div
+                                                className={"z-[5] absolute bottom-0 w-full h-[60%] bg-gradient-to-t from-black to-transparent"}
+                                            />
+                                            <Badge
+                                                className={"absolute left-2 top-2 font-semibold rounded-md text-[.95rem]"}
+                                                intent={"white-solid"}>{edge.node?.format === "MOVIE" ? "Movie" : _.capitalize(edge.relationType || "").replace("_", " ")}</Badge>
+                                            <div className={"p-2 z-[5] absolute bottom-0 w-full "}>
+                                                <p className={"font-semibold line-clamp-2 overflow-hidden"}>{edge.node?.title?.userPreferred}</p>
+                                            </div>
+                                        </div>}
+                                    </Link>
+                                </div>
+                            })}
+                        </div>
+                    </Accordion.Item>
+                )}
+                <Accordion.Item title={"Recommendations"}>
+                    <div className={"grid grid-cols-4 gap-4 p-4"}>
+                        {detailedMedia.recommendations?.edges?.map(edge => edge?.node?.mediaRecommendation).filter(Boolean).map(media => {
+                            return <div key={media.id} className={"col-span-1"}>
+                                <Link href={`/view/${media.id}`}>
+                                    {media.coverImage?.large && <div
+                                        className="h-64 w-full flex-none rounded-md object-cover object-center relative overflow-hidden group/anime-list-item">
+                                        <Image
+                                            src={media.coverImage.large}
+                                            alt={""}
+                                            fill
+                                            quality={80}
+                                            priority
+                                            sizes="10rem"
+                                            className="object-cover object-center group-hover/anime-list-item:scale-110 transition"
+                                        />
+                                        <div
+                                            className={"z-[5] absolute bottom-0 w-full h-[60%] bg-gradient-to-t from-black to-transparent"}
+                                        />
+                                        <div className={"p-2 z-[5] absolute bottom-0 w-full "}>
+                                            <p className={"font-semibold line-clamp-2 overflow-hidden"}>{media.title?.userPreferred}</p>
+                                        </div>
+                                    </div>}
+                                </Link>
+                            </div>
+                        })}
+                    </div>
+                </Accordion.Item>
+            </Accordion>
+
+        </div>
     )
 
 }

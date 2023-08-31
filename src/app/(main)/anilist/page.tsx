@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useTransition } from "react"
+import React, { startTransition, useState, useTransition } from "react"
 import { useSettings } from "@/atoms/settings"
 import { TabPanels } from "@/components/ui/tabs"
 import { cn } from "@/components/ui/core"
@@ -15,7 +15,10 @@ import {
     anilistCurrentlyWatchingListAtom,
     anilistPausedListAtom,
     anilistPlanningListAtom,
+    watchListSearchInputAtom,
 } from "@/atoms/anilist/watch-list.atoms"
+import { TextInput } from "@/components/ui/text-input"
+import { FiSearch } from "@react-icons/all-files/fi/FiSearch"
 
 const selectedIndexAtom = atom(0)
 
@@ -59,6 +62,9 @@ export default function Home() {
                     </TabPanels.Tab>
                 </TabPanels.Nav>
                 <TabPanels.Container className="pt-8 relative">
+
+                    <SearchInput/>
+
                     <LoadingOverlay className={cn("z-50 backdrop-blur-none", { "hidden": !pending })}/>
 
                     <TabPanels.Panel>
@@ -93,3 +99,20 @@ const WatchList = React.memo(({ collectionEntriesAtom }: { collectionEntriesAtom
     )
 
 })
+
+const SearchInput = () => {
+
+    const [input, setter] = useAtom(watchListSearchInputAtom)
+    const [inputValue, setInputValue] = useState(input)
+
+    return (
+        <div className={"px-4 mb-8"}>
+            <TextInput leftIcon={<FiSearch/>} value={inputValue} onChange={e => {
+                setInputValue(e.target.value)
+                startTransition(() => {
+                    setter(e.target.value)
+                })
+            }}/>
+        </div>
+    )
+}

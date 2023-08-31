@@ -150,7 +150,7 @@ export const EpisodeItemSkeleton: React.FC<EpisodeItemSkeletonProps> = (props) =
 
                 <div className={"relative overflow-hidden"}>
                     <h4 className={"font-medium"}>{title}</h4>
-                    {!!episodeTitle && <p className={"text-sm text-[--muted]"}>{episodeTitle}</p>}
+                    {!!episodeTitle && <p className={"text-sm text-[--muted] line-clamp-2"}>{episodeTitle}</p>}
                     {!!fileName && <p className={"text-sm text-gray-600 truncate text-ellipsis"}>{fileName}</p>}
                     {children && children}
                 </div>

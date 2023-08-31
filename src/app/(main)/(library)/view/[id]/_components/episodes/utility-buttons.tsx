@@ -1,4 +1,4 @@
-import { PrimitiveAtom } from "jotai"
+import { Atom } from "jotai"
 import { LibraryEntry } from "@/atoms/library/library-entry.atoms"
 import { useSettings } from "@/atoms/settings"
 import { useSelectAtom } from "@/atoms/helpers"
@@ -13,7 +13,7 @@ import { useSetLocalFiles } from "@/atoms/library/local-file.atoms"
 import { DropdownMenu } from "@/components/ui/dropdown-menu"
 import { BiDotsVerticalRounded } from "@react-icons/all-files/bi/BiDotsVerticalRounded"
 
-export const UtilityButtons = (props: { entryAtom: PrimitiveAtom<LibraryEntry> }) => {
+export const UtilityButtons = (props: { entryAtom: Atom<LibraryEntry> }) => {
 
     const { settings } = useSettings()
 

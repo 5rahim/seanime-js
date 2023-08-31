@@ -5,7 +5,8 @@ import rakun from "@/lib/rakun/rakun"
 import { logger } from "@/lib/helpers/debug"
 import { isPast } from "date-fns"
 import { Nyaa } from "@/lib/download/nyaa/api"
-import { valueContainsSeason } from "@/lib/anilist/utils"
+
+import { valueContainsSeason } from "@/lib/local-library/utils"
 
 
 export async function unstable_findNyaaTorrents(props: {

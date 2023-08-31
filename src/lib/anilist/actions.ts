@@ -1,9 +1,23 @@
 "use server"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
-import { AnimeShortMediaByIdDocument, UpdateEntryDocument, UpdateEntryMutationVariables } from "@/gql/graphql"
+import {
+    AnimeShortMediaByIdDocument,
+    DeleteEntryDocument,
+    DeleteEntryMutationVariables,
+    MediaSort,
+    MediaStatus,
+    SearchAnimeShortMediaDocument,
+    UpdateEntryDocument,
+    UpdateEntryMutationVariables,
+} from "@/gql/graphql"
 import { logger } from "@/lib/helpers/debug"
 import { AnilistShortMedia } from "@/lib/anilist/fragment"
 import { findMediaEdge } from "@/lib/anilist/utils"
+import { compareTitleVariationsToMediaTitles } from "@/lib/local-library/utils"
+
+/* -------------------------------------------------------------------------------------------------
+ * Collection Entries
+ * -----------------------------------------------------------------------------------------------*/
 
 export async function updateEntry(variables: UpdateEntryMutationVariables, token: string | null | undefined) {
     try {
@@ -20,11 +34,30 @@ export async function updateEntry(variables: UpdateEntryMutationVariables, token
     }
 }
 
+export async function deleteEntry(variables: DeleteEntryMutationVariables, token: string | null | undefined) {
+    try {
+        if (token) {
+            const mutation = await useAniListAsyncQuery(DeleteEntryDocument, {
+                ...variables,
+            }, token)
+            return true
+        }
+    } catch (e) {
+        logger("anilist/updateEntry").error("Could not delete entry")
+        logger("anilist/updateEntry").error(e)
+        return false
+    }
+}
+
+/* -------------------------------------------------------------------------------------------------
+ * Specialized actions
+ * -----------------------------------------------------------------------------------------------*/
+
 /**
  * {@link https://github.com/ThaUnknown/miru/blob/master/src/renderer/modules/anime.js#L317}
  * @param opts
  */
-export async function resolveSeason(opts: {
+export async function normalizeMediaEpisode(opts: {
     media: AnilistShortMedia | null | undefined,
     episode?: number | null,
     increment?: boolean | null,
@@ -73,5 +106,44 @@ export async function resolveSeason(opts: {
         return { media, episode, offset, increment, rootMedia }
     }
 
-    return resolveSeason({ media, episode, increment, offset, rootMedia, force })
+    return normalizeMediaEpisode({ media, episode, increment, offset, rootMedia, force })
+}
+
+export async function fetchRelatedMedia(
+    media: AnilistShortMedia,
+    queryMap: Map<number, AnilistShortMedia>,
+    token: string,
+): Promise<AnilistShortMedia[]> {
+    const relatedMedia: AnilistShortMedia[] = []
+
+    console.log(media.relations?.edges)
+
+    async function getEdges() {
+        // Find prequel if we don't increment
+        const prequel = findMediaEdge(media, "PREQUEL")?.node
+        // Find prequel if there's no prequel, and we increment, find sequel
+        const sequel = findMediaEdge(media, "SEQUEL")?.node
+        console.log(prequel, sequel)
+    }
+
+    return relatedMedia
+}
+
+/**
+ * DO NOT USE to look up parsed titles
+ * AniList sucks with search
+ */
+export async function searchWithAnilist({ name, ...method }: {
+    name: string,
+    method: string,
+    perPage: number,
+    status: MediaStatus[],
+    sort: MediaSort
+}) {
+    logger("searchWithAnilist").info("Ran")
+    const res = await useAniListAsyncQuery(SearchAnimeShortMediaDocument, { search: name, page: 1, ...method })
+    const media = res.Page?.media?.filter(Boolean).map(media => compareTitleVariationsToMediaTitles(media, [name]))
+    if (!media?.length) return res
+    const lowest = media.reduce((prev, curr) => prev.distance <= curr.distance ? prev : curr)
+    return { Page: { media: [lowest.media] } }
 }

@@ -1,3 +1,4 @@
+"use server"
 import { cache } from "react"
 import { redirect } from "next/navigation"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"

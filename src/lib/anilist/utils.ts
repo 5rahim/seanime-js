@@ -1,17 +1,19 @@
 import { AnilistDetailedMedia, AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import { MediaRelation } from "@/gql/graphql"
-import { ANIDB_RX } from "@/lib/series-scanner/regex"
+import _ from "lodash"
+import { AnilistCollectionEntry } from "@/atoms/anilist/entries.atoms"
+import { LibraryEntry } from "@/atoms/library/library-entry.atoms"
 
-type _Edge = { relationType: MediaRelation, node: AnilistShowcaseMedia | null | undefined }
+type _RelationEdge = { relationType: MediaRelation, node: AnilistShowcaseMedia | null | undefined }
 
 /**
  * @description
  * Returns an [AnilistShowcaseMedia] with the specified [MediaRelation] to the given media.
  * If the specified [MediaRelation] is "SEQUEL", it will look for OVAs if it can't find on first try.
- * /!\ Will not work with [AnilistShowcaseMedia].
+ * /!\ Will not work with [AnilistShowcaseMedia] since the `media` parameter needs to contain `relations`
  */
-export function findMediaEdge(media: AnilistShortMedia | null | undefined, relation: MediaRelation, formats = ["TV", "TV_SHORT"], skip: boolean = false): _Edge | undefined {
-    let res = (media?.relations?.edges as _Edge[])?.find(edge => {
+export function findMediaEdge(media: AnilistShortMedia | null | undefined, relation: MediaRelation, formats = ["TV", "TV_SHORT"], skip: boolean = false): _RelationEdge | undefined {
+    let res = (media?.relations?.edges as _RelationEdge[])?.find(edge => {
         if (edge?.relationType === relation) {
             return formats.includes(edge?.node?.format ?? "")
         }
@@ -24,8 +26,32 @@ export function findMediaEdge(media: AnilistShortMedia | null | undefined, relat
     return res
 }
 
+/**
+ * Normalize [AnilistShortMedia] to [AnilistShowcaseMedia]
+ * @param media
+ */
+export function shortMediaToShowcaseMedia(media: AnilistShortMedia): AnilistShowcaseMedia {
+    return _.omit(media, "streamingEpisodes", "relations", "studio", "description", "format", "source", "isAdult", "genres", "trailer", "countryOfOrigin", "studios")
+}
+
+export function filterEntriesByTitle<T extends AnilistCollectionEntry[] | LibraryEntry[]>(arr: T, input: string) {
+    if (arr.length > 0 && input.length > 0) {
+        const _input = input.toLowerCase().trim().replace(/\s+/g, " ")
+        return (arr as { media: AnilistShowcaseMedia | null | undefined }[]).filter(entry => (
+            entry.media?.title?.english?.toLowerCase().includes(_input)
+            || entry.media?.title?.userPreferred?.toLowerCase().includes(_input)
+            || entry.media?.title?.romaji?.toLowerCase().includes(_input)
+            || entry.media?.synonyms?.some(syn => syn?.toLowerCase().includes(_input))
+        )) as T
+    }
+    return arr
+}
+
+/**
+ * Create title variations from a media titles and synonyms
+ * @param media
+ */
 export function getAnilistMediaTitleList(media: AnilistShortMedia | AnilistDetailedMedia) {
-    // group and de-duplicate
     if (!media.title) return undefined
 
     const grouped = [
@@ -58,27 +84,4 @@ export function getAnilistMediaTitleList(media: AnilistShortMedia | AnilistDetai
         }
     }
     return titles
-}
-
-export const valueContainsSeason = (value: string | null | undefined) => (
-    value?.toLowerCase()?.includes("season") ||
-    value?.toLowerCase()?.match(/\d(st|nd|rd|th) [Ss].*/)
-) && !value?.toLowerCase().includes("episode") && !value?.toLowerCase().includes("第") && !value?.toLowerCase().match(/\b(ova|special|special)\b/i)
-
-export function valueContainsSpecials(value: string | null | undefined) {
-    if (!value) return false
-    return (ANIDB_RX[0].test(value) ||
-        ANIDB_RX[5].test(value) ||
-        ANIDB_RX[6].test(value)) && !(ANIDB_RX[1].test(value) ||
-        ANIDB_RX[2].test(value) ||
-        ANIDB_RX[3].test(value) ||
-        ANIDB_RX[4].test(value))
-}
-
-export function valueContainsNC(value: string | null | undefined) {
-    if (!value) return false
-    return (ANIDB_RX[1].test(value) ||
-        ANIDB_RX[2].test(value) ||
-        ANIDB_RX[3].test(value) ||
-        ANIDB_RX[4].test(value))
 }

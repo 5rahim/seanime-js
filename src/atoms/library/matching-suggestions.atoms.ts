@@ -2,7 +2,7 @@ import { LocalFile } from "@/lib/local-library/local-file"
 import { atom } from "jotai"
 import { logger } from "@/lib/helpers/debug"
 import _ from "lodash"
-import { fetchMALMatchingSuggestions } from "@/lib/mal/actions"
+import { searchWithMAL } from "@/lib/mal/actions"
 import { useAtom, useAtomValue } from "jotai/react"
 
 import { localFilesAtom } from "@/atoms/library/local-file.atoms"
@@ -57,7 +57,7 @@ const getMatchingSuggestionGroupsAtom = atom(null, async (get, set, payload: "fi
                         let animeList2: any[] = []
                         // title
                         if (_title && !fetchedSuggestionMap.has(_title)) {
-                            const res = await fetchMALMatchingSuggestions(_title)
+                            const res = await searchWithMAL(_title)
                             if (res && res.length > 0) {
                                 animeList1 = res
                                 fetchedSuggestionMap.set(_title, res)
@@ -67,7 +67,7 @@ const getMatchingSuggestionGroupsAtom = atom(null, async (get, set, payload: "fi
                         }
                         // folder title
                         if (_fTitle && !fetchedSuggestionMap.has(_fTitle)) {
-                            const res = await fetchMALMatchingSuggestions(_fTitle)
+                            const res = await searchWithMAL(_fTitle)
                             if (res && res.length > 0) {
                                 animeList2 = res
                                 fetchedSuggestionMap.set(_fTitle, res)

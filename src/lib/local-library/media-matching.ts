@@ -3,47 +3,45 @@ import { AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import _ from "lodash"
 import { ordinalize } from "inflection"
 import similarity from "string-similarity"
-import lavenshtein from "js-levenshtein"
 import { AnimeFileInfo, LocalFile } from "@/lib/local-library/local-file"
 import { logger } from "@/lib/helpers/debug"
 import { ScanLogging } from "@/lib/local-library/logs"
-import { valueContainsSeason } from "@/lib/anilist/utils"
+
+import {
+    compareTitleVariationsToMediaTitles,
+    eliminateLeastSimilarValue,
+    toRomanNumber,
+    valueContainsSeason,
+} from "@/lib/local-library/utils"
+import { advancedSearchWithMAL } from "@/lib/mal/actions"
 
 /**
  * This method employs 3 comparison algorithms: Dice's coefficient (string-similarity), Levenshtein's algorithm, and MAL's elastic search algorithm
- * - Get the media titles from 4 possibles values (userPreferred, english, romaji and synonyms that include seasons)
- * - Parse the title that will be used for comparison
- * - Parse a season
- * - Find variations of the title containing the seasons for comparison
- * - Find similar title in watch list from Dice's coefficient
- * - Find similar title in watch list from Levenshtein's algorithm
- * - Find similar title from MAL's elastic search
- * - From these 3 best matches, eliminate the least similar one using Dice's coefficient
- * - From these 2 best matches, find the most similar to the title using Dice's coefficient
- * - Compare the best match titles (===) to a media
  */
-export async function findBestCorrespondingMedia({
-                                                     file,
-                                                     allMedia,
-                                                     mediaTitles,
-                                                     parsed,
-                                                     parsedFolderInfo,
-                                                     _matchingCache,
-                                                     _scanLogging,
-                                                 }: {
-    file: LocalFile,
-    allMedia: AnilistShortMedia[],
-    mediaTitles: {
-        eng: string[],
-        rom: string[],
-        preferred: string[],
-        synonymsWithSeason: string[]
+export async function findBestCorrespondingMedia(
+    {
+        file,
+        allMedia,
+        mediaTitles,
+        parsed,
+        parsedFolderInfo,
+        _matchingCache,
+        _scanLogging,
+    }: {
+        file: LocalFile,
+        allMedia: AnilistShortMedia[],
+        mediaTitles: {
+            eng: string[],
+            rom: string[],
+            preferred: string[],
+            synonymsWithSeason: string[]
+        },
+        parsed: AnimeFileInfo,
+        parsedFolderInfo: AnimeFileInfo[],
+        _matchingCache: Map<string, AnilistShowcaseMedia | undefined>,
+        _scanLogging: ScanLogging
     },
-    parsed: AnimeFileInfo,
-    parsedFolderInfo: AnimeFileInfo[],
-    _matchingCache: Map<string, AnilistShowcaseMedia | undefined>,
-    _scanLogging: ScanLogging
-}) {
+) {
 
     function debug(...value: any[]) {
         // if (parsed.original.toLowerCase().includes("(not)")) console.log(...value)
@@ -110,17 +108,17 @@ export async function findBestCorrespondingMedia({
     if (!!courAsNumber) {
         [_folderTitle, parsed.title].filter(Boolean).map(value => {
             _titleVariations.push(`${value} Part ${courAsNumber}`) // Title Part 2
-            _titleVariations.push(`${value} Part ${romanize(courAsNumber)}`) // Title Part II
+            _titleVariations.push(`${value} Part ${toRomanNumber(courAsNumber)}`) // Title Part II
             _titleVariations.push(`${value} Cour ${courAsNumber}`) // Title Cour 2
-            _titleVariations.push(`${value} Cour ${romanize(courAsNumber)}`) // Title Cour II
+            _titleVariations.push(`${value} Cour ${toRomanNumber(courAsNumber)}`) // Title Cour II
         })
     }
     if (!!partAsNumber) {
         [_folderTitle, parsed.title].filter(Boolean).map(value => {
             _titleVariations.push(`${value} Part ${partAsNumber}`) // Title Part 2
-            _titleVariations.push(`${value} Part ${romanize(partAsNumber)}`) // Title Part II
+            _titleVariations.push(`${value} Part ${toRomanNumber(partAsNumber)}`) // Title Part II
             _titleVariations.push(`${value} Cour ${partAsNumber}`) // Title Cour 2
-            _titleVariations.push(`${value} Cour ${romanize(partAsNumber)}`) // Title Cour II
+            _titleVariations.push(`${value} Cour ${toRomanNumber(partAsNumber)}`) // Title Cour II
         })
     }
     if (!!partAsNumber && eitherSeasonExists) {
@@ -205,7 +203,7 @@ export async function findBestCorrespondingMedia({
 
     // Calculate Levenshtein distances and find the lowest for all title variations
     const distances = allMedia.flatMap(media => {
-        return getDistanceFromTitle(media, titleVariations)
+        return compareTitleVariationsToMediaTitles(media, titleVariations)
     })
     if (distances) {
         const lowest = distances.reduce((prev, curr) => prev.distance <= curr.distance ? prev : curr) // Lower distance
@@ -224,22 +222,17 @@ export async function findBestCorrespondingMedia({
     _scanLogging.add(file.path, "Title matching using MAL")
     try {
         if (_title) {
-            const url = new URL("https://myanimelist.net/search/prefix.json")
-            url.searchParams.set("type", "anime")
-            url.searchParams.set("keyword", titleVariations[0]) // Why titleVariations[0]? Because it changes depending on the availability of season
-            const res = await fetch(url, { method: "GET" })
-            const body: any = await res.json()
-            // Find anime data from the response
-            const anime = body?.categories?.find((category: any) => category?.type === "anime")?.items?.[0]
-            // Check if the corresponding media exists in the user's list
-            const correspondingInUserList = allMedia.find(media => media.idMal === anime.id)
+            const anime = await advancedSearchWithMAL(titleVariations[0])
+            const correspondingInUserList = allMedia.find(media => media.idMal === anime?.id)
             _scanLogging.add(file.path, `   -> Title used for search = ` + JSON.stringify(titleVariations[0]))
             if (anime && !!correspondingInUserList) {
                 correspondingMediaFromMAL = correspondingInUserList
                 _scanLogging.add(file.path, "   -> Result = " + JSON.stringify(correspondingMediaFromMAL.title))
-            } else {
+            } else if (anime) {
                 _scanLogging.add(file.path, "   -> warning - Could not find the MAL media in user watch list")
                 _scanLogging.add(file.path, "   -> Result = " + JSON.stringify(anime))
+            } else {
+                _scanLogging.add(file.path, "   -> error - Could not find a media")
             }
         }
     } catch {
@@ -259,10 +252,10 @@ export async function findBestCorrespondingMedia({
     _scanLogging.add(file.path, "Eliminating the least similar candidate title using string-similarity")
 
     // Eliminate duplicate and least similar elements from each langages
-    const best_userPreferred = eliminateLeastSimilarElement(differentFoundMedia.map(n => n.title?.userPreferred?.toLowerCase()).filter(Boolean))
-    const best_english = eliminateLeastSimilarElement(differentFoundMedia.map(n => n.title?.english?.toLowerCase()).filter(Boolean))
-    const best_romaji = eliminateLeastSimilarElement(differentFoundMedia.map(n => n.title?.romaji?.toLowerCase()).filter(Boolean))
-    const best_syn = eliminateLeastSimilarElement(differentFoundMedia.flatMap(n => n.synonyms?.filter(Boolean).filter(syn => valueContainsSeason(syn.toLowerCase()))).map(n => n?.toLowerCase()).filter(Boolean))
+    const best_userPreferred = eliminateLeastSimilarValue(differentFoundMedia.map(n => n.title?.userPreferred?.toLowerCase()).filter(Boolean))
+    const best_english = eliminateLeastSimilarValue(differentFoundMedia.map(n => n.title?.english?.toLowerCase()).filter(Boolean))
+    const best_romaji = eliminateLeastSimilarValue(differentFoundMedia.map(n => n.title?.romaji?.toLowerCase()).filter(Boolean))
+    const best_syn = eliminateLeastSimilarValue(differentFoundMedia.flatMap(n => n.synonyms?.filter(Boolean).filter(syn => valueContainsSeason(syn.toLowerCase()))).map(n => n?.toLowerCase()).filter(Boolean))
     // debug(best_userPreferred, "preferred")// debug(best_english, "english")// debug(best_romaji, "romaji")// debug(best_syn, "season synonym")
 
     _scanLogging.add(file.path, "   -> Remaining candidate titles from 'userPreferred' = " + JSON.stringify(best_userPreferred))
@@ -333,74 +326,4 @@ export async function findBestCorrespondingMedia({
     return {
         correspondingMedia: +rating >= 0.5 ? bestMedia : undefined,
     }
-}
-
-function getDistanceFromTitle(media: AnilistShowcaseMedia, values: string[]) {
-    if (media && media.title) {
-
-        const titles = Object.values(media.title).filter(Boolean).flatMap(title => values.map(unit => lavenshtein(title!.toLowerCase(), unit!.toLowerCase())))
-
-        const synonymsWithSeason = media.synonyms?.filter(Boolean)
-            .filter(valueContainsSeason)
-            .flatMap(title => values.map(unit => lavenshtein(title.toLowerCase(), unit.toLowerCase()))) // If synonym has "season", remove padding
-
-        const distances = [...(synonymsWithSeason || []), ...titles]
-        const min = distances.length > 0 ? distances.reduce((prev, curr) => prev < curr ? prev : curr) : 999999999999999
-        return {
-            media,
-            distance: min,
-        } // Return the minimum distance
-    }
-    return {
-        media: undefined,
-        distance: 99999,
-    }
-}
-
-function romanize(num: number) {
-    try {
-        if (isNaN(num))
-            return NaN
-        var digits = String(+num).split(""),
-            key = ["", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM",
-                "", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC",
-                "", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"],
-            roman = "",
-            i = 3
-        while (i--)
-            roman = (key[+digits.pop()! + (i * 10)] || "") + roman
-        return Array(+digits.join("") + 1).join("M") + roman
-    } catch (e) {
-        return ""
-    }
-}
-
-function eliminateLeastSimilarElement(arr: string[]): string[] {
-
-    if (!arr.length || arr.length <= 2) return arr
-
-    let leastSimilarIndex = -1
-    let leastSimilarScore = Number.MAX_VALUE
-
-    for (let i = 0; i < arr.length; i++) {
-        let totalSimilarity = 0
-
-        for (let j = 0; j < arr.length; j++) {
-            if (i !== j) {
-                const score = similarity.compareTwoStrings(arr[i], arr[j])
-                totalSimilarity += score
-            }
-        }
-
-        if (totalSimilarity < leastSimilarScore) {
-            leastSimilarScore = totalSimilarity
-            leastSimilarIndex = i
-        }
-    }
-
-    if (leastSimilarIndex !== -1) {
-        arr.splice(leastSimilarIndex, 1)
-    }
-
-    return arr
 }

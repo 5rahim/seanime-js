@@ -22,7 +22,7 @@ export const UndownloadedEpisodeList: React.FC<UndownloadedEpisodeListProps> = R
         downloadInfo,
     } = useDownloadPageData(media)
 
-    if (!aniZipData || (downloadInfo.toDownload === 0)) return null
+    if (!aniZipData || Object.keys(aniZipData?.episodes).length === 0 || (downloadInfo.toDownload === 0)) return null
 
     return (
         <>
@@ -35,15 +35,15 @@ export const UndownloadedEpisodeList: React.FC<UndownloadedEpisodeListProps> = R
             </div>
             <div className={"grid grid-cols-2 gap-4 opacity-60"}>
                 {downloadInfo.episodeNumbers.map((epNumber, index) => {
-                    const airDate = aniZipData?.episodes[String(epNumber)]?.airdate
+                    const airDate = aniZipData?.episodes?.[String(epNumber)]?.airdate
                     return (
                         <EpisodeItemSkeleton
                             media={media}
                             key={epNumber + index}
                             title={media.format !== "MOVIE" ? `Episode ${epNumber}` : media.title?.userPreferred || ""}
                             showImagePlaceholder
-                            episodeTitle={aniZipData?.episodes[String(epNumber)]?.title?.en}
-                            image={aniZipData?.episodes[String(epNumber)]?.image}
+                            episodeTitle={aniZipData?.episodes?.[String(epNumber)]?.title?.en}
+                            image={aniZipData?.episodes?.[String(epNumber)]?.image}
                             action={
                                 <Link
                                     href={`/view/${media.id}/download?episode=${epNumber}`}
@@ -54,7 +54,7 @@ export const UndownloadedEpisodeList: React.FC<UndownloadedEpisodeListProps> = R
                         >
                             <div className={"mt-1"}>
                                 <p className={"flex gap-1 items-center text-sm text-[--muted]"}>
-                                    <BiCalendarAlt/> {airDate ? `Aired on ${new Date(airDate).toLocaleDateString()}` : "Aired recently"}
+                                    <BiCalendarAlt/> {airDate ? `Aired on ${new Date(airDate).toLocaleDateString()}` : "Aired"}
                                 </p>
                             </div>
                         </EpisodeItemSkeleton>

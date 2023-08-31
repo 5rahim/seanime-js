@@ -1,6 +1,6 @@
 "use client"
-import React from "react"
-import { IconButton } from "@/components/ui/button"
+import React, { Fragment } from "react"
+import { Button, IconButton } from "@/components/ui/button"
 import { AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import { useAnilistCollectionEntryAtomByMediaId, useUpdateAnilistEntry } from "@/atoms/anilist/entries.atoms"
 import { BiPlus } from "@react-icons/all-files/bi/BiPlus"
@@ -8,12 +8,14 @@ import { useToggle } from "react-use"
 import { Modal } from "@/components/ui/modal"
 import { createTypesafeFormSchema, Field, TypesafeForm } from "@/components/ui/typesafe-form"
 import { MediaListStatus } from "@/gql/graphql"
-import { useSelectAtom } from "@/atoms/helpers"
+import { useStableSelectAtom } from "@/atoms/helpers"
 import { BiStar } from "@react-icons/all-files/bi/BiStar"
 import { BiListPlus } from "@react-icons/all-files/bi/BiListPlus"
 import { AiFillEdit } from "@react-icons/all-files/ai/AiFillEdit"
 import Image from "next/image"
 import { cn } from "@/components/ui/core"
+import { BiTrash } from "@react-icons/all-files/bi/BiTrash"
+import { Disclosure } from "@headlessui/react"
 
 interface AnilistMediaEntryModalProps {
     children?: React.ReactNode
@@ -42,9 +44,9 @@ export const AnilistMediaEntryModal: React.FC<AnilistMediaEntryModalProps> = (pr
     const { children, media, ...rest } = props
 
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(media.id)
-    const state = !!collectionEntryAtom ? useSelectAtom(collectionEntryAtom, entry => entry) : undefined
+    const state = useStableSelectAtom(collectionEntryAtom, entry => entry)
 
-    const { updateEntry } = useUpdateAnilistEntry()
+    const { updateEntry, deleteEntry } = useUpdateAnilistEntry()
 
     const [open, toggle] = useToggle(false)
 
@@ -58,9 +60,27 @@ export const AnilistMediaEntryModal: React.FC<AnilistMediaEntryModalProps> = (pr
                 onClick={toggle}
             />}
 
-            {/*TODO: Add to watching button*/}
-            {/*TODO: Remove from lists button*/}
+            {!collectionEntryAtom && <IconButton
+                intent={"primary-subtle"}
+                icon={<BiPlus/>}
+                rounded
+                size={"md"}
+                onClick={() => updateEntry({
+                    mediaId: media.id,
+                    status: "PLANNING",
+                })}
+            />}
 
+            {/*{!!collectionEntryAtom && state?.status === "PLANNING" && state.id && <IconButton*/}
+            {/*    intent={"alert-subtle"}*/}
+            {/*    icon={<BiTrash />}*/}
+            {/*    rounded*/}
+            {/*    size={"sm"}*/}
+            {/*    onClick={() => deleteEntry({*/}
+            {/*        mediaListEntryId: state.id,*/}
+            {/*        status: "PLANNING",*/}
+            {/*    })}*/}
+            {/*/>}*/}
 
             <Modal
                 isOpen={open}
@@ -173,7 +193,34 @@ export const AnilistMediaEntryModal: React.FC<AnilistMediaEntryModalProps> = (pr
                             // defaultValue={(state.completedAt && state.completedAt.year) ? parseAbsoluteToLocal(new Date(state.completedAt.year, (state.completedAt.month || 1)-1, state.completedAt.day || 1).toISOString()) : undefined}
                         />
                     </div>}
-                    <Field.Submit role={"save"}/>
+
+                    <div className={"flex w-full items-center justify-between mt-4"}>
+                        <div className={"flex items-center gap-1"}>
+                            <Disclosure>
+                                <Disclosure.Button as={Fragment}>
+                                    <IconButton
+                                        intent={"alert-subtle"}
+                                        icon={<BiTrash/>}
+                                        rounded
+                                        size={"md"}
+                                    />
+                                </Disclosure.Button>
+                                <Disclosure.Panel>
+                                    <Button
+                                        intent={"alert-basic"}
+                                        rounded
+                                        size={"md"}
+                                        onClick={() => deleteEntry({
+                                            mediaListEntryId: state.id,
+                                            status: state.status!,
+                                        })}
+                                    >Confirm</Button>
+                                </Disclosure.Panel>
+                            </Disclosure>
+                        </div>
+
+                        <Field.Submit role={"save"}/>
+                    </div>
                 </TypesafeForm>}
 
             </Modal>

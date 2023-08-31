@@ -4543,6 +4543,7 @@ export type MediaFragment = {
     averageScore?: number | null,
     popularity?: number | null,
     countryOfOrigin?: any | null,
+    meanScore?: number | null,
     title?: {
         userPreferred?: string | null,
         romaji?: string | null,
@@ -4559,7 +4560,10 @@ export type MediaFragment = {
     endDate?: { year?: number | null, month?: number | null, day?: number | null } | null,
     mediaListEntry?: { id: number, status?: MediaListStatus | null } | null,
     nextAiringEpisode?: { airingAt: number, timeUntilAiring: number, episode: number } | null,
-    studios?: { nodes?: Array<{ name: string } | null> | null } | null,
+    studios?: {
+        nodes?: Array<{ name: string } | null> | null,
+        edges?: Array<{ id?: number | null, node?: { name: string, isAnimationStudio: boolean } | null } | null> | null
+    } | null,
     relations?: {
         edges?: Array<{
             relationType?: MediaRelation | null,
@@ -4588,6 +4592,37 @@ export type MediaFragment = {
                 } | null,
                 startDate?: { year?: number | null, month?: number | null, day?: number | null } | null,
                 nextAiringEpisode?: { airingAt: number, timeUntilAiring: number, episode: number } | null
+            } | null
+        } | null> | null
+    } | null,
+    rankings?: Array<{
+        context: string,
+        type: MediaRankType,
+        rank: number,
+        year?: number | null,
+        format: MediaFormat,
+        allTime?: boolean | null,
+        season?: MediaSeason | null
+    } | null> | null,
+    recommendations?: {
+        edges?: Array<{
+            node?: {
+                mediaRecommendation?: {
+                    id: number,
+                    bannerImage?: string | null,
+                    coverImage?: {
+                        extraLarge?: string | null,
+                        large?: string | null,
+                        medium?: string | null,
+                        color?: string | null
+                    } | null,
+                    title?: {
+                        romaji?: string | null,
+                        english?: string | null,
+                        native?: string | null,
+                        userPreferred?: string | null
+                    } | null
+                } | null
             } | null
         } | null> | null
     } | null
@@ -4717,6 +4752,7 @@ export type AnimeCollectionQuery = {
     MediaListCollection?: {
         lists?: Array<{
             entries?: Array<{
+                id: number,
                 score?: number | null,
                 progress?: number | null,
                 status?: MediaListStatus | null,
@@ -4813,6 +4849,7 @@ export type SimpleAnimeCollectionQuery = {
     MediaListCollection?: {
         lists?: Array<{
             entries?: Array<{
+                id: number,
                 media?: {
                     id: number,
                     idMal?: number | null,
@@ -4987,6 +5024,7 @@ export type AnimeByIdQuery = {
         averageScore?: number | null,
         popularity?: number | null,
         countryOfOrigin?: any | null,
+        meanScore?: number | null,
         title?: {
             userPreferred?: string | null,
             romaji?: string | null,
@@ -5003,7 +5041,13 @@ export type AnimeByIdQuery = {
         endDate?: { year?: number | null, month?: number | null, day?: number | null } | null,
         mediaListEntry?: { id: number, status?: MediaListStatus | null } | null,
         nextAiringEpisode?: { airingAt: number, timeUntilAiring: number, episode: number } | null,
-        studios?: { nodes?: Array<{ name: string } | null> | null } | null,
+        studios?: {
+            nodes?: Array<{ name: string } | null> | null,
+            edges?: Array<{
+                id?: number | null,
+                node?: { name: string, isAnimationStudio: boolean } | null
+            } | null> | null
+        } | null,
         relations?: {
             edges?: Array<{
                 relationType?: MediaRelation | null,
@@ -5032,6 +5076,37 @@ export type AnimeByIdQuery = {
                     } | null,
                     startDate?: { year?: number | null, month?: number | null, day?: number | null } | null,
                     nextAiringEpisode?: { airingAt: number, timeUntilAiring: number, episode: number } | null
+                } | null
+            } | null> | null
+        } | null,
+        rankings?: Array<{
+            context: string,
+            type: MediaRankType,
+            rank: number,
+            year?: number | null,
+            format: MediaFormat,
+            allTime?: boolean | null,
+            season?: MediaSeason | null
+        } | null> | null,
+        recommendations?: {
+            edges?: Array<{
+                node?: {
+                    mediaRecommendation?: {
+                        id: number,
+                        bannerImage?: string | null,
+                        coverImage?: {
+                            extraLarge?: string | null,
+                            large?: string | null,
+                            medium?: string | null,
+                            color?: string | null
+                        } | null,
+                        title?: {
+                            romaji?: string | null,
+                            english?: string | null,
+                            native?: string | null,
+                            userPreferred?: string | null
+                        } | null
+                    } | null
                 } | null
             } | null> | null
         } | null
@@ -5131,6 +5206,13 @@ export type UpdateEntryMutationVariables = Exact<{
 
 
 export type UpdateEntryMutation = { SaveMediaListEntry?: { id: number } | null };
+
+export type DeleteEntryMutationVariables = Exact<{
+    mediaListEntryId?: InputMaybe<Scalars["Int"]["input"]>;
+}>;
+
+
+export type DeleteEntryMutation = { DeleteMediaListEntry?: { deleted?: boolean | null } | null };
 
 export const ShowcaseMediaFragmentDoc = {
     "kind": "Document", "definitions": [{
@@ -5362,6 +5444,138 @@ export const MediaFragmentDoc = {
                                     "selections": [{
                                         "kind": "FragmentSpread",
                                         "name": { "kind": "Name", "value": "showcaseMedia" },
+                                    }],
+                                },
+                            }],
+                        },
+                    }],
+                },
+            }, { "kind": "Field", "name": { "kind": "Name", "value": "meanScore" } }, {
+                "kind": "Field",
+                "name": { "kind": "Name", "value": "rankings" },
+                "selectionSet": {
+                    "kind": "SelectionSet",
+                    "selections": [{
+                        "kind": "Field",
+                        "name": { "kind": "Name", "value": "context" },
+                    }, { "kind": "Field", "name": { "kind": "Name", "value": "type" } }, {
+                        "kind": "Field",
+                        "name": { "kind": "Name", "value": "rank" },
+                    }, { "kind": "Field", "name": { "kind": "Name", "value": "year" } }, {
+                        "kind": "Field",
+                        "name": { "kind": "Name", "value": "format" },
+                    }, { "kind": "Field", "name": { "kind": "Name", "value": "allTime" } }, {
+                        "kind": "Field",
+                        "name": { "kind": "Name", "value": "season" },
+                    }],
+                },
+            }, { "kind": "Field", "name": { "kind": "Name", "value": "genres" } }, {
+                "kind": "Field",
+                "name": { "kind": "Name", "value": "studios" },
+                "arguments": [{
+                    "kind": "Argument",
+                    "name": { "kind": "Name", "value": "isMain" },
+                    "value": { "kind": "BooleanValue", "value": true },
+                }],
+                "selectionSet": {
+                    "kind": "SelectionSet",
+                    "selections": [{
+                        "kind": "Field",
+                        "name": { "kind": "Name", "value": "edges" },
+                        "selectionSet": {
+                            "kind": "SelectionSet",
+                            "selections": [{
+                                "kind": "Field",
+                                "name": { "kind": "Name", "value": "id" },
+                            }, {
+                                "kind": "Field",
+                                "name": { "kind": "Name", "value": "node" },
+                                "selectionSet": {
+                                    "kind": "SelectionSet",
+                                    "selections": [{
+                                        "kind": "Field",
+                                        "name": { "kind": "Name", "value": "name" },
+                                    }, { "kind": "Field", "name": { "kind": "Name", "value": "isAnimationStudio" } }],
+                                },
+                            }],
+                        },
+                    }],
+                },
+            }, {
+                "kind": "Field",
+                "name": { "kind": "Name", "value": "recommendations" },
+                "arguments": [{
+                    "kind": "Argument",
+                    "name": { "kind": "Name", "value": "page" },
+                    "value": { "kind": "IntValue", "value": "1" },
+                }, {
+                    "kind": "Argument",
+                    "name": { "kind": "Name", "value": "perPage" },
+                    "value": { "kind": "IntValue", "value": "8" },
+                }, {
+                    "kind": "Argument",
+                    "name": { "kind": "Name", "value": "sort" },
+                    "value": { "kind": "EnumValue", "value": "RATING_DESC" },
+                }],
+                "selectionSet": {
+                    "kind": "SelectionSet", "selections": [{
+                        "kind": "Field", "name": { "kind": "Name", "value": "edges" }, "selectionSet": {
+                            "kind": "SelectionSet", "selections": [{
+                                "kind": "Field",
+                                "name": { "kind": "Name", "value": "node" },
+                                "selectionSet": {
+                                    "kind": "SelectionSet",
+                                    "selections": [{
+                                        "kind": "Field",
+                                        "name": { "kind": "Name", "value": "mediaRecommendation" },
+                                        "selectionSet": {
+                                            "kind": "SelectionSet",
+                                            "selections": [{
+                                                "kind": "Field",
+                                                "name": { "kind": "Name", "value": "id" },
+                                            }, {
+                                                "kind": "Field",
+                                                "name": { "kind": "Name", "value": "coverImage" },
+                                                "selectionSet": {
+                                                    "kind": "SelectionSet",
+                                                    "selections": [{
+                                                        "kind": "Field",
+                                                        "name": { "kind": "Name", "value": "extraLarge" },
+                                                    }, {
+                                                        "kind": "Field",
+                                                        "name": { "kind": "Name", "value": "large" },
+                                                    }, {
+                                                        "kind": "Field",
+                                                        "name": { "kind": "Name", "value": "medium" },
+                                                    }, {
+                                                        "kind": "Field",
+                                                        "name": { "kind": "Name", "value": "color" },
+                                                    }],
+                                                },
+                                            }, {
+                                                "kind": "Field",
+                                                "name": { "kind": "Name", "value": "bannerImage" },
+                                            }, {
+                                                "kind": "Field",
+                                                "name": { "kind": "Name", "value": "title" },
+                                                "selectionSet": {
+                                                    "kind": "SelectionSet",
+                                                    "selections": [{
+                                                        "kind": "Field",
+                                                        "name": { "kind": "Name", "value": "romaji" },
+                                                    }, {
+                                                        "kind": "Field",
+                                                        "name": { "kind": "Name", "value": "english" },
+                                                    }, {
+                                                        "kind": "Field",
+                                                        "name": { "kind": "Name", "value": "native" },
+                                                    }, {
+                                                        "kind": "Field",
+                                                        "name": { "kind": "Name", "value": "userPreferred" },
+                                                    }],
+                                                },
+                                            }],
+                                        },
                                     }],
                                 },
                             }],
@@ -5758,6 +5972,9 @@ export const AnimeCollectionDocument = {
                                     "kind": "SelectionSet",
                                     "selections": [{
                                         "kind": "Field",
+                                        "name": { "kind": "Name", "value": "id" },
+                                    }, {
+                                        "kind": "Field",
                                         "name": { "kind": "Name", "value": "score" },
                                     }, {
                                         "kind": "Field",
@@ -6090,6 +6307,9 @@ export const SimpleAnimeCollectionDocument = {
                                 "selectionSet": {
                                     "kind": "SelectionSet",
                                     "selections": [{
+                                        "kind": "Field",
+                                        "name": { "kind": "Name", "value": "id" },
+                                    }, {
                                         "kind": "Field",
                                         "name": { "kind": "Name", "value": "media" },
                                         "selectionSet": {
@@ -6881,6 +7101,138 @@ export const AnimeByIdDocument = {
                         },
                     }],
                 },
+            }, { "kind": "Field", "name": { "kind": "Name", "value": "meanScore" } }, {
+                "kind": "Field",
+                "name": { "kind": "Name", "value": "rankings" },
+                "selectionSet": {
+                    "kind": "SelectionSet",
+                    "selections": [{
+                        "kind": "Field",
+                        "name": { "kind": "Name", "value": "context" },
+                    }, { "kind": "Field", "name": { "kind": "Name", "value": "type" } }, {
+                        "kind": "Field",
+                        "name": { "kind": "Name", "value": "rank" },
+                    }, { "kind": "Field", "name": { "kind": "Name", "value": "year" } }, {
+                        "kind": "Field",
+                        "name": { "kind": "Name", "value": "format" },
+                    }, { "kind": "Field", "name": { "kind": "Name", "value": "allTime" } }, {
+                        "kind": "Field",
+                        "name": { "kind": "Name", "value": "season" },
+                    }],
+                },
+            }, { "kind": "Field", "name": { "kind": "Name", "value": "genres" } }, {
+                "kind": "Field",
+                "name": { "kind": "Name", "value": "studios" },
+                "arguments": [{
+                    "kind": "Argument",
+                    "name": { "kind": "Name", "value": "isMain" },
+                    "value": { "kind": "BooleanValue", "value": true },
+                }],
+                "selectionSet": {
+                    "kind": "SelectionSet",
+                    "selections": [{
+                        "kind": "Field",
+                        "name": { "kind": "Name", "value": "edges" },
+                        "selectionSet": {
+                            "kind": "SelectionSet",
+                            "selections": [{
+                                "kind": "Field",
+                                "name": { "kind": "Name", "value": "id" },
+                            }, {
+                                "kind": "Field",
+                                "name": { "kind": "Name", "value": "node" },
+                                "selectionSet": {
+                                    "kind": "SelectionSet",
+                                    "selections": [{
+                                        "kind": "Field",
+                                        "name": { "kind": "Name", "value": "name" },
+                                    }, { "kind": "Field", "name": { "kind": "Name", "value": "isAnimationStudio" } }],
+                                },
+                            }],
+                        },
+                    }],
+                },
+            }, {
+                "kind": "Field",
+                "name": { "kind": "Name", "value": "recommendations" },
+                "arguments": [{
+                    "kind": "Argument",
+                    "name": { "kind": "Name", "value": "page" },
+                    "value": { "kind": "IntValue", "value": "1" },
+                }, {
+                    "kind": "Argument",
+                    "name": { "kind": "Name", "value": "perPage" },
+                    "value": { "kind": "IntValue", "value": "8" },
+                }, {
+                    "kind": "Argument",
+                    "name": { "kind": "Name", "value": "sort" },
+                    "value": { "kind": "EnumValue", "value": "RATING_DESC" },
+                }],
+                "selectionSet": {
+                    "kind": "SelectionSet", "selections": [{
+                        "kind": "Field", "name": { "kind": "Name", "value": "edges" }, "selectionSet": {
+                            "kind": "SelectionSet", "selections": [{
+                                "kind": "Field",
+                                "name": { "kind": "Name", "value": "node" },
+                                "selectionSet": {
+                                    "kind": "SelectionSet",
+                                    "selections": [{
+                                        "kind": "Field",
+                                        "name": { "kind": "Name", "value": "mediaRecommendation" },
+                                        "selectionSet": {
+                                            "kind": "SelectionSet",
+                                            "selections": [{
+                                                "kind": "Field",
+                                                "name": { "kind": "Name", "value": "id" },
+                                            }, {
+                                                "kind": "Field",
+                                                "name": { "kind": "Name", "value": "coverImage" },
+                                                "selectionSet": {
+                                                    "kind": "SelectionSet",
+                                                    "selections": [{
+                                                        "kind": "Field",
+                                                        "name": { "kind": "Name", "value": "extraLarge" },
+                                                    }, {
+                                                        "kind": "Field",
+                                                        "name": { "kind": "Name", "value": "large" },
+                                                    }, {
+                                                        "kind": "Field",
+                                                        "name": { "kind": "Name", "value": "medium" },
+                                                    }, {
+                                                        "kind": "Field",
+                                                        "name": { "kind": "Name", "value": "color" },
+                                                    }],
+                                                },
+                                            }, {
+                                                "kind": "Field",
+                                                "name": { "kind": "Name", "value": "bannerImage" },
+                                            }, {
+                                                "kind": "Field",
+                                                "name": { "kind": "Name", "value": "title" },
+                                                "selectionSet": {
+                                                    "kind": "SelectionSet",
+                                                    "selections": [{
+                                                        "kind": "Field",
+                                                        "name": { "kind": "Name", "value": "romaji" },
+                                                    }, {
+                                                        "kind": "Field",
+                                                        "name": { "kind": "Name", "value": "english" },
+                                                    }, {
+                                                        "kind": "Field",
+                                                        "name": { "kind": "Name", "value": "native" },
+                                                    }, {
+                                                        "kind": "Field",
+                                                        "name": { "kind": "Name", "value": "userPreferred" },
+                                                    }],
+                                                },
+                                            }],
+                                        },
+                                    }],
+                                },
+                            }],
+                        },
+                    }],
+                },
             }],
         },
     }],
@@ -7250,3 +7602,32 @@ export const UpdateEntryDocument = {
         },
     }],
 } as unknown as DocumentNode<UpdateEntryMutation, UpdateEntryMutationVariables>
+export const DeleteEntryDocument = {
+    "kind": "Document",
+    "definitions": [{
+        "kind": "OperationDefinition",
+        "operation": "mutation",
+        "name": { "kind": "Name", "value": "DeleteEntry" },
+        "variableDefinitions": [{
+            "kind": "VariableDefinition",
+            "variable": { "kind": "Variable", "name": { "kind": "Name", "value": "mediaListEntryId" } },
+            "type": { "kind": "NamedType", "name": { "kind": "Name", "value": "Int" } },
+        }],
+        "selectionSet": {
+            "kind": "SelectionSet",
+            "selections": [{
+                "kind": "Field",
+                "name": { "kind": "Name", "value": "DeleteMediaListEntry" },
+                "arguments": [{
+                    "kind": "Argument",
+                    "name": { "kind": "Name", "value": "id" },
+                    "value": { "kind": "Variable", "name": { "kind": "Name", "value": "mediaListEntryId" } },
+                }],
+                "selectionSet": {
+                    "kind": "SelectionSet",
+                    "selections": [{ "kind": "Field", "name": { "kind": "Name", "value": "deleted" } }],
+                },
+            }],
+        },
+    }],
+} as unknown as DocumentNode<DeleteEntryMutation, DeleteEntryMutationVariables>

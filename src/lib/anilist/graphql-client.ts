@@ -15,5 +15,6 @@ export const getAniListGraphQLClient = (accessToken?: Nullish<string>, role?: st
             Accept: "application/json",
         },
         cache: "no-cache",
+        method: "POST",
     })
 }

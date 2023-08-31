@@ -17,7 +17,7 @@ import {
     useNCLocalFileAtomsByMediaId,
     useSpecialsLocalFileAtomsByMediaId,
 } from "@/atoms/library/local-file.atoms"
-import { useSelectAtom } from "@/atoms/helpers"
+import { useStableSelectAtom } from "@/atoms/helpers"
 
 import { useAnilistCollectionEntryAtomByMediaId, useWatchedAnilistEntry } from "@/atoms/anilist/entries.atoms"
 import { atomWithImmer } from "jotai-immer"
@@ -26,6 +26,7 @@ import { Modal } from "@/components/ui/modal"
 import { Button } from "@/components/ui/button"
 import _ from "lodash"
 import { Badge } from "@/components/ui/badge"
+import { FiPlayCircle } from "@react-icons/all-files/fi/FiPlayCircle"
 
 interface EpisodeSectionProps {
     children?: React.ReactNode
@@ -48,7 +49,9 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = React.memo((props) 
     const ovaFileAtoms = useSpecialsLocalFileAtomsByMediaId(detailedMedia.id)
     const ncFileAtoms = useNCLocalFileAtomsByMediaId(detailedMedia.id)
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(detailedMedia.id)
-    const collectionEntryProgress = !!collectionEntryAtom ? useSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress) : undefined
+    const status = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.media?.status)
+
+    const nextUpFilePath = useStableSelectAtom(toWatch[0], file => file.path)
 
     const setProgressTracking = useSetAtom(progressTrackingAtom)
 
@@ -75,7 +78,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = React.memo((props) 
 
     if (!entryAtom) {
         return <div className={"space-y-10"}>
-            <p>Not in your library</p>
+            {status !== "NOT_YET_RELEASED" ? <p>Not in your library</p> : <p>Not yet released</p>}
             <UndownloadedEpisodeList media={detailedMedia} aniZipData={aniZipData}/>
         </div>
     }
@@ -85,9 +88,20 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = React.memo((props) 
             <div>
                 <div className={"mb-8 flex items-center justify-between"}>
 
-                    <h2 className={"flex items-center gap-2"}>
-                        {detailedMedia.format === "MOVIE" ? "Movie" : "Episodes"}
-                    </h2>
+                    <div className={"flex items-center gap-8"}>
+                        <h2>{detailedMedia.format === "MOVIE" ? "Movie" : "Episodes"}</h2>
+                        {watched.length > 0 && toWatch.length > 0 && !!nextUpFilePath && <>
+                            <Button
+                                size={"lg"}
+                                intent={"white"}
+                                rightIcon={<FiPlayCircle/>}
+                                iconClassName={"text-2xl"}
+                                onClick={() => playFile(nextUpFilePath)}
+                            >
+                                {detailedMedia.format === "MOVIE" ? "Watch" : "Play next episode"}
+                            </Button>
+                        </>}
+                    </div>
 
                     {!!entryAtom && <div className={"space-x-4 flex items-center"}>
                         <ProgressTrackingButton/>

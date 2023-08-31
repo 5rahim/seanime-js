@@ -1,7 +1,7 @@
 "use client"
-import { PrimitiveAtom } from "jotai"
+import { Atom } from "jotai"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
-import { useSelectAtom } from "@/atoms/helpers"
+import { useStableSelectAtom } from "@/atoms/helpers"
 import React from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -14,14 +14,14 @@ import { AnilistCollectionEntry } from "@/atoms/anilist/entries.atoms"
 
 export const DownloadPageButton = (
     { entryAtom, collectionEntryAtom, detailedMedia }: {
-        entryAtom: PrimitiveAtom<LibraryEntry> | undefined
-        collectionEntryAtom: PrimitiveAtom<AnilistCollectionEntry> | undefined,
+        entryAtom: Atom<LibraryEntry> | undefined
+        collectionEntryAtom: Atom<AnilistCollectionEntry> | undefined,
         detailedMedia: AnilistDetailedMedia
     },
 ) => {
 
-    const collectionEntryProgress = !!collectionEntryAtom ? useSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress) : undefined
-    const collectionEntryStatus = !!collectionEntryAtom ? useSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.status) : undefined
+    const collectionEntryProgress = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress)
+    const collectionEntryStatus = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.status)
 
     const getLastFile = useSetAtom(getLastMainLocalFileByMediaIdAtom)
     const lastFile = entryAtom ? getLastFile(detailedMedia.id) : undefined
@@ -34,8 +34,8 @@ export const DownloadPageButton = (
         status: collectionEntryStatus,
     })
 
-    if (downloadInfo.toDownload === 0) return <Link href={`/view/${detailedMedia.id}/download`}>Nothing to download
-        REMOVE</Link>
+    // if (downloadInfo.toDownload === 0) return <Link href={`/view/${detailedMedia.id}/download`}>Nothing to download REMOVE</Link>
+    if (downloadInfo.toDownload === 0) return null
 
     return (
         <div>

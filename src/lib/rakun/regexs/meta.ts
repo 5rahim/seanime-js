@@ -10,6 +10,7 @@ export default {
         /(?<remastered>\bRemastered\b)/,
         /(?<complete>\[[Cc]omplete\])/,
         /(?<complete>COMPLETE)/,
+        /(?<weekly>[(\[]Weekly[)\]])/i,
         /(?<complete>Complete (?:[Ss]eries)?)/,
         /(?<complete>Complete$)/,
         /(?<high_quality>\b[Hh]igh [Qq]uality\b)/,

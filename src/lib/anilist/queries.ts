@@ -24,6 +24,7 @@ export const _AnimeCollection = gql`
         MediaListCollection(userName: $userName, type: ANIME) {
             lists {
                 entries {
+                    id
                     score
                     progress
                     status
@@ -54,6 +55,7 @@ export const _SimpleAnimeCollection = gql`
         MediaListCollection(userName: $userName, type: ANIME) {
             lists {
                 entries {
+                    id
                     media {
                         ...showcaseMedia
                     }
@@ -133,10 +135,10 @@ export const _SaveOrUpdateEntry = gql`
 
 export const _DeleteEntry = gql`
     mutation DeleteEntry (
-        $mediaId: Int
+        $mediaListEntryId: Int
     ) {
         DeleteMediaListEntry(
-            mediaId: $mediaId
+            id: $mediaListEntryId
         ) {
             deleted
         }

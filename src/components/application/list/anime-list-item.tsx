@@ -17,7 +17,7 @@ import { VscVerified } from "@react-icons/all-files/vsc/VscVerified"
 import { BiLockOpenAlt } from "@react-icons/all-files/bi/BiLockOpenAlt"
 import { useLocalFilesByMediaId, useSetLocalFiles } from "@/atoms/library/local-file.atoms"
 import { BiStar } from "@react-icons/all-files/bi/BiStar"
-import { useSelectAtom } from "@/atoms/helpers"
+import { useStableSelectAtom } from "@/atoms/helpers"
 import { useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist/entries.atoms"
 import { useAnilistUserMedia } from "@/atoms/anilist/media.atoms"
 import { IoLibrarySharp } from "@react-icons/all-files/io5/IoLibrarySharp"
@@ -30,7 +30,7 @@ export const AnimeListItem = ((props: { mediaId: number, showLibraryBadge?: bool
     const media = useAnilistUserMedia(mediaId)
     const entryAtom = useLibraryEntryAtomByMediaId(mediaId)
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(mediaId)
-    const status = !!collectionEntryAtom ? useSelectAtom(collectionEntryAtom, entry => entry?.status) : undefined
+    const status = useStableSelectAtom(collectionEntryAtom, entry => entry?.status)
     const showLibraryBadge = !!entryAtom && !!props.showLibraryBadge
 
     if (!media) return <></>
@@ -245,7 +245,7 @@ const LockFilesButton = (props: { media: AnilistShowcaseMedia }) => {
 const ScoreBadge = (props: { mediaId: number }) => {
 
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(props.mediaId)
-    const score = !!collectionEntryAtom ? useSelectAtom(collectionEntryAtom, entry => entry?.score) : undefined
+    const score = useStableSelectAtom(collectionEntryAtom, entry => entry?.score)
 
     if (!collectionEntryAtom || !score) return null
 
@@ -271,8 +271,8 @@ const ScoreBadge = (props: { mediaId: number }) => {
 const ProgressBadge = (props: { mediaId: number }) => {
 
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(props.mediaId)
-    const progress = !!collectionEntryAtom ? useSelectAtom(collectionEntryAtom, entry => entry?.progress) : undefined
-    const episodes = !!collectionEntryAtom ? useSelectAtom(collectionEntryAtom, entry => entry?.media?.episodes) : undefined
+    const progress = useStableSelectAtom(collectionEntryAtom, entry => entry?.progress)
+    const episodes = useStableSelectAtom(collectionEntryAtom, entry => entry?.media?.episodes)
 
     if (!collectionEntryAtom || !progress) return null
 
