@@ -14,7 +14,7 @@ export function useDownloadPageData(media: AnilistDetailedMedia) {
     const collectionEntryProgress = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress)
     const collectionEntryStatus = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.status)
     const entryAtom = useLibraryEntryAtomByMediaId(media.id)
-    const sharedPath = useStableSelectAtom(entryAtom, entry => entry.sharedPath) || (settings.library.localDirectory + "\\" + media.title?.userPreferred)
+    // const sharedPath = useStableSelectAtom(entryAtom, entry => entry.sharedPath) || (settings.library.localDirectory + "\\" + media.title?.userPreferred)
 
     const getLastFile = useSetAtom(getLastMainLocalFileByMediaIdAtom)
     const lastFile = getLastFile(media.id)
@@ -34,6 +34,6 @@ export function useDownloadPageData(media: AnilistDetailedMedia) {
         collectionEntryStatus,
         lastFile,
         downloadInfo,
-        sharedPath,
+        // sharedPath,
     }
 }

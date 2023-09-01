@@ -28,7 +28,7 @@ export const TorrentManager = (settings: Settings) => {
         },
         _connectionRefused() {
             // TODO: Listen to error being thrown and change message accordingly
-            toast.error("Connection refused. Verify your qBittorent settings.")
+            toast.error("An error occurred.")
         },
         _refreshSettings() {
             _qBit_refreshSettings(settings)

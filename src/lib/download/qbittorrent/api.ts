@@ -35,6 +35,11 @@ export async function _qBit_getAllTorrents(settings: Settings) {
     return await client.getAllData()
 }
 
+export async function _qBit_getTorrentContents(settings: Settings, hash: string) {
+    await _qBit_refreshSettings(settings)
+    return await client.getTorrent(hash)
+}
+
 /* -------------------------------------------------------------------------------------------------
  * Add magnet
  * -----------------------------------------------------------------------------------------------*/

@@ -71,17 +71,6 @@ export const AnilistMediaEntryModal: React.FC<AnilistMediaEntryModalProps> = (pr
                 })}
             />}
 
-            {/*{!!collectionEntryAtom && state?.status === "PLANNING" && state.id && <IconButton*/}
-            {/*    intent={"alert-subtle"}*/}
-            {/*    icon={<BiTrash />}*/}
-            {/*    rounded*/}
-            {/*    size={"sm"}*/}
-            {/*    onClick={() => deleteEntry({*/}
-            {/*        mediaListEntryId: state.id,*/}
-            {/*        status: "PLANNING",*/}
-            {/*    })}*/}
-            {/*/>}*/}
-
             <Modal
                 isOpen={open}
                 onClose={toggle}

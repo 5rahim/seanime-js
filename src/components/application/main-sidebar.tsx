@@ -18,7 +18,6 @@ import { FiSettings } from "@react-icons/all-files/fi/FiSettings"
 import { FiSearch } from "@react-icons/all-files/fi/FiSearch"
 import { BiTestTube } from "@react-icons/all-files/bi/BiTestTube"
 import { BiDownload } from "@react-icons/all-files/bi/BiDownload"
-import { Badge } from "@/components/ui/badge"
 
 interface MainSidebarProps {
     children?: React.ReactNode
@@ -48,9 +47,12 @@ export const MainSidebar: React.FC<MainSidebarProps> = (props) => {
                         items={[
                             { icon: RiHome2Line, name: "Home", href: "/", isCurrent: pathname === "/" },
                             {
-                                icon: BiDownload, name: "Torrents", href: "/", isCurrent: pathname === "/torrents",
-                                addon: <Badge className={"absolute right-0 top-0"} size={"sm"}
-                                              intent={"alert-solid"}>2</Badge>,
+                                icon: BiDownload,
+                                name: "Torrents",
+                                href: "/download",
+                                isCurrent: pathname === "/download",
+                                // addon: <Badge className={"absolute right-0 top-0"} size={"sm"}
+                                //               intent={"alert-solid"}>2</Badge>,
 
                             },
                             { icon: FiSearch, name: "Search", href: "/", isCurrent: pathname === "/search" },

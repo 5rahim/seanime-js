@@ -1,6 +1,6 @@
 "use client"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
-import React, { startTransition, useEffect, useMemo, useRef, useState } from "react"
+import React, { startTransition, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { unstable_findNyaaTorrents, unstable_handleSearchTorrents } from "@/lib/download/nyaa/search"
 import { SearchTorrent } from "@/lib/download/nyaa/api/types"
 import { createDataGridColumns, DataGrid } from "@/components/ui/datagrid"
@@ -8,8 +8,8 @@ import rakun from "@/lib/rakun/rakun"
 import { Badge } from "@/components/ui/badge"
 import { formatDistanceToNow } from "date-fns"
 import Image from "next/image"
-import { atom } from "jotai"
-import { useAtom, useAtomValue } from "jotai/react"
+import { Atom, atom } from "jotai"
+import { useAtom, useAtomValue, useSetAtom } from "jotai/react"
 import { useSettings } from "@/atoms/settings"
 import { TorrentManager } from "@/lib/download"
 import { Divider } from "@/components/ui/divider"
@@ -17,14 +17,22 @@ import { useDownloadPageData } from "@/app/(main)/(library)/view/[id]/download/_
 import { Switch } from "@/components/ui/switch"
 import { NumberInput } from "@/components/ui/number-input"
 import { useDebounce } from "@/hooks/use-debounce"
-import { Button } from "@/components/ui/button"
+import { Button, IconButton } from "@/components/ui/button"
 import { cn } from "@/components/ui/core"
-import { useSearchParams } from "next/navigation"
-import { useMount, useUpdateEffect } from "react-use"
-import { Drawer } from "@/components/ui/modal"
+import { useRouter, useSearchParams } from "next/navigation"
+import { useAsyncFn, useMount, useUpdateEffect } from "react-use"
+import { Modal } from "@/components/ui/modal"
 import { useDisclosure } from "@/hooks/use-disclosure"
-
+import { open } from "@tauri-apps/api/dialog"
 import { normalizeMediaEpisode } from "@/lib/anilist/actions"
+import { BiLinkExternal } from "@react-icons/all-files/bi/BiLinkExternal"
+import { useStableSelectAtom } from "@/atoms/helpers"
+import { LibraryEntry } from "@/atoms/library/library-entry.atoms"
+import { FcFolder } from "@react-icons/all-files/fc/FcFolder"
+import { BsCollectionPlayFill } from "@react-icons/all-files/bs/BsCollectionPlayFill"
+import { AiFillPlayCircle } from "@react-icons/all-files/ai/AiFillPlayCircle"
+import { Tooltip } from "@/components/ui/tooltip"
+import { BiDownload } from "@react-icons/all-files/bi/BiDownload"
 
 
 interface DownloadPageProps {
@@ -51,7 +59,6 @@ export function DownloadPage(props: DownloadPageProps) {
         entryAtom,
         lastFile,
         downloadInfo,
-        sharedPath,
     } = useDownloadPageData(props.media)
 
     const searchParams = useSearchParams()
@@ -127,36 +134,43 @@ export function DownloadPage(props: DownloadPageProps) {
         })()
     }, [globalFilter])
 
-    const torrentManager = useRef(TorrentManager(settings))
 
     const columns = useMemo(() => createDataGridColumns<SearchTorrentData>(() => [
         {
             accessorKey: "name",
             header: "Name",
-            cell: info => <div
-                className={cn(
-                    "text-[.95rem] truncate text-ellipsis cursor-pointer",
-                    {
-                        "text-brand-300 font-semibold": selectedTorrents.some(torrent => torrent.id === info.row.original.id),
-                    },
-                )}
-                onClick={() => setSelectedTorrents(draft => {
-                    if (!draft.find(torrent => torrent.id === info.row.original.id)) {
-                        return [...draft, info.row.original]
-                    } else {
-                        return draft.filter(torrent => torrent.id !== info.row.original.id)
-                    }
-                })}
-                // onClick={async () => {
-                //     if(sharedPath) {
-                //         await torrentManager.current.addMagnets({
-                //             magnets: [info.row.original.links.magnet],
-                //             savePath: sharedPath
-                //         })
-                //     }
-                // }}
-            >
-                {info.getValue<string>()}
+            cell: info => <div className={"flex items-center gap-2"}>
+                <IconButton
+                    icon={<BiLinkExternal/>}
+                    intent={"primary-basic"}
+                    size={"sm"}
+                    onClick={() => window.open("https://nyaa.si" + info.row.original.links.page.replace("#comments", ""), "_blank")}
+                />
+                <span
+                    className={cn(
+                        "text-[.95rem] truncate text-ellipsis cursor-pointer",
+                        {
+                            "text-brand-300 font-semibold": selectedTorrents.some(torrent => torrent.id === info.row.original.id),
+                        },
+                    )}
+                    onClick={() => setSelectedTorrents(draft => {
+                        if (!draft.find(torrent => torrent.id === info.row.original.id)) {
+                            return [...draft, info.row.original]
+                        } else {
+                            return draft.filter(torrent => torrent.id !== info.row.original.id)
+                        }
+                    })}
+                    // onClick={async () => {
+                    //     if(sharedPath) {
+                    //         await torrentManager.current.addMagnets({
+                    //             magnets: [info.row.original.links.magnet],
+                    //             savePath: sharedPath
+                    //         })
+                    //     }
+                    // }}
+                >
+                    {info.getValue<string>()}
+                </span>
             </div>,
             size: 120,
         },
@@ -271,20 +285,110 @@ export function DownloadPage(props: DownloadPageProps) {
 
             </div>
 
-            <Drawer isOpen={drawer.isOpen} onClose={drawer.close} size={"xl"} isClosable title={"Torrents"}>
-                <div>
-                    <p className={"flex-none"}>{sharedPath}</p>
-                    {selectedTorrents.map(torrent => (
-                        <div className={"flex flex-none pl-6"}>
-                            <p className={"truncate text-ellipsis"}>{torrent.name}</p>
-                        </div>
-                    ))}
-                </div>
-            </Drawer>
+            <Modal isOpen={drawer.isOpen} onClose={drawer.close} size={"xl"} isClosable title={"Torrents"}>
+                <TorrentList entryAtom={entryAtom} onClose={drawer.close} media={props.media}/>
+            </Modal>
         </>
     )
 }
 
+interface TorrentListProps {
+    children?: React.ReactNode
+    entryAtom: Atom<LibraryEntry> | undefined
+    media: AnilistDetailedMedia,
+    onClose: () => void
+}
+
+export const TorrentList: React.FC<TorrentListProps> = (props) => {
+
+    const { children, entryAtom, media, ...rest } = props
+
+    const { settings } = useSettings()
+    const router = useRouter()
+    const setSelectedTorrents = useSetAtom(selectedTorrentsAtom)
+    const selectedTorrents = useAtomValue(sortedSelectedTorrentsAtom)
+    const sharedPath = useStableSelectAtom(entryAtom, entry => entry.sharedPath)
+    const [selectedDir, setSelectedDir] = useState<string | undefined>(sharedPath || settings.library.localDirectory + "\\" + sanitizeDirectoryName(media.title?.romaji || ""))
+
+    const isFile = useCallback((parsed: TorrentInfos) => {
+        return !!parsed.episode
+    }, [])
+
+    function sanitizeDirectoryName(input: string): string {
+        const disallowedChars = /[<>:"/\\|?*\x00-\x1F]/g // Pattern for disallowed characters
+
+        // Replace disallowed characters with an underscore
+        const sanitized = input.replace(disallowedChars, " ")
+
+        // Remove leading/trailing spaces and dots (periods) which are not allowed
+        const trimmed = sanitized.trim().replace(/^\.+|\.+$/g, "")
+
+        // Ensure the directory name is not empty after sanitization
+        return trimmed || "Untitled"
+    }
+
+    const [state, selectDir] = useAsyncFn(async () => {
+        const selected = await open({
+            directory: true,
+            multiple: false,
+            defaultPath: selectedDir,
+        })
+        if (selected) {
+            setSelectedDir((selected ?? undefined) as string | undefined)
+            return selected
+        }
+    }, [selectedDir])
+
+    const torrentManager = useRef(TorrentManager(settings))
+
+
+    return <>
+        <div>
+            <p
+                className={"text-sm font-medium flex items-center gap-2 rounded-md border border-[--border] p-2 cursor-pointer mb-2"}
+                onClick={async () => {
+                    await selectDir()
+                }}
+            >
+                <FcFolder className={"text-2xl"}/>
+                {selectedDir}
+            </p>
+            <div className={"space-y-2"}>
+                {selectedTorrents.map(torrent => (
+                    <Tooltip trigger={<div
+                        className={"flex flex-none ml-12 items-center gap-2 p-2 border border-[--border] rounded-md cursor-pointer hover:bg-gray-800"}
+                        key={torrent.name}
+                        onClick={() => window.open("https://nyaa.si" + torrent.links.page.replace("#comments", ""), "_blank")}
+                    >
+                        <span className={"text-lg"}>{isFile(torrent.parsed) ? <AiFillPlayCircle/> :
+                            <BsCollectionPlayFill/>}</span>
+                        <p className={"truncate text-ellipsis"}>{torrent.name}</p>
+                    </div>}>
+                        Open on NYAA
+                    </Tooltip>
+                ))}
+            </div>
+            <div className={"mt-4 flex w-full justify-end"}>
+                {selectedTorrents.length > 0 && <Button
+                    leftIcon={<BiDownload/>}
+                    intent={"white"}
+                    onClick={async () => {
+                        if (selectedDir) {
+                            await torrentManager.current.addMagnets({
+                                magnets: selectedTorrents?.map(n => n.links.magnet) ?? [],
+                                savePath: selectedDir,
+                            })
+                            setSelectedTorrents([])
+                            props.onClose()
+                            router.push(`/download`)
+                        }
+                    }}
+                >Download</Button>}
+            </div>
+        </div>
+    </>
+
+}
 
 interface EpisodeListProps {
     children?: React.ReactNode

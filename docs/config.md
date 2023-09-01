@@ -1,15 +1,11 @@
-# Video Player
+# Config
 
-Seanime supports VLC and MPC-HC.
-
-## Configuration
-
-### MPC-HC
+## MPC-HC
 
 - Go to `Options > Web Interface`
 - Check the box for **Listen on port** `13579`
 
-### VLC
+## VLC
 
 - Go to `Tools > Preferences`
 - Bottom left `Show settings` to **All**
@@ -19,3 +15,12 @@ Seanime supports VLC and MPC-HC.
 - Under `Lua HTTP`, set password to `seanime`
 
 **Redo this process after updates.
+
+## qBittorent
+
+- Go to `Options > Web UI`
+- Check the box for **Web User Interface (Remove Control)**
+- Change the port to **8081** so that it does not conflict with VLC
+- **Bypass authentication for clients on localhost**
+- Disable **Enable clickjacking protection**
+- Disable **Enable CSRF protection**
