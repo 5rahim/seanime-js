@@ -22,30 +22,27 @@ Like the design? [Chalk UI](https://github.com/5rahim/chalk-ui)
 - [x] Connect to AniList
 - [x] Scan local library and match local files with corresponding
   anime. [See classification guide](https://github.com/5rahim/seanime/blob/main/guide.md).
-  - [ ] Scan logs system
-  - [ ] File name tag system for faster matching (eg: {id-0001})
+  - [x] Scan logs system
   - [x] .unsea/.seaignore file support to ignore a folder
+  - [ ] File name tag system for faster matching (eg: {id-0001})
 - [x] Show anime list from local library
 - [x] Refresh/Re-scan library
 - [x] Open episode with default player
-- [ ] Automatic progress tracking
-  - [ ] Sync progress with AniList
+- [x] Automatic progress tracking
+  - [x] Sync progress with AniList
   - [ ] Sync progress with MAL
 - [x] Lock/Unlock individual files to speed up scanning
-- [x] Ignore filles
+- [x] Ignore files
   - [ ] Manage/Un-ignore ignored files
 - [x] Un-match files (that might be incorrectly matched)
 - [x] "Resolve unmatched" files features
   - [x] Match single files or folders to a media
   - [x] Option to match files using MAL ID
   - [ ] Show AniList link using AniZip
-- [ ] Download additional episodes using qBittorent and Nyaa
-- [ ] Show additional info like future airing episodes and sequels
+- [x] Download additional episodes using qBittorent (embedded) and Nyaa (search)
+- [x] Show additional info like future airing episodes and sequels
 - [ ] Stream episode from web source with custom player
-- [ ] Browse and manage AniList list
-  - [x] View AniList lists
-  - [ ] Change score
-  - [ ] Update status, remove
+- [x] Browse and manage AniList entries
 - [ ] Search new anime
 
 ## Try it
@@ -64,14 +61,7 @@ npm run tauri:dev
 
 ## TODO
 
-- [x] Improve performance
-    - 600ms->15ms to lock/unlock files
-    - 10x faster scanning with cache system
-    - No excessive re-rendering
-- [ ] Better matching for Specials/OVA
 - [ ] Edit file metadata
-- [x] Unmatch entire media
+- [ ] Show a section with new, un-downloaded episodes
 - [ ] Preliminary scan to hydrate AniList (for users without anilist data)
-    - Get unique titles from files and folders
-    - Use matching recommendation system
 - Video
