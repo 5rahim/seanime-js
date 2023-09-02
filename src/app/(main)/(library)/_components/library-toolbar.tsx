@@ -122,7 +122,7 @@ export function LibraryToolbar() {
     return (
         <>
             <div className={"p-4"}>
-                <div className={"p-2 border border-[--border] rounded-lg flex w-full justify-between gap-2"}>
+                <div className={"flex w-full justify-between gap-2"}>
 
                     <div className={"inline-flex gap-2 items-center"}>
                         <Button onClick={refreshModal.open} intent={"primary-subtle"} leftIcon={<RiFileSearchLine/>}>

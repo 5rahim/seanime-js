@@ -28,25 +28,21 @@ This project is a hobby and is not being made to solve every single edge case.
   - [x] Ignore files or folders
   - [x] Logs
   - [ ] File name tag system for faster matching (eg: {id-0001})
-- [x] Show anime list from local library
-- [x] Refresh/Re-scan library
-- [x] Open episode with default player
+  - [x] Refresh/Re-scan library
+- [x] Play episode with default player
 - [x] Automatic progress tracking
   - [x] Sync progress with AniList
   - [ ] Sync progress with MAL
-- [x] Lock/Unlock individual files to speed up scanning
-- [x] Ignore files
-  - [ ] Manage/Un-ignore ignored files
+- [ ] Offline mode
 - [x] Un-match files (that might be incorrectly matched)
-- [x] "Resolve unmatched" files features
+- [x] Resolve unmatched files feature
   - [x] Match single files or folders to a media
   - [x] Option to match files using MAL ID
-  - [ ] Show AniList link using AniZip
 - [x] Download additional episodes using qBittorent (embedded) and Nyaa (search)
-- [x] Show additional info like future airing episodes and sequels
-- [ ] Stream episode from web source with custom player
 - [x] Browse and manage AniList entries
-- [ ] Search new anime
+  - [x] Add, edit, AniList entries (status, score, progress…)
+- [ ] Stream episodes from web source with custom player
+- [ ] See trending, search and filter
 
 ## Try it
 
@@ -62,13 +58,24 @@ npm run tauri:dev
 
 - :shrug:
 
+## Not planned
+
+- Watch together feature
+- Torrent streaming
+- Scanning without AniList data
+- Progress tracking without AniList
+- Mobile app
+
 ## TODO
 
 - [ ] Loading screen to `/view/[id]`
 - [ ] Edit file metadata
 - [ ] Show a section with new, un-downloaded episodes
 - [ ] Preliminary scan to hydrate AniList (for users without anilist data)
-- Video
+- [ ] Update settings local directory picker
+- [ ] Manage/Un-ignore ignored files
+- [ ] (Resolve unmatched) Show AniList link using AniZip
+- [ ] Offline mode
 
 ## Resources
 
