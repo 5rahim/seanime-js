@@ -1,3 +1,6 @@
+/* -------------------------------------------------------------------------------------------------
+ * Original code from Moopa - https://github.com/Ani-Moopa/Moopa/blob/main/components/videoPlayer.js
+ * -----------------------------------------------------------------------------------------------*/
 import { ArtPlayer } from "../art-player/player"
 import { useEffect, useState } from "react"
 import artplayerPluginHlsQuality from "artplayer-plugin-hls-quality"

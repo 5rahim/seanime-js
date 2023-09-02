@@ -1,3 +1,7 @@
+/* -------------------------------------------------------------------------------------------------
+ * Original code from Moopa - https://github.com/Ani-Moopa/Moopa/blob/main/lib/Artplayer.js
+ * Types https://github.com/zhw2590582/ArtPlayer/blob/master/packages/artplayer/types/artplayer.d.ts
+ * -----------------------------------------------------------------------------------------------*/
 import { useRef } from "react"
 import Artplayer from "artplayer"
 import Hls from "hls.js"

@@ -5,38 +5,25 @@
 Seanime will try to match your episode files to AniList entries using
 multiple techniques.
 
-## Unmatched files
+## Unmatched/Incorrectly matched files
 
 When some episode files are unmatched it generally means that:
 
-- You did not have that anime in your AniList lists.
+- You did not have that anime in your AniList watch list.
   - Seanime uses your AniList data to match episode files.
   - Seanime will try to match with sequels or prequels that are not on your watch list but may not find earlier or
-    later seasons
-  - For example, let's say your have the 1st, 2nd and 3rd Season in your files but only have the 1st season added in
-    your watch list, Seanime might not be able to match files with the 3rd season
-  - It is recommended that you do not use the `Resolve unmatched` features but instead manually add the anime to AniList
-    and `Refreshing entries`
-- The naming is inconsistent.
-  - During the matching process, Seanime might not resolve files that have a folder name too dissimilar to the actual
-    Anime.
-  - It might not accurately match seasons.
-- Movies may be matched incorrectly if they are not in separate folders.
-- Seanime may unmatch some episodes if it detects an anime title in the folder's name and that title differs too much
-  from the actual anime.
+    later seasons. Let's say your have the 1st, 2nd and 3rd Season in your library but only have the 1st season added in
+    your watch list, Seanime might incorrectly match 3rd season files with the 2nd season. If it is the case, you can
+    manually unmatched the files and use the `Resolve unmatched` features OR manually add the anime to your AniList
+    watch list
+    and refresh entries.
+- The structure is inconsistent.
+- Confused parts/cours with seasons.
+  - Some torrent names will inappropriately classify cours/parts as seasons. When it is the case, you should rename
+    parent folders so that they match AniList names.
+- Movies may be matched incorrectly if they are not in separate folders
+- Specials/OVAs might be matched incorrectly.
 
-```text
-├── %LIBRARY_FOLDER%
-    ├── Jujutsu Kaisen
-        ├── Season 1
-        │   └── ...
-        ├── Season 2
-        │   └── ...
-        └── NC
-            └── Jujustu Kaisen S1 OP.mkv        <- This MIGHT not be matched
-            
-Fix: Use the `Resolve unmatched` feature
-```
 
 ```text
 ├── %LIBRARY_FOLDER%
@@ -51,13 +38,13 @@ Fix: Use the `Resolve unmatched` feature
 Fix: Move and rename
 
 ├── %LIBRARY_FOLDER%
-    ├── Jujutsu Kaisen
-    │   ├── Season 1
-    │   │   └── ...
-    │   └── Season 2
-    │       └── ...
-    └── Jujustu Kaisen 0
-        └── Jujustu Kaisen 0.mkv                <- Good
+    └── Jujutsu Kaisen
+        ├── Season 1
+        │   └── ...
+        ├── Season 2
+        │   └── ...
+        └── Jujustu Kaisen 0
+            └── Jujustu Kaisen 0.mkv             <- Good
 
 ```
 
@@ -284,20 +271,18 @@ Absolute episode numbers will be normalized to relative episode number and will 
 
 ### Finding movie
 
-Make sure all movies are located at the root, in separate folders with the same title.
-
 ```text
 ├── %LIBRARY_FOLDER%
-    ├── Movie title
-    │   └── Movie title.mkv
-    └── Another movie
-        └── Another movie.mkv
+    ├── {Movie title}
+    │   └── {Movie title}.mkv
+    └── {Another movie}
+        └── {Another movie}.mkv
 ```
 
 ```text
 ├── %LIBRARY_FOLDER%
-    ├── Movie title.mkv
-    └── Another movie.mkv
+    ├── {Movie title}.mkv
+    └── {Another movie}.mkv
 ```
 
 ```text
@@ -308,18 +293,29 @@ Avoid this
         ├── Neon Genesis Evangelion 01.mkv         
         ├── Neon Genesis Evangelion 02.mkv          
         ├── ...            
-        └── Neon Genesis Evangelion Movies        
-            └── ...     
+        └── Rebuild Of Evangelion 
+            └── Evangelion: 2.0 You Can (Not) Advance.mkv
 
 Do this
 
 ├── %LIBRARY_FOLDER%
-    └── Neon Genesis Evangelion Complete Series
+    ├── Neon Genesis Evangelion Complete Series
     │   ├── Neon Genesis Evangelion 01.mkv         
     │   ├── Neon Genesis Evangelion 02.mkv          
     │   └── ...            
-    └── Neon Genesis Evangelion Movies        
-        └── ...       
+    └── Evangelion: 2.0 You Can (Not) Advance
+        └── Evangelion: 2.0 You Can (Not) Advance.mkv
+
+OR
+
+├── %LIBRARY_FOLDER%
+    └── Neon Genesis Evangelion Complete Series
+        ├── Neon Genesis Evangelion                             <- Add a sub-folder for the episodes
+        │   ├── Neon Genesis Evangelion 01.mkv         
+        │   ├── Neon Genesis Evangelion 02.mkv          
+        │   └── ...            
+        └── Evangelion: 2.0 You Can (Not) Advance
+            └── Evangelion: 2.0 You Can (Not) Advance.mkv
 ```
 
 ### Algorithms
@@ -330,7 +326,8 @@ js-levenshtein), and MAL's elastic search. These are the steps for **every singl
 - Parse candidate titles that will be used for comparison from file name and folder names
 - Parse a season from folder name or file name
 - Find multiple variations of the title with the seasons for comparison (explained in previous section)
-- Compare title variations to all media titles (userPreferred, english, and romaji) from user's AniList + related
+- Compare title variations to all media titles (userPreferred, english, and romaji, synonyms) from user's AniList +
+  related
   prequels and sequels that are not in the watch list.
   - Using Dice's coefficient, get most similar title from user's watch list
   - Using Levenshtein's algorithm, get most similar title from user's watch list
@@ -357,10 +354,10 @@ This is perfect if your episode files have consistent names.
 ```
 
 ```
-[media-matching]:  (Cache MISS) Jujustu Kaisen 01           <- 1-2 seconds, key: "[Jujustu Kaisen Season 2, Jujustu Kaisen 2, ...]"
-[media-matching]:  (Cache HIT) Jujustu Kaisen 02            <- Near instant
-[media-matching]:  (Cache HIT) Jujustu Kaisen 03            <- Near instant
-[media-matching]:  (Cache HIT) Jujustu Kaisen 04            <- ...
+[media-matching]:  (Cache MISS) Jujustu Kaisen 01           <- ~1s - key: "[Jujustu Kaisen Season 2, Jujustu Kaisen 2nd Season]"
+[media-matching]:  (Cache HIT) Jujustu Kaisen 02            <- < 1ms - key: "[Jujustu Kaisen Season 2, Jujustu Kaisen 2nd Season]"
+[media-matching]:  (Cache HIT) Jujustu Kaisen 03            <- < 1ms - key: "[Jujustu Kaisen Season 2, Jujustu Kaisen 2nd Season]"
+[media-matching]:  (Cache HIT) Jujustu Kaisen 04            <- < 1ms - key: "[Jujustu Kaisen Season 2, Jujustu Kaisen 2nd Season]"
 ```
 
 However, if your episode files do not have consistent names, the matching process will slow down considerably.
@@ -375,59 +372,76 @@ However, if your episode files do not have consistent names, the matching proces
 ```
 
 ```
-[media-matching]:  (Cache MISS) The Black Lagoon 01         <- 1-2 seconds, key: "[Black Lagoon, The Black Lagoon]"
-[media-matching]:  (Cache MISS) Mangrove Heaven 02          <- 1-2 seconds key: "[Black Lagoon, Mangrove Heaven]"
-[media-matching]:  (Cache MISS) Ring-Ding Ship Chase 03     <- 1-2 seconds key: "[Black Lagoon, Ring-Ding Ship Chase]"
+[media-matching]:  (Cache MISS) The Black Lagoon 01         <- ~1s -  key: "[Black Lagoon, The Black Lagoon]"
+[media-matching]:  (Cache MISS) Mangrove Heaven 02          <- ~1s - key: "[Black Lagoon, Mangrove Heaven]"
+[media-matching]:  (Cache MISS) Ring-Ding Ship Chase 03     <- ~1s - key: "[Black Lagoon, Ring-Ding Ship Chase]"
 ```
 
 ## TL;DR
 
+- You **might** not need to rename torrent names, the parser will extract the necessary information and ignore the rest
+  - `[Group] Anime [Dual-Audio][BDRip 1920x1080 HEVC FLAC]` = `Anime`
+  - `[Group] Anime S01E01 [8CE6090E].mkv` = `Anime S01E01`
+  - Rename only when the scan fails to find a match
 - `SX` and `Season X` can be used interchangeably
-- `SXEX` and `S0XE0x` can be used interchangeably
+- `SXEX` and `S0XE0X` can be used interchangeably
 
-2 parent folders
+The following examples will also work with torrent file names. Just make sure that the basic structure and parsable
+information are the same.
 
-- `> Anime S1-3 > Anime S1 > Anime S1E1.mkv` -> BEST
-- `> Anime S1-3 > Anime S1 > Anime E1.mkv` -> Good
-- `> Anime S1-3 > Anime > Anime S1E1.mkv` -> Good
-- `> Anime S1-3 > S1 > Anime S1E1.mkv` -> Good
-- `> Anime S1-3 > S1 > Anime E1.mkv` -> Good
+Batch
+
+- `SX-Y` = `Season X-Y` = `Season X ~ Y`, `X Y` = `0X 0Y`
+- The range is not necessary as it will be
+  ignored. `{Anime Title} S1-3` = `{Anime Title}` = `{Anime Title} Complete series` etc…
+
+
+- `~ \ {Anime Title} S1-3 \ {Anime Title} S1 \ {Anime Title} S1E1.mkv` -> BEST
+- `~ \ {Anime Title} S1-3 \ {Anime Title} S1 \ {Anime Title} E1.mkv` -> Good
+- `~ \ {Anime Title} S1-3 \ {Anime Title} \ {Anime Title} S1E1.mkv` -> Good
+- `~ \ {Anime Title} S1-3 \ Season 1 \ {Anime Title} S1E1.mkv` -> Good
+- `~ \ {Anime Title} S1-3 \ Season 1 \ {Anime Title} E1.mkv` -> Good
 
 1 parent folder
 
-- `> Anime S1 > Anime S1E1.mkv` -> BEST
-- `> Anime S1 > Anime E1.mkv` -> Good
-- `> Anime > Anime S1E1.mkv` -> Good
-- `> S1 > Anime S1E1.mkv` -> Good
-- `> S1 > Anime E1.mkv` -> Good
-- `> Anime > E1.mkv` -> Good
+- `~ \ {Movie Title} \ {Movie Title}.mkv` -> BEST
+- `~ \ {Anime Title} S1 \ {Anime Title} S1E1.mkv` -> BEST
+- `~ \ {Anime Title} \ {Anime Title} S1E1.mkv` -> Good
+- `~ \ {Anime Title} S1 \ {Anime Title} 01.mkv` -> Good
+- `~ \ {Anime Title} \ S1 \ {Anime Title} S1E1.mkv` -> Good
+- `~ \ {Anime Title} \ S1 \ {Anime Title} E1.mkv` -> Good
+- `~ \ {Anime Title} \ E1.mkv` -> Good
 
 With episode titles
 
-- `> Anime S1 > Anime - E1 - Episode title.mkv` -> Good
-- `> Anime S1 > E1 - Episode title.mkv` -> Passable
-- `> Anime S1 > Episode title - E1.mkv` -> BAD
+- `~ \ ... \ {Anime Title} \ {Anime Title} - S01E1 - Episode title.mkv` -> BEST
+- `~ \ ... \ {Anime Title} \ S01E1 - Episode title.mkv` -> Good
+- `~ \ ... \ {Anime Title} \ Episode title - S01E1.mkv` -> BAD
 
 Without seasons
 
-- `> Anime > Anime E1.mkv` -> Good
-- `> Anime > E1.mkv` -> Good
+- `~ \ {Anime Title} \ {Anime Title} 01.mkv` -> Good
+- `~ \ {Anime Title} \ {Anime Title} E1.mkv` -> Good
+- `~ \ {Anime Title} \ E1.mkv` -> Good
+- `~ \ {Anime Title} \ {Anime Title} 1.mkv` -> AVOID
 
 Root folder
 
-- `> Anime title S1E1.mkv` -> Good
-- `> Anime title - E1 - Episode title.mkv` -> Passable
-- `> Anime title - Episode title - E1.mkv` -> BAD
+- `~ \ {Anime Title} S1E1.mkv` -> Good
+- `~ \ {Anime Title} - E1 - Episode title.mkv` -> Good
+- `~ \ {Anime Title} - Episode title - E1.mkv` -> AVOID
 
 Movies
 
-- `> Movie title > Movie title.mkv` -> BEST
-- `> Anime title S1-3+Movie > Movie title > Movie title.mkv` -> Passable
-- `> Anime title S1-3+Movie > Anime title (Movie) > Movie title.mkv` -> Issue-prone
-- `> Anime title S1-3+Movie > Anime title Movie > Movie title.mkv` -> BAD
+- `~ \ {Movie title} \ {Movie title}.mkv` -> BEST
+- `~ \ {Anime Title} S1-3+Movie \ {Movie title} \ {Movie title}.mkv` -> Good
+- `~ \ {Anime Title} S1-3+Movie \ {Anime Title} (Movie) \ {Movie title}.mkv` -> Issue-prone
+- `~ \ {Anime Title} S1-3+Movie \ {Anime Title} Movie \ {Movie title}.mkv` -> BAD
 
 Specials/NC
 
-- `> [AniList Special's title] > [AniList Special's title].mkv` -> BEST
-- `> Anime title > Specials > [AniList Special's title].mkv` -> Good
-- `> Anime title > Others > Anime title (OP|ED)(1-9).mkv` -> Good
+- `~ \ [AniList Special's title] \ [AniList Special's title].mkv` -> Good (If the special has an entry on AniList. e.g.,
+  One Punch Man OVA)
+- `~ \ {Anime Title} \ Specials \ [AniList Special's title].mkv` -> Good
+- `~ \ {Anime Title} \ Specials \ {Anime Title} S00E(1-9).mkv` -> Good
+- `~ \ {Anime Title} \ Others \ {Anime Title} (OP|ED)(1-9).mkv` -> Good
