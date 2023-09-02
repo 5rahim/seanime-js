@@ -50,7 +50,6 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = React.memo((props) 
     const ncFileAtoms = useNCLocalFileAtomsByMediaId(detailedMedia.id)
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(detailedMedia.id)
     const status = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.media?.status)
-
     const nextUpFilePath = useStableSelectAtom(toWatch[0], file => file?.path)
 
     const setProgressTracking = useSetAtom(progressTrackingAtom)

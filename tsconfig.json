@@ -15,6 +15,7 @@
     "downlevelIteration": true,
     "jsx": "preserve",
     "incremental": true,
+    "noImplicitAny": true,
     "plugins": [
       {
         "name": "next"

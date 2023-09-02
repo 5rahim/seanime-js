@@ -1,13 +1,15 @@
 "use client"
 
-import React, { useState } from "react"
+import React from "react"
 import { useAniListClientQuery } from "@/hooks/graphql-client-helpers"
 import { AnimeShortMediaByIdDocument } from "@/gql/graphql"
-import { useUpdateEffect } from "react-use"
+import { useAsync } from "react-use"
 import { useSettings } from "@/atoms/settings"
-import { fetchRelatedMedia } from "@/lib/anilist/actions"
-import { AnilistShortMedia } from "@/lib/anilist/fragment"
 import { useAuthed } from "@/atoms/auth"
+
+import { getConsumetGogoAnimeStreamingData, getConsumetMediaEpisodes } from "@/lib/consumet/actions"
+import { VideoStreamer } from "@/lib/streaming/streamer"
+import { getConsumetEpisodeDataByNumber } from "@/lib/consumet/utils"
 
 export default function Page() {
 
@@ -66,28 +68,44 @@ export default function Page() {
     //     return await advancedSearchWithMAL(_title)
     // }, [settings])
 
-    const [state, setState] = useState<any>()
+    // const [state, setState] = useState<any>()
+    //
+    // useUpdateEffect(() => {
+    //     (async () => {
+    //         try {
+    //             if (data?.Media && token) {
+    //                 const queryMap = new Map<number, AnilistShortMedia>
+    //                 const res = await fetchRelatedMedia(data.Media, queryMap, token)
+    //                 queryMap.clear()
+    //                 console.log(res)
+    //                 setState(res)
+    //             }
+    //         } catch (e) {
+    //             console.log(e)
+    //         }
+    //     })()
+    // }, [data, token])
 
-    useUpdateEffect(() => {
-        (async () => {
-            try {
-                if (data?.Media && token) {
-                    const queryMap = new Map<number, AnilistShortMedia>
-                    const res = await fetchRelatedMedia(data.Media, queryMap, token)
-                    queryMap.clear()
-                    console.log(res)
-                    setState(res)
-                }
-            } catch (e) {
-                console.log(e)
-            }
-        })()
-    }, [data, token])
+    const state = useAsync(async () => {
+        const episodes = await getConsumetMediaEpisodes(145064)
+        return getConsumetGogoAnimeStreamingData(getConsumetEpisodeDataByNumber(1, episodes!)?.id!)
+    })
 
 
     return (
         <div className={"px-4"}>
-            <pre>{JSON.stringify(state, null, 2)}</pre>
+            <div className={"h-[45rem]"}>
+                {!!state.value && <VideoStreamer
+                    id={"cowboy-bebop-episode-1"}
+                    data={state.value}
+                    session={null}
+                    aniId={"cowboy-bebop-episode-1"}
+                    skip={undefined}
+
+                />}
+            </div>
+            <pre>{JSON.stringify(state.value, null, 2)}</pre>
+
         </div>
     )
     // useEffect(() => {

@@ -172,7 +172,7 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
                 {relations.length > 0 && (
                     <Accordion.Item title={"Relations"} defaultOpen={true}>
                         <div className={"grid grid-cols-4 gap-4 p-4"}>
-                            {relations.map(edge => {
+                            {relations.slice(0, 4).map(edge => {
                                 return <div key={edge.node?.id} className={"col-span-1"}>
                                     <Link href={`/view/${edge.node?.id}`}>
                                         {edge.node?.coverImage?.large && <div
