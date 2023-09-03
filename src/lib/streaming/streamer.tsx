@@ -7,6 +7,9 @@ import artplayerPluginHlsQuality from "artplayer-plugin-hls-quality"
 import { useRouter } from "next/navigation"
 import { ConsumetStreamingData } from "@/lib/consumet/types"
 import Artplayer from "artplayer"
+import { useAtom } from "jotai/react"
+import { streamingAutoplayAtom, streamingResolutionAtom } from "@/atoms/streaming/streaming.atoms"
+import { SkipTime } from "@/lib/aniskip/types"
 
 const fontSize = [
     {
@@ -27,7 +30,6 @@ export function VideoStreamer(
     {
         data,
         id,
-        session,
         aniId,
         skip,
         title,
@@ -39,10 +41,9 @@ export function VideoStreamer(
         dub,
     }: {
         data: ConsumetStreamingData,
-        id: string,
-        session?: any,
-        aniId: any,
-        skip?: any,
+        id: string, // Check
+        aniId: number, // Check
+        skip?: { op: SkipTime | null, ed: SkipTime | null }, // Check
         title?: any,
         poster?: any,
         proxy?: string
@@ -57,16 +58,16 @@ export function VideoStreamer(
 
     const router = useRouter()
 
-    const [resolution, setResolution] = useState("auto")
     const [subSize, setSubSize] = useState<any>({ size: "16px", html: "Small" })
     const [defSize, setDefSize] = useState<any>()
     const [subtitle, setSubtitle] = useState<any>()
     const [defSub, setDefSub] = useState<string | undefined>()
 
-    const [autoPlay, setAutoPlay] = useState(false)
+    const [autoplay, setAutoplay] = useAtom(streamingAutoplayAtom)
+    const [resolution, setResolution] = useAtom(streamingResolutionAtom)
 
     useEffect(() => {
-        const resol = localStorage.getItem("quality")
+        const resol = resolution
         // const sub = JSON.parse(localStorage.getItem("subSize"))
         if (resol) {
             setResolution(resol)
@@ -150,9 +151,10 @@ export function VideoStreamer(
                     key={url}
                     option={{
                         url: `${url}`,
-                        // title: `${title}`,
+                        //@ts-ignore
+                        title: `${title}`,
                         autoplay: false,
-                        screenshot: true,
+                        screenshot: false,
                         moreVideoAttr: {
                             crossOrigin: "anonymous",
                         },
@@ -192,15 +194,12 @@ export function VideoStreamer(
                             },
                         }),
                     }}
-                    id={aniId}
                     res={resolution}
                     quality={sources}
                     subSize={subSize}
                     subtitles={subtitle}
                     provider={provider}
                     track={track}
-                    autoplay={autoPlay}
-                    setAutoplay={setAutoPlay}
                     style={{
                         width: "100%",
                         height: "100%",
@@ -231,56 +230,22 @@ export function VideoStreamer(
 
                         let marked = 0
 
-                        art.on("video:playing", () => {
-                            if (!session) return
-                            // const intervalId = setInterval(async () => {
-                            //     const resp = await fetch("/api/user/update/episode", {
-                            //         method: "PUT",
-                            //         body: JSON.stringify({
-                            //             name: session?.user?.name,
-                            //             id: String(aniId),
-                            //             watchId: id,
-                            //             title: track?.playing?.title || aniTitle,
-                            //             aniTitle: aniTitle,
-                            //             image: track?.playing?.image || info?.coverImage?.extraLarge,
-                            //             number: Number(progress),
-                            //             duration: art.duration,
-                            //             timeWatched: art.currentTime,
-                            //             provider: provider,
-                            //         }),
-                            //     })
-                            //     // console.log("updating db");
-                            // }, 5000)
-
-                            // art.on("video:pause", () => {
-                            //     clearInterval(intervalId)
-                            // })
-                            //
-                            // art.on("video:ended", () => {
-                            //     clearInterval(intervalId)
-                            // })
-                            //
-                            // art.on("destroy", () => {
-                            //     clearInterval(intervalId)
-                            //     // console.log("clearing interval");
-                            // })
-                        })
-
                         // art.on("video:playing", () => {
-                        //     const interval = setInterval(async () => {
-                        //         art.storage.set(id, {
-                        //             aniId: String(aniId),
-                        //             watchId: id,
-                        //             title: track?.playing?.title || aniTitle,
-                        //             aniTitle: aniTitle,
-                        //             image: track?.playing?.image || info?.coverImage?.extraLarge,
-                        //             episode: Number(progress),
-                        //             duration: art.duration,
-                        //             timeWatched: art.currentTime,
-                        //             provider: provider,
-                        //             createdAt: new Date().toISOString(),
-                        //         })
-                        //     }, 5000)
+                        // TODO Save position
+                        // const interval = setInterval(async () => {
+                        //     art.storage.set(id, {
+                        //         aniId: String(aniId),
+                        //         watchId: id,
+                        //         title: track?.playing?.title || aniTitle,
+                        //         aniTitle: aniTitle,
+                        //         image: track?.playing?.image || info?.coverImage?.extraLarge,
+                        //         episode: Number(progress),
+                        //         duration: art.duration,
+                        //         timeWatched: art.currentTime,
+                        //         provider: provider,
+                        //         createdAt: new Date().toISOString(),
+                        //     })
+                        // }, 5000)
                         //
                         //     art.on("video:pause", () => {
                         //         clearInterval(interval)
@@ -302,8 +267,6 @@ export function VideoStreamer(
                         })
 
                         art.on("video:timeupdate", async () => {
-                            if (!session) return
-
                             var currentTime = art.currentTime
                             const duration = art.duration
                             const percentage = currentTime / duration
@@ -312,33 +275,15 @@ export function VideoStreamer(
                                 // use >= instead of >
                                 if (marked < 1) {
                                     marked = 1
+                                    // TODO: onVideoComplete
                                     // markProgress(aniId, progress, stats)
                                 }
                             }
                         })
 
                         art.on("video:ended", () => {
-                            if (!track?.next) return
-                            if (localStorage.getItem("autoplay") === "true") {
-                                art.controls.add({
-                                    name: "next-button",
-                                    position: "top",
-                                    html: "<div class=\"vid-con\"><button class=\"next-button progress\">Play Next</button></div>",
-                                    click: function (...args) {
-                                        if (track?.next) {
-                                            router.push(
-                                                `/en/anime/watch/${aniId}/${provider}?id=${encodeURIComponent(
-                                                    track?.next?.id,
-                                                )}&num=${track?.next?.number}${
-                                                    dub ? `&dub=${dub}` : ""
-                                                }`,
-                                            )
-                                        }
-                                    },
-                                })
-
-                                const button = document.querySelector(".next-button")
-
+                            if (autoplay === true) {
+                                // TODO: onVideoEnd
                                 // function stopTimeout() {
                                 //     clearTimeout(timeoutId)
                                 //     button.classList.remove("progress")
@@ -359,6 +304,7 @@ export function VideoStreamer(
                             }
                         })
 
+                        /** Skip OP/ED **/
                         art.on("video:timeupdate", () => {
                             var currentTime = art.currentTime
                             // console.log(art.currentTime);
@@ -379,9 +325,10 @@ export function VideoStreamer(
                                     art.controls.add({
                                         name: "op",
                                         position: "top",
-                                        html: "<button class=\"skip-button\">Skip Opening</button>",
+                                        // html: <Button>Skip opening</Button>,
+                                        html: "<button style=\"bottom:25px;font-weight: bold;width:130px;height:45px;\" class=\"bg-white xs:w-28 xs:h-9 w-24 h-7 rounded-md font-karla font-medium shadow-xl hover:bg-[#f1f1f1] text-black absolute -top-12 left-0 xs:text-[15px] text-sm\">Skip Opening</button>",
                                         click: function (...args) {
-                                            art.seek = skip.op.interval.endTime
+                                            if (skip.op) art.seek = skip.op.interval.endTime
                                         },
                                     })
                                 }
@@ -401,9 +348,9 @@ export function VideoStreamer(
                                     art.controls.add({
                                         name: "ed",
                                         position: "top",
-                                        html: "<button class=\"skip-button\">Skip Ending</button>",
+                                        html: "<button style=\"bottom:25px;font-weight: bold;width:130px;height:45px;\" class=\"bg-white xs:w-28 xs:h-9 w-24 h-7 rounded-md font-karla font-medium shadow-xl hover:bg-[#f1f1f1] text-black absolute -top-12 left-0 xs:text-[15px] text-sm\">Skip Opening</button>",
                                         click: function (...args) {
-                                            art.seek = skip.ed.interval.endTime
+                                            if (skip.ed) art.seek = skip.ed.interval.endTime
                                         },
                                     })
                                 }

@@ -8,3 +8,7 @@ export const streamingProviderAtom = atomWithStorage<StreamingProvider>("sea-str
 export const zoroStreamingServerAtom = atomWithStorage<ZoroServer>("sea-streaming-zoro-server", "vidstreaming", undefined, { unstable_getOnInit: true })
 
 export const gogoAnimeStreamingServerAtom = atomWithStorage<GogoAnimeServer>("sea-streaming-gogoanime-server", "gogocdn", undefined, { unstable_getOnInit: true })
+
+export const streamingAutoplayAtom = atomWithStorage("sea-streaming-autoplay", false, undefined, { unstable_getOnInit: true })
+
+export const streamingResolutionAtom = atomWithStorage("sea-streaming-quality", "auto", undefined, { unstable_getOnInit: true })

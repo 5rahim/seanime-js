@@ -30,6 +30,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useQuery } from "@tanstack/react-query"
 import Image from "next/image"
 import { FiPlayCircle } from "@react-icons/all-files/fi/FiPlayCircle"
+import { SkipTime } from "@/lib/aniskip/types"
 
 interface WatchPageProps {
     children?: React.ReactNode
@@ -37,9 +38,6 @@ interface WatchPageProps {
     aniZipData: AniZipData
     // episodes: ConsumetAnimeEpisode[]
 }
-
-/** Store the list of episodes **/
-const episodesAtom = atom<ConsumetAnimeEpisodeMeta[]>([])
 
 /** Persist the current episode number **/
 const episodeNumberRepositoryAtom = atomWithStorage<{
@@ -57,7 +55,7 @@ export function useEpisodeStreamingData(episodes: ConsumetAnimeEpisodeMeta[], ep
         async () => {
             return await getConsumetEpisodeStreamingData(episodeId!, provider, server, false)
         },
-        { enabled: !!episodeId, retry: false, keepPreviousData: false },
+        { enabled: !!episodeId, retry: false, keepPreviousData: false, refetchOnWindowFocus: false },
     )
     return { data: res.data, isLoading: res.isLoading || res.isFetching, isError: res.isError }
 }
@@ -68,7 +66,26 @@ export function useProviderEpisodes(mediaId: number, server: any) {
         async () => {
             return await getConsumetEpisodeMeta(mediaId, server, false)
         },
-        { keepPreviousData: false },
+        { keepPreviousData: false, refetchOnWindowFocus: false },
+    )
+    return { data: res.data, isLoading: res.isLoading || res.isFetching, isError: res.isError }
+}
+
+export function useSkipData(mediaMalId: number | null | undefined, episodeNumber: number) {
+    const res = useQuery(
+        ["skip-data", mediaMalId, episodeNumber],
+        async () => {
+            const result = await fetch(
+                `https://api.aniskip.com/v2/skip-times/${mediaMalId}/${episodeNumber}?types[]=ed&types[]=mixed-ed&types[]=mixed-op&types[]=op&types[]=recap&episodeLength=`,
+            )
+            const skip = (await result.json()) as { found: boolean, results: SkipTime[] }
+            if (!!skip.results && skip.found) return {
+                op: skip.results?.find((item) => item.skipType === "op") || null,
+                ed: skip.results?.find((item) => item.skipType === "ed") || null,
+            }
+            return { op: null, ed: null }
+        },
+        { keepPreviousData: false, refetchOnWindowFocus: false, enabled: !!mediaMalId },
     )
     return { data: res.data, isLoading: res.isLoading || res.isFetching, isError: res.isError }
 }
@@ -104,6 +121,13 @@ export function WatchPage(props: WatchPageProps) {
         setEpisodeNumber(ep)
         router.push(`/watch/${media.id}`) // Will remove `?episode=` on landing
     })
+
+    /** AniSkip **/
+    const { data: aniSkipData } = useSkipData(media.idMal, episodeNumber)
+
+    useEffect(() => {
+        console.log(aniSkipData)
+    }, [aniSkipData])
 
     /** Update episode number **/
     useUpdateEffect(() => {
@@ -143,7 +167,7 @@ export function WatchPage(props: WatchPageProps) {
     }, [episodes, episodeNumber])
 
     if (providerEpisodeDataLoading) return <>
-        <Skeleton className={"col-span-1 2xl:col-span-8 w-full h-10"}/>
+        <Skeleton className={"col-span-1 2xl:col-span-8 w-full h-10 mr-4"}/>
         <div className={"relative col-span-1 2xl:col-span-5 w-full h-full"}>
             <Skeleton className={"aspect-video h-auto w-full"}/>
         </div>
@@ -192,12 +216,12 @@ export function WatchPage(props: WatchPageProps) {
                         <div className={"aspect-video w-full"}>
                             <VideoStreamer
                                 id={episodeMeta?.id || ""}
+                                title={`Episode ${episodeNumber}`}
                                 data={episodeStreamingData}
                                 provider={streamingProvider}
-                                session={null}
+                                skip={aniSkipData}
                                 poster={media.bannerImage}
-                                aniId={"cowboy-bebop-episode-1"}
-                                skip={undefined}
+                                aniId={media.id}
                             />
                         </div>
                     </div>

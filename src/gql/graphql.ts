@@ -1,6 +1,5 @@
 /* eslint-disable */
 import { TypedDocumentNode as DocumentNode } from "@graphql-typed-document-node/core"
-
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -4527,6 +4526,7 @@ export type YearStats = {
 export type MediaFragment = {
     siteUrl?: string | null,
     id: number,
+    idMal?: number | null,
     bannerImage?: string | null,
     season?: MediaSeason | null,
     description?: string | null,
@@ -5008,6 +5008,7 @@ export type AnimeByIdQuery = {
     Media?: {
         siteUrl?: string | null,
         id: number,
+        idMal?: number | null,
         bannerImage?: string | null,
         season?: MediaSeason | null,
         description?: string | null,
@@ -5301,7 +5302,7 @@ export const MediaFragmentDoc = {
             "selections": [{ "kind": "Field", "name": { "kind": "Name", "value": "siteUrl" } }, {
                 "kind": "Field",
                 "name": { "kind": "Name", "value": "id" },
-            }, {
+            }, { "kind": "Field", "name": { "kind": "Name", "value": "idMal" } }, {
                 "kind": "Field",
                 "name": { "kind": "Name", "value": "title" },
                 "selectionSet": {
@@ -6952,7 +6953,7 @@ export const AnimeByIdDocument = {
             "selections": [{ "kind": "Field", "name": { "kind": "Name", "value": "siteUrl" } }, {
                 "kind": "Field",
                 "name": { "kind": "Name", "value": "id" },
-            }, {
+            }, { "kind": "Field", "name": { "kind": "Name", "value": "idMal" } }, {
                 "kind": "Field",
                 "name": { "kind": "Name", "value": "title" },
                 "selectionSet": {

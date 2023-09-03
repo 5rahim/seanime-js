@@ -98,7 +98,7 @@ Resources used to build Seanime.
 - [GraphQL Codegen](https://the-guild.dev/graphql/codegen) - GraphQL code generation
 - [Moopa](https://github.com/Ani-Moopa/Moopa) - Video streaming Proxy (Temporary)
 
-## Acknowledgement
+## Credit
 
 - [Anikki](https://github.com/Kylart/Anikki/) - Inspired some GraphQL fragments and nomenclatures
 - [Miru](https://github.com/ThaUnknown/miru/) - Inspired some AniList utility functions

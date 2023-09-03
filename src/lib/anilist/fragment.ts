@@ -9,6 +9,7 @@ export const _mediaFragment = gql`
     fragment media on Media {
         siteUrl
         id
+        idMal
         title {
             userPreferred
             romaji

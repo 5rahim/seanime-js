@@ -8,6 +8,9 @@ import Hls from "hls.js"
 import { useRouter } from "next/navigation"
 import { type Option } from "artplayer/types/option"
 import { appWindow } from "@tauri-apps/api/window"
+import { useAtom } from "jotai/react"
+import { streamingAutoplayAtom, streamingResolutionAtom } from "@/atoms/streaming/streaming.atoms"
+import { BiPlay } from "@react-icons/all-files/bi/BiPlay"
 
 export function ArtPlayer(
     {
@@ -18,10 +21,7 @@ export function ArtPlayer(
         subtitles,
         provider,
         getInstance,
-        id,
         track,
-        autoplay,
-        setAutoplay,
         ...rest
     }: {
         option: Partial<Option>,
@@ -31,15 +31,13 @@ export function ArtPlayer(
         subtitles: any,
         provider: any,
         getInstance?: any,
-        id: string,
         track?: any,
-        autoplay?: boolean,
-        setAutoplay?: (value: boolean) => void,
     } & Partial<Option>,
 ) {
     const artRef = useRef<HTMLDivElement>(null)
 
-    const router = useRouter()
+    const [autoplay, setAutoplay] = useAtom(streamingAutoplayAtom)
+    const [resolution, setResolution] = useAtom(streamingResolutionAtom)
 
     function playM3u8(video: HTMLVideoElement, url: string, art: any) {
         if (Hls.isSupported()) {
@@ -97,14 +95,13 @@ export function ArtPlayer(
             settings: [
                 {
                     html: "Autoplay",
-                    // icon: '<img width="22" heigth="22" src="/assets/img/state.svg">',
+                    icon: <BiPlay className={"w-5 h-5"}/>,
                     tooltip: "ON/OFF",
                     switch: false,
-                    // onSwitch: function (item) {
-                    //     setAutoplay(!item.switch);
-                    //     localStorage.setItem("autoplay", !item.switch);
-                    //     return !item.switch;
-                    // },
+                    onSwitch: function (item: any) {
+                        setAutoplay && setAutoplay(!item.switch)
+                        return !item.switch
+                    },
                 },
                 provider === "zoro" && {
                     html: "Subtitles",
@@ -236,6 +233,7 @@ export function ArtPlayer(
                     selector: quality,
                     onSelect: function (item: any) {
                         art.switchQuality(item.url)
+                        setResolution(item.quality)
                         // localStorage.setItem("quality", item.html);
                         return item.html
                     },
@@ -243,45 +241,15 @@ export function ArtPlayer(
             ].filter(Boolean),
         })
 
-        if ("mediaSession" in navigator) {
-            art.on("video:timeupdate", () => {
-                const session = navigator.mediaSession
-                if (!session) return
-                session.setPositionState({
-                    duration: art.duration,
-                    playbackRate: art.playbackRate,
-                    position: art.currentTime,
-                })
-            })
-
-            navigator.mediaSession.setActionHandler("play", () => {
-                art.play()
-            })
-
-            navigator.mediaSession.setActionHandler("pause", () => {
-                art.pause()
-            })
-
-            navigator.mediaSession.setActionHandler("previoustrack", () => {
-                if (track?.prev) {
-                    router.push(
-                        `/en/anime/watch/${id}/${provider}?id=${encodeURIComponent(
-                            track?.prev?.id,
-                        )}&num=${track?.prev?.number}`,
-                    )
-                }
-            })
-
-            navigator.mediaSession.setActionHandler("nexttrack", () => {
-                if (track?.next) {
-                    router.push(
-                        `/en/anime/watch/${id}/${provider}?id=${encodeURIComponent(
-                            track?.next?.id,
-                        )}&num=${track?.next?.number}`,
-                    )
-                }
-            })
-        }
+        art.on("video:timeupdate", () => {
+            // const session = navigator.mediaSession
+            // if (!session) return
+            // session.setPositionState({
+            //     duration: art.duration,
+            //     playbackRate: art.playbackRate,
+            //     position: art.currentTime,
+            // })
+        })
 
         art.events.proxy(document, "keydown", async (event: Event | KeyboardEvent) => {
             try {
@@ -297,8 +265,6 @@ export function ArtPlayer(
 
             }
         })
-
-        // artInstanceRef.current = art;
 
         if (getInstance && typeof getInstance === "function") {
             getInstance(art)
