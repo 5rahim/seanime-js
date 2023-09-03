@@ -98,7 +98,7 @@ interface TabNavProps extends TabPrimitiveListProps<"div">,
     children?: React.ReactNode
 }
 
-const TabNav: React.FC<TabNavProps> = React.forwardRef<HTMLDivElement, TabNavProps>((props, ref) => {
+export const TabNav: React.FC<TabNavProps> = React.forwardRef<HTMLDivElement, TabNavProps>((props, ref) => {
 
     const {
         children,
@@ -137,7 +137,7 @@ interface TabProps extends TabPrimitiveProps<"div">, ComponentWithAnatomy<typeof
     children?: React.ReactNode
 }
 
-const Tab: React.FC<TabProps> = React.forwardRef<HTMLDivElement, TabProps>((props, ref) => {
+export const Tab: React.FC<TabProps> = React.forwardRef<HTMLDivElement, TabProps>((props, ref) => {
 
     const {
         children,
@@ -174,7 +174,9 @@ Tab.displayName = "Tab"
 _TabPanels.Tab = Tab
 _TabPanels.Nav = TabNav
 _TabPanels.Container = React.memo(TabPrimitive.Panels)
+export const TabContainer = React.memo(TabPrimitive.Panels)
 _TabPanels.Panel = TabPrimitive.Panel
+export const TabPanel = TabPrimitive.Panel
 
 _TabPanels.Container.displayName = "TabContainer"
 _TabPanels.Panel.displayName = "TabPanel"

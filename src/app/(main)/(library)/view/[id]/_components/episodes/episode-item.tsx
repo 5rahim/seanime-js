@@ -10,15 +10,18 @@ import { BiDotsHorizontal } from "@react-icons/all-files/bi/BiDotsHorizontal"
 import { VscVerified } from "@react-icons/all-files/vsc/VscVerified"
 import { BiLockOpenAlt } from "@react-icons/all-files/bi/BiLockOpenAlt"
 import { cn } from "@/components/ui/core"
+import { ConsumetAnimeEpisodeData } from "@/lib/consumet/types"
+import { valueContainsNC, valueContainsSpecials } from "@/lib/local-library/utils"
 
 export const EpisodeItem = React.memo((props: {
     fileAtom: PrimitiveAtom<LocalFile>,
     aniZipData?: AniZipData,
     onPlayFile: (path: string) => void
     media: AnilistDetailedMedia
+    consumetEpisodeData: ConsumetAnimeEpisodeData
 }) => {
 
-    const { fileAtom, aniZipData, onPlayFile, media } = props
+    const { fileAtom, aniZipData, onPlayFile, media, consumetEpisodeData } = props
 
     const mediaID = useSelectAtom(fileAtom, file => file.mediaId) // Listen to changes in order to unmount when we unmatch
     const metadata = useSelectAtom(fileAtom, file => file.metadata)
@@ -27,8 +30,18 @@ export const EpisodeItem = React.memo((props: {
     const setFileLocked = useFocusSetAtom(fileAtom, "locked")
     const setFileMediaId = useFocusSetAtom(fileAtom, "mediaId")
 
-    const episodeData = useMemo(() => aniZipData?.episodes[metadata.aniDBEpisodeNumber || String(metadata.episode)], [])
+    const aniZipEpisode = useMemo(() => aniZipData?.episodes[metadata.aniDBEpisodeNumber || String(metadata.episode)], [])
+    const consumetEpisode = useMemo(() => consumetEpisodeData?.find(n => Number(n.number) === metadata.episode), [])
     const fileTitle = useMemo(() => parsedInfo?.original?.replace(/.(mkv|mp4)/, "")?.replaceAll(/(\[)[a-zA-Z0-9 ._~-]+(\])/ig, "")?.replaceAll(/[_,-]/g, " "), [parsedInfo])
+
+    const image = useMemo(() => {
+        if (!!path && (!valueContainsSpecials(path) && !valueContainsNC(path))) {
+            return (consumetEpisode?.image || aniZipEpisode?.image)
+        } else if (!!path) {
+            return undefined
+        }
+        return (consumetEpisode?.image || aniZipEpisode?.image)
+    }, [])
 
     const displayedTitle = useMemo(() => {
         let _output = parsedInfo?.title || fileTitle || "???"
@@ -42,11 +55,11 @@ export const EpisodeItem = React.memo((props: {
     return (
         <EpisodeItemSkeleton
             media={media}
-            image={episodeData?.image}
+            image={image}
             onClick={async () => onPlayFile(path)}
             title={displayedTitle}
             showImagePlaceholder={!metadata.isNC}
-            episodeTitle={episodeData?.title?.en}
+            episodeTitle={aniZipEpisode?.title?.en || consumetEpisode?.title}
             fileName={parsedInfo?.original?.replace(/.(mkv|mp4)/, "")?.replaceAll(/(\[)[a-zA-Z0-9 ._~-]+(\])/ig, "")?.replaceAll(/[_,-]/g, " ")}
             action={<>
                 <EpisodeItemLockButton fileAtom={fileAtom}/>
@@ -102,16 +115,42 @@ interface EpisodeItemSkeletonProps {
     onClick?: () => void
     title: string,
     episodeTitle?: string | null
+    description?: string | null
     fileName?: string
     showImagePlaceholder?: boolean
+    isSelected?: boolean
+    isWatched?: boolean
 }
 
-export const EpisodeItemSkeleton: React.FC<EpisodeItemSkeletonProps> = (props) => {
+export const EpisodeItemSkeleton: React.FC<EpisodeItemSkeletonProps & React.ComponentPropsWithoutRef<"div">> = (props) => {
 
-    const { children, action, image, onClick, episodeTitle, title, fileName, ...rest } = props
+    const {
+        children,
+        action,
+        image,
+        onClick,
+        episodeTitle,
+        description,
+        title,
+        fileName,
+        isSelected,
+        media,
+        showImagePlaceholder,
+        isWatched,
+        ...rest
+    } = props
 
     return <>
-        <div className={"border border-[--border] p-4 pr-12 rounded-lg relative transition hover:bg-gray-900"}>
+        <div
+            className={cn(
+                "border border-[--border] p-4 pr-12 rounded-lg relative transition hover:bg-gray-900",
+                {
+                    "ring-offset-3 ring-2 ring-brand-200 bg-gray-800 hover:bg-gray-800": isSelected,
+                    "opacity-50": isWatched && !isSelected,
+                },
+            )}
+            {...rest}
+        >
             <div
                 className={cn(
                     "flex gap-4 relative",
@@ -134,7 +173,7 @@ export const EpisodeItemSkeleton: React.FC<EpisodeItemSkeletonProps> = (props) =
                     />
                 </div>}
 
-                {(props.showImagePlaceholder && !image) && (
+                {(showImagePlaceholder && !image) && (
                     <div className={"h-24 w-24 rounded-md flex-none bg-gray-800 relative overflow-hidden"}>
                         {props.media.coverImage?.medium && <Image
                             src={props.media.coverImage?.medium}
@@ -152,6 +191,7 @@ export const EpisodeItemSkeleton: React.FC<EpisodeItemSkeletonProps> = (props) =
                     <h4 className={"font-medium"}>{title}</h4>
                     {!!episodeTitle && <p className={"text-sm text-[--muted] line-clamp-2"}>{episodeTitle}</p>}
                     {!!fileName && <p className={"text-sm text-gray-600 truncate text-ellipsis"}>{fileName}</p>}
+                    {!!description && <p className={"text-sm text-gray-500 line-clamp-2"}>{description}</p>}
                     {children && children}
                 </div>
             </div>

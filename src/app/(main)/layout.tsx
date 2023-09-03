@@ -37,6 +37,12 @@ export default function Layout({ children }: {
                 name: "My library",
             },
             ...authedItems,
+            {
+                href: "/",
+                icon: null,
+                isCurrent: pathname === "/discover",
+                name: "Discover",
+            },
         ]
     }, [isAuthed, pathname])
 

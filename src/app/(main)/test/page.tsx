@@ -7,10 +7,6 @@ import { useAsync } from "react-use"
 import { useSettings } from "@/atoms/settings"
 import { useAuthed } from "@/atoms/auth"
 
-import { getConsumetGogoAnimeStreamingData, getConsumetMediaEpisodes } from "@/lib/consumet/actions"
-import { VideoStreamer } from "@/lib/streaming/streamer"
-import { getConsumetEpisodeDataByNumber } from "@/lib/consumet/utils"
-
 export default function Page() {
 
     const { settings } = useSettings()
@@ -87,23 +83,22 @@ export default function Page() {
     // }, [data, token])
 
     const state = useAsync(async () => {
-        const episodes = await getConsumetMediaEpisodes(145064)
-        return getConsumetGogoAnimeStreamingData(getConsumetEpisodeDataByNumber(1, episodes!)?.id!)
+        return null
     })
 
 
     return (
         <div className={"px-4"}>
-            <div className={"h-[45rem]"}>
-                {!!state.value && <VideoStreamer
-                    id={"cowboy-bebop-episode-1"}
-                    data={state.value}
-                    session={null}
-                    aniId={"cowboy-bebop-episode-1"}
-                    skip={undefined}
+            {/*<div className={"h-[45rem]"}>*/}
+            {/*    {!!state.value && <VideoStreamer*/}
+            {/*        id={"cowboy-bebop-episode-1"}*/}
+            {/*        data={state.value}*/}
+            {/*        session={null}*/}
+            {/*        aniId={"cowboy-bebop-episode-1"}*/}
+            {/*        skip={undefined}*/}
 
-                />}
-            </div>
+            {/*    />}*/}
+            {/*</div>*/}
             <pre>{JSON.stringify(state.value, null, 2)}</pre>
 
         </div>

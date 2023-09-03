@@ -1,5 +1,5 @@
 "use client"
-import React from "react"
+import React, { useMemo } from "react"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
 import { BiCalendarAlt } from "@react-icons/all-files/bi/BiCalendarAlt"
 import _ from "lodash"
@@ -17,6 +17,11 @@ import { BiHeart } from "@react-icons/all-files/bi/BiHeart"
 import { AiFillStar } from "@react-icons/all-files/ai/AiFillStar"
 import { AiOutlineStar } from "@react-icons/all-files/ai/AiOutlineStar"
 import { AiOutlineHeart } from "@react-icons/all-files/ai/AiOutlineHeart"
+import { Button } from "@/components/ui/button"
+import { BiCloud } from "@react-icons/all-files/bi/BiCloud"
+import { useStableSelectAtom } from "@/atoms/helpers"
+import { useAtomValue } from "jotai/react"
+import { streamingProviderAtom } from "@/atoms/streaming/streaming.atoms"
 
 interface MetaSectionProps {
     children?: React.ReactNode
@@ -29,7 +34,20 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
 
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(detailedMedia.id)
     const entryAtom = useLibraryEntryAtomByMediaId(detailedMedia.id)
+    const progress = useStableSelectAtom(collectionEntryAtom, entry => entry?.progress)
 
+    /** Streaming **/
+    const streamingProvider = useAtomValue(streamingProviderAtom)
+
+    const nextEpisode = useMemo(() => {
+        if (!!detailedMedia.nextAiringEpisode?.episode) {
+            return progress ? (progress + 1 <= detailedMedia.nextAiringEpisode.episode - 1 ? progress + 1 : detailedMedia.nextAiringEpisode.episode - 1) : 1
+        } else {
+            return progress ? (progress + 1 <= detailedMedia.episodes! ? progress + 1 : detailedMedia.episodes!) : 1
+        }
+    }, [])
+
+    /** Rest **/
     const relations = (detailedMedia.relations?.edges?.map(edge => edge) || [])
         .filter(Boolean)
         .filter(n => (n.node?.format === "TV" || n.node?.format === "OVA" || n.node?.format === "MOVIE") && (n.relationType === "PREQUEL" || n.relationType === "SEQUEL" || n.relationType === "PARENT" || n.relationType === "SIDE_STORY" || n.relationType === "ALTERNATIVE" || n.relationType === "ADAPTATION"))
@@ -38,8 +56,6 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
     const allTimeHighestRated = detailedMedia.rankings?.find(r => !!r?.allTime && r?.type === "RATED" && r.rank <= 100)
     const seasonHighestRated = detailedMedia.rankings?.find(r => (!!r?.season || !!r?.year) && r?.type === "RATED" && r.rank <= 5)
     const allTimeMostPopular = detailedMedia.rankings?.find(r => !!r?.allTime && r?.type === "POPULAR" && r.rank <= 100)
-
-    console.log(detailedMedia.rankings)
 
     return (
         <div className={"space-y-8 pb-10"}>
@@ -154,13 +170,19 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
 
                 </div>
 
-                {/*Avoid "rendered fewer hooks than expected" error*/}
                 {detailedMedia.status !== "NOT_YET_RELEASED" && (
                     <DownloadPageButton
                         entryAtom={entryAtom}
                         collectionEntryAtom={collectionEntryAtom}
                         detailedMedia={detailedMedia}
                     />
+                )}
+
+                {detailedMedia.status !== "NOT_YET_RELEASED" && (
+                    <Link href={`/watch/${detailedMedia.id}/${streamingProvider}/${nextEpisode}`} className={"block"}>
+                        <Button className={"w-full"} intent={"white-outline"} size={"lg"} leftIcon={<BiCloud/>}
+                                iconClassName={"text-xl"}>Stream online</Button>
+                    </Link>
                 )}
 
                 <NextAiringEpisode detailedMedia={detailedMedia}/>

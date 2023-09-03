@@ -11,6 +11,8 @@ export type ConsumetAnimeEpisode = {
     airDate: string | null | undefined
 }
 
+export type ConsumetAnimeEpisodeData = ConsumetAnimeEpisode[] | undefined
+
 export type ConsumetStreamingData = {
     headers: {
         Referer: string

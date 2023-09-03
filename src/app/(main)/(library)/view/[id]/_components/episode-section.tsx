@@ -27,11 +27,13 @@ import { Button } from "@/components/ui/button"
 import _ from "lodash"
 import { Badge } from "@/components/ui/badge"
 import { FiPlayCircle } from "@react-icons/all-files/fi/FiPlayCircle"
+import { ConsumetAnimeEpisodeData } from "@/lib/consumet/types"
 
 interface EpisodeSectionProps {
     children?: React.ReactNode
     detailedMedia: AnilistDetailedMedia
     aniZipData: AniZipData
+    consumetEpisodeData: ConsumetAnimeEpisodeData
 }
 
 const progressTrackingAtom = atomWithImmer<{ open: boolean, filesWatched: LocalFile[] }>({
@@ -42,7 +44,7 @@ const progressTrackingAtom = atomWithImmer<{ open: boolean, filesWatched: LocalF
 
 export const EpisodeSection: React.FC<EpisodeSectionProps> = React.memo((props) => {
 
-    const { children, detailedMedia, aniZipData, ...rest } = props
+    const { children, detailedMedia, aniZipData, consumetEpisodeData, ...rest } = props
 
     const entryAtom = useLibraryEntryAtomByMediaId(detailedMedia.id)
     const { toWatch, watched } = useMainLocalFileAtomsByMediaId(detailedMedia.id)
@@ -59,7 +61,6 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = React.memo((props) 
     const { playFile } = useVideoPlayer({
         onTick: console.log,
         onVideoComplete: (fileName) => {
-            // console.log("video complete", fileName)
             if (!!getFile(fileName)) {
                 setProgressTracking(draft => {
                     draft.filesWatched.push(getFile(fileName)!)
@@ -78,7 +79,8 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = React.memo((props) 
     if (!entryAtom) {
         return <div className={"space-y-10"}>
             {status !== "NOT_YET_RELEASED" ? <p>Not in your library</p> : <p>Not yet released</p>}
-            <UndownloadedEpisodeList media={detailedMedia} aniZipData={aniZipData}/>
+            <UndownloadedEpisodeList media={detailedMedia} aniZipData={aniZipData}
+                                     consumetEpisodeData={consumetEpisodeData}/>
         </div>
     }
 
@@ -119,6 +121,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = React.memo((props) 
                         onPlayFile={playFile}
                         media={detailedMedia}
                         aniZipData={aniZipData}
+                        consumetEpisodeData={consumetEpisodeData}
                     />
 
                     {watched.length > 0 && <>
@@ -129,6 +132,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = React.memo((props) 
                             onPlayFile={playFile}
                             media={detailedMedia}
                             aniZipData={aniZipData}
+                            consumetEpisodeData={consumetEpisodeData}
                         />
                     </>}
 
@@ -143,6 +147,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = React.memo((props) 
                             onPlayFile={playFile}
                             media={detailedMedia}
                             aniZipData={aniZipData}
+                            consumetEpisodeData={consumetEpisodeData}
                         />
                     </>}
 
@@ -155,6 +160,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = React.memo((props) 
                             onPlayFile={playFile}
                             media={detailedMedia}
                             aniZipData={aniZipData}
+                            consumetEpisodeData={consumetEpisodeData}
                         />
                     </>}
 

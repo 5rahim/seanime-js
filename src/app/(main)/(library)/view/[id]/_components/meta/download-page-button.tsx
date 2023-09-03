@@ -41,11 +41,13 @@ export const DownloadPageButton = (
         <div>
             <Link href={`/view/${detailedMedia.id}/download`}>
                 {detailedMedia.format !== "MOVIE" &&
-                    <Button className={"w-full"} intent={"white"} size={"lg"} leftIcon={<BiDownload/>}>
+                    <Button className={"w-full"} intent={"white"} size={"lg"} leftIcon={<BiDownload/>}
+                            iconClassName={"text-2xl"}>
                         Download {downloadInfo.batch ? "batch /" : "next"} {downloadInfo.toDownload > 1 ? `${downloadInfo.toDownload} episodes` : "episode"}
                     </Button>}
                 {detailedMedia.format === "MOVIE" &&
-                    <Button className={"w-full"} intent={"white"} size={"lg"} leftIcon={<BiDownload/>}>Download
+                    <Button className={"w-full"} intent={"white"} size={"lg"} leftIcon={<BiDownload/>}
+                            iconClassName={"text-2xl"}>Download
                         movie</Button>}
             </Link>
         </div>
