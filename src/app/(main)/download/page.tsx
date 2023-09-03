@@ -10,7 +10,7 @@ export default function Page() {
             <div
                 className={"w-[80%] h-[calc(100vh-15rem)] rounded-xl border border-[--border] overflow-hidden mx-auto mt-10 ring-1 ring-[--border] ring-offset-2"}>
                 <iframe
-                    src={"http://localhost:8081"}
+                    src={"http://127.0.0.1:8081"}
                     className={"w-full h-full"}
                 />
             </div>

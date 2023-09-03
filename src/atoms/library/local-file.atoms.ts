@@ -65,10 +65,11 @@ const get_Main_LocalFileAtomsByMediaIdAtom = atom(null,
                 !ANIDB_RX[4].test(file.path) && !ANIDB_RX[5].test(file.path) && !ANIDB_RX[6].test(file.path)
         }) ?? []
 
-        if (mainFileAtoms.length > 0 && !!collectionEntry?.progress && !!collectionEntry.media?.episodes && !(collectionEntry.progress === Number(collectionEntry.media.episodes))) {
+        const maxEp = (collectionEntry?.media?.nextAiringEpisode?.episode ? collectionEntry?.media?.nextAiringEpisode?.episode - 1 : undefined) || collectionEntry?.media?.episodes
+        if (mainFileAtoms.length > 0 && !!collectionEntry?.progress && !!maxEp && !(collectionEntry.progress === Number(maxEp))) {
             return {
-                toWatch: mainFileAtoms?.slice(collectionEntry.progress) ?? [],
-                watched: mainFileAtoms?.slice(0, collectionEntry.progress) ?? [],
+                toWatch: mainFileAtoms?.filter(n => !!get(n).metadata.episode && get(n).metadata.episode! > collectionEntry?.progress!) ?? [],
+                watched: mainFileAtoms?.filter(n => !!get(n).metadata.episode && get(n).metadata.episode! <= collectionEntry?.progress!) ?? [],
             }
         } else {
             return {

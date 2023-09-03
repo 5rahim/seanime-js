@@ -18,6 +18,7 @@ import { FiSettings } from "@react-icons/all-files/fi/FiSettings"
 import { FiSearch } from "@react-icons/all-files/fi/FiSearch"
 import { BiTestTube } from "@react-icons/all-files/bi/BiTestTube"
 import { BiDownload } from "@react-icons/all-files/bi/BiDownload"
+import { useRefreshAnilistCollection } from "@/atoms/anilist/collection.atoms"
 
 interface MainSidebarProps {
     children?: React.ReactNode
@@ -31,6 +32,7 @@ export const MainSidebar: React.FC<MainSidebarProps> = (props) => {
     const { authenticate } = useAnilistLogin()
     const { user } = useCurrentUser()
     const pathname = usePathname()
+    const refreshCollection = useRefreshAnilistCollection()
 
     const loginModal = useDisclosure(false)
 
@@ -103,6 +105,7 @@ export const MainSidebar: React.FC<MainSidebarProps> = (props) => {
                             onSubmit={data => {
                                 authenticate(data.token)
                                 loginModal.close()
+                                refreshCollection()
                             }}
                         >
                             <Field.Textarea name={"token"} className={"h-24"}/>

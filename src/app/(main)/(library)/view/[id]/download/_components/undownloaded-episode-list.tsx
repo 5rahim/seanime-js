@@ -9,8 +9,6 @@ import { BiDownload } from "@react-icons/all-files/bi/BiDownload"
 import Link from "next/link"
 import { ConsumetAnimeEpisodeData } from "@/lib/consumet/types"
 import { BiPlayCircle } from "@react-icons/all-files/bi/BiPlayCircle"
-import { useAtomValue } from "jotai/react"
-import { streamingProviderAtom } from "@/atoms/streaming/streaming.atoms"
 
 interface UndownloadedEpisodeListProps {
     children?: React.ReactNode
@@ -22,8 +20,6 @@ interface UndownloadedEpisodeListProps {
 export const UndownloadedEpisodeList: React.FC<UndownloadedEpisodeListProps> = React.memo((props) => {
 
     const { children, media, aniZipData, consumetEpisodeData, ...rest } = props
-
-    const streamingProvider = useAtomValue(streamingProviderAtom)
 
     const {
         downloadInfo,
@@ -60,9 +56,8 @@ export const UndownloadedEpisodeList: React.FC<UndownloadedEpisodeListProps> = R
                                         className={"text-orange-200 absolue top-1 right-1 text-3xl absolute animate-pulse"}>
                                         <BiDownload/>
                                     </Link>
-                                    {/*TODO Episode id*/}
                                     <Link
-                                        href={`/watch/${media.id}/${streamingProvider}/${epNumber}`}
+                                        href={`/watch/${media.id}?episode=${epNumber}`}
                                         className={"text-gray-50 absolue top-10 right-1 text-3xl absolute"}>
                                         <BiPlayCircle/>
                                     </Link>

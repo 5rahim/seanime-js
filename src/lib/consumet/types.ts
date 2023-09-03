@@ -1,8 +1,8 @@
 export type ConsumetAnimeMeta = {
-    episodes: ConsumetAnimeEpisode[]
+    episodes: ConsumetAnimeEpisodeMeta[]
 } // TODO
 
-export type ConsumetAnimeEpisode = {
+export type ConsumetAnimeEpisodeMeta = {
     id: string
     title: string | null | undefined
     description: string | null | undefined
@@ -11,7 +11,7 @@ export type ConsumetAnimeEpisode = {
     airDate: string | null | undefined
 }
 
-export type ConsumetAnimeEpisodeData = ConsumetAnimeEpisode[] | undefined
+export type ConsumetAnimeEpisodeData = ConsumetAnimeEpisodeMeta[] | undefined
 
 export type ConsumetStreamingData = {
     headers: {
@@ -31,3 +31,22 @@ export type ConsumetStreamingData = {
 }
 
 export type ConsumetErrorResponse = { message: string }
+export type ConsumetProvider =
+    "9anime"
+    | "animefox"
+    | "animepahe"
+    | "bilibili"
+    | "crunchyroll"
+    | "enime"
+    | "gogoanime"
+    | "marin"
+    | "zoro"
+
+export type ZoroServer = "vidcloud" | "streamsb" | "vidstreaming" | "streamtape"
+export type GogoAnimeServer = "gogocdn" | "streamsb" | "vidstreaming"
+
+// export const consumetZoroServers = ["vidcloud", "streamsb", "vidstreaming", "streamtape"]
+export const consumetZoroServers = ["vidstreaming"]
+
+// export const consumetGogoAnimeServers = ["gogocdn", "streamsb", "vidstreaming"]
+export const consumetGogoAnimeServers = ["gogocdn", "vidstreaming"]

@@ -77,7 +77,7 @@ export const initialSettings: Settings = {
  * Atoms
  * -----------------------------------------------------------------------------------------------*/
 
-export const settingsAtoms = atomWithStorage<Settings>("sea-settings", initialSettings)
+export const settingsAtoms = atomWithStorage<Settings>("sea-settings", initialSettings, undefined, { unstable_getOnInit: true })
 
 /* -------------------------------------------------------------------------------------------------
  * Hooks

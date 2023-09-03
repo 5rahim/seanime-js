@@ -28,7 +28,7 @@ export default async function RootLayout(
     return (
         <html lang="en" suppressHydrationWarning>
         <body className={inter.className}>
-        <script src="http://localhost:8097"></script>
+        <script src="http://127.0.0.1:8097"></script>
         <TitleBar/>
         <ClientProviders>
             <Suspense fallback={<LoadingOverlay/>}>

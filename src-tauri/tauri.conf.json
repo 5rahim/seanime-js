@@ -3,7 +3,7 @@
   "build": {
     "beforeBuildCommand": "npm run build",
     "beforeDevCommand": "npm run next:dev",
-    "devPath": "http://localhost:7777",
+    "devPath": "http://127.0.0.1:7777",
     "distDir": "../out"
   },
   "package": {

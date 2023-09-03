@@ -1,19 +1,17 @@
 import React from "react"
 import { Skeleton } from "@/components/ui/skeleton"
+import { EpisodeListSkeleton } from "@/app/(main)/(library)/watch/[id]/_components/watch-page"
 
 export default function loading() {
     return (
-        <>
-            <div className={"__header h-[15rem]"}>
-                <div
-                    className="h-[15rem] w-[calc(100%-5rem)] flex-none object-cover object-center absolute top-0 overflow-hidden">
-                    <div
-                        className={"w-full absolute z-[1] top-0 h-[15rem] bg-gradient-to-b from-[--background-color] to-transparent via"}/>
-                    <Skeleton className={"h-full absolute w-full"}/>
-                    <div
-                        className={"w-full absolute bottom-0 h-[10rem] bg-gradient-to-t from-[--background-color] via-transparent to-transparent"}/>
-                </div>
+        <div className={"relative z-10 max-w-full px-10 grid grid-cols-1 2xl:grid-cols-8 gap-8"}>
+            <Skeleton className={"col-span-8 w-full h-10"}/>
+            <div className={"relative col-span-5 w-full h-full"}>
+                <Skeleton className={"aspect-video h-auto w-full"}/>
             </div>
-        </>
+            <div className={"relative col-span-3 p-4 pt-0 space-y-4"}>
+                <EpisodeListSkeleton/>
+            </div>
+        </div>
     )
 }

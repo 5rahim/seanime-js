@@ -2,11 +2,10 @@
  * Original code from Moopa - https://github.com/Ani-Moopa/Moopa/blob/main/lib/Artplayer.js
  * Types https://github.com/zhw2590582/ArtPlayer/blob/master/packages/artplayer/types/artplayer.d.ts
  * -----------------------------------------------------------------------------------------------*/
-import { useRef } from "react"
+import { useEffect, useRef } from "react"
 import Artplayer from "artplayer"
 import Hls from "hls.js"
 import { useRouter } from "next/navigation"
-import { useMount } from "react-use"
 import { type Option } from "artplayer/types/option"
 import { appWindow } from "@tauri-apps/api/window"
 
@@ -57,7 +56,7 @@ export function ArtPlayer(
         }
     }
 
-    useMount(() => {
+    useEffect(() => {
         const art = new Artplayer({
             ...option,
             //@ts-ignore
@@ -163,7 +162,7 @@ export function ArtPlayer(
                             html: "Language",
                             icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"35\" height=\"26\" viewBox=\"0 -960 960 960\"><path d=\"M528.282-110.771q-21.744 0-31.308-14.013t-2.205-34.295l135.952-359.307q5.304-14.793 20.292-25.126 14.988-10.334 31.152-10.334 15.398 0 30.85 10.388 15.451 10.387 20.932 25.125l137.128 357.485q8.025 20.949-1.83 35.513-9.855 14.564-33.24 14.564-10.366 0-19.392-6.616-9.025-6.615-12.72-16.242l-30.997-91.808H594.769l-33.381 91.869q-3.645 9.181-13.148 15.989-9.504 6.808-19.958 6.808zm87.871-179.281h131.64l-64.615-180.717h-2.41l-64.615 180.717zM302.104-608.384q14.406 25.624 31.074 48.184 16.669 22.559 37.643 47.021 41.333-44.128 68.628-90.461t46.038-97.897H111.499q-15.674 0-26.278-10.615-10.603-10.616-10.603-26.308t10.615-26.307q10.616-10.616 26.308-10.616h221.537v-36.923q0-15.692 10.615-26.307 10.616-10.616 26.308-10.616t26.307 10.616q10.616 10.615 10.616 26.307v36.923h221.537q15.692 0 26.307 10.616 10.616 10.615 10.616 26.307 0 15.692-10.616 26.308-10.615 10.615-26.307 10.615h-69.088q-19.912 64.153-53.237 125.74-33.325 61.588-82.341 116.412l89.384 90.974-27.692 75.179-115.486-112.922-158.948 158.947q-10.615 10.616-25.667 10.616-15.051 0-25.666-11.026-11.026-10.615-11.026-25.666 0-15.052 11.026-26.077l161.614-161.358q-24.666-28.308-45.551-57.307-20.884-29-37.756-60.103-10.641-19.871-1.346-34.717t33.038-14.846q9.088 0 18.429 5.73 9.34 5.731 13.956 13.577z\"></path></svg>",
                             tooltip: "English",
-                            selector: [...subtitles],
+                            selector: Array.isArray(subtitles) ? [...subtitles] : undefined,
                             onSelect: function (item: any) {
                                 art.subtitle.switch(item.url, {
                                     name: item.html,
@@ -310,7 +309,7 @@ export function ArtPlayer(
                 art.destroy(false)
             }
         }
-    })
+    }, [])
 
     return <div ref={artRef} {...rest}></div>
 }

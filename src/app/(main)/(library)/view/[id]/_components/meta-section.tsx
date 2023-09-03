@@ -20,8 +20,6 @@ import { AiOutlineHeart } from "@react-icons/all-files/ai/AiOutlineHeart"
 import { Button } from "@/components/ui/button"
 import { BiCloud } from "@react-icons/all-files/bi/BiCloud"
 import { useStableSelectAtom } from "@/atoms/helpers"
-import { useAtomValue } from "jotai/react"
-import { streamingProviderAtom } from "@/atoms/streaming/streaming.atoms"
 
 interface MetaSectionProps {
     children?: React.ReactNode
@@ -36,14 +34,11 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
     const entryAtom = useLibraryEntryAtomByMediaId(detailedMedia.id)
     const progress = useStableSelectAtom(collectionEntryAtom, entry => entry?.progress)
 
-    /** Streaming **/
-    const streamingProvider = useAtomValue(streamingProviderAtom)
-
     const nextEpisode = useMemo(() => {
         if (!!detailedMedia.nextAiringEpisode?.episode) {
             return progress ? (progress + 1 <= detailedMedia.nextAiringEpisode.episode - 1 ? progress + 1 : detailedMedia.nextAiringEpisode.episode - 1) : 1
         } else {
-            return progress ? (progress + 1 <= detailedMedia.episodes! ? progress + 1 : detailedMedia.episodes!) : 1
+            return progress ? (progress + 1 <= detailedMedia.episodes! ? progress + 1 : 1) : 1
         }
     }, [])
 
@@ -179,7 +174,7 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
                 )}
 
                 {detailedMedia.status !== "NOT_YET_RELEASED" && (
-                    <Link href={`/watch/${detailedMedia.id}/${streamingProvider}/${nextEpisode}`} className={"block"}>
+                    <Link href={`/watch/${detailedMedia.id}?episode=${nextEpisode}`} className={"block"}>
                         <Button className={"w-full"} intent={"white-outline"} size={"lg"} leftIcon={<BiCloud/>}
                                 iconClassName={"text-xl"}>Stream online</Button>
                     </Link>

@@ -1,3 +1,4 @@
+"use client"
 import React, { useEffect } from "react"
 import { useAuthed } from "@/atoms/auth"
 import { getAniListGraphQLClient } from "@/lib/anilist/graphql-client"

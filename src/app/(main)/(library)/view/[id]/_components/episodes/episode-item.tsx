@@ -145,7 +145,7 @@ export const EpisodeItemSkeleton: React.FC<EpisodeItemSkeletonProps & React.Comp
             className={cn(
                 "border border-[--border] p-4 pr-12 rounded-lg relative transition hover:bg-gray-900",
                 {
-                    "ring-offset-3 ring-2 ring-brand-200 bg-gray-800 hover:bg-gray-800": isSelected,
+                    "border-brand-200 bg-gray-800 hover:bg-gray-800": isSelected,
                     "opacity-50": isWatched && !isSelected,
                 },
             )}

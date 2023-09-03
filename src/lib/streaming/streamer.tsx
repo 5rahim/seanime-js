@@ -32,7 +32,7 @@ export function VideoStreamer(
         skip,
         title,
         poster,
-        proxy = "https://nextjs-cors-anywhere.vercel.app",
+        proxy = "https://cors.moopa.workers.dev/?url=",
         provider = "gogoanime",
         track,
         timeWatched,
@@ -200,7 +200,7 @@ export function VideoStreamer(
                     provider={provider}
                     track={track}
                     autoplay={autoPlay}
-                    setautoplay={setAutoPlay}
+                    setAutoplay={setAutoPlay}
                     style={{
                         width: "100%",
                         height: "100%",

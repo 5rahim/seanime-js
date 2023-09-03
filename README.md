@@ -70,6 +70,7 @@ npm run tauri:dev
 
 - [ ] Loading screen to `/view/[id]`
 - [ ] Edit file metadata
+- [ ] Do not use next/image when list > 100
 - [ ] Show a section with new, un-downloaded episodes
 - [ ] Preliminary scan to hydrate AniList (for users without anilist data)
 - [ ] Update settings local directory picker
@@ -95,6 +96,7 @@ Resources used to build Seanime.
 - [MPC-HC API](https://github.com/rzcoder/mpc-hc-control) - Original MPC-HC API code
 - [VLC API](https://github.com/alexandrucancescu/node-vlc-client) - Original VLC API code
 - [GraphQL Codegen](https://the-guild.dev/graphql/codegen) - GraphQL code generation
+- [Moopa](https://github.com/Ani-Moopa/Moopa) - Video streaming Proxy (Temporary)
 
 ## Acknowledgement
 
