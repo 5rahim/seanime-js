@@ -43,7 +43,7 @@ similar software.
 
 ## Caveats
 
-For the time being, user must ensure their AniList watchlist includes all media present in their local library before
+For the time being, users must ensure their AniList watchlist includes all media present in their local library before
 initiating the scanning process.
 This is because Seanime relies on the user's AniList data to accurately match episode files and organize them
 effectively.

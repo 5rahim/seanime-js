@@ -4,7 +4,12 @@ import { AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import similarity from "string-similarity"
 import { logger } from "@/lib/helpers/debug"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
-import { AnimeCollectionDocument, AnimeShortMediaByIdDocument, UpdateEntryDocument } from "@/gql/graphql"
+import {
+    AnimeByIdDocument,
+    AnimeCollectionDocument,
+    AnimeShortMediaByIdDocument,
+    UpdateEntryDocument,
+} from "@/gql/graphql"
 import fs from "fs"
 import { findMediaEdge } from "@/lib/anilist/utils"
 import {
@@ -270,11 +275,15 @@ export async function manuallyMatchFiles(
 
     if (type === "match") {
 
-
         if (mediaId && !isNaN(Number(mediaId))) {
 
             try {
                 logger("library-entry/manuallyMatchFiles").info("3) Trying to match files")
+                const data = await useAniListAsyncQuery(AnimeByIdDocument, { id: mediaId }, token)
+
+                if (!data.Media) {
+                    return { error: "Could not find the anime on AniList" }
+                }
 
                 const animeExistsInUsersWatchList = collectionQuery.MediaListCollection?.lists?.some(list => !!list?.entries?.some(entry => entry?.media?.id === mediaId)) ?? false
 
