@@ -5,12 +5,22 @@
 import { useEffect, useRef } from "react"
 import Artplayer from "artplayer"
 import Hls from "hls.js"
-import { useRouter } from "next/navigation"
 import { type Option } from "artplayer/types/option"
 import { appWindow } from "@tauri-apps/api/window"
 import { useAtom } from "jotai/react"
 import { streamingAutoplayAtom, streamingResolutionAtom } from "@/atoms/streaming/streaming.atoms"
 import { BiPlay } from "@react-icons/all-files/bi/BiPlay"
+import { ConsumetProvider } from "@/lib/consumet/types"
+
+type ArtPlayerProps = {
+    option: Partial<Option>,
+    res: string,
+    quality: any,
+    subSize: any,
+    subtitles: any,
+    provider: ConsumetProvider,
+    getInstance?: any,
+} & Partial<Option>
 
 export function ArtPlayer(
     {
@@ -21,18 +31,8 @@ export function ArtPlayer(
         subtitles,
         provider,
         getInstance,
-        track,
         ...rest
-    }: {
-        option: Partial<Option>,
-        res: string,
-        quality: any,
-        subSize: any,
-        subtitles: any,
-        provider: any,
-        getInstance?: any,
-        track?: any,
-    } & Partial<Option>,
+    }: ArtPlayerProps,
 ) {
     const artRef = useRef<HTMLDivElement>(null)
 

@@ -4,14 +4,11 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { EpisodeSection } from "@/app/(main)/(library)/view/[id]/_components/episode-section"
 import { MetaSection } from "@/app/(main)/(library)/view/[id]/_components/meta-section"
 import { getAnimeInfo } from "@/app/(main)/(library)/view/[id]/get-anime-info"
-import { getConsumetMediaEpisodes } from "@/lib/consumet/actions"
 
 
 export default async function Page({ params }: { params: { id: string } }) {
 
     const { media, aniZipData } = await getAnimeInfo(params)
-
-    const episodeData = await getConsumetMediaEpisodes(media.id)
 
     return (
         <div>
@@ -44,7 +41,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                     <MetaSection detailedMedia={media}/>
                 </div>
                 <div className={"relative 2xl:order-first pb-10"}>
-                    <EpisodeSection detailedMedia={media} aniZipData={aniZipData} consumetEpisodeData={episodeData}/>
+                    <EpisodeSection detailedMedia={media} aniZipData={aniZipData}/>
                 </div>
             </div>
         </div>

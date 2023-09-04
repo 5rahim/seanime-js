@@ -5,7 +5,9 @@ import { EpisodeListSkeleton } from "@/app/(main)/(library)/watch/[id]/_componen
 export default function loading() {
     return (
         <div className={"relative z-10 max-w-full px-10 grid grid-cols-1 2xl:grid-cols-8 gap-8"}>
-            <Skeleton className={"col-span-8 w-full h-10"}/>
+            <div className={"col-span-1 2xl:col-span-8 w-full pr-4"}>
+                <Skeleton className={"w-full h-10"}/>
+            </div>
             <div className={"relative col-span-5 w-full h-full"}>
                 <Skeleton className={"aspect-video h-auto w-full"}/>
             </div>

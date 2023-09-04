@@ -1,36 +1,34 @@
 "use client"
-import React, { startTransition, useEffect } from "react"
+import React, { startTransition, useEffect, useState } from "react"
 import Link from "next/link"
-import { IconButton } from "@/components/ui/button"
+import { Button, IconButton } from "@/components/ui/button"
 import { AiOutlineArrowLeft } from "@react-icons/all-files/ai/AiOutlineArrowLeft"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
-import { useAtom } from "jotai/react"
-import {
-    ConsumetAnimeEpisodeMeta,
-    consumetGogoAnimeServers,
-    ConsumetProvider,
-    consumetZoroServers,
-} from "@/lib/consumet/types"
+import { useAtom, useAtomValue } from "jotai/react"
+import { consumetGogoAnimeServers, consumetZoroServers } from "@/lib/consumet/types"
 import { EpisodeItemSkeleton } from "@/app/(main)/(library)/view/[id]/_components/episodes/episode-item"
 import {
     gogoAnimeStreamingServerAtom,
+    streamingAutoplayAtom,
     streamingProviderAtom,
     zoroStreamingServerAtom,
 } from "@/atoms/streaming/streaming.atoms"
-import { useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist/entries.atoms"
+import { useAnilistCollectionEntryAtomByMediaId, useWatchedAnilistEntry } from "@/atoms/anilist/entries.atoms"
 import { useStableSelectAtom } from "@/atoms/helpers"
 import { useRouter, useSearchParams } from "next/navigation"
 import { atom } from "jotai"
 import { useMount, useUpdateEffect } from "react-use"
-import { getConsumetEpisodeMeta, getConsumetEpisodeStreamingData } from "@/lib/consumet/actions"
 import { Select } from "@/components/ui/select"
 import { atomWithStorage } from "jotai/utils"
 import { VideoStreamer } from "@/lib/streaming/streamer"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useQuery } from "@tanstack/react-query"
 import Image from "next/image"
 import { FiPlayCircle } from "@react-icons/all-files/fi/FiPlayCircle"
-import { SkipTime } from "@/lib/aniskip/types"
+import {
+    useEpisodeStreamingData,
+    useProviderEpisodes,
+    useSkipData,
+} from "@/app/(main)/(library)/watch/[id]/_lib/queries"
 
 interface WatchPageProps {
     children?: React.ReactNode
@@ -48,48 +46,6 @@ const episodeNumberRepositoryAtom = atomWithStorage<{
 const episodeNumberAtom = atom<number>(1)
 
 
-export function useEpisodeStreamingData(episodes: ConsumetAnimeEpisodeMeta[], episodeNumber: number, provider: ConsumetProvider, server: any | undefined) {
-    const episodeId = episodes.find(episode => episode.number === episodeNumber)?.id
-    const res = useQuery(
-        ["episode-streaming-data", episodes, episodeNumber, server || "-"],
-        async () => {
-            return await getConsumetEpisodeStreamingData(episodeId!, provider, server, false)
-        },
-        { enabled: !!episodeId, retry: false, keepPreviousData: false, refetchOnWindowFocus: false },
-    )
-    return { data: res.data, isLoading: res.isLoading || res.isFetching, isError: res.isError }
-}
-
-export function useProviderEpisodes(mediaId: number, server: any) {
-    const res = useQuery(
-        ["episode-data", mediaId, server],
-        async () => {
-            return await getConsumetEpisodeMeta(mediaId, server, false)
-        },
-        { keepPreviousData: false, refetchOnWindowFocus: false },
-    )
-    return { data: res.data, isLoading: res.isLoading || res.isFetching, isError: res.isError }
-}
-
-export function useSkipData(mediaMalId: number | null | undefined, episodeNumber: number) {
-    const res = useQuery(
-        ["skip-data", mediaMalId, episodeNumber],
-        async () => {
-            const result = await fetch(
-                `https://api.aniskip.com/v2/skip-times/${mediaMalId}/${episodeNumber}?types[]=ed&types[]=mixed-ed&types[]=mixed-op&types[]=op&types[]=recap&episodeLength=`,
-            )
-            const skip = (await result.json()) as { found: boolean, results: SkipTime[] }
-            if (!!skip.results && skip.found) return {
-                op: skip.results?.find((item) => item.skipType === "op") || null,
-                ed: skip.results?.find((item) => item.skipType === "ed") || null,
-            }
-            return { op: null, ed: null }
-        },
-        { keepPreviousData: false, refetchOnWindowFocus: false, enabled: !!mediaMalId },
-    )
-    return { data: res.data, isLoading: res.isLoading || res.isFetching, isError: res.isError }
-}
-
 export function WatchPage(props: WatchPageProps) {
 
     const { children, media, aniZipData, ...rest } = props
@@ -98,12 +54,18 @@ export function WatchPage(props: WatchPageProps) {
     const searchParams = useSearchParams()
     const navigationEpisodeNumber = searchParams.get("episode") ? Number(searchParams.get("episode")) : undefined
 
+    const maxEp = media.nextAiringEpisode?.episode ? (media.nextAiringEpisode?.episode - 1) : media.episodes!
+
+    /** Update progress **/
+    const [showProgressButton, toggleProgressButton] = useState(false)
+    const { watchedEntry } = useWatchedAnilistEntry()
+
     /** AniList **/
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(media.id)
     const progress = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress)
 
     /** Streaming **/
-        // const [episodes, setEpisodes] = useAtom(episodesAtom)
+    const autoplay = useAtomValue(streamingAutoplayAtom)
     const [episodeNumber, setEpisodeNumber] = useAtom(episodeNumberAtom)
     const [episodeNumberRepository, setEpisodeNumberRepository] = useAtom(episodeNumberRepositoryAtom)
     const currentEpisodeNumberFromRepository = (!!episodeNumberRepository && episodeNumberRepository?.mediaId === media.id) ? episodeNumberRepository.episodeNumber : undefined
@@ -166,8 +128,16 @@ export function WatchPage(props: WatchPageProps) {
         })
     }, [episodes, episodeNumber])
 
+    function goToNextEpisode() {
+        setEpisodeNumber(ep => {
+            return ep + 1 < maxEp ? ep + 1 : ep
+        })
+    }
+
     if (providerEpisodeDataLoading) return <>
-        <Skeleton className={"col-span-1 2xl:col-span-8 w-full h-10 mr-4"}/>
+        <div className={"col-span-1 2xl:col-span-8 w-full pr-4"}>
+            <Skeleton className={"w-full h-10"}/>
+        </div>
         <div className={"relative col-span-1 2xl:col-span-5 w-full h-full"}>
             <Skeleton className={"aspect-video h-auto w-full"}/>
         </div>
@@ -179,11 +149,29 @@ export function WatchPage(props: WatchPageProps) {
 
     return (
         <>
-            <div className={"col-span-1 2xl:col-span-8 flex gap-4 items-center"}>
+            <div className={"col-span-1 2xl:col-span-8 flex gap-4 items-center relative"}>
                 <Link href={`/view/${media.id}`}>
                     <IconButton icon={<AiOutlineArrowLeft/>} rounded intent={"white-outline"} size={"md"}/>
                 </Link>
                 <h3>{media.title?.userPreferred}</h3>
+                {(showProgressButton && (!progress || progress < episodeNumber) && progress !== maxEp) && (
+                    <div className={"absolute right-6 z-[5]"}>
+                        <Button
+                            intent={"success"}
+                            className={"animate-bounce"}
+                            onClick={() => {
+                                toggleProgressButton(false)
+                                watchedEntry({
+                                    mediaId: media.id,
+                                    episode: episodeNumber || 1,
+                                })
+                                goToNextEpisode()
+                            }}
+                        >
+                            Update progress ({episodeNumber}/{maxEp})
+                        </Button>
+                    </div>
+                )}
             </div>
 
             <div
@@ -212,7 +200,7 @@ export function WatchPage(props: WatchPageProps) {
                 </div>}
 
                 {(!episodeStreamingDataError && !episodeStreamingDataLoading && !!episodeStreamingData) && (
-                    <div>
+                    <div className={"relative"}>
                         <div className={"aspect-video w-full"}>
                             <VideoStreamer
                                 id={episodeMeta?.id || ""}
@@ -221,47 +209,67 @@ export function WatchPage(props: WatchPageProps) {
                                 provider={streamingProvider}
                                 skip={aniSkipData}
                                 poster={media.bannerImage}
-                                aniId={media.id}
+                                onVideoComplete={() => {
+                                    if (!progress || progress < episodeNumber) {
+                                        toggleProgressButton(true)
+                                    }
+                                    console.log("video completed")
+                                }}
+                                onVideoEnd={() => {
+                                    console.log("video ended")
+                                    if (autoplay) {
+                                        startTransition(() => {
+                                            goToNextEpisode()
+                                        })
+                                    }
+                                }}
                             />
                         </div>
                     </div>
                 )}
-                <div className={"flex gap-4 w-full justify-end"}>
-                    <Select
-                        options={episodes.map(episode => ({
-                            label: `Episode ${episode.number}`,
-                            value: String(episode.number),
-                        }))}
-                        fieldClassName={"flex items-center gap-4 w-auto space-y-0"}
-                        fieldLabelClassName={"self-center"}
-                        value={String(episodeNumber)}
-                        onChange={e => setEpisodeNumber(Number(e.target.value))}
-                        leftIcon={<FiPlayCircle/>}
-                    />
-                    <Select
-                        label={"Provider"}
-                        options={[
-                            { value: "gogoanime", label: "GogoAnime" },
-                            { value: "zoro", label: "AniWatch" },
-                        ]}
-                        fieldClassName={"flex items-center gap-4 w-auto space-y-0"}
-                        fieldLabelClassName={"self-center"}
-                        value={streamingProvider}
-                        onChange={e => setStreamingProvider(e.target.value as any)}
-                    />
-                    <Select
-                        label={"Server"}
-                        options={streamingProvider === "gogoanime" ? consumetGogoAnimeServers.map(n => ({ value: n })) : consumetZoroServers.map(n => ({ value: n }))}
-                        fieldClassName={"flex items-center gap-4 w-auto space-y-0"}
-                        fieldLabelClassName={"self-center"}
-                        value={streamingProvider === "gogoanime" ? gogoAnimeServer : zoroServer}
-                        onChange={e => {
-                            if (streamingProvider === "gogoanime")
-                                setGogoAnimeServer(e.target.value as any)
-                            if (streamingProvider === "zoro")
-                                setZoroServer(e.target.value as any)
-                        }}
-                    />
+                <div className={"flex flex-col xl:flex-row items-center w-full justify-between gap-4"}>
+                    <div className={"w-fit flex-none"}>
+                        <h3 className={"flex-none"}>
+                            {`Episode ${episodeNumber}`}
+                        </h3>
+                    </div>
+                    <div className={"flex gap-4 w-full justify-end"}>
+                        <Select
+                            options={episodes.map(episode => ({
+                                label: `Episode ${episode.number}`,
+                                value: String(episode.number),
+                            }))}
+                            fieldClassName={"flex items-center gap-4 w-auto space-y-0"}
+                            fieldLabelClassName={"self-center"}
+                            value={String(episodeNumber)}
+                            onChange={e => setEpisodeNumber(Number(e.target.value))}
+                            leftIcon={<FiPlayCircle/>}
+                        />
+                        <Select
+                            label={"Provider"}
+                            options={[
+                                { value: "gogoanime", label: "GogoAnime" },
+                                { value: "zoro", label: "AniWatch" },
+                            ]}
+                            fieldClassName={"flex items-center gap-4 w-auto space-y-0"}
+                            fieldLabelClassName={"self-center"}
+                            value={streamingProvider}
+                            onChange={e => setStreamingProvider(e.target.value as any)}
+                        />
+                        <Select
+                            label={"Server"}
+                            options={streamingProvider === "gogoanime" ? consumetGogoAnimeServers.map(n => ({ value: n })) : consumetZoroServers.map(n => ({ value: n }))}
+                            fieldClassName={"flex items-center gap-4 w-auto space-y-0"}
+                            fieldLabelClassName={"self-center"}
+                            value={streamingProvider === "gogoanime" ? gogoAnimeServer : zoroServer}
+                            onChange={e => {
+                                if (streamingProvider === "gogoanime")
+                                    setGogoAnimeServer(e.target.value as any)
+                                if (streamingProvider === "zoro")
+                                    setZoroServer(e.target.value as any)
+                            }}
+                        />
+                    </div>
                 </div>
                 {/*<pre>{JSON.stringify(episodeStreamingData, null, 2)}</pre>*/}
 
@@ -285,6 +293,7 @@ export function WatchPage(props: WatchPageProps) {
                                 image={episode.image}
                                 media={media}
                                 isSelected={episode.number === episodeNumber}
+                                unoptimizedImage={episodes.length > 200}
                                 isWatched={progress ? episode.number <= progress : undefined}
                             />
                         </div>

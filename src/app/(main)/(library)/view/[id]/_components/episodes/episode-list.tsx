@@ -10,7 +10,7 @@ export const EpisodeList = React.memo((props: {
     aniZipData?: AniZipData,
     onPlayFile: (path: string) => void
     media: AnilistDetailedMedia
-    consumetEpisodeData: ConsumetAnimeEpisodeData
+    consumetEpisodeData?: ConsumetAnimeEpisodeData
 }) => {
 
     const { fileAtoms, ...rest } = props

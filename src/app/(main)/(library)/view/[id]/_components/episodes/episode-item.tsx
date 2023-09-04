@@ -18,7 +18,7 @@ export const EpisodeItem = React.memo((props: {
     aniZipData?: AniZipData,
     onPlayFile: (path: string) => void
     media: AnilistDetailedMedia
-    consumetEpisodeData: ConsumetAnimeEpisodeData
+    consumetEpisodeData?: ConsumetAnimeEpisodeData
 }) => {
 
     const { fileAtom, aniZipData, onPlayFile, media, consumetEpisodeData } = props
@@ -30,18 +30,18 @@ export const EpisodeItem = React.memo((props: {
     const setFileLocked = useFocusSetAtom(fileAtom, "locked")
     const setFileMediaId = useFocusSetAtom(fileAtom, "mediaId")
 
-    const aniZipEpisode = useMemo(() => aniZipData?.episodes[metadata.aniDBEpisodeNumber || String(metadata.episode)], [])
-    const consumetEpisode = useMemo(() => consumetEpisodeData?.find(n => Number(n.number) === metadata.episode), [])
+    const aniZipEpisode = aniZipData?.episodes[metadata.aniDBEpisodeNumber || String(metadata.episode)]
+    const consumetEpisode = consumetEpisodeData?.find(n => Number(n.number) === metadata.episode)
     const fileTitle = useMemo(() => parsedInfo?.original?.replace(/.(mkv|mp4)/, "")?.replaceAll(/(\[)[a-zA-Z0-9 ._~-]+(\])/ig, "")?.replaceAll(/[_,-]/g, " "), [parsedInfo])
 
-    const image = useMemo(() => {
+    const image = () => {
         if (!!path && (!valueContainsSpecials(path) && !valueContainsNC(path))) {
             return (consumetEpisode?.image || aniZipEpisode?.image)
         } else if (!!path) {
             return undefined
         }
         return (consumetEpisode?.image || aniZipEpisode?.image)
-    }, [])
+    }
 
     const displayedTitle = useMemo(() => {
         let _output = parsedInfo?.title || fileTitle || "???"
@@ -55,7 +55,7 @@ export const EpisodeItem = React.memo((props: {
     return (
         <EpisodeItemSkeleton
             media={media}
-            image={image}
+            image={image()}
             onClick={async () => onPlayFile(path)}
             title={displayedTitle}
             showImagePlaceholder={!metadata.isNC}
@@ -120,6 +120,7 @@ interface EpisodeItemSkeletonProps {
     showImagePlaceholder?: boolean
     isSelected?: boolean
     isWatched?: boolean
+    unoptimizedImage?: boolean
 }
 
 export const EpisodeItemSkeleton: React.FC<EpisodeItemSkeletonProps & React.ComponentPropsWithoutRef<"div">> = (props) => {
@@ -137,6 +138,7 @@ export const EpisodeItemSkeleton: React.FC<EpisodeItemSkeletonProps & React.Comp
         media,
         showImagePlaceholder,
         isWatched,
+        unoptimizedImage,
         ...rest
     } = props
 
@@ -160,7 +162,7 @@ export const EpisodeItemSkeleton: React.FC<EpisodeItemSkeletonProps & React.Comp
                 )}
                 onClick={onClick}
             >
-                {image && <div
+                {(image && !unoptimizedImage) && <div
                     className="h-24 w-24 flex-none rounded-md object-cover object-center relative overflow-hidden">
                     <Image
                         src={image}
@@ -170,6 +172,16 @@ export const EpisodeItemSkeleton: React.FC<EpisodeItemSkeletonProps & React.Comp
                         priority
                         sizes="10rem"
                         className="object-cover object-center"
+                        data-src={image}
+                    />
+                </div>}
+                {(image && unoptimizedImage) && <div
+                    className="h-24 w-24 flex-none rounded-md object-cover object-center relative overflow-hidden">
+                    <img
+                        src={image}
+                        alt={"episode image"}
+                        className="object-cover object-center absolute w-full h-full"
+                        data-src={image}
                     />
                 </div>}
 

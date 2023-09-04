@@ -18,8 +18,8 @@ import { AiFillStar } from "@react-icons/all-files/ai/AiFillStar"
 import { AiOutlineStar } from "@react-icons/all-files/ai/AiOutlineStar"
 import { AiOutlineHeart } from "@react-icons/all-files/ai/AiOutlineHeart"
 import { Button } from "@/components/ui/button"
-import { BiCloud } from "@react-icons/all-files/bi/BiCloud"
 import { useStableSelectAtom } from "@/atoms/helpers"
+import { AiFillPlayCircle } from "@react-icons/all-files/ai/AiFillPlayCircle"
 
 interface MetaSectionProps {
     children?: React.ReactNode
@@ -175,7 +175,7 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
 
                 {detailedMedia.status !== "NOT_YET_RELEASED" && (
                     <Link href={`/watch/${detailedMedia.id}?episode=${nextEpisode}`} className={"block"}>
-                        <Button className={"w-full"} intent={"white-outline"} size={"lg"} leftIcon={<BiCloud/>}
+                        <Button className={"w-full"} intent={"white-outline"} size={"lg"} leftIcon={<AiFillPlayCircle/>}
                                 iconClassName={"text-xl"}>Stream online</Button>
                     </Link>
                 )}

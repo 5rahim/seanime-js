@@ -27,13 +27,15 @@ import { Button } from "@/components/ui/button"
 import _ from "lodash"
 import { Badge } from "@/components/ui/badge"
 import { FiPlayCircle } from "@react-icons/all-files/fi/FiPlayCircle"
-import { ConsumetAnimeEpisodeData } from "@/lib/consumet/types"
+import { useMount } from "react-use"
+import { useQuery } from "@tanstack/react-query"
+import { getConsumetMediaEpisodes } from "@/lib/consumet/actions"
+import { Nullish } from "@/types/common"
 
 interface EpisodeSectionProps {
     children?: React.ReactNode
     detailedMedia: AnilistDetailedMedia
     aniZipData: AniZipData
-    consumetEpisodeData: ConsumetAnimeEpisodeData
 }
 
 const progressTrackingAtom = atomWithImmer<{ open: boolean, filesWatched: LocalFile[] }>({
@@ -41,10 +43,17 @@ const progressTrackingAtom = atomWithImmer<{ open: boolean, filesWatched: LocalF
     filesWatched: [],
 })
 
+export const useConsumetEpisodeData = (mediaId: Nullish<number>) => {
+    const res = useQuery(["episode-data"], async () => {
+        return await getConsumetMediaEpisodes(mediaId!)
+    }, { enabled: !!mediaId, refetchOnWindowFocus: false, retry: 2 })
+    return res.data || undefined
+}
+
 
 export const EpisodeSection: React.FC<EpisodeSectionProps> = React.memo((props) => {
 
-    const { children, detailedMedia, aniZipData, consumetEpisodeData, ...rest } = props
+    const { children, detailedMedia, aniZipData, ...rest } = props
 
     const entryAtom = useLibraryEntryAtomByMediaId(detailedMedia.id)
     const { toWatch, watched } = useMainLocalFileAtomsByMediaId(detailedMedia.id)
@@ -52,9 +61,21 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = React.memo((props) 
     const ncFileAtoms = useNCLocalFileAtomsByMediaId(detailedMedia.id)
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(detailedMedia.id)
     const status = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.media?.status)
+    const progress = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress)
     const nextUpFilePath = useStableSelectAtom(toWatch[0], file => file?.path)
 
+    const consumetEpisodeData = useConsumetEpisodeData(detailedMedia.id)
+
+    const maxEp = detailedMedia.nextAiringEpisode?.episode ? detailedMedia.nextAiringEpisode.episode - 1 : detailedMedia.episodes!
+    const canTrackProgress = (!progress || progress < maxEp) && progress !== maxEp
+
     const setProgressTracking = useSetAtom(progressTrackingAtom)
+
+    useMount(() => {
+        setProgressTracking(draft => {
+            return { open: false, filesWatched: [] }
+        })
+    })
 
     const getFile = useSetAtom(getLocalFileByNameAtom)
     // Video player
@@ -62,6 +83,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = React.memo((props) 
         onTick: console.log,
         onVideoComplete: (fileName) => {
             if (!!getFile(fileName)) {
+                console.log("video completed")
                 setProgressTracking(draft => {
                     draft.filesWatched.push(getFile(fileName)!)
                     return
@@ -105,7 +127,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = React.memo((props) 
                     </div>
 
                     {!!entryAtom && <div className={"space-x-4 flex items-center"}>
-                        <ProgressTrackingButton/>
+                        {canTrackProgress && <ProgressTrackingButton/>}
                         <UtilityButtons entryAtom={entryAtom}/>
                         <ToggleLockStatusButton entryAtom={entryAtom}/>
                     </div>}
@@ -167,7 +189,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = React.memo((props) 
                 </div>
             </div>
 
-            <ProgressTrackingModal media={detailedMedia}/>
+            {canTrackProgress && <ProgressTrackingModal media={detailedMedia} progress={progress}/>}
         </>
     )
 })
@@ -175,18 +197,23 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = React.memo((props) 
 interface ProgressTrackingModalProps {
     children?: React.ReactNode
     media: AnilistDetailedMedia
+    progress?: number | null
 }
 
 export const ProgressTrackingModal: React.FC<ProgressTrackingModalProps> = (props) => {
 
-    const { children, media, ...rest } = props
+    const { children, media, progress, ...rest } = props
 
     const [state, setState] = useAtom(progressTrackingAtom)
 
     const { watchedEntry } = useWatchedAnilistEntry()
 
+    const maxEp = media.nextAiringEpisode?.episode ? media.nextAiringEpisode.episode - 1 : media.episodes!
+
     const files = _.sortBy(state.filesWatched, file => file.metadata.episode)
     const latestFile = files[files.length - 1]
+
+    const epWatched = latestFile?.metadata?.episode || 1
 
     return <>
         <Modal
@@ -208,11 +235,11 @@ export const ProgressTrackingModal: React.FC<ProgressTrackingModalProps> = (prop
                     </p>
                     {media.format !== "MOVIE" && files.length > 0 && !!latestFile && (
                         <p className={"bg-[--background-color] rounded-md text-center p-4 mt-4 text-xl"}>Last episode
-                            watched: <Badge size={"lg"}>{latestFile.metadata.episode}</Badge></p>
+                            watched: <Badge size={"lg"}>{epWatched}</Badge></p>
                     )}
                 </div>
                 <div className={"flex gap-2 justify-center items-center"}>
-                    <Button
+                    {(epWatched <= maxEp) && <Button
                         intent={"success"}
                         isDisabled={state.filesWatched.length === 0}
                         onClick={() => {
@@ -224,13 +251,13 @@ export const ProgressTrackingModal: React.FC<ProgressTrackingModalProps> = (prop
                             startTransition(() => {
                                 watchedEntry({
                                     mediaId: media.id,
-                                    episode: latestFile.metadata.episode || 1,
+                                    episode: epWatched,
                                 })
                             })
                         }}
                     >
                         Confirm
-                    </Button>
+                    </Button>}
                     <Button intent={"warning-subtle"} onClick={() => {
                         setState(draft => {
                             draft.open = false
@@ -251,14 +278,14 @@ export const ProgressTrackingButton = () => {
     if (state.filesWatched.length === 0) return null
 
     return <Button
-        intent={"white"}
-        className={"animate-pulse"}
+        intent={"success"}
+        className={"animate-bounce"}
         onClick={() => {
             setState(draft => {
                 draft.open = true
                 return
             })
         }}
-    >Progress tracking</Button>
+    >Update progress</Button>
 
 }

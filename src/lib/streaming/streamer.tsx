@@ -5,53 +5,44 @@ import { ArtPlayer } from "../art-player/player"
 import { useEffect, useState } from "react"
 import artplayerPluginHlsQuality from "artplayer-plugin-hls-quality"
 import { useRouter } from "next/navigation"
-import { ConsumetStreamingData } from "@/lib/consumet/types"
+import { ConsumetProvider, ConsumetStreamingData } from "@/lib/consumet/types"
 import Artplayer from "artplayer"
 import { useAtom } from "jotai/react"
 import { streamingAutoplayAtom, streamingResolutionAtom } from "@/atoms/streaming/streaming.atoms"
 import { SkipTime } from "@/lib/aniskip/types"
 
-const fontSize = [
-    {
-        html: "Small",
-        size: "16px",
-    },
-    {
-        html: "Medium",
-        size: "36px",
-    },
-    {
-        html: "Large",
-        size: "56px",
-    },
+const fontSizes = [
+    { html: "Small", size: "16px" },
+    { html: "Medium", size: "36px" },
+    { html: "Large", size: "56px" },
 ]
+
+type VideoStreamerProps = {
+    data: ConsumetStreamingData,
+    id: string, // Check
+    skip?: { op: SkipTime | null, ed: SkipTime | null }, // Check
+    title?: string, // Check
+    poster?: string | null, // Check
+    proxy?: string // Check
+    provider?: ConsumetProvider, // Check
+    timeWatched?: any,
+    onVideoComplete?: () => void
+    onVideoEnd?: () => void
+}
 
 export function VideoStreamer(
     {
         data,
         id,
-        aniId,
         skip,
         title,
         poster,
         proxy = "https://cors.moopa.workers.dev/?url=",
         provider = "gogoanime",
-        track,
         timeWatched,
-        dub,
-    }: {
-        data: ConsumetStreamingData,
-        id: string, // Check
-        aniId: number, // Check
-        skip?: { op: SkipTime | null, ed: SkipTime | null }, // Check
-        title?: any,
-        poster?: any,
-        proxy?: string
-        provider?: string,
-        track?: any,
-        timeWatched?: any,
-        dub?: any,
-    },
+        onVideoEnd,
+        onVideoComplete,
+    }: VideoStreamerProps,
 ) {
     const [url, setUrl] = useState<string>("")
     const [sources, setSources] = useState<ConsumetStreamingData["sources"]>([])
@@ -74,7 +65,7 @@ export function VideoStreamer(
         }
 
         if (provider === "zoro") {
-            const size = fontSize.map((i) => {
+            const size = fontSizes.map((i) => {
                 // const isDefault = !sub ? i.html === "Small" : i.html === sub?.html
                 const isDefault = i.html === "Small"
                 return {
@@ -199,7 +190,6 @@ export function VideoStreamer(
                     subSize={subSize}
                     subtitles={subtitle}
                     provider={provider}
-                    track={track}
                     style={{
                         width: "100%",
                         height: "100%",
@@ -272,35 +262,16 @@ export function VideoStreamer(
                             const percentage = currentTime / duration
 
                             if (percentage >= 0.9) {
-                                // use >= instead of >
                                 if (marked < 1) {
                                     marked = 1
-                                    // TODO: onVideoComplete
-                                    // markProgress(aniId, progress, stats)
+                                    onVideoComplete && onVideoComplete()
                                 }
                             }
                         })
 
                         art.on("video:ended", () => {
                             if (autoplay === true) {
-                                // TODO: onVideoEnd
-                                // function stopTimeout() {
-                                //     clearTimeout(timeoutId)
-                                //     button.classList.remove("progress")
-                                // }
-
-                                // let timeoutId = setTimeout(() => {
-                                //     art.controls.remove("next-button")
-                                //     if (track?.next) {
-                                //         router.push(
-                                //             `/en/anime/watch/${aniId}/${provider}?id=${encodeURIComponent(
-                                //                 track?.next?.id,
-                                //             )}&num=${track?.next?.number}${dub ? `&dub=${dub}` : ""}`,
-                                //         )
-                                //     }
-                                // }, 7000)
-
-                                // button.addEventListener("mouseover", stopTimeout)
+                                onVideoEnd && onVideoEnd()
                             }
                         })
 
