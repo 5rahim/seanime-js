@@ -12,7 +12,6 @@ import Link from "next/link"
 import { Button, IconButton } from "@/components/ui/button"
 import { AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import { BiPlay } from "@react-icons/all-files/bi/BiPlay"
-import { BiBookmarkPlus } from "@react-icons/all-files/bi/BiBookmarkPlus"
 import { VscVerified } from "@react-icons/all-files/vsc/VscVerified"
 import { BiLockOpenAlt } from "@react-icons/all-files/bi/BiLockOpenAlt"
 import { useLocalFilesByMediaId, useSetLocalFiles } from "@/atoms/library/local-file.atoms"
@@ -177,6 +176,9 @@ export const AnimeListItem = ((props: { mediaId: number, showLibraryBadge?: bool
 
 const MainActionButton = (props: { media: AnilistShowcaseMedia }) => {
     const entryAtom = useLibraryEntryAtomByMediaId(props.media.id)
+    const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(props.media.id)
+    const progress = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress)
+    const status = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.status)
     return (
         <>
             {!!entryAtom ? <div>
@@ -186,9 +188,9 @@ const MainActionButton = (props: { media: AnilistShowcaseMedia }) => {
                             leftIcon={<BiPlay/>}
                             intent={"white"}
                             size={"md"}
-                            className={"w-full"}
+                            className={"w-full text-md"}
                         >
-                            Watch
+                            {!!progress && status !== "COMPLETED" ? "Continue watching" : "Watch"}
                         </Button>
                     </Link>
                 </div>
@@ -197,12 +199,12 @@ const MainActionButton = (props: { media: AnilistShowcaseMedia }) => {
                     {/*This button will add the anime into the local library*/}
                     <Link href={`/view/${props.media.id}`}>
                         <Button
-                            leftIcon={<BiBookmarkPlus/>}
+                            leftIcon={<BiPlay/>}
                             intent={"warning-subtle"}
-                            size={"sm"}
-                            className={"w-full"}
+                            size={"md"}
+                            className={"w-full text-md"}
                         >
-                            Add to library
+                            Watch
                         </Button>
                     </Link>
                 </div>

@@ -23,6 +23,8 @@ import { logger } from "@/lib/helpers/debug"
 import { useSelectAtom } from "@/atoms/helpers"
 import { DropdownMenu } from "@/components/ui/dropdown-menu"
 import { BiDotsVerticalRounded } from "@react-icons/all-files/bi/BiDotsVerticalRounded"
+import { FiSearch } from "@react-icons/all-files/fi/FiSearch"
+import { GoDiffIgnored } from "@react-icons/all-files/go/GoDiffIgnored"
 
 export function LibraryToolbar() {
 
@@ -125,9 +127,13 @@ export function LibraryToolbar() {
                 <div className={"flex w-full justify-between gap-2"}>
 
                     <div className={"inline-flex gap-2 items-center"}>
-                        <Button onClick={refreshModal.open} intent={"primary-subtle"} leftIcon={<RiFileSearchLine/>}>
-                            Refresh entries
-                        </Button>
+                        {(lockedPaths.length > 0 || ignoredPaths.length > 0) ?
+                            <Button onClick={refreshModal.open} intent={"primary-subtle"}
+                                    leftIcon={<RiFileSearchLine/>}>
+                                Refresh entries
+                            </Button> : <Button onClick={refreshModal.open} intent={"primary"} leftIcon={<FiSearch/>}>
+                                Scan library
+                            </Button>}
 
                         {unresolvedFileCount > 0 && <Button
                             onClick={async () => {
@@ -144,16 +150,17 @@ export function LibraryToolbar() {
 
                     <div className={"inline-flex gap-2 items-center"}>
 
-                        <Button onClick={handleOpenLocalDirectory} intent={"gray-basic"} leftIcon={<BiFolder/>}>
-                            Open folder
-                        </Button>
-
                         <DropdownMenu trigger={<IconButton icon={<BiDotsVerticalRounded/>} intent={"gray-basic"}/>}>
+                            <DropdownMenu.Item onClick={handleOpenLocalDirectory}>
+                                <BiFolder/>
+                                <span>Open folder</span>
+                            </DropdownMenu.Item>
                             <DropdownMenu.Item onClick={rescanModal.open}>
                                 <RiFolderDownloadFill/>
                                 <span>Re-scan library</span>
                             </DropdownMenu.Item>
                             <DropdownMenu.Item>
+                                <GoDiffIgnored/>
                                 <span>Manage ignored files</span>
                             </DropdownMenu.Item>
                         </DropdownMenu>
@@ -183,7 +190,8 @@ export function LibraryToolbar() {
                    bodyClassName={"space-y-4"}>
                 <p>Are you sure you want to re-scan your library?</p>
                 <ul className={"list-disc pl-4"}>
-                    <li>This will un-match locked or ignored files</li>
+                    <li>This will un-match locked and un-ignore files</li>
+                    <li>This will not un-ignore folders</li>
                 </ul>
                 <Button onClick={handleRescanEntries} intent={"warning"} leftIcon={<IoReload/>}
                         isDisabled={isLoading}>Re-scan</Button>

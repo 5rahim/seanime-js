@@ -11,6 +11,7 @@ import {
 import { logger } from "@/lib/helpers/debug"
 import axios from "axios"
 import cache from "memory-cache"
+import _ from "lodash"
 
 const CONSUMET_API_URL = process.env.CONSUMET_URL
 
@@ -84,7 +85,7 @@ export async function getConsumetEpisodeMeta<P extends ConsumetProvider>(
             if (!!resData && resData.episodes.length > 0) {
                 data.push({
                     provider: provider,
-                    episodes: provider === "gogoanime" ? resData.episodes.reverse() : resData.episodes,
+                    episodes: _.sortBy(resData.episodes, n => n.number),
                 })
             }
         } catch (error) {

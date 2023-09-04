@@ -26,9 +26,10 @@ This project is a hobby and is not being made to solve every single edge case.
   - [x] Lock files to speed up subsequent
     scans. [Learn more](https://github.com/5rahim/seanime/blob/main/docs/guide.md#locking-files).
   - [x] Ignore files or folders
+  - [x] Resolve unmatched files
+  - [ ] Update file metadata
   - [x] Logs
   - [ ] File name tag system for faster matching (eg: {id-0001})
-  - [x] Refresh/Re-scan library
 - [x] Play episode with default player
 - [x] Automatic progress tracking
   - [x] Sync progress with AniList
@@ -41,7 +42,7 @@ This project is a hobby and is not being made to solve every single edge case.
 - [x] Download additional episodes using qBittorent (embedded) and Nyaa (search)
 - [x] Browse and manage AniList entries
   - [x] Add, edit, AniList entries (status, score, progress…)
-- [ ] Stream episodes from web source with custom player
+- [x] Stream episodes from web source with custom player
 - [ ] See trending, search and filter
 
 ## Try it

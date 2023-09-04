@@ -16,7 +16,6 @@ import { useCurrentUser } from "@/atoms/user"
 import { usePathname } from "next/navigation"
 import { FiSettings } from "@react-icons/all-files/fi/FiSettings"
 import { FiSearch } from "@react-icons/all-files/fi/FiSearch"
-import { BiTestTube } from "@react-icons/all-files/bi/BiTestTube"
 import { BiDownload } from "@react-icons/all-files/bi/BiDownload"
 import { useRefreshAnilistCollection } from "@/atoms/anilist/collection.atoms"
 
@@ -42,12 +41,18 @@ export const MainSidebar: React.FC<MainSidebarProps> = (props) => {
                 <div>
                     <div className={"mb-8 flex justify-center w-full"}>
                         {/*<p className={"text-2xl font-bold w-full text-center text-brand"}>Sea</p>*/}
-                        <img src="/android-chrome-192x192.png" alt="logo" className={"w-10 h-10"}/>
+                        <img src="/android-chrome-192x192.png" alt="logo" className={"w-15 h-10"}/>
                     </div>
                     <VerticalNav
                         itemClassName={"relative"}
                         items={[
                             { icon: RiHome2Line, name: "Home", href: "/", isCurrent: pathname === "/" },
+                            {
+                                icon: FiSearch,
+                                name: "Discover",
+                                href: "/discover",
+                                isCurrent: pathname === "/discover",
+                            },
                             {
                                 icon: BiDownload,
                                 name: "Torrents",
@@ -57,9 +62,8 @@ export const MainSidebar: React.FC<MainSidebarProps> = (props) => {
                                 //               intent={"alert-solid"}>2</Badge>,
 
                             },
-                            { icon: FiSearch, name: "Search", href: "/", isCurrent: pathname === "/search" },
-                            { icon: BiTestTube, name: "Test", href: "/test", isCurrent: pathname === "/test" },
-                            { icon: BiTestTube, name: "Test2", href: "/test/two", isCurrent: pathname === "/test/two" },
+                            // { icon: BiTestTube, name: "Test", href: "/test", isCurrent: pathname === "/test" },
+                            // { icon: BiTestTube, name: "Test2", href: "/test/two", isCurrent: pathname === "/test/two" },
                         ]}/>
                 </div>
                 <div className={"flex w-full gap-2 flex-col"}>

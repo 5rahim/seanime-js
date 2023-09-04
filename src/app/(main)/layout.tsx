@@ -38,7 +38,7 @@ export default function Layout({ children }: {
             },
             ...authedItems,
             {
-                href: "/",
+                href: "/discover",
                 icon: null,
                 isCurrent: pathname === "/discover",
                 name: "Discover",
@@ -57,7 +57,7 @@ export default function Layout({ children }: {
                         items={navigationItems}
                     />
                     <div className={"flex items-center gap-4"}>
-                        <Button
+                        {isAuthed && <Button
                             onClick={refetchCollection}
                             intent={"warning-subtle"}
                             rightIcon={<IoReload/>}
@@ -69,10 +69,10 @@ export default function Layout({ children }: {
                             className={"hover:bg-transparent dark:hover:bg-transparent"}
                         >
                             Actualize AniList
-                        </Button>
-                        {isAuthed && (
-                            <p>{user?.name}</p>
-                        )}
+                        </Button>}
+                        {/*{isAuthed && (*/}
+                        {/*    <p>{user?.name}</p>*/}
+                        {/*)}*/}
                     </div>
                 </div>
                 {!pathname.includes("/view") && <>
