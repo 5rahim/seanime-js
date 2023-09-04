@@ -7,8 +7,6 @@
 🚨 This project is a hobby and doesn't aim to solve every unique issue or address all complaints you may have about
 similar software.
 
-<img src="docs/showcase.gif" alt="preview" width="100%"/>
-
 ## Features
 
 - [x] Scan local library and match local files with corresponding
