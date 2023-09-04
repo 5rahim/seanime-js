@@ -39,6 +39,10 @@ similar software.
 - [x] Stream episodes from web source with custom player
 - [ ] See trending, search and filter
 
+<img src="docs/img_8.png" alt="preview" width="700"/>
+<br/>
+<img src="docs/img_9.png" alt="preview" width="700"/>
+
 ## Caveats
 
 For the time being, users must ensure their AniList watchlist includes all media present in their local library before
