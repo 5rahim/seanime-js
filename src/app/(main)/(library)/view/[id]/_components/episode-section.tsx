@@ -234,8 +234,9 @@ export const ProgressTrackingModal: React.FC<ProgressTrackingModalProps> = (prop
                             : files.length > 0 ? `You have completed ${media.title?.userPreferred}.` : `You haven't completed ${media.title?.userPreferred} yet.`}
                     </p>
                     {media.format !== "MOVIE" && files.length > 0 && !!latestFile && (
-                        <p className={"bg-[--background-color] rounded-md text-center p-4 mt-4 text-xl"}>Last episode
-                            watched: <Badge size={"lg"}>{epWatched}</Badge></p>
+                        <p className={"bg-[--background-color] rounded-md text-center p-4 mt-4 text-xl"}>Current
+                            progress: <Badge size={"lg"}>{epWatched} /<span
+                                className={"opacity-60"}>{maxEp}</span></Badge></p>
                     )}
                 </div>
                 <div className={"flex gap-2 justify-center items-center"}>

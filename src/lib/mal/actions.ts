@@ -10,7 +10,6 @@ export async function searchWithMAL(title: string, slice: number | null | undefi
         url.searchParams.set("type", "anime")
         url.searchParams.set("keyword", encodeURI(title))
         url.searchParams.set("v", "1")
-        console.log(url)
         const res = await fetch(url, {
             method: "GET",
         })

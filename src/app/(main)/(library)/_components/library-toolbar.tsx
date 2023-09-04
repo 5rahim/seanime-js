@@ -10,7 +10,7 @@ import { BiFolder } from "@react-icons/all-files/bi/BiFolder"
 import { cleanupFiles, scanLocalFiles } from "@/lib/local-library/repository"
 import { useCurrentUser } from "@/atoms/user"
 import { FcHighPriority } from "@react-icons/all-files/fc/FcHighPriority"
-import { useDisclosure } from "@/hooks/use-disclosure"
+import { useBoolean, useDisclosure } from "@/hooks/use-disclosure"
 import { ResolveUnmatched } from "@/app/(main)/(library)/_components/resolve-unmatched"
 import { Modal } from "@/components/ui/modal"
 import { IoReload } from "@react-icons/all-files/io5/IoReload"
@@ -25,6 +25,7 @@ import { DropdownMenu } from "@/components/ui/dropdown-menu"
 import { BiDotsVerticalRounded } from "@react-icons/all-files/bi/BiDotsVerticalRounded"
 import { FiSearch } from "@react-icons/all-files/fi/FiSearch"
 import { GoDiffIgnored } from "@react-icons/all-files/go/GoDiffIgnored"
+import { Checkbox } from "@/components/ui/checkbox"
 
 export function LibraryToolbar() {
 
@@ -45,6 +46,10 @@ export function LibraryToolbar() {
     const refreshModal = useDisclosure(false)
     const rescanModal = useDisclosure(false)
 
+    const refresh_skipLockedFiles = useBoolean(false)
+    const rescan_preserveLockedFileStatus = useBoolean(true)
+    const rescan_preserveIgnoredFileStatus = useBoolean(true)
+
     const handleOpenLocalDirectory = async () => {
         const tID = toast.loading("Opening")
         await openLocalDirectoryInExplorer(settings, await type())
@@ -59,8 +64,8 @@ export function LibraryToolbar() {
             setIsLoading(true)
 
             const result = await scanLocalFiles(settings, user?.name, token, {
-                ignored: lockedPaths,
-                locked: ignoredPaths,
+                locked: lockedPaths,
+                ignored: ignoredPaths,
             })
             if (result && result.checkedFiles && !result.error) {
                 const incomingFiles = result.checkedFiles
@@ -79,6 +84,7 @@ export function LibraryToolbar() {
             } else if (result && result.error) {
                 toast.error(result.error)
             }
+            refreshModal.close()
             toast.remove(tID)
             setIsLoading(false)
         }
@@ -95,13 +101,32 @@ export function LibraryToolbar() {
             })
             if (result && result.checkedFiles) {
                 if (result.checkedFiles.length > 0) {
-                    setLocalFiles(result.checkedFiles)
+
+                    if (rescan_preserveLockedFileStatus.active || rescan_preserveIgnoredFileStatus.active) {
+                        setLocalFiles(draft => {
+                            const lockedPathsSet = new Set(draft.filter(file => !!file.locked).map(file => file.path))
+                            const ignoredPathsSet = new Set(draft.filter(file => !!file.ignored).map(file => file.path))
+                            const final = []
+                            for (let i = 0; i < result.checkedFiles.length; i++) {
+                                if (rescan_preserveLockedFileStatus.active && lockedPathsSet.has(result.checkedFiles[i].path)) { // Reset locked status
+                                    result.checkedFiles[i].locked = true
+                                }
+                                if (rescan_preserveIgnoredFileStatus.active && ignoredPathsSet.has(result.checkedFiles[i].path)) { // Reset ignored status
+                                    result.checkedFiles[i].ignored = true
+                                }
+                                final.push(result.checkedFiles[i])
+                            }
+                            return final
+                        })
+                    } else {
+                        setLocalFiles(result.checkedFiles)
+                    }
                 }
                 toast.success("Your local library is up to date")
             } else if (result.error) {
                 toast.error(result.error)
             }
-
+            rescanModal.close()
             toast.remove(tID)
             setIsLoading(false)
         }
@@ -131,7 +156,7 @@ export function LibraryToolbar() {
                             <Button onClick={refreshModal.open} intent={"primary-subtle"}
                                     leftIcon={<RiFileSearchLine/>}>
                                 Refresh entries
-                            </Button> : <Button onClick={refreshModal.open} intent={"primary"} leftIcon={<FiSearch/>}>
+                            </Button> : <Button onClick={handleRescanEntries} intent={"primary"} leftIcon={<FiSearch/>}>
                                 Scan library
                             </Button>}
 
@@ -176,23 +201,28 @@ export function LibraryToolbar() {
             />
             <Modal isOpen={refreshModal.isOpen} onClose={refreshModal.close} isClosable title={"Refresh entries"}
                    bodyClassName={"space-y-4"}>
+
                 <p>Are you sure you want to refresh entries?</p>
-                <ul className={"list-disc pl-4"}>
-                    <li>You have locked or ignored files using Seanime</li>
-                    <li>You have NOT manually modified, added, deleted, moved files or folders</li>
-                </ul>
+
+                <div>
+                    {/*<Checkbox label={"Skip locked files"} checked={refresh_skipLockedFiles.active} onChange={refresh_skipLockedFiles.toggle} />*/}
+                    <Checkbox label={"Clean up non-existent files"} checked={true} isDisabled/>
+                </div>
+
                 <Button onClick={async () => {
                     await handleRefreshEntries()
                     await handleCleanRepository()
                 }} leftIcon={<IoReload/>} isDisabled={isLoading}>Refresh</Button>
+
             </Modal>
-            <Modal isOpen={rescanModal.isOpen} onClose={rescanModal.close} isClosable title={"Re-scan library"}
+            <Modal isOpen={rescanModal.isOpen} onClose={rescanModal.close} isClosable title={"Scan library"}
                    bodyClassName={"space-y-4"}>
-                <p>Are you sure you want to re-scan your library?</p>
-                <ul className={"list-disc pl-4"}>
-                    <li>This will un-match locked and un-ignore files</li>
-                    <li>This will not un-ignore folders</li>
-                </ul>
+                <div>
+                    <Checkbox label={"Preserve locked status"} checked={rescan_preserveLockedFileStatus.active}
+                              onChange={rescan_preserveLockedFileStatus.toggle}/>
+                    <Checkbox label={"Preserve ignored status"} checked={rescan_preserveIgnoredFileStatus.active}
+                              onChange={rescan_preserveIgnoredFileStatus.toggle}/>
+                </div>
                 <Button onClick={handleRescanEntries} intent={"warning"} leftIcon={<IoReload/>}
                         isDisabled={isLoading}>Re-scan</Button>
             </Modal>

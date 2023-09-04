@@ -28,7 +28,6 @@ import { useRefreshAnilistCollection } from "@/atoms/anilist/collection.atoms"
  * ClassificationRecommendationHub
  * -----------------------------------------------------------------------------------------------*/
 
-
 export function ResolveUnmatched(props: { isOpen: boolean, close: () => void }) {
     const { user } = useCurrentUser()
     const { token } = useAuthed()
@@ -66,15 +65,15 @@ export function ResolveUnmatched(props: { isOpen: boolean, close: () => void }) 
             // props.close()
             const {
                 error,
-                media,
-            } = await manuallyMatchFiles(currentGroup.files.map(n => n.path), "match", user?.name, token, selectedAnimeId)
+                mediaId,
+            } = await manuallyMatchFiles(currentGroup.files.map(n => n.path), "match", user?.name, token, Number(selectedAnimeId))
 
-            if (media) {
+            if (mediaId) {
                 // Update stored local files
                 setLocalFiles(files => {
                     for (const path of currentGroup.files.map(n => n.path)) {
                         const fileIndex = files.findIndex(file => file.path === path)
-                        files[fileIndex].mediaId = media.id
+                        files[fileIndex].mediaId = mediaId
                         files[fileIndex].locked = true
                         files[fileIndex].ignored = false
                     }
@@ -82,7 +81,7 @@ export function ResolveUnmatched(props: { isOpen: boolean, close: () => void }) 
                 })
                 const entriesMediaIdsSet = new Set([...entriesMediaIds])
                 // If entry didn't exist, refresh collection
-                if (!entriesMediaIdsSet.has(media.id)) {
+                if (!entriesMediaIdsSet.has(mediaId)) {
                     await refreshAnilistCollection()
                 }
 
@@ -200,15 +199,15 @@ export function ResolveUnmatched(props: { isOpen: boolean, close: () => void }) 
                         label="Select Anime"
                         value={selectedAnimeId}
                         onChange={handleSelectAnime}
-                        options={currentGroup.recommendations.map((media: any) => (
+                        options={currentGroup.recommendations.map((media) => (
                             {
-                                label: media.name,
+                                label: media.title?.userPreferred,
                                 value: String(media.id) || "",
                                 help: <div className={"mt-2 flex w-full gap-4"}>
-                                    <div
-                                        className="h-24 w-24 flex-none rounded-md object-cover object-center relative overflow-hidden">
+                                    {media.coverImage?.medium && <div
+                                        className="h-28 w-28 flex-none rounded-md object-cover object-center relative overflow-hidden">
                                         <Image
-                                            src={media.image_url}
+                                            src={media.coverImage.medium}
                                             alt={""}
                                             fill
                                             quality={100}
@@ -216,15 +215,22 @@ export function ResolveUnmatched(props: { isOpen: boolean, close: () => void }) 
                                             sizes="10rem"
                                             className="object-cover object-center"
                                         />
-                                    </div>
+                                    </div>}
                                     <div className={"text-[--muted]"}>
+                                        <p className={"line-clamp-1"}>{media.title?.english}</p>
                                         <p>Type: <span
-                                            className={"text-gray-200 font-semibold"}>{media.payload?.media_type}</span>
+                                            className={"text-gray-200 font-semibold"}>{media.format}</span>
                                         </p>
-                                        <p>Aired: {media.payload?.aired}</p>
-                                        <p>Status: {media.payload?.status}</p>
-                                        <Button intent={"primary-link"} size={"sm"} className={"px-0"}
-                                                onClick={() => window.open(media.url, "_target")}>Open on MAL</Button>
+                                        <p>Aired: {media.startDate?.year ? new Intl.DateTimeFormat("en-US", {
+                                            year: "numeric",
+                                        }).format(new Date(media.startDate?.year || 0, media.startDate?.month || 0)) : "-"}</p>
+                                        <p>Status: {media.status}</p>
+                                        <Button
+                                            intent={"primary-link"}
+                                            size={"sm"}
+                                            className={"px-0"}
+                                            onClick={() => window.open(`https://anilist.co/anime/${media.id}`, "_target")}
+                                        >Open on AniList</Button>
                                     </div>
                                 </div>,
                             }
@@ -236,17 +242,17 @@ export function ResolveUnmatched(props: { isOpen: boolean, close: () => void }) 
                         stackClassName="grid grid-cols-2 gap-2 space-y-0"
                     />
 
-                    <TextInput label={"Or enter MyAnimeList ID"} value={selectedAnimeId}
-                               onChange={e => handleSelectAnime(e.target.value)}/>
+                    <TextInput
+                        label={"Or enter AniList ID"}
+                        value={selectedAnimeId}
+                        onChange={e => handleSelectAnime(e.target.value)}
+                        // help={"Leave at 0"}
+                    />
 
                     <ul className={"list-disc pl-6"}>
                         <li>Good to know: It is recommended that you manually solve the matching issues by
-                            renaming/removing files and
-                            refreshing the entries instead
+                            renaming/removing files and refreshing the entries instead. See guide for more information.
                         </li>
-                        <li>Seanime will not unmatch files that you confirm manually when refreshing entries</li>
-                        <li>Seanime will not scan files marked as ignored when you refresh entries</li>
-                        <li>Renaming or moving the files later on will no longer keep them locked/ignored</li>
                     </ul>
 
                     <div className={"flex gap-2"}>
@@ -255,16 +261,6 @@ export function ResolveUnmatched(props: { isOpen: boolean, close: () => void }) 
                             Mark files as ignored
                         </Button>
                     </div>
-                </div>
-                <div>
-                    <h5>Help</h5>
-                    <ul className={"list-disc pl-6"}>
-                        <li>This feature allows you to match files to specific anime.
-                            You should use it as the LAST resort OR use it to match ED/OP/NC/Specials folders to an
-                            anime.
-                        </li>
-                        <li>See guide for more information</li>
-                    </ul>
                 </div>
             </div>}
         </Drawer>

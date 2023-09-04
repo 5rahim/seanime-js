@@ -1,9 +1,19 @@
 # Guide
 
-## Automatic Classification
+## AniList
 
-Seanime will try to match your episode files to AniList entries using
-multiple techniques.
+For the time being, user must ensure their AniList watchlist includes all media present in their local library before
+initiating the scanning process.
+This is because Seanime relies on the user's AniList data to accurately match episode files and organize them
+effectively.
+Failure to do so may result in incorrect matches, especially when dealing with sequels, prequels, or different seasons
+of the same series.
+
+### What about MAL?
+
+Seanime does not currently support media matching using MAL data. I recommend you create an AniList account and use a
+tool like
+MAL-Sync to automatically sync data effortlessly.
 
 ## Unmatched/Incorrectly matched files
 
@@ -24,6 +34,17 @@ When some episode files are unmatched it generally means that:
 - Movies may be matched incorrectly if they are not in separate folders
 - Specials/OVAs might be matched incorrectly.
 
+### Solutions
+
+#### Renaming
+
+You may discover that some episodes or seasons are not matched correctly, if this is the case:
+
+- You should **lock** the correct files, **un-match** incorrect ones, **rename** them and retry by **refreshing entries
+  **.
+- Rename parent folders so that their name accurately matches the titles on AniList.
+
+### Example of fixes
 
 ```text
 ├── %LIBRARY_FOLDER%
@@ -33,9 +54,9 @@ When some episode files are unmatched it generally means that:
         ├── Season 2
         │   └── ...
         └── Movie
-            └── Jujustu Kaisen 0.mkv            <- This MIGHT NOT be matched
+            └── Jujustu Kaisen 0.mkv            <- This MIGHT NOT be matched correctly
             
-Fix: Move and rename
+Fix: Ensure that the movie is in your AniList watchlist, move or rename the file.
 
 ├── %LIBRARY_FOLDER%
     └── Jujutsu Kaisen
@@ -51,52 +72,50 @@ Fix: Move and rename
 ```txt
 ├── %LIBRARY_FOLDER%
     ├── Fruits Basket S1-3
-        ├── Fruits Basket S01                   <- Should be "Fruits Basket (2019)"
-        │   └── ...
+        ├── Fruits Basket S01                   <- This might be matched to the 2001 version. 
+        │   └── ...                                Rename to "Fruits Basket (2019)"
         ├── Fruits Basket S02
         │   └── ...
-        └── Fruits Basket S03                   <- Should be "Fruits Basket The Final"
+        └── Fruits Basket S03
             └── ...
-
-Fix: Rename with AniList titles
+            
+Fix: Use AniList titles
 ```
 
-### Solutions
+### "Resolve unmatched" feature
 
-#### Renaming
+<img src="img_6.png" alt="preview" width="300"/>
+<br/>
+<img src="img_7.png" alt="preview" width="600"/>
 
-You may discover that some episodes or seasons are not matched correctly, if this is the case:
-
-- You should **lock** the correct files, **un-match** incorrect ones, **rename** them and retry by **refreshing entries
-  **.
-- Rename parent folders so that their name accurately matches the titles on AniList.
-
-#### Resolve unmatched feature
-
-This feature allows you to match files to specific anime that you choose either from the suggestions or the AniList ID
-input.
-You should use it as the **LAST** resort.
+- This feature allows you to match files to specific anime that you choose either from the suggestions or the AniList ID
+  input.
+- The files will be automatically locked so that subsequent refreshes will not unmatch them again.
+- You should use it as the **LAST** resort because the next time your scan (not refresh) your library, they will be
+  unmatched.
 
 ## Locking files
 
-Locking is a feature made to speed up refreshing.
+<img src="img_4.png" alt="preview" width="600"/>
 
-After your first scan of the local library you should lock files that were perfectly matched before subsequent
-refreshing.
+Locking is a feature made to speed up refreshing entries.
+It just tells Seanime that these files were correctly matched and to skip them when **refreshing** entries next time.
 
 ## Refresh vs Re-scan
+
+<img src="img_5.png" alt="preview" width="600"/>
 
 ### Refreshing entries
 
 What happens when you refresh entries?
 
 - Seanime will skip **locked** and **ignored** files, this will speed up the process.
-- A cleanup process is started to remove non-existent files from entries.
+- Seanime will remove manually deleted entries/files.
 
 ### Re-scanning library
 
-Re-scanning the library will unlock all files and re-scan ignored files.
-Do it after manually re-organizing multiple files or folders or after changing local libraries.
+Re-scanning will go through even locked and ignored files.
+Do it changing your local library folder.
 
 ### Ignoring
 
@@ -110,34 +129,23 @@ Caveats: This will only work if it does not contain locked files.
 
 ```text
 ├── %LIBRARY_FOLDER%
-    └── Anime title
-        └── Anime title Season 1
-            └── Anime title - S01E05.mkv
+    └── {Anime title}
+        └── {Anime title} Season 1
+            └── {Anime title} - S01E05.mkv
 ```
 
 #### With episode titles in file name
 
 - When there is an episode title, make sure the episode number is enclosed with "-"
-- And make sure the folder's name has the anime title
+- Make sure the folder name has the anime title, especially if the file does not have it
 
 ```text
 ├── %LIBRARY_FOLDER%
     └── Bungo Stray Dogs
-        └── Bungo Stray Dogs 5
-            ├── Bungo Stray Dogs 5 - E05.mkv
-            ├── Bungo Stray Dogs 5 - S05E05 - Episode title.mkv
+        └── Bungo Stray Dogs Season 5
+            ├── Bungo Stray Dogs Season 5 - S05E05 - {Episode title}.mkv
+            ├── S05E05 - {Episode title}.mkv
             └── ...
-```
-
-#### Without anime titles in file name
-
-/!\ Make sure the parent folder has the Anime title if the files do not.
-
-```text
-├── %LIBRARY_FOLDER%
-    └── Anime title
-        └── Anime title Season 1
-            └── Episode title - S01E05.mkv
 ```
 
 ## How it works
@@ -225,7 +233,7 @@ Seanime will first try to locate the season from the file name, then look for it
 
 ### Episode number
 
-Seanime will search the file title for the episode number
+Seanime will search the file title for the episode number.
 
 ### Example (Episode 5)
 
@@ -234,14 +242,12 @@ Seanime will search the file title for the episode number
 │   ├── Jujutsu Kaisen
 │   │   ├── Season 1
 │   │   │   ├── Jujutsu Kaisen S01E05.mkv  #BEST
-│   │   │   ├── Jujutsu Kaisen E05.mkv
 │   │   │   ├── Jujutsu Kaisen 05.mkv
 │   │   │   ├── Jujutsu Kaisen 05v2.mkv    
-│   │   │   ├── Jujutsu Kaisen 5'.mkv  
 │   │   │   ├── Jujutsu Kaisen 05'.mkv 
 │   │   │   ├── Jujutsu Kaisen 05.2.mkv    
 │   │   │   ├── Jujutsu Kaisen 01x05.mkv...................<- Equivalent to S01E05
-│   │   │   ├── Jujutsu Kaisen S1 - 5.mkv                  
+│   │   │   ├── Jujutsu Kaisen S1 - 05.mkv                  
 │   │   │   ├── Jujutsu Kaisen S1_5.mkv                    
 │   │   │   ├── Jujutsu Kaisen 05 Episode title.mkv    
 │   │   │   ├── Jujutsu Kaisen 2 - E05.mkv 
@@ -379,7 +385,7 @@ However, if your episode files do not have consistent names, the matching proces
 
 ## TL;DR
 
-- You **might** not need to rename torrent names, the parser will extract the necessary information and ignore the rest
+- You **might** not need to rename torrent files, the parser will extract the necessary information and ignore the rest
   - `[Group] Anime [Dual-Audio][BDRip 1920x1080 HEVC FLAC]` = `Anime`
   - `[Group] Anime S01E01 [8CE6090E].mkv` = `Anime S01E01`
   - Rename only when the scan fails to find a match
@@ -396,27 +402,27 @@ Batch
   ignored. `{Anime Title} S1-3` = `{Anime Title}` = `{Anime Title} Complete series` etc…
 
 
-- `~ \ {Anime Title} S1-3 \ {Anime Title} S1 \ {Anime Title} S1E1.mkv` -> BEST
-- `~ \ {Anime Title} S1-3 \ {Anime Title} S1 \ {Anime Title} E1.mkv` -> Good
+- `~ \ {Anime Title} S1-3 \ {Anime Title} Season 1 \ {Anime Title} S01E01.mkv` -> BEST
+- `~ \ {Anime Title} S1-3 \ {Anime Title} Season 1 \ {Anime Title} 01.mkv` -> Good
 - `~ \ {Anime Title} S1-3 \ {Anime Title} \ {Anime Title} S1E1.mkv` -> Good
-- `~ \ {Anime Title} S1-3 \ Season 1 \ {Anime Title} S1E1.mkv` -> Good
-- `~ \ {Anime Title} S1-3 \ Season 1 \ {Anime Title} E1.mkv` -> Good
+- `~ \ {Anime Title} S1-3 \ Season 1 \ {Anime Title} S01E01.mkv` -> Good
+- `~ \ {Anime Title} S1-3 \ Season 1 \ {Anime Title} 01.mkv` -> Good
 
 1 parent folder
 
-- `~ \ {Movie Title} \ {Movie Title}.mkv` -> BEST
-- `~ \ {Anime Title} S1 \ {Anime Title} S1E1.mkv` -> BEST
-- `~ \ {Anime Title} \ {Anime Title} S1E1.mkv` -> Good
-- `~ \ {Anime Title} S1 \ {Anime Title} 01.mkv` -> Good
-- `~ \ {Anime Title} \ S1 \ {Anime Title} S1E1.mkv` -> Good
-- `~ \ {Anime Title} \ S1 \ {Anime Title} E1.mkv` -> Good
+- `~ \ {Anime Title} Season 1 \ {Anime Title} S01E01.mkv` -> Good
+- `~ \ {Anime Title} \ {Anime Title} S01E01.mkv` -> Good
+- `~ \ {Anime Title} Season 1 \ {Anime Title} 01.mkv` -> Good
+- `~ \ {Anime Title} \ Season 1 \ {Anime Title} S01E01.mkv` -> Good
+- `~ \ {Anime Title} \ Season 1 \ {Anime Title} 01.mkv` -> Good
+- `~ \ {Anime Title} Season 1 \ E1.mkv` -> Good
 - `~ \ {Anime Title} \ E1.mkv` -> Good
 
 With episode titles
 
-- `~ \ ... \ {Anime Title} \ {Anime Title} - S01E1 - Episode title.mkv` -> BEST
-- `~ \ ... \ {Anime Title} \ S01E1 - Episode title.mkv` -> Good
-- `~ \ ... \ {Anime Title} \ Episode title - S01E1.mkv` -> BAD
+- `~ \ ... \ {Anime Title} \ {Anime Title} - S01E1 - {Episode title}.mkv` -> BEST
+- `~ \ ... \ {Anime Title} \ S01E1 - {Episode title}.mkv` -> Good
+- `~ \ ... \ {Anime Title} \ {Episode title} - S01E1.mkv` -> BAD
 
 Without seasons
 
@@ -428,20 +434,20 @@ Without seasons
 Root folder
 
 - `~ \ {Anime Title} S1E1.mkv` -> Good
-- `~ \ {Anime Title} - E1 - Episode title.mkv` -> Good
-- `~ \ {Anime Title} - Episode title - E1.mkv` -> AVOID
+- `~ \ {Anime Title} - 01 - {Episode title}.mkv` -> Good
+- `~ \ {Anime Title} - {Episode title} - E1.mkv` -> AVOID
 
 Movies
 
 - `~ \ {Movie title} \ {Movie title}.mkv` -> BEST
 - `~ \ {Anime Title} S1-3+Movie \ {Movie title} \ {Movie title}.mkv` -> Good
-- `~ \ {Anime Title} S1-3+Movie \ {Anime Title} (Movie) \ {Movie title}.mkv` -> Issue-prone
+- `~ \ {Anime Title} S1-3+Movie \ {Anime Title} (Movie) \ {Movie title}.mkv` -> Meh
 - `~ \ {Anime Title} S1-3+Movie \ {Anime Title} Movie \ {Movie title}.mkv` -> BAD
 
 Specials/NC
 
-- `~ \ [AniList Special's title] \ [AniList Special's title].mkv` -> Good (If the special has an entry on AniList. e.g.,
+- `~ \ {Special's title} \ {Special's title}.mkv` -> Good (If the special has an entry on AniList. e.g.,
   One Punch Man OVA)
-- `~ \ {Anime Title} \ Specials \ [AniList Special's title].mkv` -> Good
+- `~ \ {Anime Title} \ Specials \ {Special's title}.mkv` -> Good
 - `~ \ {Anime Title} \ Specials \ {Anime Title} S00E(1-9).mkv` -> Good
 - `~ \ {Anime Title} \ Others \ {Anime Title} (OP|ED)(1-9).mkv` -> Good

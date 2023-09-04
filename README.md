@@ -1,17 +1,13 @@
 <h2 align="center"><b>Seanime</b></h2>
 
-<h4 align="center">Scan your local library, keep track of progress with AniList integration. Download new episodes or
-batches.</h4>
+<h4 align="center">Feature-packed, user-friendly app for managing your local library with AniList integration</h4>
 
-![img_2.png](docs/img_2.png)
+<img src="docs/main.png" alt="preview" width="100%"/>
 
-This project is a hobby and is not being made to solve every single edge case.
+🚨 This project is a hobby and doesn't aim to solve every unique issue or address all complaints you may have about
+similar software.
 
-## Why?
-
-[//]: # (I wanted to make a single client to browse my local files, download/stream new episodes)
-
-![img_1.png](docs/img_1.png)
+<img src="docs/showcase.gif" alt="preview" width="100%"/>
 
 ## Features
 
@@ -38,12 +34,21 @@ This project is a hobby and is not being made to solve every single edge case.
 - [x] Un-match files (that might be incorrectly matched)
 - [x] Resolve unmatched files feature
   - [x] Match single files or folders to a media
-  - [x] Option to match files using MAL ID
+  - [x] Option to match files using AniList ID
 - [x] Download additional episodes using qBittorent (embedded) and Nyaa (search)
 - [x] Browse and manage AniList entries
   - [x] Add, edit, AniList entries (status, score, progress…)
 - [x] Stream episodes from web source with custom player
 - [ ] See trending, search and filter
+
+## Caveats
+
+For the time being, user must ensure their AniList watchlist includes all media present in their local library before
+initiating the scanning process.
+This is because Seanime relies on the user's AniList data to accurately match episode files and organize them
+effectively.
+Failure to do so may result in incorrect matches, especially when dealing with sequels, prequels, or different seasons
+of the same series.
 
 ## Try it
 
@@ -61,9 +66,8 @@ npm run tauri:dev
 
 ## Not planned
 
-- Watch together feature
-- Torrent streaming
-- Scanning without AniList data
+- Watch together feature / social features
+- Torrent streaming (use [Miru](https://github.com/ThaUnknown/miru/))
 - Progress tracking without AniList
 - Mobile app
 

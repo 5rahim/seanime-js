@@ -26,3 +26,31 @@ export function useDisclosure(
 
     return { isOpen: opened, open, close, toggle } as const
 }
+
+
+export function useBoolean(
+    initialState: boolean,
+    callbacks?: { onOpen?(): void; onClose?(): void },
+) {
+    const [opened, setOpened] = useState(initialState)
+
+    const open = () => {
+        if (!opened) {
+            setOpened(true)
+            callbacks?.onOpen?.()
+        }
+    }
+
+    const close = () => {
+        if (opened) {
+            setOpened(false)
+            callbacks?.onClose?.()
+        }
+    }
+
+    const toggle = () => {
+        opened ? close() : open()
+    }
+
+    return { active: opened, on: open, off: close, toggle } as const
+}

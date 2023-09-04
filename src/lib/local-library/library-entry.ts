@@ -4,12 +4,7 @@ import { AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import similarity from "string-similarity"
 import { logger } from "@/lib/helpers/debug"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
-import {
-    AnimeByMalIdDocument,
-    AnimeCollectionDocument,
-    AnimeShortMediaByIdDocument,
-    UpdateEntryDocument,
-} from "@/gql/graphql"
+import { AnimeCollectionDocument, AnimeShortMediaByIdDocument, UpdateEntryDocument } from "@/gql/graphql"
 import fs from "fs"
 import { findMediaEdge } from "@/lib/anilist/utils"
 import {
@@ -261,8 +256,8 @@ export async function manuallyMatchFiles(
     type: "match" | "ignore",
     userName: string,
     token: string,
-    malID?: string | undefined,
-): Promise<{ error?: string, media?: AnilistShowcaseMedia }> {
+    mediaId?: number | undefined,
+): Promise<{ error?: string, mediaId?: number }> {
 
     logger("library-entry/manuallyMatchFiles").info("1) Fetching user collection")
     const collectionQuery = await useAniListAsyncQuery(AnimeCollectionDocument, { userName })
@@ -276,22 +271,17 @@ export async function manuallyMatchFiles(
     if (type === "match") {
 
 
-        if (malID && !isNaN(Number(malID))) {
+        if (mediaId && !isNaN(Number(mediaId))) {
 
             try {
                 logger("library-entry/manuallyMatchFiles").info("3) Trying to match files")
-                const data = await useAniListAsyncQuery(AnimeByMalIdDocument, { id: Number(malID) }, token)
 
-                if (!data.Media) {
-                    return { error: "Could not find the anime on AniList" }
-                }
-
-                const animeExistsInUsersWatchList = collectionQuery.MediaListCollection?.lists?.some(list => !!list?.entries?.some(entry => entry?.media?.id === data.Media?.id)) ?? false
+                const animeExistsInUsersWatchList = collectionQuery.MediaListCollection?.lists?.some(list => !!list?.entries?.some(entry => entry?.media?.id === mediaId)) ?? false
 
                 if (!animeExistsInUsersWatchList) {
                     try {
                         const mutation = await useAniListAsyncQuery(UpdateEntryDocument, {
-                            mediaId: data.Media.id, //Int
+                            mediaId: mediaId, //Int
                             status: "PLANNING", //MediaListStatus
                         }, token)
                     } catch (e) {
@@ -301,7 +291,7 @@ export async function manuallyMatchFiles(
                 }
 
                 // Return media so that the client updates the [LocalFile]s
-                return { media: data.Media }
+                return { mediaId: mediaId }
 
                 // return { error: animeExistsInUsersWatchList ? "Anime exists in list" : "Anime doesn't exist in list" }
 
