@@ -28,6 +28,9 @@ type VideoStreamerProps = {
     timeWatched?: any,
     onVideoComplete?: () => void
     onVideoEnd?: () => void
+    onCleanPlaybackPosition?: () => void
+    onTick?: (status: { position: number, duration: number }) => void
+    storedPlaybackPosition?: { id: string, position: number, duration: number } | null
 }
 
 export function VideoStreamer(
@@ -42,6 +45,9 @@ export function VideoStreamer(
         timeWatched,
         onVideoEnd,
         onVideoComplete,
+        onTick,
+        storedPlaybackPosition,
+        onCleanPlaybackPosition,
     }: VideoStreamerProps,
 ) {
     const [url, setUrl] = useState<string>("")
@@ -197,8 +203,8 @@ export function VideoStreamer(
                     }}
                     getInstance={(art: Artplayer) => {
                         art.on("ready", () => {
-                            const seek = art.storage.get(id)
-                            const seekTime = seek?.timeWatched || 0
+                            const seek = storedPlaybackPosition
+                            const seekTime = seek?.position || 0
                             const duration = art.duration
                             const percentage = seekTime / duration
                             const percentagedb = timeWatched / duration
@@ -210,6 +216,7 @@ export function VideoStreamer(
 
                             if (percentage >= 0.9 || percentagedb >= 0.9) {
                                 art.currentTime = 0
+                                onCleanPlaybackPosition && onCleanPlaybackPosition()
                                 console.log("Video started from the beginning")
                             } else if (timeWatched) {
                                 art.currentTime = timeWatched
@@ -220,35 +227,24 @@ export function VideoStreamer(
 
                         let marked = 0
 
-                        // art.on("video:playing", () => {
-                        // TODO Save position
-                        // const interval = setInterval(async () => {
-                        //     art.storage.set(id, {
-                        //         aniId: String(aniId),
-                        //         watchId: id,
-                        //         title: track?.playing?.title || aniTitle,
-                        //         aniTitle: aniTitle,
-                        //         image: track?.playing?.image || info?.coverImage?.extraLarge,
-                        //         episode: Number(progress),
-                        //         duration: art.duration,
-                        //         timeWatched: art.currentTime,
-                        //         provider: provider,
-                        //         createdAt: new Date().toISOString(),
-                        //     })
-                        // }, 5000)
-                        //
-                        //     art.on("video:pause", () => {
-                        //         clearInterval(interval)
-                        //     })
-                        //
-                        //     art.on("video:ended", () => {
-                        //         clearInterval(interval)
-                        //     })
-                        //
-                        //     art.on("destroy", () => {
-                        //         clearInterval(interval)
-                        //     })
-                        // })
+                        art.on("video:playing", () => {
+
+                            const interval = setInterval(async () => {
+                                onTick && onTick({ position: art.currentTime, duration: art.duration })
+                            }, 5000)
+
+                            art.on("video:pause", () => {
+                                clearInterval(interval)
+                            })
+
+                            art.on("video:ended", () => {
+                                clearInterval(interval)
+                            })
+
+                            art.on("destroy", () => {
+                                clearInterval(interval)
+                            })
+                        })
 
                         art.on("resize", () => {
                             art.subtitle.style({

@@ -9,6 +9,7 @@ const nextConfig = {
             {hostname: "s4.anilist.co"},
             {hostname: "cdn.myanimelist.net"},
             {hostname: "artworks.thetvdb.com"},
+            {hostname: "media.kitsu.io"},
         ]
     },
 }

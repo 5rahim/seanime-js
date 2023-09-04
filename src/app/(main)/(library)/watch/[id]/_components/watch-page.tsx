@@ -4,13 +4,15 @@ import Link from "next/link"
 import { Button, IconButton } from "@/components/ui/button"
 import { AiOutlineArrowLeft } from "@react-icons/all-files/ai/AiOutlineArrowLeft"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
-import { useAtom, useAtomValue } from "jotai/react"
+import { useAtom, useAtomValue, useSetAtom } from "jotai/react"
 import { consumetGogoAnimeServers, consumetZoroServers } from "@/lib/consumet/types"
 import { EpisodeItemSkeleton } from "@/app/(main)/(library)/view/[id]/_components/episodes/episode-item"
 import {
+    getStreamPlaybackPositionAtom,
     gogoAnimeStreamingServerAtom,
     streamingAutoplayAtom,
     streamingProviderAtom,
+    useStreamingPlaybackPosition,
     zoroStreamingServerAtom,
 } from "@/atoms/streaming/streaming.atoms"
 import { useAnilistCollectionEntryAtomByMediaId, useWatchedAnilistEntry } from "@/atoms/anilist/entries.atoms"
@@ -77,6 +79,10 @@ export function WatchPage(props: WatchPageProps) {
     const [gogoAnimeServer, setGogoAnimeServer] = useAtom(gogoAnimeStreamingServerAtom)
 
     const server = streamingProvider === "gogoanime" ? gogoAnimeServer : zoroServer
+
+    /** Playback position **/
+    const { updatePlaybackPosition, cleanPlaybackPosition } = useStreamingPlaybackPosition()
+    const getStoredPlaybackPosition = useSetAtom(getStreamPlaybackPositionAtom)
 
     useMount(() => {
         const ep = navigationEpisodeNumber || currentEpisodeNumberFromRepository || 1
@@ -223,6 +229,19 @@ export function WatchPage(props: WatchPageProps) {
                                         })
                                     }
                                 }}
+                                onTick={(status) => {
+                                    updatePlaybackPosition({
+                                        id: `${media.id}/${episodeNumber}`,
+                                        position: status.position,
+                                        duration: status.duration,
+                                    })
+                                    console.log(status)
+
+                                }}
+                                onCleanPlaybackPosition={() => {
+                                    cleanPlaybackPosition({ id: `${media.id}/${episodeNumber}` })
+                                }}
+                                storedPlaybackPosition={getStoredPlaybackPosition(`${media.id}/${episodeNumber}`)}
                             />
                         </div>
                     </div>

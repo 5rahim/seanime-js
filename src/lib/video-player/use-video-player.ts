@@ -61,7 +61,7 @@ export function useVideoPlayer(props?: {
             toggleTracking(false)
 
         }
-    }, tracking ? 1000 : null)
+    }, tracking ? 3000 : null)
 
     return {
         videoPlayer: videoPlayerRepository.current,

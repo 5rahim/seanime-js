@@ -18,11 +18,11 @@ export type PlaybackPosition = {
     seek: number
 }
 
-export const playbackPositionsAtom = atomWithStorage<PlaybackPosition[]>("sea-playback-positions", [], undefined, { unstable_getOnInit: true })
+const playbackPositionsAtom = atomWithStorage<PlaybackPosition[]>("sea-playback-positions", [], undefined, { unstable_getOnInit: true })
 
-export const playbackPositionsAtomWithImmer = withImmer(playbackPositionsAtom)
+const playbackPositionsAtomWithImmer = withImmer(playbackPositionsAtom)
 
-export function useUpdatePlaybackPosition() {
+export function usePlaybackPosition() {
     const setter = useSetAtom(playbackPositionsAtomWithImmer)
 
     return {
@@ -57,6 +57,6 @@ export function useUpdatePlaybackPosition() {
  * const getPlaybackPositon = useSetAtom(getFilePlaybackPositionAtom)
  * getPlaybackPositon("fileName")
  */
-export const getFilePlaybackPositionAtom = atom(null,
+export const getPlaybackPositionAtom = atom(null,
     (get, set, fileName: string) => get(focusAtom(playbackPositionsAtom, optic => optic.find(n => n?.fileName === fileName))),
 )
