@@ -84,7 +84,7 @@ export async function getConsumetEpisodeMeta<P extends ConsumetProvider>(
             if (!!resData && resData.episodes.length > 0) {
                 data.push({
                     provider: provider,
-                    episodes: resData.episodes.reverse(),
+                    episodes: provider === "gogoanime" ? resData.episodes.reverse() : resData.episodes,
                 })
             }
         } catch (error) {
