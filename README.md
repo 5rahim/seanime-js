@@ -21,23 +21,24 @@ similar software.
     scans. [Learn more](https://github.com/5rahim/seanime/blob/main/docs/guide.md#locking-files).
   - [x] Ignore files or folders
   - [x] Resolve unmatched files
-  - [ ] Update file metadata
+  - [x] Unmatch files
   - [x] Logs
-  - [ ] File name tag system for faster matching (eg: {id-0001})
-- [x] Play episode with default player
+  - [ ] Filename tag system for faster matching
+  - [ ] Update file metadata
+- [x] Open files with VLC or MPC-HC
 - [x] Automatic progress tracking
   - [x] Sync progress with AniList
   - [ ] Sync progress with MAL
-- [ ] Offline mode
-- [x] Un-match files (that might be incorrectly matched)
 - [x] Resolve unmatched files feature
   - [x] Match single files or folders to a media
   - [x] Option to match files using AniList ID
 - [x] Download additional episodes using qBittorent (embedded) and Nyaa (search)
 - [x] Browse and manage AniList entries
   - [x] Add, edit, AniList entries (status, score, progress…)
-- [x] Stream episodes from web source with custom player
+- [x] Stream episodes from web sources with custom player
+  - [ ] Support for Crunchyroll
 - [ ] See trending, search and filter
+- [ ] Offline mode
 
 <img src="docs/img_8.png" alt="preview" width="700"/>
 <br/>
@@ -52,14 +53,25 @@ effectively.
 Failure to do so may result in incorrect matches, especially when dealing with sequels, prequels, or different seasons
 of the same series.
 
-## Try it
+## Development
+
+1. Update `.env` file
+
+```dotenv
+# Deploy your Consumet API https://github.com/consumet/api.consumet.org#vercel
+CONSUMET_API_URL="https://consumet-api-example.vercel.app"
+```
+
+2. Install packages
 
 ```shell
 npm install
 ```
 
+3. Enjoy
+
 ```shell
-npm run tauri:dev
+npm run dev
 ```
 
 ## Known issues

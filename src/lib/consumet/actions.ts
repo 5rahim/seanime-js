@@ -13,7 +13,7 @@ import axios from "axios"
 import cache from "memory-cache"
 import _ from "lodash"
 
-const CONSUMET_API_URL = process.env.CONSUMET_URL
+const CONSUMET_API_URL = process.env.CONSUMET_API_URL
 
 /**
  * @link https://docs.consumet.org/rest-api/Meta/anilist-anime/get-anime-info

@@ -3,14 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"npm:cli:dev\" \"npm:next:dev\"",
+    "concurrent:dev": "concurrently \"npm:cli:dev\" \"npm:next:dev\"",
     "cli:dev": "tsx watch src/cli/bin.ts",
     "next:dev": "next dev --port=7777",
+    "dev": "tauri dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "tauri": "tauri",
-    "tauri:dev": "tauri dev",
     "codegen": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {

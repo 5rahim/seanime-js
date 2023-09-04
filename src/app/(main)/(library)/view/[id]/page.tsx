@@ -20,9 +20,9 @@ export default async function Page({ params }: { params: { id: string } }) {
                     />
                     {media.bannerImage && <Image
                         src={media.bannerImage || ""}
-                        alt={""}
+                        alt={"banner image"}
                         fill
-                        quality={80}
+                        quality={100}
                         priority
                         sizes="100vw"
                         className="object-cover object-center z-[1]"
