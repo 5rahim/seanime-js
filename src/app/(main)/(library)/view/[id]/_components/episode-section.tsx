@@ -44,9 +44,9 @@ const progressTrackingAtom = atomWithImmer<{ open: boolean, filesWatched: LocalF
 })
 
 export const useConsumetEpisodeData = (mediaId: Nullish<number>) => {
-    const res = useQuery(["episode-data"], async () => {
+    const res = useQuery(["episode-data", mediaId], async () => {
         return await getConsumetMediaEpisodes(mediaId!)
-    }, { enabled: !!mediaId, refetchOnWindowFocus: false, retry: 2 })
+    }, { enabled: !!mediaId, refetchOnWindowFocus: false, retry: 2, keepPreviousData: false })
     return res.data || undefined
 }
 
