@@ -1,5 +1,5 @@
 "use client"
-import React, { Fragment, useEffect, useState } from "react"
+import React, { Fragment, useState } from "react"
 import { Combobox, Dialog, Transition } from "@headlessui/react"
 import { cn } from "@/components/ui/core"
 import { FiSearch } from "@react-icons/all-files/fi/FiSearch"
@@ -19,7 +19,7 @@ import { useAuthed } from "@/atoms/auth"
 import { useRouter } from "next/navigation"
 
 
-export const __globalSearch_isOpenAtom = atom(true)
+export const __globalSearch_isOpenAtom = atom(false)
 
 interface GlobalSearchProps {
     children?: React.ReactNode
@@ -51,10 +51,6 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = (props) => {
         },
         { enabled: query.length > 0, keepPreviousData: false, refetchOnWindowFocus: false, retry: 0 },
     )
-
-    useEffect(() => {
-        console.log(query, isLoading, isFetching, fetchStatus, media)
-    }, [query, isLoading, isFetching, fetchStatus, media])
 
     return (
         <>

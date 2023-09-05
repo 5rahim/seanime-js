@@ -9,6 +9,7 @@ import { IoReload } from "@react-icons/all-files/io5/IoReload"
 import { Button } from "@/components/ui/button"
 
 import { useRefreshAnilistCollection } from "@/atoms/anilist/collection.atoms"
+import { IoLibrary } from "@react-icons/all-files/io5/IoLibrary"
 
 export default function Layout({ children }: {
     children: React.ReactNode,
@@ -22,6 +23,12 @@ export default function Layout({ children }: {
     const navigationItems = useMemo(() => {
         const authedItems = isAuthed ? [
             {
+                href: "/schedule",
+                icon: null,
+                isCurrent: pathname.includes("/schedule"),
+                name: "Schedule",
+            },
+            {
                 href: "/anilist",
                 icon: null,
                 isCurrent: pathname.includes("/anilist"),
@@ -32,7 +39,7 @@ export default function Layout({ children }: {
         return [
             {
                 href: "/",
-                icon: null,
+                icon: IoLibrary,
                 isCurrent: pathname === "/",
                 name: "My library",
             },

@@ -32,7 +32,7 @@ import { EpisodeListItem } from "@/components/shared/episode-list-item"
 interface WatchPageProps {
     children?: React.ReactNode
     media: AnilistDetailedMedia
-    aniZipData: AniZipData
+    aniZipData?: AniZipData
 }
 
 /** Persist the current episode number **/
