@@ -18,6 +18,8 @@ import { FiSettings } from "@react-icons/all-files/fi/FiSettings"
 import { FiSearch } from "@react-icons/all-files/fi/FiSearch"
 import { BiDownload } from "@react-icons/all-files/bi/BiDownload"
 import { useRefreshAnilistCollection } from "@/atoms/anilist/collection.atoms"
+import { useSetAtom } from "jotai"
+import { __globalSearch_isOpenAtom } from "@/components/application/global-search/global-search"
 
 interface MainSidebarProps {
     children?: React.ReactNode
@@ -32,6 +34,8 @@ export const MainSidebar: React.FC<MainSidebarProps> = (props) => {
     const { user } = useCurrentUser()
     const pathname = usePathname()
     const refreshCollection = useRefreshAnilistCollection()
+
+    const setGlobalSearchIsOpen = useSetAtom(__globalSearch_isOpenAtom)
 
     const loginModal = useDisclosure(false)
 
@@ -50,8 +54,7 @@ export const MainSidebar: React.FC<MainSidebarProps> = (props) => {
                             {
                                 icon: FiSearch,
                                 name: "Discover",
-                                href: "/discover",
-                                isCurrent: pathname === "/discover",
+                                onClick: () => setGlobalSearchIsOpen(true),
                             },
                             {
                                 icon: BiDownload,

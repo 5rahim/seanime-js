@@ -20,6 +20,8 @@ export const ClientProviders: React.FC<ClientProvidersProps> = ({ children, ...r
         defaultOptions: {
             queries: {
                 refetchOnWindowFocus: false,
+                keepPreviousData: false,
+                retry: 0,
             },
         },
     }))

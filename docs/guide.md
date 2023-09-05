@@ -101,27 +101,26 @@ Fix: Use AniList titles
 Locking is a feature made to speed up refreshing entries.
 It just tells Seanime that these files were correctly matched and to skip them when **refreshing** entries next time.
 
-## Refresh vs Re-scan
+## Ignoring files
+
+You can add a `.unsea` file to a folder if you want Seanime to skip its content.
+
+Caveats: If you have locked some files in the folder, **re-scan** the library after adding the `.unsea` file.
+This is because the files might still show up on Seanime when you only **refresh**.
+
+## Refresh vs Scan
 
 <img src="img_5.png" alt="preview" width="600"/>
 
 ### Refreshing entries
 
-What happens when you refresh entries?
+Seanime will skip **locked** and **ignored** files, this will speed up the process.
+You can also refresh after you manually delete some files (even if they were locked or ignored).
 
-- Seanime will skip **locked** and **ignored** files, this will speed up the process.
-- Seanime will remove manually deleted entries/files.
+### Scanning library
 
-### Re-scanning library
-
-Re-scanning will go through even locked and ignored files.
-Do it changing your local library folder.
-
-### Ignoring
-
-You can add a `.unsea` file to a folder if you want Seanime to skip its content.
-
-Caveats: This will only work if it does not contain locked files.
+Scanning (or re-scanning) will go through all files even if they are locked or ignored.
+Optimally, you should only scan once, or each time you change your library folder.
 
 ## Structure
 
@@ -150,14 +149,13 @@ Caveats: This will only work if it does not contain locked files.
 
 ## How it works
 
-- Seanime will try to match files to an anime using parsed info from the file name and its parent folders.
+- Seanime will try to match **files** to an anime using parsed info from the file name and its parent folders.
 - Parsed data include: the title, the season and the episode number.
-- The parsing algorithm will try to find **candidate** titles from:
-  - The file name (Can incorrectly use episode title if the formatting is weird)
-  - The folder name
-  - It will create candidate titles based on parsed title from folder+file name if they do no match
-  - It will also create candidate title variations based on the parsed season.
-  - If the file title is not included in the folder title
+- The matching algorithm will create **candidate** titles from:
+    - The file name (Can incorrectly use episode title if the format is unconventional)
+    - The folder name
+    - Folder name + file name, if they do no match
+    - The parsed season
 
 ### Finding anime by title variations
 
@@ -189,7 +187,8 @@ Caveats: This will only work if it does not contain locked files.
 ```
 
 ```text
-(No recommended)
+(Not recommended, prefer subfolders)
+
 ├── %LIBRARY_FOLDER%           
     └── Jujustu Kaisen S02E01.mkv               <- Captures title and season
     
@@ -389,7 +388,7 @@ However, if your episode files do not have consistent names, the matching proces
 - You **might** not need to rename torrent files, the parser will extract the necessary information and ignore the rest
   - `[Group] Anime [Dual-Audio][BDRip 1920x1080 HEVC FLAC]` = `Anime`
   - `[Group] Anime S01E01 [8CE6090E].mkv` = `Anime S01E01`
-  - Rename only when the scan fails to find a match
+  - See **Unmatched/Incorrectly matched files** to see when you need to rename files.
 - `SX` and `Season X` can be used interchangeably
 - `SXEX` and `S0XE0X` can be used interchangeably
 
@@ -398,7 +397,7 @@ information are the same.
 
 Batch
 
-- `SX-Y` = `Season X-Y` = `Season X ~ Y`, `X Y` = `0X 0Y`
+- `SX-Y` = `Season X-Y` = `Season X ~ Y`
 - The range is not necessary as it will be
   ignored. `{Anime Title} S1-3` = `{Anime Title}` = `{Anime Title} Complete series` etc…
 

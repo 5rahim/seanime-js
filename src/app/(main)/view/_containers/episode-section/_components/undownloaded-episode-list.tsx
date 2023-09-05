@@ -9,6 +9,8 @@ import { ConsumetAnimeEpisodeData } from "@/lib/consumet/types"
 import { BiPlayCircle } from "@react-icons/all-files/bi/BiPlayCircle"
 import { useDownloadPageData } from "@/lib/download/helpers"
 import { EpisodeListItem } from "@/components/shared/episode-list-item"
+import { useSetAtom } from "jotai"
+import { __torrentSearch_isOpenAtom } from "@/app/(main)/view/_containers/torrent-search/torrent-search-modal"
 
 interface UndownloadedEpisodeListProps {
     children?: React.ReactNode
@@ -21,12 +23,13 @@ export const UndownloadedEpisodeList: React.FC<UndownloadedEpisodeListProps> = R
 
     const { children, media, aniZipData, consumetEpisodeData, ...rest } = props
 
+    const setTorrentSearchIsOpen = useSetAtom(__torrentSearch_isOpenAtom)
+
     const {
         downloadInfo,
     } = useDownloadPageData(media)
 
     if (!aniZipData || Object.keys(aniZipData?.episodes).length === 0 || (downloadInfo.toDownload === 0)) return null
-
 
     return (
         <>
@@ -51,11 +54,11 @@ export const UndownloadedEpisodeList: React.FC<UndownloadedEpisodeListProps> = R
                             image={consumetEpisode?.image || aniZipData?.episodes?.[String(epNumber)]?.image}
                             action={
                                 <div className={""}>
-                                    <Link
-                                        href={`/view/${media.id}/torrent-search?episode=${epNumber}`}
-                                        className={"text-orange-200 absolue top-1 right-1 text-3xl absolute animate-pulse"}>
+                                    <a
+                                        onClick={() => setTorrentSearchIsOpen({ isOpen: true, episode: epNumber })}
+                                        className={"text-orange-200 absolue top-1 right-1 text-3xl absolute animate-pulse cursor-pointer"}>
                                         <BiDownload/>
-                                    </Link>
+                                    </a>
                                     <Link
                                         href={`/watch/${media.id}?episode=${epNumber}`}
                                         className={"text-gray-50 absolue top-10 right-1 text-3xl absolute"}>

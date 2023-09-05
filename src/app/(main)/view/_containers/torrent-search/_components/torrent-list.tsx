@@ -16,8 +16,8 @@ import { BsCollectionPlayFill } from "@react-icons/all-files/bs/BsCollectionPlay
 import { Button } from "@/components/ui/button"
 import { BiDownload } from "@react-icons/all-files/bi/BiDownload"
 import {
-    selectedTorrentsAtom,
-    sortedSelectedTorrentsAtom,
+    __torrentSearch_selectedTorrentsAtom,
+    __torrentSearch_sortedSelectedTorrentsAtom,
 } from "@/app/(main)/view/_containers/torrent-search/torrent-search-modal"
 
 interface TorrentListProps {
@@ -33,8 +33,8 @@ export const TorrentList: React.FC<TorrentListProps> = (props) => {
 
     const { settings } = useSettings()
     const router = useRouter()
-    const setSelectedTorrents = useSetAtom(selectedTorrentsAtom)
-    const selectedTorrents = useAtomValue(sortedSelectedTorrentsAtom)
+    const setSelectedTorrents = useSetAtom(__torrentSearch_selectedTorrentsAtom)
+    const selectedTorrents = useAtomValue(__torrentSearch_sortedSelectedTorrentsAtom)
     const sharedPath = useStableSelectAtom(entryAtom, entry => entry.sharedPath)
     const [selectedDir, setSelectedDir] = useState<string | undefined>(sharedPath || settings.library.localDirectory + "\\" + sanitizeDirectoryName(media.title?.romaji || ""))
 

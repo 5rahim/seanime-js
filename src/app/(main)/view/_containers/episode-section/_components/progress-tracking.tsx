@@ -6,7 +6,7 @@ import _ from "lodash"
 import { Modal } from "@/components/ui/modal"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { progressTrackingAtom } from "@/app/(main)/view/_containers/episode-section"
+import { __progressTrackingAtom } from "@/app/(main)/view/_containers/episode-section"
 
 interface ProgressTrackingModalProps {
     children?: React.ReactNode
@@ -18,7 +18,7 @@ export const ProgressTrackingModal: React.FC<ProgressTrackingModalProps> = (prop
 
     const { children, media, progress, ...rest } = props
 
-    const [state, setState] = useAtom(progressTrackingAtom)
+    const [state, setState] = useAtom(__progressTrackingAtom)
 
     const { watchedEntry } = useWatchedAnilistEntry()
 
@@ -88,7 +88,7 @@ export const ProgressTrackingModal: React.FC<ProgressTrackingModalProps> = (prop
 }
 export const ProgressTrackingButton = () => {
 
-    const [state, setState] = useAtom(progressTrackingAtom)
+    const [state, setState] = useAtom(__progressTrackingAtom)
 
     if (state.filesWatched.length === 0) return null
 

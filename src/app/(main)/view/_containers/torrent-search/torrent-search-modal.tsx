@@ -7,57 +7,56 @@ import { createDataGridColumns, DataGrid } from "@/components/ui/datagrid"
 import { Badge } from "@/components/ui/badge"
 import { formatDistanceToNow } from "date-fns"
 import { atom } from "jotai"
-import { useAtom } from "jotai/react"
+import { useAtom, useAtomValue } from "jotai/react"
 import { Divider } from "@/components/ui/divider"
 import { Switch } from "@/components/ui/switch"
 import { NumberInput } from "@/components/ui/number-input"
 import { useDebounce } from "@/hooks/use-debounce"
 import { Button, IconButton } from "@/components/ui/button"
 import { cn } from "@/components/ui/core"
-import { useSearchParams } from "next/navigation"
 import { useMount } from "react-use"
-import { Modal } from "@/components/ui/modal"
+import { Drawer, Modal } from "@/components/ui/modal"
 import { useDisclosure } from "@/hooks/use-disclosure"
 import { normalizeMediaEpisode } from "@/lib/anilist/actions"
 import { BiLinkExternal } from "@react-icons/all-files/bi/BiLinkExternal"
 import { useDownloadPageData } from "@/lib/download/helpers"
 import { TorrentList } from "@/app/(main)/view/_containers/torrent-search/_components/torrent-list"
-import { useGetTorrentSearchAnimeInfo } from "@/app/(main)/view/_containers/torrent-search/_lib/queries"
-import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { useQuery } from "@tanstack/react-query"
 import rakun from "@/lib/rakun/rakun"
-
-// TODO Refactor with React Query
+import { atomWithImmer } from "jotai-immer"
 
 interface Props {
-    mediaId: number
-    // media: AnilistDetailedMedia,
-    // aniZipData: AniZipData
+    media: AnilistDetailedMedia,
+    aniZipData?: AniZipData
 }
 
 type SearchTorrentData = SearchTorrent & { parsed: TorrentInfos }
 
-export const selectedTorrentsAtom = atom<SearchTorrentData[]>([])
+export const __torrentSearch_selectedTorrentsAtom = atom<SearchTorrentData[]>([])
 
-export const sortedSelectedTorrentsAtom = atom((get) => {
-    const torrents = get(selectedTorrentsAtom)
-    if (torrents.every(torrent => !!torrent.parsed.episode)) {
-        return get(selectedTorrentsAtom)?.sort((a, b) => Number(a.parsed.episode!) - Number(b.parsed.episode!))
+export const __torrentSearch_isOpenAtom = atomWithImmer<{ isOpen: boolean, episode: number | undefined }>({
+    isOpen: false,
+    episode: undefined,
+})
+
+export const __torrentSearch_sortedSelectedTorrentsAtom = atom((get) => {
+    const torrents = get(__torrentSearch_selectedTorrentsAtom)
+    if (torrents.every(torrent => !!torrent.parsed.episode)) { // Sort torrents if they all contain an episode number
+        return get(__torrentSearch_selectedTorrentsAtom)?.sort((a, b) => Number(a.parsed.episode!) - Number(b.parsed.episode!))
     }
     return torrents
 })
 
 export function TorrentSearchModal(props: Props) {
 
-    const {
-        media,
-        aniZipData,
-        isLoading,
-    } = useGetTorrentSearchAnimeInfo(props.mediaId)
+    const [status, setStatus] = useAtom(__torrentSearch_isOpenAtom)
 
-    if (isLoading || !media || !aniZipData) return <LoadingSpinner/>
-
-    return <Content media={media} aniZipData={aniZipData}/>
+    return <Drawer isOpen={status.isOpen} onClose={() => setStatus(draft => {
+        draft.isOpen = false
+        return
+    })} size={"xl"}>
+        <Content media={props.media} aniZipData={props.aniZipData}/>
+    </Drawer>
 
 }
 
@@ -69,17 +68,13 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
         lastFile,
         downloadInfo,
     } = useDownloadPageData(media)
-
-    const modal = useDisclosure(false)
-
-    const searchParams = useSearchParams()
-    const episode = searchParams.get("episode")
+    const { episode } = useAtomValue(__torrentSearch_isOpenAtom)
 
     const [globalFilter, setGlobalFilter] = useState<string>("")
 
-    const [selectedTorrents, setSelectedTorrents] = useAtom(selectedTorrentsAtom)
-    const [quickSearchIsBatch, setQuickSearchIsBatch] = useState<boolean>(false)
-    const [quickSearchEpisode, setQuickSearchEpisode] = useState<number | undefined>(undefined)
+    const [selectedTorrents, setSelectedTorrents] = useAtom(__torrentSearch_selectedTorrentsAtom)
+    const [quickSearchIsBatch, setQuickSearchIsBatch] = useState<boolean>(downloadInfo.batch || downloadInfo.canBatch)
+    const [quickSearchEpisode, setQuickSearchEpisode] = useState<number | undefined>(episode || downloadInfo.episodeNumbers[0])
     const debouncedEpisode = useDebounce(quickSearchEpisode, 500)
 
     const [episodeOffset, setEpisodeOffset] = useState<number | undefined>(undefined)
@@ -89,10 +84,7 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
     useMount(() => {
         (async () => {
             if (media && downloadInfo) {
-
                 setSelectedTorrents([])
-                setQuickSearchIsBatch(downloadInfo.batch || downloadInfo.canBatch)
-                setQuickSearchEpisode(episode ? Number(episode) : downloadInfo.episodeNumbers[0])
 
                 const object = await normalizeMediaEpisode({
                     media: media,
@@ -100,7 +92,6 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
                     force: true,
                 })
                 setEpisodeOffset(object?.offset ?? 0)
-                // await handleFindNyaaTorrents(object?.offset ?? 0)
             }
         })()
     })

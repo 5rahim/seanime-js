@@ -94,6 +94,7 @@ npm run dev
 - [ ] Update settings local directory picker
 - [ ] Manage/Un-ignore ignored files
 - [ ] Optimize episode number normalization during scan with cache (library-entry.ts L171)
+- [ ] Delete files
 - [ ] Offline mode
 
 ## Resources

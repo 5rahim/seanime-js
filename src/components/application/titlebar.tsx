@@ -1,11 +1,12 @@
 "use client"
 
-import React, { useEffect } from "react"
+import React from "react"
 import { appWindow } from "@tauri-apps/api/window"
 import { cva } from "class-variance-authority"
 import { cn } from "@/components/ui/core"
 import { useWindowSize } from "@/hooks/use-window-size"
 import toast from "react-hot-toast"
+import { useIsomorphicLayoutEffect } from "react-use"
 
 /* -------------------------------------------------------------------------------------------------
  * TitleBar
@@ -30,13 +31,13 @@ export const TitleBar: React.FC<TitleBarProps> = React.forwardRef<HTMLDivElement
 
     const { windowSize, isMaximized } = useWindowSize()
 
-    React.useLayoutEffect(() => {
+    useIsomorphicLayoutEffect(() => {
         document?.getElementById("titlebar-minimize")?.addEventListener("click", () => appWindow.minimize())
         document?.getElementById("titlebar-maximize")?.addEventListener("click", () => appWindow.toggleMaximize())
         document?.getElementById("titlebar-close")?.addEventListener("click", () => appWindow.close())
     }, [])
 
-    useEffect(() => {
+    useIsomorphicLayoutEffect(() => {
         (async () => {
             const unlistenProgress = await appWindow.listen(
                 "video-player-error",
@@ -59,7 +60,7 @@ export const TitleBar: React.FC<TitleBarProps> = React.forwardRef<HTMLDivElement
 
     return (
         <div data-tauri-drag-region
-             className="h-[--titlebar-h] bg-transparent select-none flex justify-between fixed top-0 left-0 right-0 z-50">
+             className="h-[--titlebar-h] bg-transparent select-none flex justify-between fixed top-0 left-0 right-0 z-[999]">
             <div className={"h-[--titlebar-h] inline-flex items-center px-4 font-bold"}>
                 {/*<p>Seanime</p>*/}
             </div>

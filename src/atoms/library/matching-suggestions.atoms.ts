@@ -19,7 +19,7 @@ export type MatchingSuggestionGroups = {
 }
 export const libraryMatchingSuggestionGroupsAtom = atom<MatchingSuggestionGroups[]>([])
 
-const _isCurrentlyFetchingSuggestions = atom(false)
+const isFetchingSuggestionsAtom = atom(false)
 
 const getMatchingSuggestionGroupsAtom = atom(null, async (get, set, payload: "file" | "folder") => {
     try {
@@ -32,7 +32,7 @@ const getMatchingSuggestionGroupsAtom = atom(null, async (get, set, payload: "fi
             set(libraryMatchingSuggestionGroupsAtom, []) // Reset suggestions
 
             logger("atom/library/getMatchingSuggestionGroup").info("Grouping local files with no media")
-            set(_isCurrentlyFetchingSuggestions, true)
+            set(isFetchingSuggestionsAtom, true)
 
             /** Grouping **/
             const filesWithFolderPath = files.map(file => {
@@ -138,7 +138,7 @@ const getMatchingSuggestionGroupsAtom = atom(null, async (get, set, payload: "fi
                 }
             }
             fetchedSuggestionMap.clear()
-            set(_isCurrentlyFetchingSuggestions, false)
+            set(isFetchingSuggestionsAtom, false)
             logger("atom/library").info("Matching suggestion groups", groups)
             set(libraryMatchingSuggestionGroupsAtom, groups)
 
@@ -151,7 +151,7 @@ const getMatchingSuggestionGroupsAtom = atom(null, async (get, set, payload: "fi
 })
 export const useMatchingSuggestions = () => {
     const [, getMatchingSuggestions] = useAtom(getMatchingSuggestionGroupsAtom)
-    const isLoading = useAtomValue(_isCurrentlyFetchingSuggestions)
+    const isLoading = useAtomValue(isFetchingSuggestionsAtom)
 
     return {
         getMatchingSuggestions,

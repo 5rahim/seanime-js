@@ -35,10 +35,10 @@ import {
 interface EpisodeSectionProps {
     children?: React.ReactNode
     detailedMedia: AnilistDetailedMedia
-    aniZipData: AniZipData
+    aniZipData?: AniZipData
 }
 
-export const progressTrackingAtom = atomWithImmer<{ open: boolean, filesWatched: LocalFile[] }>({
+export const __progressTrackingAtom = atomWithImmer<{ open: boolean, filesWatched: LocalFile[] }>({
     open: false,
     filesWatched: [],
 })
@@ -69,7 +69,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = React.memo((props) 
     const maxEp = detailedMedia.nextAiringEpisode?.episode ? detailedMedia.nextAiringEpisode.episode - 1 : detailedMedia.episodes!
     const canTrackProgress = (!progress || progress < maxEp) && progress !== maxEp
 
-    const setProgressTracking = useSetAtom(progressTrackingAtom)
+    const setProgressTracking = useSetAtom(__progressTrackingAtom)
 
     useMount(() => {
         setProgressTracking(draft => {
@@ -128,8 +128,8 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = React.memo((props) 
 
                     {!!entryAtom && <div className={"space-x-4 flex items-center"}>
                         {canTrackProgress && <ProgressTrackingButton/>}
-                        <UtilityButtons entryAtom={entryAtom}/>
                         <ToggleLockStatusButton entryAtom={entryAtom}/>
+                        <UtilityButtons entryAtom={entryAtom}/>
                     </div>}
 
                 </div>

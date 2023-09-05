@@ -5,7 +5,7 @@ import { AnilistCollectionEntry } from "@/atoms/anilist/entries.atoms"
 import { Badge } from "@/components/ui/badge"
 import { BiStar } from "@react-icons/all-files/bi/BiStar"
 
-export function ProgressBadge({ collectionEntryAtom, episodes }: {
+export function ScoreProgressBadges({ collectionEntryAtom, episodes }: {
     collectionEntryAtom: PrimitiveAtom<AnilistCollectionEntry>,
     episodes: number | null | undefined
 }) {

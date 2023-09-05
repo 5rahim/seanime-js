@@ -3,9 +3,9 @@ import React, { useMemo } from "react"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
 import { BiCalendarAlt } from "@react-icons/all-files/bi/BiCalendarAlt"
 import _ from "lodash"
-import { ProgressBadge } from "@/app/(main)/view/_containers/meta-section/_components/progress-badge"
+import { ScoreProgressBadges } from "@/app/(main)/view/_containers/meta-section/_components/score-progress-badges"
 import { NextAiringEpisode } from "@/app/(main)/view/_containers/meta-section/_components/next-airing-episode"
-import { DownloadPageButton } from "@/app/(main)/view/_containers/meta-section/_components/download-page-button"
+import { TorrentDownloadButton } from "@/app/(main)/view/_containers/meta-section/_components/torrent-download-button"
 import { useLibraryEntryAtomByMediaId } from "@/atoms/library/library-entry.atoms"
 import { useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist/entries.atoms"
 import { AnilistMediaEntryModal } from "@/components/shared/anilist-media-entry-modal"
@@ -42,7 +42,6 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
         }
     }, [])
 
-    /** Rest **/
     const relations = (detailedMedia.relations?.edges?.map(edge => edge) || [])
         .filter(Boolean)
         .filter(n => (n.node?.format === "TV" || n.node?.format === "OVA" || n.node?.format === "MOVIE") && (n.relationType === "PREQUEL" || n.relationType === "SEQUEL" || n.relationType === "PARENT" || n.relationType === "SIDE_STORY" || n.relationType === "ALTERNATIVE" || n.relationType === "ADAPTATION"))
@@ -84,7 +83,8 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
                     {/*PROGRESS*/}
                     <div className={"flex gap-4 items-center"}>
                         {collectionEntryAtom &&
-                            <ProgressBadge collectionEntryAtom={collectionEntryAtom} episodes={detailedMedia.episodes}/>
+                            <ScoreProgressBadges collectionEntryAtom={collectionEntryAtom}
+                                                 episodes={detailedMedia.episodes}/>
                         }
                         <AnilistMediaEntryModal media={detailedMedia}/>
                     </div>
@@ -166,7 +166,7 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
                 </div>
 
                 {detailedMedia.status !== "NOT_YET_RELEASED" && (
-                    <DownloadPageButton
+                    <TorrentDownloadButton
                         entryAtom={entryAtom}
                         collectionEntryAtom={collectionEntryAtom}
                         detailedMedia={detailedMedia}

@@ -22,6 +22,11 @@ const _dummy = atom(null)
 /**
  * Select from an atom that might be undefined.
  * Ensures that the condition that determines the callback's definition remains stable across renders
+ *
+ * @example
+ * const anAtom = condition ? getAtom() : undefined
+ * const value = useStableSelectAtom(anAtom, n => n.property)
+ *
  * @param anAtom
  * @param keyFn
  */

@@ -27,20 +27,46 @@ import axios from "axios"
  * Get anime info from page params
  */
 export const getAnimeInfo = cache(async (params: { id: string }) => {
-    if (!params.id || isNaN(Number(params.id))) redirect("/")
+    try {
+        if (!params.id || isNaN(Number(params.id))) redirect("/")
 
-    const [animeRes, aniZipRes] = await Promise.all([
-        useAniListAsyncQuery(AnimeByIdDocument, { id: Number(params.id) }),
-        axios.get<AniZipData>("https://api.ani.zip/mappings?anilist_id=" + Number(params.id)),
-    ])
+        const [animeRes, aniZipRes] = await Promise.all([
+            useAniListAsyncQuery(AnimeByIdDocument, { id: Number(params.id) }),
+            axios.get<AniZipData>("https://api.ani.zip/mappings?anilist_id=" + Number(params.id)),
+        ])
 
-    if (!animeRes.Media) redirect("/")
+        if (!animeRes.Media) redirect("/")
 
-    logger("view/id").info("Fetched media data for " + animeRes.Media.title?.english)
+        logger("view/id").info("Fetched media data for " + animeRes.Media.title?.english)
 
-    return {
-        media: animeRes.Media,
-        aniZipData: aniZipRes.data,
+        return {
+            media: animeRes.Media,
+            aniZipData: aniZipRes.data,
+        }
+    } catch (e) {
+
+        logger("view/id").warning("Failed to fetch media data for " + params.id, "Retrying...")
+
+        try {
+            const animeRes = await useAniListAsyncQuery(AnimeByIdDocument, { id: Number(params.id) })
+
+            if (!animeRes.Media) redirect("/")
+
+            logger("view/id").info("Fetched media data for " + animeRes.Media.title?.english)
+            logger("view/id").warning("No aniZip data for " + animeRes.Media.title?.english)
+
+            return {
+                media: animeRes.Media,
+                aniZipData: undefined,
+            }
+
+        } catch (e) {
+
+            logger("view/id").error("Fetched media data for " + params.id)
+
+            redirect("/")
+        }
+
     }
 })
 
@@ -162,7 +188,40 @@ export async function experimental__fetchRelatedMedia(
  * DO NOT USE to look up parsed titles
  * AniList sucks with search
  */
-export async function searchWithAnilist({ name, ...method }: {
+export async function searchWithAnilist(
+    {
+        name,
+        perPage = 5,
+        status = ["FINISHED", "CANCELLED", "NOT_YET_RELEASED", "RELEASING"],
+        sort = "SEARCH_MATCH",
+        method = "SearchName",
+    }: {
+        name: string,
+        method?: string,
+        perPage?: number,
+        status?: MediaStatus[],
+        sort?: MediaSort
+    },
+): Promise<AnilistShortMedia[]> {
+    logger("searchWithAnilist").info("Searching", name)
+    const res = await useAniListAsyncQuery(SearchAnimeShortMediaDocument, {
+        search: name,
+        page: 1,
+        perPage,
+        status,
+        sort,
+        method,
+    })
+    logger("searchWithAnilist").info("Found", res.Page?.media?.length)
+    return res.Page?.media?.filter(Boolean) ?? []
+}
+
+
+/**
+ * DO NOT USE to look up parsed titles
+ * AniList sucks with search
+ */
+export async function searchUniqueWithAnilist({ name, ...method }: {
     name: string,
     method: string,
     perPage: number,

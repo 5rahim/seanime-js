@@ -6,7 +6,7 @@ import fs from "fs/promises"
 import { logger } from "@/lib/helpers/debug"
 import rakun from "@/lib/rakun/rakun"
 import _ from "lodash"
-import { searchWithAnilist } from "@/lib/anilist/actions"
+import { searchUniqueWithAnilist } from "@/lib/anilist/actions"
 
 async function PromiseBatch(task: any, items: any, batchSize: number) {
     let position = 0
@@ -48,17 +48,17 @@ export async function resolveTitle(name: string) {
         if (match) {
             if (Number(match[1]) === 1) { // if this is S1, remove the " S1" or " S01"
                 method.name = method.name.replace(/ S(\d+)/, "")
-                media = (await searchWithAnilist(method))?.Page?.media?.[0]
+                media = (await searchUniqueWithAnilist(method))?.Page?.media?.[0]
             } else {
                 method.name = method.name.replace(/ S(\d+)/, ` ${Number(match[1])}${postfix[Number(match[1])] || "th"} Season`)
-                media = (await searchWithAnilist(method))?.Page?.media?.[0]
+                media = (await searchUniqueWithAnilist(method))?.Page?.media?.[0]
                 if (!media) {
                     method.name = oldname.replace(/ S(\d+)/, ` Season ${Number(match[1])}`)
-                    media = (await searchWithAnilist(method))?.Page?.media?.[0]
+                    media = (await searchUniqueWithAnilist(method))?.Page?.media?.[0]
                 }
             }
         } else {
-            media = (await searchWithAnilist(method))?.Page?.media?.[0]
+            media = (await searchUniqueWithAnilist(method))?.Page?.media?.[0]
         }
 
         // remove - :
@@ -66,7 +66,7 @@ export async function resolveTitle(name: string) {
             const match = method.name.match(/[-:]/g)
             if (match) {
                 method.name = method.name.replace(/[-:]/g, "")
-                media = (await searchWithAnilist(method))?.Page?.media?.[0]
+                media = (await searchUniqueWithAnilist(method))?.Page?.media?.[0]
             }
         }
         // remove (TV)
@@ -74,7 +74,7 @@ export async function resolveTitle(name: string) {
             const match = method.name.match(/\(TV\)/)
             if (match) {
                 method.name = method.name.replace("(TV)", "")
-                media = (await searchWithAnilist(method))?.Page?.media?.[0]
+                media = (await searchUniqueWithAnilist(method))?.Page?.media?.[0]
             }
         }
         // remove 2020
@@ -82,7 +82,7 @@ export async function resolveTitle(name: string) {
             const match = method.name.match(/ (19[5-9]\d|20\d{2})/)
             if (match) {
                 method.name = method.name.replace(/ (19[5-9]\d|20\d{2})/, "")
-                media = (await searchWithAnilist(method))?.Page?.media?.[0]
+                media = (await searchUniqueWithAnilist(method))?.Page?.media?.[0]
             }
         }
     } catch (e) {
