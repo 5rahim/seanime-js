@@ -29,16 +29,18 @@ import axios from "axios"
 export const getAnimeInfo = cache(async (params: { id: string }) => {
     if (!params.id || isNaN(Number(params.id))) redirect("/")
 
-    const mediaQuery = await useAniListAsyncQuery(AnimeByIdDocument, { id: Number(params.id) })
-    if (!mediaQuery.Media) redirect("/")
+    const [animeRes, aniZipRes] = await Promise.all([
+        useAniListAsyncQuery(AnimeByIdDocument, { id: Number(params.id) }),
+        axios.get<AniZipData>("https://api.ani.zip/mappings?anilist_id=" + Number(params.id)),
+    ])
 
-    const { data: aniZipData } = await axios.get<AniZipData>("https://api.ani.zip/mappings?anilist_id=" + Number(params.id))
+    if (!animeRes.Media) redirect("/")
 
-    logger("view/id").info("Fetched media data for " + mediaQuery.Media.title?.english)
+    logger("view/id").info("Fetched media data for " + animeRes.Media.title?.english)
 
     return {
-        media: mediaQuery.Media,
-        aniZipData: aniZipData,
+        media: animeRes.Media,
+        aniZipData: aniZipRes.data,
     }
 })
 

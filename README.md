@@ -87,14 +87,13 @@ npm run dev
 
 ## TODO
 
-- [ ] Loading screen to `/view/[id]`
+- [ ] Move Torrent Search to modal
 - [ ] Edit file metadata
-- [ ] Do not use next/image when list > 100
 - [ ] Show a section with new, un-downloaded episodes
 - [ ] Preliminary scan to hydrate AniList (for users without anilist data)
 - [ ] Update settings local directory picker
 - [ ] Manage/Un-ignore ignored files
-- [ ] (Resolve unmatched) Show AniList link using AniZip
+- [ ] Optimize episode number normalization during scan with cache (library-entry.ts L171)
 - [ ] Offline mode
 
 ## Resources

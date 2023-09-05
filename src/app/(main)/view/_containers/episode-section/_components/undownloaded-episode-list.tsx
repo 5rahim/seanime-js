@@ -52,7 +52,7 @@ export const UndownloadedEpisodeList: React.FC<UndownloadedEpisodeListProps> = R
                             action={
                                 <div className={""}>
                                     <Link
-                                        href={`/view/${media.id}/download?episode=${epNumber}`}
+                                        href={`/view/${media.id}/torrent-search?episode=${epNumber}`}
                                         className={"text-orange-200 absolue top-1 right-1 text-3xl absolute animate-pulse"}>
                                         <BiDownload/>
                                     </Link>

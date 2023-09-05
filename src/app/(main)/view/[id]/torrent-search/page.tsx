@@ -4,8 +4,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { IconButton } from "@/components/ui/button"
 import { AiOutlineArrowLeft } from "@react-icons/all-files/ai/AiOutlineArrowLeft"
 import Link from "next/link"
-import { DownloadPage } from "@/app/(main)/view/_containers/download/download-page"
 import { getAnimeInfo } from "@/lib/anilist/actions"
+import { TorrentSearchModal } from "@/app/(main)/view/_containers/torrent-search/torrent-search-modal"
 
 export default async function Page({ params }: { params: { id: string } }) {
 
@@ -43,10 +43,9 @@ export default async function Page({ params }: { params: { id: string } }) {
                     </Link>
                     <h2>{media.title?.english}</h2>
                 </div>
-                <div>
-                    <DownloadPage
-                        media={media}
-                        aniZipData={aniZipData}
+                <div className={"mt-8"}>
+                    <TorrentSearchModal
+                        mediaId={media.id}
                     />
                 </div>
             </div>

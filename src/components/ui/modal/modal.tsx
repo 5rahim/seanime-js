@@ -66,7 +66,7 @@ export interface ModalProps extends React.ComponentPropsWithRef<"div">,
     ComponentWithAnatomy<typeof ModalAnatomy>,
     VariantProps<typeof ModalAnatomy.panel>, VariantProps<typeof ModalAnatomy.outsideContainer> {
     isOpen: boolean,
-    onClose: () => void
+    onClose?: () => void
     title?: string
     isClosable?: boolean
     closeButtonIntent?: CloseButtonProps["intent"]
@@ -96,7 +96,8 @@ export const Modal = React.forwardRef<HTMLDivElement, ModalProps>((props, ref) =
     return (
         <>
             <Transition appear show={isOpen} as={Fragment}>
-                <Dialog as="div" className={cn("relative z-50")} onClose={onClose}>
+                <Dialog as="div" className={cn("relative z-50")} onClose={() => onClose ? onClose() : () => {
+                }}>
                     <Transition.Child
                         as={Fragment}
                         enter="ease-out duration-300"

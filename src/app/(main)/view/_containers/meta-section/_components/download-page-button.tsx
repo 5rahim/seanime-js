@@ -39,7 +39,7 @@ export const DownloadPageButton = (
 
     return (
         <div>
-            <Link href={`/view/${detailedMedia.id}/download`}>
+            <Link href={`/view/${detailedMedia.id}/torrent-search`}>
                 {detailedMedia.format !== "MOVIE" &&
                     <Button className={"w-full"} intent={"white"} size={"lg"} leftIcon={<BiDownload/>}
                             iconClassName={"text-2xl"}>

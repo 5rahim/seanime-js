@@ -203,10 +203,11 @@ Caveats: This will only work if it does not contain locked files.
 ├── %LIBRARY_FOLDER%                              
     └── Fruits Basket S1-3                      <- Captures title (ignores range)
         └── Fruits Basket S2                    <- Overrides previous title, captures season \/
-            └── S02E01 - Spring comes.mkv       <- Captures "Spring comes"
+            └── Spring comes - S02E01.mkv       <- (v1) Captures "Spring comes"
 
 ---> Will try [Fruits Basket Season 2, ..., Spring comes Season 2, ..., Fruits Basket Spring comes Season 2, ...]
 ---> However, since the folder's title is prioritized the episode title might not negatively impact the matching process
+---> Make sure the episode title comes AFTER (e.g., "S02E01 - Spring comes.mkv")
 ```
 
 ### More about seasons
