@@ -1,6 +1,12 @@
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
 import { LocalFile } from "@/lib/local-library/local-file"
 import { MediaListStatus } from "@/gql/graphql"
+import { useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist/entries.atoms"
+import { useStableSelectAtom } from "@/atoms/helpers"
+import { useLibraryEntryAtomByMediaId } from "@/atoms/library/library-entry.atoms"
+import { useSetAtom } from "jotai/react"
+import { getLastMainLocalFileByMediaIdAtom } from "@/atoms/library/local-file.atoms"
+import { useMemo } from "react"
 
 /**
  * @description
@@ -89,4 +95,31 @@ export const getMediaDownloadInfo = (
     }
 
 
+}
+
+export function useDownloadPageData(media: AnilistDetailedMedia) {
+    const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(media.id)
+    const collectionEntryProgress = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress)
+    const collectionEntryStatus = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.status)
+    const entryAtom = useLibraryEntryAtomByMediaId(media.id)
+
+    const getLastFile = useSetAtom(getLastMainLocalFileByMediaIdAtom)
+    const lastFile = getLastFile(media.id)
+
+    const downloadInfo = useMemo(() => getMediaDownloadInfo({
+        media: media,
+        lastEpisodeFile: lastFile,
+        progress: collectionEntryProgress,
+        libraryEntryExists: !!entryAtom,
+        status: collectionEntryStatus,
+    }), [lastFile])
+
+    return {
+        entryAtom,
+        collectionEntryAtom,
+        collectionEntryProgress,
+        collectionEntryStatus,
+        lastFile,
+        downloadInfo,
+    }
 }

@@ -7,7 +7,7 @@ import { cn } from "@/components/ui/core"
 import { Atom, atom } from "jotai"
 import { useAtom } from "jotai/react"
 import { useSelectAtom } from "@/atoms/helpers"
-import { AnimeListItem } from "@/components/application/list/anime-list-item"
+import { AnimeListItem } from "@/components/shared/anime-list-item"
 import { LoadingOverlay } from "@/components/ui/loading-spinner"
 import { AnilistCollectionEntry } from "@/atoms/anilist/entries.atoms"
 import {

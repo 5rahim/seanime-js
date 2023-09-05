@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------------------------------------
- * Unused
+ * Unused - Prefer players' settings
  * -----------------------------------------------------------------------------------------------*/
 import { atomWithStorage } from "jotai/utils"
 import { withImmer } from "jotai-immer"

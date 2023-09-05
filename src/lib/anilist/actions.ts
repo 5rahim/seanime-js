@@ -1,6 +1,7 @@
 "use server"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
 import {
+    AnimeByIdDocument,
     AnimeShortMediaByIdDocument,
     DeleteEntryDocument,
     DeleteEntryMutationVariables,
@@ -14,9 +15,35 @@ import { logger } from "@/lib/helpers/debug"
 import { AnilistShortMedia } from "@/lib/anilist/fragment"
 import { findMediaEdge } from "@/lib/anilist/utils"
 import { compareTitleVariationsToMediaTitles } from "@/lib/local-library/utils"
+import { cache } from "react"
+import { redirect } from "next/navigation"
+import axios from "axios"
 
 /* -------------------------------------------------------------------------------------------------
- * Collection Entries
+ * General
+ * -----------------------------------------------------------------------------------------------*/
+
+/**
+ * Get anime info from page params
+ */
+export const getAnimeInfo = cache(async (params: { id: string }) => {
+    if (!params.id || isNaN(Number(params.id))) redirect("/")
+
+    const mediaQuery = await useAniListAsyncQuery(AnimeByIdDocument, { id: Number(params.id) })
+    if (!mediaQuery.Media) redirect("/")
+
+    const { data: aniZipData } = await axios.get<AniZipData>("https://api.ani.zip/mappings?anilist_id=" + Number(params.id))
+
+    logger("view/id").info("Fetched media data for " + mediaQuery.Media.title?.english)
+
+    return {
+        media: mediaQuery.Media,
+        aniZipData: aniZipData,
+    }
+})
+
+/* -------------------------------------------------------------------------------------------------
+ * Edit collection entries
  * -----------------------------------------------------------------------------------------------*/
 
 export async function updateEntry(variables: UpdateEntryMutationVariables, token: string | null | undefined) {
@@ -109,7 +136,7 @@ export async function normalizeMediaEpisode(opts: {
     return normalizeMediaEpisode({ media, episode, increment, offset, rootMedia, force })
 }
 
-export async function fetchRelatedMedia(
+export async function experimental__fetchRelatedMedia(
     media: AnilistShortMedia,
     queryMap: Map<number, AnilistShortMedia>,
     token: string,

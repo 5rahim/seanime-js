@@ -56,8 +56,8 @@ export const MainSidebar: React.FC<MainSidebarProps> = (props) => {
                             {
                                 icon: BiDownload,
                                 name: "Torrents",
-                                href: "/download",
-                                isCurrent: pathname === "/download",
+                                href: "/torrents",
+                                isCurrent: pathname === "/torrents",
                                 // addon: <Badge className={"absolute right-0 top-0"} size={"sm"}
                                 //               intent={"alert-solid"}>2</Badge>,
 

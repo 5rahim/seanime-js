@@ -104,6 +104,13 @@ export async function getConsumetEpisodeMeta<P extends ConsumetProvider>(
     return data
 }
 
+/**
+ * Get an episode streaming data from a specific provider
+ * @param episodeId
+ * @param provider
+ * @param server
+ * @param skipCache
+ */
 export async function getConsumetEpisodeStreamingData<P extends ConsumetProvider>(
     episodeId: string,
     provider: P,
