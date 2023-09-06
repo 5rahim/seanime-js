@@ -86,7 +86,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = (props) => {
                                     {({ activeOption }: any) => (
                                         <>
                                             <div
-                                                className="relative bg-gray-900 shadow-2xl ring-1 ring-black ring-opacity-5 w-full rounded-lg">
+                                                className="relative bg-gray-900 shadow-2xl ring-1 ring-black ring-opacity-5 w-full rounded-lg ">
                                                 <FiSearch
                                                     className="pointer-events-none absolute top-5 left-4 h-6 w-6 text-[--muted]"
                                                     aria-hidden="true"
@@ -101,7 +101,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = (props) => {
                                             {(!!media && media.length > 0) && (
                                                 <Combobox.Options
                                                     as="div" static hold
-                                                    className="flex divide-[--border] bg-gray-900 shadow-2xl ring-1 ring-black ring-opacity-5 rounded-lg"
+                                                    className="flex divide-[--border] bg-gray-900 shadow-2xl ring-1 ring-black ring-opacity-5 rounded-lg border border-[--border]"
                                                 >
                                                     <div
                                                         className={cn(
@@ -180,6 +180,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = (props) => {
                                                                 <Button
                                                                     type="button"
                                                                     className={"w-full"}
+                                                                    intent={"white-subtle"}
                                                                 >
                                                                     Open
                                                                 </Button>

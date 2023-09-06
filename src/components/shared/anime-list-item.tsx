@@ -10,7 +10,7 @@ import { addSeconds, formatDistanceToNow } from "date-fns"
 import { RiSignalTowerLine } from "@react-icons/all-files/ri/RiSignalTowerLine"
 import Link from "next/link"
 import { Button, IconButton } from "@/components/ui/button"
-import { AnilistShowcaseMedia } from "@/lib/anilist/fragment"
+import { AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import { BiPlay } from "@react-icons/all-files/bi/BiPlay"
 import { VscVerified } from "@react-icons/all-files/vsc/VscVerified"
 import { BiLockOpenAlt } from "@react-icons/all-files/bi/BiLockOpenAlt"
@@ -22,11 +22,15 @@ import { useAnilistUserMedia } from "@/atoms/anilist/media.atoms"
 import { IoLibrarySharp } from "@react-icons/all-files/io5/IoLibrarySharp"
 import { AnilistMediaEntryModal } from "@/components/shared/anilist-media-entry-modal"
 
-export const AnimeListItem = ((props: { mediaId: number, showLibraryBadge?: boolean }) => {
+type AnimeListItemProps = { mediaId: number, media?: AnilistShortMedia, showLibraryBadge?: boolean } & {
+    containerClassName?: string
+}
+
+export const AnimeListItem = ((props: AnimeListItemProps) => {
 
     const { mediaId } = props
 
-    const media = useAnilistUserMedia(mediaId)
+    const media = !props.media ? useAnilistUserMedia(mediaId) : props.media
     const entryAtom = useLibraryEntryAtomByMediaId(mediaId)
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(mediaId)
     const status = useStableSelectAtom(collectionEntryAtom, entry => entry?.status)
@@ -36,7 +40,11 @@ export const AnimeListItem = ((props: { mediaId: number, showLibraryBadge?: bool
 
     return (
         <div
-            className={"h-full col-span-1 group/anime-list-item relative flex flex-col place-content-stretch focus-visible:outline-0"}>
+            className={cn(
+                "h-full col-span-1 group/anime-list-item relative flex flex-col place-content-stretch focus-visible:outline-0 flex-none",
+                props.containerClassName,
+            )}
+        >
 
             {/*ACTION POPUP*/}
             <div className={cn(
@@ -65,7 +73,7 @@ export const AnimeListItem = ((props: { mediaId: number, showLibraryBadge?: bool
                             {/*<Tooltip trigger={*/}
                             {/*    <p className={"text-center font-medium text-sm min-[2000px]:text-lg px-4 truncate text-ellipsis"}>{media.title?.userPreferred}</p>*/}
                             {/*}>{media.title?.userPreferred}</Tooltip>*/}
-                            <p className={"text-center font-medium text-sm min-[2000px]:text-lg px-4 truncate text-ellipsis"}>{media.title?.userPreferred}</p>
+                            <p className={"text-center font-medium text-sm min-[2000px]:text-lg px-4 line-clamp-3"}>{media.title?.userPreferred}</p>
                         </div>
                         {!!media.season ? <div>
                                 <p className={"justify-center text-sm text-[--muted] flex w-full gap-1 items-center"}>
@@ -157,7 +165,7 @@ export const AnimeListItem = ((props: { mediaId: number, showLibraryBadge?: bool
             </div>
             <div className={"pt-2 space-y-2 flex flex-col justify-between h-full"}>
                 <div>
-                    <p className={"text-center font-semibold text-sm min-[2000px]:text-lg"}>{media.title?.userPreferred}</p>
+                    <p className={"text-center font-semibold text-sm min-[2000px]:text-lg line-clamp-3"}>{media.title?.userPreferred}</p>
                 </div>
                 <div>
                     <div>

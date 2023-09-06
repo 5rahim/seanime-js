@@ -3,9 +3,12 @@ import React, { useEffect, useRef, useState } from "react"
 import { useDraggableScroll } from "@/hooks/use-draggable-scroll"
 import { MdChevronLeft } from "@react-icons/all-files/md/MdChevronLeft"
 import { MdChevronRight } from "@react-icons/all-files/md/MdChevronRight"
+import { cn } from "@/components/ui/core"
 
 interface SliderProps {
     children?: React.ReactNode
+    sliderClassName?: string
+    containerClassName?: string
 }
 
 export const Slider: React.FC<SliderProps> = (props) => {
@@ -58,7 +61,10 @@ export const Slider: React.FC<SliderProps> = (props) => {
     }
 
     return (
-        <div className={"relative flex items-center lg:gap-2"}>
+        <div className={cn(
+            "relative flex items-center lg:gap-2",
+            props.containerClassName,
+        )}>
             <div
                 onClick={slideLeft}
                 className={`flex items-center cursor-pointer hover:text-action absolute left-0 bg-gradient-to-r from-[--background-color] z-40 h-full w-12 hover:opacity-100 ${

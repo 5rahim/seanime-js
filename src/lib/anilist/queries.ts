@@ -78,6 +78,19 @@ export const _SearchAnimeShortMedia = gql`
     }
 `
 
+export const _ListAnime = gql`
+    query ListAnime($page: Int, $perPage: Int, $sort: [MediaSort], $status: [MediaStatus], $format: MediaFormat){
+        Page(page: $page, perPage: $perPage){
+            pageInfo{
+                hasNextPage
+            },
+            media(type: ANIME, sort: $sort, status_in: $status, isAdult: false, format: $format, format_not: MUSIC){
+                ...shortMedia
+            }
+        }
+    }
+`
+
 
 export const _AnimeByMalId = gql`
     query AnimeByMalId ($id: Int) {
@@ -98,6 +111,19 @@ export const _AnimeShortMediaById = gql`
     query AnimeShortMediaById ($id: Int) {
         Media(id: $id, type: ANIME) {
             ...shortMedia
+        }
+    }
+`
+
+export const _TrendingAnime = gql`
+    query TrendingAnime {
+        Page(page: 1, perPage: 20) {
+            pageInfo {
+                hasNextPage
+            }
+            media(type: ANIME, sort: [TRENDING_DESC], isAdult: false, format_not: MUSIC) {
+                ...shortMedia
+            }
         }
     }
 `
