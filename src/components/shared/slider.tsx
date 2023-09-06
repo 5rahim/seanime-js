@@ -1,19 +1,21 @@
 "use client"
-import React, { useEffect, useRef, useState } from "react"
+import React, { useRef, useState } from "react"
 import { useDraggableScroll } from "@/hooks/use-draggable-scroll"
 import { MdChevronLeft } from "@react-icons/all-files/md/MdChevronLeft"
 import { MdChevronRight } from "@react-icons/all-files/md/MdChevronRight"
 import { cn } from "@/components/ui/core"
+import { useUpdateEffect } from "react-use"
 
 interface SliderProps {
     children?: React.ReactNode
     sliderClassName?: string
     containerClassName?: string
+    onSlideEnd?: () => void
 }
 
 export const Slider: React.FC<SliderProps> = (props) => {
 
-    const { children, ...rest } = props
+    const { children, onSlideEnd, ...rest } = props
 
     const ref = useRef<HTMLDivElement>() as React.MutableRefObject<HTMLInputElement>
     const { events } = useDraggableScroll(ref, {
@@ -36,8 +38,21 @@ export const Slider: React.FC<SliderProps> = (props) => {
         }
     }
 
-    useEffect(() => {
+    useUpdateEffect(() => {
         console.log(isScrolledToLeft, isScrolledToRight)
+        if (!isScrolledToLeft && isScrolledToRight) {
+            onSlideEnd && onSlideEnd()
+            const t = setTimeout(() => {
+                const div = ref.current
+                if (div) {
+                    div.scrollTo({
+                        left: div.scrollLeft + 500,
+                        behavior: "smooth",
+                    })
+                }
+            }, 1000)
+            return () => clearTimeout(t)
+        }
     }, [isScrolledToLeft, isScrolledToRight])
 
     function slideLeft() {
@@ -67,11 +82,11 @@ export const Slider: React.FC<SliderProps> = (props) => {
         )}>
             <div
                 onClick={slideLeft}
-                className={`flex items-center cursor-pointer hover:text-action absolute left-0 bg-gradient-to-r from-[--background-color] z-40 h-full w-12 hover:opacity-100 ${
+                className={`flex items-center cursor-pointer hover:text-action absolute left-0 bg-gradient-to-r from-[--background-color] z-40 h-full w-16 hover:opacity-100 ${
                     !isScrolledToLeft ? "lg:visible" : "invisible"
                 }`}
             >
-                <MdChevronLeft className="w-7 h-7 stroke-2"/>
+                <MdChevronLeft className="w-7 h-7 stroke-2 mx-auto"/>
             </div>
             <div
                 onScroll={handleScroll}
@@ -83,11 +98,11 @@ export const Slider: React.FC<SliderProps> = (props) => {
             </div>
             <div
                 onClick={slideRight}
-                className={`flex items-center cursor-pointer hover:text-action absolute right-0 bg-gradient-to-l from-[--background-color] z-40 h-full w-12 hover:opacity-100 ${
+                className={`flex items-center cursor-pointer hover:text-action absolute right-0 bg-gradient-to-l from-[--background-color] z-40 h-full w-16 hover:opacity-100 ${
                     !isScrolledToRight ? "lg:visible" : "invisible"
                 }`}
             >
-                <MdChevronRight className="w-7 h-7 stroke-2"/>
+                <MdChevronRight className="w-7 h-7 stroke-2 mx-auto"/>
             </div>
         </div>
     )

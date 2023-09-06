@@ -7,6 +7,10 @@
 🚨 This project is a hobby and doesn't aim to solve every unique issue or address all complaints you may have about
 similar software.
 
+## Disclaimer
+
+[Read the disclaimer](https://github.com/5rahim/seanime/blob/main/docs/DISCLAIMER.md).
+
 ## Features
 
 - [x] Scan local library and match local files with corresponding
@@ -50,7 +54,7 @@ For the time being, users must ensure their AniList watchlist includes all media
 initiating the scanning process.
 This is because Seanime relies on the user's AniList data to accurately match episode files and organize them
 effectively.
-Failure to do so may result in incorrect matches, especially when dealing with sequels, prequels, or different seasons
+Failure to do so may result in incorrect matches, especially when dealing with different seasons
 of the same series.
 
 ## Development

@@ -56,7 +56,7 @@ export function DataGridFilter<T extends Record<string, any>>(props: DataGridFil
     } = props
 
     const filterParams = getColumnHelperMeta(column, "filteringMeta")!
-    const filterValue: any = useMemo(() => column.getFilterValue(), [column.getFilterValue()])
+    const filterValue = useMemo(() => column.getFilterValue(), [column.getFilterValue()]) as any
     const setFilterValue = useMemo(() => column.setFilterValue, [column.setFilterValue])
     const icon = filterParams.icon
 
@@ -124,7 +124,7 @@ export function DataGridFilter<T extends Record<string, any>>(props: DataGridFil
                     trigger={
                         <DataGridActiveFilter
                             options={filterParams}
-                            value={Array.isArray(filterValue) ? filterValue.map((n: string) => valueFormatter(n)) : valueFormatter(filterValue)}
+                            value={Array.isArray(filterValue) ? (filterValue as any).map((n: string) => valueFormatter(n)) : valueFormatter(filterValue)}
                         />}
                 >
                     <DropdownMenu.Group className={"p-1"}>
@@ -147,7 +147,7 @@ export function DataGridFilter<T extends Record<string, any>>(props: DataGridFil
                     trigger={
                         <DataGridActiveFilter
                             options={filterParams}
-                            value={Array.isArray(filterValue) ? filterValue.map((n: string) => valueFormatter(n)) : valueFormatter(filterValue)}
+                            value={Array.isArray(filterValue) ? (filterValue as any).map((n: string) => valueFormatter(n)) : valueFormatter(filterValue)}
                         />}
                 >
                     <DropdownMenu.Group className={"p-1"}>

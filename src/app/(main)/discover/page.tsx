@@ -4,18 +4,45 @@ import { useAniListClientQuery } from "@/hooks/graphql-client-helpers"
 import { ListAnimeDocument } from "@/gql/graphql"
 import { AnimeListItem } from "@/components/shared/anime-list-item"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useInfiniteQuery } from "@tanstack/react-query"
+import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
+import React, { useEffect, useMemo } from "react"
+import Image from "next/image"
 
 export default function Page() {
 
-    const { data: trendingAnime, isLoading: trendingLoading } = useAniListClientQuery(ListAnimeDocument, {
-        page: 1,
-        perPage: 20,
-        sort: ["TRENDING_DESC"],
+    // const { data: trendingAnime, isLoading: trendingLoading } = useAniListClientQuery(ListAnimeDocument, {
+    //     page: 1,
+    //     perPage: 20,
+    //     sort: ["TRENDING_DESC"],
+    // })
+    const {
+        data: trendingAnime, isLoading: trendingLoading,
+        fetchNextPage: fetchNextTrending,
+        status,
+    } = useInfiniteQuery({
+        queryKey: ["projects"],
+        queryFn: async ({ pageParam }) => {
+            return useAniListAsyncQuery(ListAnimeDocument, {
+                page: pageParam + 1,
+                perPage: 20,
+                sort: ["TRENDING_DESC"],
+            })
+        },
+        getNextPageParam: (lastPage, pages) => {
+            const curr = lastPage.Page?.pageInfo?.currentPage
+            const hasNext = lastPage.Page?.pageInfo?.hasNextPage
+            return (!!curr && hasNext && (curr + 1) < 4) ? curr + 1 : undefined
+        },
     })
 
+    useEffect(() => {
+        console.log(status)
+    }, [status])
+
     const {
-        data: trendingNotReleasedAnime,
-        isLoading: trendingNotReleasedLoading,
+        data: trendingUpcomingAnime,
+        isLoading: trendingUpcomingLoading,
     } = useAniListClientQuery(ListAnimeDocument, {
         page: 1,
         perPage: 20,
@@ -34,69 +61,99 @@ export default function Page() {
         sort: ["TRENDING_DESC"],
     })
 
+    const randomNumber = useMemo(() => Math.floor(Math.random() * 6), [])
+
+    const firstTrending = useMemo(() => trendingAnime?.pages?.flatMap(n => n.Page?.media).filter(Boolean)[randomNumber], [trendingAnime, randomNumber])
+
     return (
-        <div className={"px-4 pt-8 space-y-10 pb-10"}>
-            <div className={"space-y-2"}>
-                <h2>Most popular this season</h2>
-                <Slider>
-                    {!trendingLoading ? trendingAnime?.Page?.media?.filter(Boolean).map(media => {
-                        return (
-                            <AnimeListItem
-                                mediaId={media.id}
-                                media={media}
-                                showLibraryBadge
-                                containerClassName={"min-w-[250px] max-w-[250px] mt-8"}
-                            />
-                        )
-                    }) : [...Array(10).keys()].map((v, idx) => <AnimeListItemSkeleton key={idx}/>)}
-                </Slider>
+        <>
+            <div className={"__header h-[20rem] "}>
+                <div
+                    className="h-[30rem] w-[calc(100%-5rem)] flex-none object-cover object-center absolute top-0 overflow-hidden">
+                    <div
+                        className={"w-full absolute z-[2] top-0 h-[15rem] bg-gradient-to-b from-[--background-color] to-transparent via"}
+                    />
+                    {firstTrending?.bannerImage && <Image
+                        src={firstTrending.bannerImage}
+                        alt={"banner image"}
+                        fill
+                        quality={100}
+                        priority
+                        sizes="100vw"
+                        className="object-cover object-center z-[1]"
+                    />}
+                    {!firstTrending?.bannerImage && <Skeleton className={"z-0 h-full absolute w-full"}/>}
+                    <div
+                        className={"w-full z-[2] absolute bottom-0 h-[20rem] bg-gradient-to-t from-[--background-color] via-[--background-color] via-opacity-50 via-10% to-transparent"}
+                    />
+
+                </div>
             </div>
-            <div className={"space-y-2"}>
-                <h2>Popular shows</h2>
-                <Slider>
-                    {!popularLoading ? popularAnime?.Page?.media?.filter(Boolean).map(media => {
-                        return (
-                            <AnimeListItem
-                                mediaId={media.id}
-                                media={media}
-                                showLibraryBadge
-                                containerClassName={"min-w-[250px] max-w-[250px] mt-8"}
-                            />
-                        )
-                    }) : [...Array(10).keys()].map((v, idx) => <AnimeListItemSkeleton key={idx}/>)}
-                </Slider>
+            <div className={"px-4 pt-8 space-y-10 pb-10"}>
+                <div className={"space-y-2"}>
+                    <h2>Popular this season</h2>
+                    <Slider
+                        onSlideEnd={() => fetchNextTrending()}
+                    >
+                        {!trendingLoading ? trendingAnime?.pages?.flatMap(n => n.Page?.media).filter(Boolean).map(media => {
+                            return (
+                                <AnimeListItem
+                                    mediaId={media.id}
+                                    media={media}
+                                    showLibraryBadge
+                                    containerClassName={"min-w-[250px] max-w-[250px] mt-8"}
+                                />
+                            )
+                        }) : [...Array(10).keys()].map((v, idx) => <AnimeListItemSkeleton key={idx}/>)}
+                    </Slider>
+                </div>
+                <div className={"space-y-2"}>
+                    <h2>Popular shows</h2>
+                    <Slider>
+                        {!popularLoading ? popularAnime?.Page?.media?.filter(Boolean).map(media => {
+                            return (
+                                <AnimeListItem
+                                    mediaId={media.id}
+                                    media={media}
+                                    showLibraryBadge
+                                    containerClassName={"min-w-[250px] max-w-[250px] mt-8"}
+                                />
+                            )
+                        }) : [...Array(10).keys()].map((v, idx) => <AnimeListItemSkeleton key={idx}/>)}
+                    </Slider>
+                </div>
+                <div className={"space-y-2"}>
+                    <h2>Trending upcoming</h2>
+                    <Slider>
+                        {!trendingUpcomingLoading ? trendingUpcomingAnime?.Page?.media?.filter(Boolean).map(media => {
+                            return (
+                                <AnimeListItem
+                                    mediaId={media.id}
+                                    media={media}
+                                    showLibraryBadge
+                                    containerClassName={"min-w-[250px] max-w-[250px] mt-8"}
+                                />
+                            )
+                        }) : [...Array(10).keys()].map((v, idx) => <AnimeListItemSkeleton key={idx}/>)}
+                    </Slider>
+                </div>
+                <div className={"space-y-2"}>
+                    <h2>Trending movies</h2>
+                    <Slider>
+                        {!popularMoviesLoading ? popularMovies?.Page?.media?.filter(Boolean).map(media => {
+                            return (
+                                <AnimeListItem
+                                    mediaId={media.id}
+                                    media={media}
+                                    showLibraryBadge
+                                    containerClassName={"min-w-[250px] max-w-[250px] mt-8"}
+                                />
+                            )
+                        }) : [...Array(10).keys()].map((v, idx) => <AnimeListItemSkeleton key={idx}/>)}
+                    </Slider>
+                </div>
             </div>
-            <div className={"space-y-2"}>
-                <h2>Trending upcoming</h2>
-                <Slider>
-                    {!trendingNotReleasedLoading ? trendingNotReleasedAnime?.Page?.media?.filter(Boolean).map(media => {
-                        return (
-                            <AnimeListItem
-                                mediaId={media.id}
-                                media={media}
-                                showLibraryBadge
-                                containerClassName={"min-w-[250px] max-w-[250px] mt-8"}
-                            />
-                        )
-                    }) : [...Array(10).keys()].map((v, idx) => <AnimeListItemSkeleton key={idx}/>)}
-                </Slider>
-            </div>
-            <div className={"space-y-2"}>
-                <h2>Trending movies</h2>
-                <Slider>
-                    {!popularMoviesLoading ? popularMovies?.Page?.media?.filter(Boolean).map(media => {
-                        return (
-                            <AnimeListItem
-                                mediaId={media.id}
-                                media={media}
-                                showLibraryBadge
-                                containerClassName={"min-w-[250px] max-w-[250px] mt-8"}
-                            />
-                        )
-                    }) : [...Array(10).keys()].map((v, idx) => <AnimeListItemSkeleton key={idx}/>)}
-                </Slider>
-            </div>
-        </div>
+        </>
     )
 }
 

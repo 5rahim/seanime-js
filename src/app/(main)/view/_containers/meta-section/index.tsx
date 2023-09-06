@@ -128,8 +128,9 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
                             iconClassName={"text-yellow-500"}
                             badgeClassName={"rounded-md"}
                         >
-                            #{String(allTimeHighestRated.rank)} Highest Rated of All
-                            Time {allTimeHighestRated.format !== "TV" ? `(${allTimeHighestRated.format})` : ""}
+                            #{String(allTimeHighestRated.rank)} Highest
+                            Rated {allTimeHighestRated.format !== "TV" ? `${allTimeHighestRated.format}` : ""} of All
+                            Time
                         </Badge>}
                         {seasonHighestRated && <Badge
                             className={""} size={"lg"}
@@ -138,8 +139,8 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
                             iconClassName={"text-yellow-500"}
                             badgeClassName={"rounded-md"}
                         >
-                            #{String(seasonHighestRated.rank)} Highest Rated
-                            of {_.capitalize(seasonHighestRated.season!)} {seasonHighestRated.year} {seasonHighestRated.format !== "TV" ? `(${seasonHighestRated.format})` : ""}
+                            #{String(seasonHighestRated.rank)} Highest
+                            Rated {seasonHighestRated.format !== "TV" ? `${seasonHighestRated.format}` : ""} of {_.capitalize(seasonHighestRated.season!)} {seasonHighestRated.year}
                         </Badge>}
                         {seasonMostPopular && <Badge
                             className={""} size={"lg"}
@@ -149,8 +150,7 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
                             badgeClassName={"rounded-md"}
                         >
                             #{(String(seasonMostPopular.rank))} Most
-                            Popular
-                            of {_.capitalize(seasonMostPopular.season!)} {seasonMostPopular.year} {seasonMostPopular.format !== "TV" ? `(${seasonMostPopular.format})` : ""}
+                            Popular {seasonMostPopular.format !== "TV" ? `${seasonMostPopular.format}` : ""} of {_.capitalize(seasonMostPopular.season!)} {seasonMostPopular.year}
                         </Badge>}
                         {/*{allTimeMostPopular && <Badge*/}
                         {/*    className={""} size={"lg"}*/}

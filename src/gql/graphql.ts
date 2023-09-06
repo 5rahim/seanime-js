@@ -4977,7 +4977,13 @@ export type ListAnimeQueryVariables = Exact<{
 
 export type ListAnimeQuery = {
     Page?: {
-        pageInfo?: { hasNextPage?: boolean | null } | null, media?: Array<{
+        pageInfo?: {
+            hasNextPage?: boolean | null,
+            total?: number | null,
+            perPage?: number | null,
+            currentPage?: number | null,
+            lastPage?: number | null
+        } | null, media?: Array<{
             id: number,
             idMal?: number | null,
             siteUrl?: string | null,
@@ -6947,7 +6953,16 @@ export const ListAnimeDocument = {
                         "name": { "kind": "Name", "value": "pageInfo" },
                         "selectionSet": {
                             "kind": "SelectionSet",
-                            "selections": [{ "kind": "Field", "name": { "kind": "Name", "value": "hasNextPage" } }],
+                            "selections": [{
+                                "kind": "Field",
+                                "name": { "kind": "Name", "value": "hasNextPage" },
+                            }, { "kind": "Field", "name": { "kind": "Name", "value": "total" } }, {
+                                "kind": "Field",
+                                "name": { "kind": "Name", "value": "perPage" },
+                            }, {
+                                "kind": "Field",
+                                "name": { "kind": "Name", "value": "currentPage" },
+                            }, { "kind": "Field", "name": { "kind": "Name", "value": "lastPage" } }],
                         },
                     }, {
                         "kind": "Field",

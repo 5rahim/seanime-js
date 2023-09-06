@@ -2,11 +2,11 @@
 
 ## AniList
 
-For the time being, user must ensure their AniList watchlist includes all media present in their local library before
+For the time being, users must ensure their AniList watchlist includes all media present in their local library before
 initiating the scanning process.
 This is because Seanime relies on the user's AniList data to accurately match episode files and organize them
 effectively.
-Failure to do so may result in incorrect matches, especially when dealing with sequels, prequels, or different seasons
+Failure to do so may result in incorrect matches, especially when dealing different seasons
 of the same series.
 
 ### What about MAL?

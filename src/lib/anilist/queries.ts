@@ -83,6 +83,10 @@ export const _ListAnime = gql`
         Page(page: $page, perPage: $perPage){
             pageInfo{
                 hasNextPage
+                total
+                perPage
+                currentPage
+                lastPage
             },
             media(type: ANIME, sort: $sort, status_in: $status, isAdult: false, format: $format, format_not: MUSIC){
                 ...shortMedia
