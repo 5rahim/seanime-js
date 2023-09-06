@@ -37,6 +37,7 @@ export default function Home() {
                 navClassName={"border-none"}
                 tabClassName={cn(
                     "text-lg rounded-none border-b border-b-2 border-b-transparent data-[selected=true]:text-white data-[selected=true]:border-brand-400",
+                    "hover:bg-transparent dark:hover:bg-transparent hover:text-white",
                     "dark:border-transparent dark:hover:border-b-transparent dark:data-[selected=true]:border-brand-400 dark:data-[selected=true]:text-white",
                     "hover:bg-[--highlight]",
                 )}
