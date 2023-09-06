@@ -9,7 +9,7 @@ similar software.
 
 ## Disclaimer
 
-[Read the disclaimer](https://github.com/5rahim/seanime/blob/main/docs/DISCLAIMER.md).
+[Read the disclaimer](https://github.com/5rahim/seanime/blob/main/DISCLAIMER.md).
 
 ## Features
 
