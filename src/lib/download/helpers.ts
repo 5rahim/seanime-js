@@ -102,9 +102,10 @@ export function useDownloadPageData(media: AnilistDetailedMedia) {
     const collectionEntryProgress = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress)
     const collectionEntryStatus = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.status)
     const entryAtom = useLibraryEntryAtomByMediaId(media.id)
+    const entryFileCount = useStableSelectAtom(entryAtom, entry => entry.files.length) || 0
 
     const getLastFile = useSetAtom(getLastMainLocalFileByMediaIdAtom)
-    const lastFile = getLastFile(media.id)
+    const lastFile = useMemo(() => getLastFile(media.id), [entryFileCount]) // Refetch the last file when the number of file changes
 
     const downloadInfo = useMemo(() => getMediaDownloadInfo({
         media: media,

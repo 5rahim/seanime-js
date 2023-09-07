@@ -11,6 +11,7 @@ import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
 import gql from "graphql-tag"
 import { AnilistShortMedia } from "@/lib/anilist/fragment"
 import { aniListTokenAtom } from "@/atoms/auth"
+import axios from "axios"
 
 export type MatchingSuggestionGroups = {
     files: LocalFile[],
@@ -62,7 +63,7 @@ const getMatchingSuggestionGroupsAtom = atom(null, async (get, set, payload: "fi
                         let animeList2: MALSearchResultAnime[] = []
                         // title
                         if (_title && !fetchedSuggestionMap.has(_title)) {
-                            const res = await searchWithMAL(_title)
+                            const res = await searchWithMAL(_title, 6)
                             if (res && res.length > 0) {
                                 animeList1 = res
                                 fetchedSuggestionMap.set(_title, res)
@@ -72,7 +73,7 @@ const getMatchingSuggestionGroupsAtom = atom(null, async (get, set, payload: "fi
                         }
                         // folder title
                         if (_fTitle && !fetchedSuggestionMap.has(_fTitle)) {
-                            const res = await searchWithMAL(_fTitle)
+                            const res = await searchWithMAL(_fTitle, 6)
                             if (res && res.length > 0) {
                                 animeList2 = res
                                 fetchedSuggestionMap.set(_fTitle, res)
@@ -83,17 +84,20 @@ const getMatchingSuggestionGroupsAtom = atom(null, async (get, set, payload: "fi
 
                         const animeList = [...animeList1, ...animeList2]
 
-                        // const aniListIds = await Promise.all(animeList.map(async item => {
-                        //     const { data } = await axios.get<AniZipData>(`https://api.ani.zip/mappings?mal_id=${item.id}`)
-                        //     return data.mappings.anilist_id
-                        // }))
+                        const mappingResults = await Promise.allSettled(animeList.map(async item => {
+                            return axios.get<AniZipData>(`https://api.ani.zip/mappings?mal_id=${item.id}`)
+                        }))
+                        // Remove non-existent mappings and get the actual Anilist ids
+                        const anilistIds = mappingResults.map(result => {
+                            if (result.status === "fulfilled") return result.value.data.mappings.anilist_id
+                        }).filter(Boolean)
 
                         const res = await useAniListAsyncQuery<{
                             [key: string]: MatchingSuggestionGroups["recommendations"][number]
                         } | null, any>(gql`
                             query AnimeByMalId {
-                                ${animeList.map(item => `
-                                t${item.id}: Media(idMal: ${item.id}, type: ANIME) {
+                                ${anilistIds.map(id => `
+                                t${id}: Media(id: ${id}, type: ANIME) {
                                     id
                                     format
                                     status
@@ -134,12 +138,12 @@ const getMatchingSuggestionGroupsAtom = atom(null, async (get, set, payload: "fi
                         }
                     }
                 } catch (e) {
-                    logger("atom/library").error(e)
+                    logger("atom/library/getMatchingSuggestionGroup").error(e)
                 }
             }
             fetchedSuggestionMap.clear()
             set(isFetchingSuggestionsAtom, false)
-            logger("atom/library").info("Matching suggestion groups", groups)
+            logger("atom/library/getMatchingSuggestionGroup").info("Matching suggestion groups", groups)
             set(libraryMatchingSuggestionGroupsAtom, groups)
 
 

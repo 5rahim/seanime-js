@@ -3,7 +3,7 @@
 import {
     useLocalFileAtomByPath,
     useLocalFileAtomsByMediaId,
-    useLocalFilesByMediaId,
+    useLocalFilesByMediaId_UNSTABLE,
     useSetLocalFiles,
 } from "@/atoms/library/local-file.atoms"
 import { LocalFile } from "@/lib/local-library/local-file"
@@ -110,7 +110,7 @@ const IgnoredStatus = ({ path }: { path: string }) => {
 
 const ToggleAll = (props: { mediaId: number }) => {
 
-    const files = useLocalFilesByMediaId(props.mediaId)
+    const files = useLocalFilesByMediaId_UNSTABLE(props.mediaId)
     const allFilesLocked = files.every(file => file.locked)
     const setFiles = useSetLocalFiles()
 

@@ -24,13 +24,11 @@ import { LocalFile } from "@/lib/local-library/local-file"
 import { Button } from "@/components/ui/button"
 import { FiPlayCircle } from "@react-icons/all-files/fi/FiPlayCircle"
 import { useMount } from "react-use"
-import { useQuery } from "@tanstack/react-query"
-import { getConsumetMediaEpisodes } from "@/lib/consumet/actions"
-import { Nullish } from "@/types/common"
 import {
     ProgressTrackingButton,
     ProgressTrackingModal,
 } from "@/app/(main)/view/_containers/episode-section/_components/progress-tracking"
+import { useConsumetMediaEpisodes } from "@/lib/consumet/client"
 
 interface EpisodeSectionProps {
     children?: React.ReactNode
@@ -43,15 +41,8 @@ export const __progressTrackingAtom = atomWithImmer<{ open: boolean, filesWatche
     filesWatched: [],
 })
 
-export const useConsumetEpisodeData = (mediaId: Nullish<number>) => {
-    const res = useQuery(["episode-data", mediaId], async () => {
-        return await getConsumetMediaEpisodes(mediaId!)
-    }, { enabled: !!mediaId, refetchOnWindowFocus: false, retry: 2, keepPreviousData: false })
-    return res.data || undefined
-}
 
-
-export const EpisodeSection: React.FC<EpisodeSectionProps> = React.memo((props) => {
+export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
 
     const { children, detailedMedia, aniZipData, ...rest } = props
 
@@ -64,7 +55,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = React.memo((props) 
     const progress = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress)
     const nextUpFilePath = useStableSelectAtom(toWatch[0], file => file?.path)
 
-    const consumetEpisodeData = useConsumetEpisodeData(detailedMedia.id)
+    const consumetEpisodeData = useConsumetMediaEpisodes(detailedMedia.id)
 
     const maxEp = detailedMedia.nextAiringEpisode?.episode ? detailedMedia.nextAiringEpisode.episode - 1 : detailedMedia.episodes!
     const canTrackProgress = (!progress || progress < maxEp) && progress !== maxEp
@@ -101,8 +92,11 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = React.memo((props) 
     if (!entryAtom) {
         return <div className={"space-y-10"}>
             {status !== "NOT_YET_RELEASED" ? <p>Not in your library</p> : <p>Not yet released</p>}
-            <UndownloadedEpisodeList media={detailedMedia} aniZipData={aniZipData}
-                                     consumetEpisodeData={consumetEpisodeData}/>
+            <UndownloadedEpisodeList
+                media={detailedMedia}
+                aniZipData={aniZipData}
+                consumetEpisodeData={consumetEpisodeData}
+            />
         </div>
     }
 
@@ -134,8 +128,6 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = React.memo((props) 
 
                 </div>
 
-                {/*TODO: Re-watch now, Continue now, Watch now Button*/}
-
                 <div className={"space-y-10"}>
 
                     <EpisodeList
@@ -158,7 +150,11 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = React.memo((props) 
                         />
                     </>}
 
-                    <UndownloadedEpisodeList media={detailedMedia} aniZipData={aniZipData}/>
+                    <UndownloadedEpisodeList
+                        media={detailedMedia}
+                        aniZipData={aniZipData}
+                        consumetEpisodeData={consumetEpisodeData}
+                    />
 
                     {ovaFileAtoms.length > 0 && <>
                         <Divider/>
@@ -192,4 +188,4 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = React.memo((props) 
             {canTrackProgress && <ProgressTrackingModal media={detailedMedia} progress={progress}/>}
         </>
     )
-})
+}

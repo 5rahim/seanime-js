@@ -103,6 +103,7 @@ Features that may be implemented
 - [ ] Update settings local directory picker
 - [ ] Manage/Un-ignore ignored files
 - [ ] Optimize episode number normalization during scan with cache (library-entry.ts L171)
+- [ ] (Search) Filter by studios
 - [ ] Delete files
 - [ ] Offline mode
 - [ ] Logs settings, directory, display logs in-app

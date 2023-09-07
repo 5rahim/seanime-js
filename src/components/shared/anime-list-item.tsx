@@ -14,13 +14,14 @@ import { AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import { BiPlay } from "@react-icons/all-files/bi/BiPlay"
 import { VscVerified } from "@react-icons/all-files/vsc/VscVerified"
 import { BiLockOpenAlt } from "@react-icons/all-files/bi/BiLockOpenAlt"
-import { useLocalFilesByMediaId, useSetLocalFiles } from "@/atoms/library/local-file.atoms"
+import { useLocalFilesByMediaId_UNSTABLE, useSetLocalFiles } from "@/atoms/library/local-file.atoms"
 import { BiStar } from "@react-icons/all-files/bi/BiStar"
 import { useStableSelectAtom } from "@/atoms/helpers"
 import { useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist/entries.atoms"
-import { useAnilistUserMedia } from "@/atoms/anilist/media.atoms"
+import { useAnilistUserMediaId_UNSTABLE } from "@/atoms/anilist/media.atoms"
 import { IoLibrarySharp } from "@react-icons/all-files/io5/IoLibrarySharp"
 import { AnilistMediaEntryModal } from "@/components/shared/anilist-media-entry-modal"
+import { useLogger } from "react-use"
 
 type AnimeListItemProps = { mediaId: number, media?: AnilistShortMedia, showLibraryBadge?: boolean } & {
     containerClassName?: string
@@ -30,11 +31,16 @@ export const AnimeListItem = ((props: AnimeListItemProps) => {
 
     const { mediaId } = props
 
-    const media = !props.media ? useAnilistUserMedia(mediaId) : props.media
     const entryAtom = useLibraryEntryAtomByMediaId(mediaId)
+    const media = !props.media ? useAnilistUserMediaId_UNSTABLE(mediaId) : props.media
+
+
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(mediaId)
     const status = useStableSelectAtom(collectionEntryAtom, entry => entry?.status)
+
     const showLibraryBadge = !!entryAtom && !!props.showLibraryBadge
+
+    useLogger(String(mediaId))
 
     if (!media) return <></>
 
@@ -226,7 +232,7 @@ const MainActionButton = (props: { media: AnilistShowcaseMedia }) => {
 
 const LockFilesButton = (props: { media: AnilistShowcaseMedia }) => {
 
-    const files = useLocalFilesByMediaId(props.media.id)
+    const files = useLocalFilesByMediaId_UNSTABLE(props.media.id)
     const allFilesLocked = files.every(file => file.locked)
     const setFiles = useSetLocalFiles()
 

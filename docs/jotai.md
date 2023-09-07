@@ -1,38 +1,29 @@
-## Thinking Jotai
+# Jotai
 
-Jotai allows for a better handling of re-rendering.
-By deriving and splitting atoms, we can listen to specific changes and update data at different levels.
-[Learn more](https://jotai.org/docs/recipes/large-objects).
+## References
+
+- [Large objects](https://jotai.org/docs/recipes/large-objects)
+- [Split atoms](https://jotai.org/docs/utilities/split)
 
 ### Local files
 
-Local files contain data regarding their media and current state.
-They are stored in an array which is an atom. The atom is then split so components can subscribe to specific files while
-ignoring the rest.
-With memoization, we stop unnecessary re-renders.
-
 ```ts
+export const localFilesAtom = atomWithStorage<LocalFile[]>("sea-local-files", [], undefined, { unstable_getOnInit: true })
 
-// Atom derived from `localFileAtoms` and `anilistCollectionEntryAtoms`
-const get_Main_LocalFileAtomsByMediaIdAtom = atom(null,
-    // Get the local file atoms from a specific media
-    // Split the `watched` and `to watch` file atoms by listening to a specific `anilistCollectionEntryAtom`
+// Split [LocalFile]s into multiple atoms with `path` as the unique key
+export const localFileAtoms = splitAtom(localFilesAtom, localFile => localFile.path)
+
+// Get [LocalFile] atoms from a specific media
+const getLocalFileAtomsByMediaIdAtom = atom(null,
     (get, set, mediaId: number) => {
-        // ...
+        // Filter split atoms
+        return get(localFileAtoms).filter((fileAtom) => get(fileAtom).mediaId === mediaId)
     },
 )
 
-export const useMainLocalFileAtomsByMediaId = (mediaId: number) => {
-    // This will update only when the specific entry changes
-    const collectionEntry = useAtomValue(
-        selectAtom(
-            anilistCollectionEntriesAtom,
-            useCallback(entries => entries.find(entry => entry?.media?.id === mediaId), []), // Stable reference
-            deepEquals, // Equality check
-        ),
-    )
-    const [, get] = useAtom(get_Main_LocalFileAtomsByMediaIdAtom)
-    return useMemo(() => get(mediaId), [collectionEntry]) // Actualize atom list when collection entry changes 
+export const useLocalFileAtomsByMediaId = (mediaId: number) => {
+    const [, get] = useAtom(getLocalFileAtomsByMediaIdAtom)
+    return useMemo(() => get(mediaId), [/** Dependencies **/])
 }
 ```
 

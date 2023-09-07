@@ -55,9 +55,12 @@ const sortedLibraryEntriesAtom = atom(get => {
         n => n.media.title?.userPreferred,
     ], ["desc", "desc", "desc", "asc"])
 })
+export const libraryEntryAtoms = splitAtom(sortedLibraryEntriesAtom, entry => entry.id)
 
 export const currentlyWatching_libraryEntryAtoms = splitAtom(atom(get => {
-        return get(libraryEntriesAtom).filter(n => n.collectionEntry?.status === "CURRENT")
+        return _.orderBy(get(libraryEntriesAtom).filter(n => n.collectionEntry?.status === "CURRENT"), [
+            n => n.collectionEntry?.startedAt,
+        ], ["asc"])
     },
 ), entry => entry.id)
 
@@ -72,7 +75,6 @@ export const rest_libraryEntryAtoms = splitAtom(atom(get => {
     },
 ), entry => entry.id)
 
-export const libraryEntryAtoms = splitAtom(sortedLibraryEntriesAtom, entry => entry.id)
 
 /**
  * @example
@@ -84,7 +86,12 @@ export const getLibraryEntryAtomsByMediaIdAtom = atom(null,
 )
 
 /**
+ * @description
  * Useful for mapping over [LibraryEntry]s
+ * /!\ Do not use to get nested information like `media`
+ * /!\ Only re-renders when file count changes
+ *      Why? Because a [LibraryEntry] depends only on available files
+ *
  * @example Parent
  * const libraryEntryAtoms = useLocalFileAtomsByMediaId(21)
  *  ...
@@ -94,14 +101,15 @@ export const getLibraryEntryAtomsByMediaIdAtom = atom(null,
  * const entry = useAtomValue(entryAtom)
  */
 export const useLibraryEntryAtomByMediaId = (mediaId: number) => {
-    // Refresh atom when its file count changes TODO Replace with better method
+    // Refresh atom when its file count changes
     const fileCount = useSelectAtom(localFilesAtom, files => files.filter(file => file.mediaId === mediaId).filter(Boolean).map(file => file.path).length)
     const [, get] = useAtom(getLibraryEntryAtomsByMediaIdAtom)
     return useMemo(() => get(mediaId), [fileCount]) as Atom<LibraryEntry> | undefined
 }
 
 /**
- * Used in local library to display anime list
+ * @description Used in local library to display anime list
+ * @deprecated Replaced by filtered atoms
  */
 export const useLibraryEntryAtoms = () => {
     // Refresh entry atom list when number of entries changes

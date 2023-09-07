@@ -96,6 +96,12 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = (props) => {
                                                     placeholder="Search..."
                                                     onChange={(event) => setInputValue(event.target.value)}
                                                 />
+                                                <Link href={"/discover/search"} onClick={() => setOpen(false)}>
+                                                    <Button className={"absolute top-3 right-2 z-1"}
+                                                            intent={"white-basic"}>
+                                                        Advanced search
+                                                    </Button>
+                                                </Link>
                                             </div>
 
                                             {(!!media && media.length > 0) && (
@@ -118,7 +124,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = (props) => {
                                                                     onClick={() => router.push(`/view/${item.id}`)}
                                                                     className={({ active }) =>
                                                                         cn(
-                                                                            "flex cursor-default select-none items-center rounded-md p-2 text-[--muted] cursor-pointer",
+                                                                            "flex select-none items-center rounded-md p-2 text-[--muted] cursor-pointer",
                                                                             active && "bg-gray-800 text-white",
                                                                         )
                                                                     }

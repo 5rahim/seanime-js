@@ -6,7 +6,6 @@ import React, { useEffect, useMemo, useState } from "react"
 import { Select } from "@/components/ui/select"
 import { getYear } from "date-fns"
 import { ListAnimeDocument, MediaFormat, MediaSeason, MediaSort, MediaStatus } from "@/gql/graphql"
-import { atom } from "jotai"
 import { atomWithImmer } from "jotai-immer"
 import { useMount, useUpdateEffect } from "react-use"
 import { useAtom, useSetAtom } from "jotai/react"
@@ -21,12 +20,8 @@ import { useDebounce } from "@/hooks/use-debounce"
 import { IconButton } from "@/components/ui/button"
 import { BiTrash } from "@react-icons/all-files/bi/BiTrash"
 import _ from "lodash"
-
-const genreAtom = atom<string | null>(null)
-const sortingAtom = atom<MediaSort | null>(null)
-const formatAtom = atom<MediaFormat | null>(null)
-const seasonAtom = atom<MediaSeason | null>(null)
-const yearAtom = atom<string | null>(null)
+import { AiOutlineArrowLeft } from "@react-icons/all-files/ai/AiOutlineArrowLeft"
+import Link from "next/link"
 
 type Params = {
     active: boolean
@@ -145,6 +140,12 @@ export default function Page({ params: urlParams }: {
 
     return (
         <AppLayoutStack spacing={"xl"} className={"mt-8 px-4 pb-10"}>
+            <div className={"flex items-center gap-4"}>
+                <Link href={`/discover`}>
+                    <IconButton icon={<AiOutlineArrowLeft/>} rounded intent={"white-outline"} size={"sm"}/>
+                </Link>
+                <h3>Discover</h3>
+            </div>
             <div className={"text-center xl:text-left"}>
                 <h2>{title}</h2>
             </div>

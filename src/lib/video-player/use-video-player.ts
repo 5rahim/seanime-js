@@ -11,12 +11,11 @@ export function useVideoPlayer(props?: {
     onVideoComplete?: (fileName: string) => void // Will trigger when user watched video above the threshold or played the next file above a certain threshold
     onFilePlay?: () => void
     sameFileThreshold?: number
-    nextFileThreshold?: number
 }) {
     const { settings } = useSettings()
     const videoPlayerRepository = useRef(VideoPlayerRepository(settings))
 
-    const threshold = useRef({ complete: props?.sameFileThreshold || 0.9, next: props?.nextFileThreshold || 0.9 })
+    const threshold = useRef({ complete: props?.sameFileThreshold || 0.9 })
     const playbackFileName = useRef<string | null>(null) // Keep track of current file being played
     const watched = useRef<boolean>(false) // Keep track of watch status
 

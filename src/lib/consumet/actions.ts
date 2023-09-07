@@ -34,12 +34,12 @@ export async function getConsumetMediaEpisodes(mediaId: number = 1, provider: Co
             return (<ConsumetAnimeMeta>data)?.episodes?.reverse()
         } else {
             logger("lib/consumet/getConsumetMediaEpisodes").error("Media not found")
-            return undefined
+            return null
         }
     } catch (e) {
         logger("lib/consumet/getConsumetMediaEpisodes").error("Could not fetch data")
         logger("lib/consumet/getConsumetMediaEpisodes").error(e)
-        return undefined
+        return null
     }
 }
 

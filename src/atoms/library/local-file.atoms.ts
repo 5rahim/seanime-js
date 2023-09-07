@@ -8,7 +8,8 @@ import deepEquals from "fast-deep-equal"
 import _ from "lodash"
 import { ANIDB_RX } from "@/lib/series-scanner/regex"
 import { focusAtom } from "jotai-optics"
-import { anilistCollectionEntryAtoms, useAnilistCollectionEntryByMediaId } from "@/atoms/anilist/entries.atoms"
+import { anilistCollectionEntryAtoms, useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist/entries.atoms"
+import { useStableSelectAtom } from "@/atoms/helpers"
 
 /* -------------------------------------------------------------------------------------------------
  * Main atoms
@@ -20,7 +21,7 @@ import { anilistCollectionEntryAtoms, useAnilistCollectionEntryByMediaId } from 
  */
 export const localFilesAtom = atomWithStorage<LocalFile[]>("sea-local-files", [], undefined, { unstable_getOnInit: true })
 
-// Split [LocalFile] into multiple atom by `path`
+// Split [LocalFile]s into multiple atoms by `path`
 export const localFileAtoms = splitAtom(localFilesAtom, localFile => localFile.path)
 
 // Derived atom for updates using Immer
@@ -119,7 +120,7 @@ export const getLocalFileAtomByPathAtom = atom(null,
  * @example
  * const getFile = useSetAtom(getLocalFileByNameAtom)
  */
-export const getLocalFileByNameAtom = atom(null,
+export const getLocalFileByNameAtom = atom(null, // Writable too
     (get, set, name: string) => get(focusAtom(localFilesAtom, optic => optic.find(file => file.name === name))),
 )
 
@@ -128,7 +129,7 @@ export const getLocalFileByNameAtom = atom(null,
  * @example
  * const getFile = useSetAtom(getLocalFileByPathAtom)
  */
-export const getLocalFileByPathAtom = atom(null,
+export const getLocalFileByPathAtom = atom(null, // Writable too
     (get, set, path: string) => get(focusAtom(localFilesAtom, optic => optic.find(file => file.path === path))),
 )
 
@@ -169,30 +170,36 @@ export const useLocalFileAtomsByMediaId = (mediaId: number) => {
 }
 
 export const useMainLocalFileAtomsByMediaId = (mediaId: number) => {
-    // Actualize file list when collection entry changes
-    const collectionEntry = useAnilistCollectionEntryByMediaId(mediaId)
+    // Actualize file list when collection entry progress or status change
+    const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(mediaId)
+    const progress = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress) ?? 0
+    const status = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.status) ?? ""
+
     const [, get] = useAtom(get_Main_LocalFileAtomsByMediaIdAtom)
-    return useMemo(() => get(mediaId), [collectionEntry]) as {
+    return useMemo(() => get(mediaId), [progress, status]) as {
         toWatch: Array<PrimitiveAtom<LocalFile>>,
         watched: Array<PrimitiveAtom<LocalFile>>
     }
 }
 export const useSpecialsLocalFileAtomsByMediaId = (mediaId: number) => {
-    // Actualize file list when collection entry changes
-    const collectionEntry = useAnilistCollectionEntryByMediaId(mediaId)
+    const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(mediaId)
+    const progress = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress) ?? 0
+    const status = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.status) ?? ""
+
     const [, get] = useAtom(get_OVA_LocalFileAtomsByMediaIdAtom)
-    return useMemo(() => get(mediaId), [collectionEntry]) as Array<PrimitiveAtom<LocalFile>>
+    return useMemo(() => get(mediaId), [progress, status]) as Array<PrimitiveAtom<LocalFile>>
 }
 export const useNCLocalFileAtomsByMediaId = (mediaId: number) => {
-    // Actualize file list when collection entry changes
-    const collectionEntry = useAnilistCollectionEntryByMediaId(mediaId)
+    const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(mediaId)
+    const progress = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress) ?? 0
+    const status = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.status) ?? ""
+
     const [, get] = useAtom(get_NC_LocalFileAtomsByMediaIdAtom)
-    return useMemo(() => get(mediaId), [collectionEntry]) as Array<PrimitiveAtom<LocalFile>>
+    return useMemo(() => get(mediaId), [progress, status]) as Array<PrimitiveAtom<LocalFile>>
 }
 
 /**
- * Returns a memoized value containing [LocalFile]s with the same `mediaId`
- * Useful for getting general information about that group of [LocalFile]s
+ * /!\ Unstable - Re-renders component when `localFilesAtom` is updated
  *
  * @example
  * const files = useLocalFilesByMediaId(props.mediaId)
@@ -200,11 +207,11 @@ export const useNCLocalFileAtomsByMediaId = (mediaId: number) => {
  *
  * @param mediaId
  */
-export const useLocalFilesByMediaId = (mediaId: number) => {
+export const useLocalFilesByMediaId_UNSTABLE = (mediaId: number) => {
     return useAtomValue(
         selectAtom(
             localFilesAtom,
-            useCallback(files => files.filter(file => file.mediaId === mediaId), []), // Stable reference
+            useCallback(files => files.filter(file => file.mediaId === mediaId), []),
             deepEquals, // Equality check
         ),
     )

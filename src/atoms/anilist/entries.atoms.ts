@@ -23,6 +23,7 @@ export type AnilistCollectionEntry = {
     startedAt?: { year?: number | null, month?: number | null, day?: number | null } | null,
     completedAt?: { year?: number | null, month?: number | null, day?: number | null } | null,
     media?: AnilistShortMedia | null
+    timestamp: any
 } | null | undefined
 
 /* -------------------------------------------------------------------------------------------------
@@ -32,7 +33,11 @@ export type AnilistCollectionEntry = {
  * -----------------------------------------------------------------------------------------------*/
 
 export const anilistCollectionEntriesAtom = atom<AnilistCollectionEntry[]>((get) => {
-    const arr = get(anilistCollectionAtom)?.lists?.map(n => n?.entries)?.flat().filter(Boolean)
+    // const arr = get(anilistCollectionAtom)?.lists?.map(n => n?.entries)?.flat().filter(Boolean)
+    const arr = get(anilistCollectionAtom)?.lists?.map(n => n?.entries)?.flat().filter(Boolean).map(n => ({
+        ...n,
+        timestamp: new Date().getTime(),
+    }))
     return arr !== undefined ? arr : []
 })
 /**
@@ -43,15 +48,27 @@ export const anilistCollectionEntryAtoms = splitAtom(anilistCollectionEntriesAto
 const getAnilist_CollectionEntry_Atoms_ByMediaIdAtom = atom(get => get(anilistCollectionEntryAtoms).length,
     (get, set, mediaId: number) => get(anilistCollectionEntryAtoms).find((entryAtom) => get(entryAtom)?.media?.id === mediaId),
 )
+
+/**
+ * Almost stable
+ * Refreshes when the number of collection entry changes
+ * @param mediaId
+ */
 export const useAnilistCollectionEntryAtomByMediaId = (mediaId: number) => {
     const [value, get] = useAtom(getAnilist_CollectionEntry_Atoms_ByMediaIdAtom)
     return useMemo(() => get(mediaId), [value]) as PrimitiveAtom<AnilistCollectionEntry> | undefined
 }
-export const useAnilistCollectionEntryByMediaId = (mediaId: number) => {
+
+/**
+ * /!\ Unstable use `useAnilistCollectionEntryAtomByMediaId`
+ * /!\ Causes re-renders when AniList entries are refreshed
+ * @param mediaId
+ */
+export const useAnilistCollectionEntryByMediaId_UNSTABLE = (mediaId: number) => {
     return useAtomValue(
         selectAtom(
             anilistCollectionEntriesAtom,
-            useCallback(entries => entries.find(entry => entry?.media?.id === mediaId), []), // Stable reference
+            useCallback(entries => entries.find(entry => entry?.media?.id === mediaId), []),
             deepEquals, // Equality check
         ),
     )

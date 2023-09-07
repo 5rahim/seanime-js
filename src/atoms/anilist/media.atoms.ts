@@ -1,9 +1,8 @@
 import { atom, PrimitiveAtom } from "jotai"
 import { useAtom, useAtomValue } from "jotai/react"
-import { useCallback, useMemo } from "react"
-import { AnilistShowcaseMedia } from "@/lib/anilist/fragment"
-import { atomWithStorage, selectAtom, splitAtom } from "jotai/utils"
-import deepEquals from "fast-deep-equal"
+import { useMemo } from "react"
+import { AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
+import { atomWithStorage, splitAtom } from "jotai/utils"
 
 export const allUserMediaAtom = atomWithStorage<AnilistShowcaseMedia[]>("sea-anilist-media", [], undefined, { unstable_getOnInit: true })
 export const allUserMediaAtoms = splitAtom(allUserMediaAtom, media => media.id)
@@ -15,6 +14,15 @@ export const allUserMediaAtoms = splitAtom(allUserMediaAtom, media => media.id)
 
 export const getUserMediaAtomByIdAtom = atom(null,
     (get, set, mediaId: number) => get(allUserMediaAtoms).find((media) => get(media).id === mediaId),
+)
+export const getUserMediaByIdAtom = atom(null,
+    (get, set, mediaId: number) => {
+        const atom = get(allUserMediaAtoms).find((media) => get(media).id === mediaId)
+        if (atom)
+            return get(atom)
+        else
+            return undefined
+    },
 )
 
 /**
@@ -37,17 +45,13 @@ export const useAnilistUserMediaAtoms = () => {
  * -----------------------------------------------------------------------------------------------*/
 
 /**
+ * /!\ Unstable due to `nextAiringEpisode.timeUntilAiring`
  * @example
  * const media = useAnilistUserMedia(21)
  *
  * const title = media?.title?.english //=> One Piece
  */
-export const useAnilistUserMedia = (mediaId: number) => {
-    return useAtomValue(
-        selectAtom(
-            allUserMediaAtom,
-            useCallback(media => media.find(medium => medium.id === mediaId), []), // Stable reference
-            deepEquals, // Equality check
-        ),
-    )
+export const useAnilistUserMediaId_UNSTABLE = (mediaId: number) => {
+    const [, get] = useAtom(getUserMediaByIdAtom)
+    return useMemo(() => get(mediaId), []) as AnilistShortMedia | undefined
 }

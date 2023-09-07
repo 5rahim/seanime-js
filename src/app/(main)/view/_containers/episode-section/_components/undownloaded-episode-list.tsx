@@ -16,7 +16,7 @@ interface UndownloadedEpisodeListProps {
     children?: React.ReactNode
     media: AnilistDetailedMedia
     aniZipData?: AniZipData
-    consumetEpisodeData?: ConsumetAnimeEpisodeData
+    consumetEpisodeData?: ConsumetAnimeEpisodeData | null
 }
 
 export const UndownloadedEpisodeList: React.FC<UndownloadedEpisodeListProps> = React.memo((props) => {

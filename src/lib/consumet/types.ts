@@ -1,6 +1,6 @@
 export type ConsumetAnimeMeta = {
     episodes: ConsumetAnimeEpisodeMeta[]
-} // TODO
+} // TODO Rest
 
 export type ConsumetAnimeEpisodeMeta = {
     id: string
@@ -11,7 +11,7 @@ export type ConsumetAnimeEpisodeMeta = {
     airDate: string | null | undefined
 }
 
-export type ConsumetAnimeEpisodeData = ConsumetAnimeEpisodeMeta[] | undefined
+export type ConsumetAnimeEpisodeData = ConsumetAnimeEpisodeMeta[] | null
 
 export type ConsumetStreamingData = {
     headers: {
