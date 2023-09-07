@@ -6,10 +6,15 @@ import { AnimeListItem } from "@/components/shared/anime-list-item"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
-import React, { useEffect, useMemo } from "react"
+import React, { useMemo } from "react"
 import Image from "next/image"
+import { TextInput } from "@/components/ui/text-input"
+import { FiSearch } from "@react-icons/all-files/fi/FiSearch"
+import { useRouter } from "next/navigation"
 
 export default function Page() {
+
+    const router = useRouter()
 
     // const { data: trendingAnime, isLoading: trendingLoading } = useAniListClientQuery(ListAnimeDocument, {
     //     page: 1,
@@ -22,23 +27,20 @@ export default function Page() {
         status,
     } = useInfiniteQuery({
         queryKey: ["projects"],
-        queryFn: async ({ pageParam }) => {
+        queryFn: async ({ pageParam = 1 }) => {
             return useAniListAsyncQuery(ListAnimeDocument, {
-                page: pageParam + 1,
+                page: pageParam,
                 perPage: 20,
-                sort: ["TRENDING_DESC"],
+                sort: "TRENDING_DESC",
             })
         },
         getNextPageParam: (lastPage, pages) => {
             const curr = lastPage.Page?.pageInfo?.currentPage
             const hasNext = lastPage.Page?.pageInfo?.hasNextPage
-            return (!!curr && hasNext && (curr + 1) < 4) ? curr + 1 : undefined
+            return (!!curr && hasNext && curr < 4) ? pages.length + 1 : undefined
         },
     })
 
-    useEffect(() => {
-        console.log(status)
-    }, [status])
 
     const {
         data: trendingUpcomingAnime,
@@ -46,19 +48,19 @@ export default function Page() {
     } = useAniListClientQuery(ListAnimeDocument, {
         page: 1,
         perPage: 20,
-        sort: ["TRENDING_DESC"],
+        sort: "TRENDING_DESC",
         status: "NOT_YET_RELEASED",
     })
     const { data: popularAnime, isLoading: popularLoading } = useAniListClientQuery(ListAnimeDocument, {
         page: 1,
         perPage: 20,
-        sort: ["POPULARITY_DESC", "START_DATE"],
+        sort: "POPULARITY_DESC",
     })
     const { data: popularMovies, isLoading: popularMoviesLoading } = useAniListClientQuery(ListAnimeDocument, {
         page: 1,
         perPage: 20,
         format: "MOVIE",
-        sort: ["TRENDING_DESC"],
+        sort: "TRENDING_DESC",
     })
 
     const randomNumber = useMemo(() => Math.floor(Math.random() * 6), [])
@@ -67,7 +69,7 @@ export default function Page() {
 
     return (
         <>
-            <div className={"__header h-[20rem] "}>
+            <div className={"__header h-[20rem]"}>
                 <div
                     className="h-[30rem] w-[calc(100%-5rem)] flex-none object-cover object-center absolute top-0 overflow-hidden">
                     <div
@@ -86,7 +88,13 @@ export default function Page() {
                     <div
                         className={"w-full z-[2] absolute bottom-0 h-[20rem] bg-gradient-to-t from-[--background-color] via-[--background-color] via-opacity-50 via-10% to-transparent"}
                     />
-
+                    <div
+                        className={"absolute bottom-16 right-8 z-[2] cursor-pointer opacity-80 transition-opacity hover:opacity-100"}
+                        onClick={() => router.push(`/discover/search`)}>
+                        <TextInput leftIcon={<FiSearch/>} value={"Search by genres, seasons…"} isReadOnly size={"lg"}
+                                   className={"pointer-events-none w-96"} onChange={() => {
+                        }}/>
+                    </div>
                 </div>
             </div>
             <div className={"px-4 pt-8 space-y-10 pb-10"}>
@@ -98,6 +106,7 @@ export default function Page() {
                         {!trendingLoading ? trendingAnime?.pages?.flatMap(n => n.Page?.media).filter(Boolean).map(media => {
                             return (
                                 <AnimeListItem
+                                    key={media.id}
                                     mediaId={media.id}
                                     media={media}
                                     showLibraryBadge
@@ -113,6 +122,7 @@ export default function Page() {
                         {!popularLoading ? popularAnime?.Page?.media?.filter(Boolean).map(media => {
                             return (
                                 <AnimeListItem
+                                    key={media.id}
                                     mediaId={media.id}
                                     media={media}
                                     showLibraryBadge
@@ -123,11 +133,12 @@ export default function Page() {
                     </Slider>
                 </div>
                 <div className={"space-y-2"}>
-                    <h2>Trending upcoming</h2>
+                    <h2>Upcoming</h2>
                     <Slider>
                         {!trendingUpcomingLoading ? trendingUpcomingAnime?.Page?.media?.filter(Boolean).map(media => {
                             return (
                                 <AnimeListItem
+                                    key={media.id}
                                     mediaId={media.id}
                                     media={media}
                                     showLibraryBadge
@@ -143,6 +154,7 @@ export default function Page() {
                         {!popularMoviesLoading ? popularMovies?.Page?.media?.filter(Boolean).map(media => {
                             return (
                                 <AnimeListItem
+                                    key={media.id}
                                     mediaId={media.id}
                                     media={media}
                                     showLibraryBadge

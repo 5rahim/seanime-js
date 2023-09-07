@@ -83,15 +83,17 @@ export const TorrentList: React.FC<TorrentListProps> = (props) => {
             </p>
             <div className={"space-y-2"}>
                 {selectedTorrents.map(torrent => (
-                    <Tooltip trigger={<div
-                        className={"flex flex-none ml-12 items-center gap-2 p-2 border border-[--border] rounded-md cursor-pointer hover:bg-gray-800"}
-                        key={torrent.name}
-                        onClick={() => window.open("https://nyaa.si" + torrent.links.page.replace("#comments", ""), "_blank")}
-                    >
-                        <span className={"text-lg"}>{isFile(torrent.parsed) ? <AiFillPlayCircle/> :
-                            <BsCollectionPlayFill/>}</span>
-                        <p className={"truncate text-ellipsis"}>{torrent.name}</p>
-                    </div>}>
+                    <Tooltip
+                        key={`${torrent.id}`}
+                        trigger={<div
+                            className={"flex flex-none ml-12 items-center gap-2 p-2 border border-[--border] rounded-md cursor-pointer hover:bg-gray-800"}
+                            key={torrent.name}
+                            onClick={() => window.open("https://nyaa.si" + torrent.links.page.replace("#comments", ""), "_blank")}
+                        >
+                            <span className={"text-lg"}>{isFile(torrent.parsed) ? <AiFillPlayCircle/> :
+                                <BsCollectionPlayFill/>}</span>
+                            <p className={"truncate text-ellipsis"}>{torrent.name}</p>
+                        </div>}>
                         Open on NYAA
                     </Tooltip>
                 ))}

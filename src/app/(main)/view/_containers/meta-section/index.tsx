@@ -76,7 +76,7 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
                         ) :
                         (
                             <p className={"text-lg text-gray-200 flex w-full gap-1 items-center"}>
-                                Not yet released
+
                             </p>
                         )}
 

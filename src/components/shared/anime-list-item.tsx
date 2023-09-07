@@ -75,16 +75,19 @@ export const AnimeListItem = ((props: AnimeListItemProps) => {
                             {/*}>{media.title?.userPreferred}</Tooltip>*/}
                             <p className={"text-center font-medium text-sm min-[2000px]:text-lg px-4 line-clamp-3"}>{media.title?.userPreferred}</p>
                         </div>
-                        {!!media.season ? <div>
-                                <p className={"justify-center text-sm text-[--muted] flex w-full gap-1 items-center"}>
-                                    <BiCalendarAlt/> {new Intl.DateTimeFormat("en-US", {
-                                    year: "numeric",
-                                    month: "short",
-                                }).format(new Date(media.startDate?.year || 0, media.startDate?.month || 0))} - {_.capitalize(media.season ?? "")}
-                                </p>
-                            </div> :
-                            <p className={"justify-center text-sm text-[--muted] flex w-full gap-1 items-center"}>Not
-                                yet released</p>}
+                        {!!media.startDate?.year && <div>
+                            <p className={"justify-center text-sm text-[--muted] flex w-full gap-1 items-center"}>
+                                <BiCalendarAlt/> {new Intl.DateTimeFormat("en-US", {
+                                year: "numeric",
+                                month: "short",
+                            }).format(new Date(media.startDate?.year || 0, media.startDate?.month || 0))} - {_.capitalize(media.season ?? "")}
+                            </p>
+                        </div>}
+
+                        <p className={"justify-center text-sm text-[--muted] font-semibold flex w-full gap-1 items-center"}>
+                            {_.startCase(media.format || "")}
+                        </p>
+
                         {!!media.nextAiringEpisode && (
                             <div className={"flex gap-1 items-center justify-center"}>
                                 <p className={"text-xs min-[2000px]:text-md"}>Next episode:</p>
@@ -145,7 +148,7 @@ export const AnimeListItem = ((props: AnimeListItemProps) => {
                                 month: "short",
                                 day: "numeric",
                             }).format(new Date(media.startDate.year, media.startDate?.month || 0, media.startDate?.day || 0))
-                            : "Not yet released"
+                            : "-"
                         }
                     </Tooltip>
                 </div>}
@@ -172,7 +175,7 @@ export const AnimeListItem = ((props: AnimeListItemProps) => {
                         <p className={"text-sm text-[--muted] inline-flex gap-1 items-center"}>
                             <BiCalendarAlt/>{_.capitalize(media.season ?? "")} {media.startDate?.year ? new Intl.DateTimeFormat("en-US", {
                             year: "numeric",
-                        }).format(new Date(media.startDate?.year || 0, media.startDate?.month || 0)) : "Not yet released"}
+                        }).format(new Date(media.startDate?.year || 0, media.startDate?.month || 0)) : "-"}
                         </p>
                     </div>
                 </div>

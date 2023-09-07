@@ -79,7 +79,7 @@ export const _SearchAnimeShortMedia = gql`
 `
 
 export const _ListAnime = gql`
-    query ListAnime($page: Int, $perPage: Int, $sort: [MediaSort], $status: [MediaStatus], $format: MediaFormat){
+    query ListAnime($page: Int, $search: String, $perPage: Int, $sort: [MediaSort], $status: [MediaStatus], $genres: [String], $averageScore_greater: Int, $season: MediaSeason, $seasonYear: Int, $format: MediaFormat){
         Page(page: $page, perPage: $perPage){
             pageInfo{
                 hasNextPage
@@ -88,7 +88,7 @@ export const _ListAnime = gql`
                 currentPage
                 lastPage
             },
-            media(type: ANIME, sort: $sort, status_in: $status, isAdult: false, format: $format, format_not: MUSIC){
+            media(type: ANIME, search: $search, sort: $sort, status_in: $status, isAdult: false, format: $format, genre_in: $genres, averageScore_greater: $averageScore_greater, season: $season, seasonYear: $seasonYear, format_not: MUSIC){
                 ...shortMedia
             }
         }
@@ -119,18 +119,6 @@ export const _AnimeShortMediaById = gql`
     }
 `
 
-export const _TrendingAnime = gql`
-    query TrendingAnime {
-        Page(page: 1, perPage: 20) {
-            pageInfo {
-                hasNextPage
-            }
-            media(type: ANIME, sort: [TRENDING_DESC], isAdult: false, format_not: MUSIC) {
-                ...shortMedia
-            }
-        }
-    }
-`
 
 export const _SaveOrUpdateEntry = gql`
     mutation UpdateEntry (

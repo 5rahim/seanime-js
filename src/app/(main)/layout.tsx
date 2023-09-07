@@ -25,13 +25,13 @@ export default function Layout({ children }: {
             {
                 href: "/schedule",
                 icon: null,
-                isCurrent: pathname.includes("/schedule"),
+                isCurrent: pathname.startsWith("/schedule"),
                 name: "Schedule",
             },
             {
                 href: "/anilist",
                 icon: null,
-                isCurrent: pathname.includes("/anilist"),
+                isCurrent: pathname.startsWith("/anilist"),
                 name: "Watch lists",
             },
         ] : []
@@ -47,7 +47,7 @@ export default function Layout({ children }: {
             {
                 href: "/discover",
                 icon: null,
-                isCurrent: pathname === "/discover",
+                isCurrent: pathname.startsWith("/discover"),
                 name: "Discover",
             },
         ]

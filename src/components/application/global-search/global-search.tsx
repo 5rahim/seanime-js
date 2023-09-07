@@ -173,7 +173,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = (props) => {
                                                                     {activeOption.format}{activeOption.season ? ` - ${_.capitalize(activeOption.season)} ` : " - "}{activeOption.startDate?.year
                                                                     ? new Intl.DateTimeFormat("en-US", { year: "numeric" })
                                                                         .format(new Date(activeOption.startDate?.year || 0, activeOption.startDate?.month || 0))
-                                                                    : "Not yet released"}
+                                                                    : "-"}
                                                                 </p>
                                                             </div>
                                                             <Link href={`/view/${activeOption.id}`}>

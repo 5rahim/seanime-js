@@ -25,7 +25,6 @@ similar software.
     scans. [Learn more](https://github.com/5rahim/seanime/blob/main/docs/guide.md#locking-files).
   - [x] Ignore files or folders
   - [x] Resolve unmatched files
-  - [x] Unmatch files
   - [x] Logs
   - [ ] Filename tag system for faster matching
   - [ ] Update file metadata
@@ -89,6 +88,12 @@ npm run dev
 - Progress tracking without AniList
 - Mobile app
 
+## Future plans
+
+Features that may be implemented
+
+- Manga support
+
 ## TODO
 
 - [ ] Move Torrent Search to modal
@@ -100,6 +105,7 @@ npm run dev
 - [ ] Optimize episode number normalization during scan with cache (library-entry.ts L171)
 - [ ] Delete files
 - [ ] Offline mode
+- [ ] Logs settings, directory, display logs in-app
 
 ## Resources
 
