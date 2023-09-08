@@ -21,7 +21,6 @@ import { useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist/entries.
 import { useAnilistUserMediaId_UNSTABLE } from "@/atoms/anilist/media.atoms"
 import { IoLibrarySharp } from "@react-icons/all-files/io5/IoLibrarySharp"
 import { AnilistMediaEntryModal } from "@/components/shared/anilist-media-entry-modal"
-import { useLogger } from "react-use"
 
 type AnimeListItemProps = { mediaId: number, media?: AnilistShortMedia, showLibraryBadge?: boolean } & {
     containerClassName?: string
@@ -39,8 +38,6 @@ export const AnimeListItem = ((props: AnimeListItemProps) => {
     const status = useStableSelectAtom(collectionEntryAtom, entry => entry?.status)
 
     const showLibraryBadge = !!entryAtom && !!props.showLibraryBadge
-
-    useLogger(String(mediaId))
 
     if (!media) return <></>
 

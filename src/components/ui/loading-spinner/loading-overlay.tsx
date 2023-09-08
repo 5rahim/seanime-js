@@ -10,7 +10,7 @@ import { LoadingSpinner } from "./loading-spinner"
 export const LoadingOverlayAnatomy = defineStyleAnatomy({
     overlay: cva([
         "UI-LoadingOverlay__overlay",
-        "absolute bg-white dark:bg-[rgba(0,0,0,0.3)] bg-opacity-70 w-full h-full z-10 inset-0 pt-4 flex items-center justify-center backdrop-blur-sm"
+        "absolute bg-white dark:bg-[rgba(0,0,0,0.3)] bg-opacity-70 w-full h-full z-10 inset-0 pt-4 flex flex-col items-center justify-center backdrop-blur-sm",
     ]),
 })
 
@@ -33,6 +33,7 @@ export const LoadingOverlay: React.FC<LoadingOverlayProps & React.ComponentProps
         <>
             <div className={cn(LoadingOverlayAnatomy.overlay(), className)} {...rest}>
                 <LoadingSpinner className="justify-auto"/>
+                {children}
             </div>
         </>
     )

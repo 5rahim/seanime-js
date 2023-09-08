@@ -20,6 +20,7 @@ import { BiDownload } from "@react-icons/all-files/bi/BiDownload"
 import { useRefreshAnilistCollection } from "@/atoms/anilist/collection.atoms"
 import { useSetAtom } from "jotai"
 import { __globalSearch_isOpenAtom } from "@/components/application/global-search/global-search"
+import { BiTestTube } from "@react-icons/all-files/bi/BiTestTube"
 
 interface MainSidebarProps {
     children?: React.ReactNode
@@ -67,6 +68,12 @@ export const MainSidebar: React.FC<MainSidebarProps> = (props) => {
                             },
                             // { icon: BiTestTube, name: "Test", href: "/test", isCurrent: pathname === "/test" },
                             // { icon: BiTestTube, name: "Test2", href: "/test/two", isCurrent: pathname === "/test/two" },
+                            {
+                                icon: BiTestTube,
+                                name: "Test3",
+                                href: "/test/three",
+                                isCurrent: pathname === "/test/three",
+                            },
                         ]}/>
                 </div>
                 <div className={"flex w-full gap-2 flex-col"}>

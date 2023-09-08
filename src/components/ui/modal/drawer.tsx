@@ -15,7 +15,7 @@ export const DrawerAnatomy = defineStyleAnatomy({
         "UI-Drawer__panel",
     ], {
         variants: {
-            size: { md: "", lg: "", xl: "", full: "" },
+            size: { md: "", lg: "", xl: "", "2xl": "", full: "" },
             placement: { top: "", right: "", left: "", bottom: "" },
         },
         defaultVariants: {
@@ -172,11 +172,13 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>((props, ref)
                                                 "max-w-md": size == "md" && (placement == "right" || placement == "left"),
                                                 "max-w-2xl": size == "lg" && (placement == "right" || placement == "left"),
                                                 "max-w-5xl": size == "xl" && (placement == "right" || placement == "left"),
+                                                "max-w-7xl": size == "2xl" && (placement == "right" || placement == "left"),
                                                 "max-w-full": size == "full" && (placement == "right" || placement == "left"),
                                                 // Top or Bottom
                                                 "h-[100vh] max-h-[50vh]": size == "md" && (placement == "bottom" || placement == "top"),
                                                 "h-[100vh] max-h-[70vh]": size == "lg" && (placement == "bottom" || placement == "top"),
                                                 "h-[100vh] max-h-[80vh]": size == "xl" && (placement == "bottom" || placement == "top"),
+                                                "h-[100vh] max-h-[90vh]": size == "2xl" && (placement == "bottom" || placement == "top"),
                                                 "h-[100vh] min-h-screen": size == "full" && (placement == "bottom" || placement == "top"),
                                             },
                                             panelClassName,

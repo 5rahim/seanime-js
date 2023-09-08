@@ -20,17 +20,20 @@ import { useDisclosure } from "@/hooks/use-disclosure"
 import { normalizeMediaEpisode } from "@/lib/anilist/actions"
 import { BiLinkExternal } from "@react-icons/all-files/bi/BiLinkExternal"
 import { useDownloadPageData } from "@/lib/download/helpers"
-import { TorrentList } from "@/app/(main)/view/_containers/torrent-search/_components/torrent-list"
+import {
+    TorrentSearchTorrentList,
+} from "@/app/(main)/view/_containers/torrent-search/_components/torrent-search-torrent-list"
 import { useQuery } from "@tanstack/react-query"
 import rakun from "@/lib/rakun/rakun"
 import { atomWithImmer } from "jotai-immer"
+import { SearchTorrentData } from "@/lib/download/types"
+import { Tooltip } from "@/components/ui/tooltip"
+import { extractHashFromMagnetLink } from "@/lib/download/torrent-helpers"
 
 interface Props {
     media: AnilistDetailedMedia,
     aniZipData?: AniZipData
 }
-
-type SearchTorrentData = SearchTorrent & { parsed: TorrentInfos }
 
 export const __torrentSearch_selectedTorrentsAtom = atom<SearchTorrentData[]>([])
 
@@ -51,10 +54,14 @@ export function TorrentSearchModal(props: Props) {
 
     const [status, setStatus] = useAtom(__torrentSearch_isOpenAtom)
 
-    return <Drawer isOpen={status.isOpen} onClose={() => setStatus(draft => {
-        draft.isOpen = false
-        return
-    })} size={"xl"}>
+    return <Drawer
+        isOpen={status.isOpen}
+        onClose={() => setStatus(draft => {
+            draft.isOpen = false
+            return
+        })}
+        size={"2xl"}
+    >
         <Content media={props.media} aniZipData={props.aniZipData}/>
     </Drawer>
 
@@ -117,8 +124,16 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
                 res = await unstable_handleSearchTorrents(globalFilter)
             }
             return (res?.map(torrent => {
-                return { ...torrent, parsed: rakun.parse(torrent.name) }
-            }) || []) as SearchTorrentData[]
+                return {
+                    ...torrent,
+                    parsed: rakun.parse(torrent.name),
+                    hash: extractHashFromMagnetLink(torrent.links.magnet),
+                }
+            }) || []).filter(torrent => {
+                // If this isn't a batch search, remove torrents that don't have episodes parsed
+                if (!quickSearchIsBatch && !torrent.parsed.episode) return false
+                return true
+            }) as SearchTorrentData[]
         }, {
             keepPreviousData: false,
             refetchOnWindowFocus: false,
@@ -132,31 +147,36 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
             accessorKey: "name",
             header: "Name",
             cell: info => <div className={"flex items-center gap-2"}>
-                <IconButton
+                <Tooltip trigger={<IconButton
                     icon={<BiLinkExternal/>}
                     intent={"primary-basic"}
                     size={"sm"}
                     onClick={() => window.open("https://nyaa.si" + info.row.original.links.page.replace("#comments", ""), "_blank")}
-                />
-                <span
-                    className={cn(
-                        "text-[.95rem] truncate text-ellipsis cursor-pointer",
-                        {
-                            "text-brand-300 font-semibold": selectedTorrents.some(torrent => torrent.id === info.row.original.id),
-                        },
-                    )}
-                    onClick={() => setSelectedTorrents(draft => {
-                        if (!draft.find(torrent => torrent.id === info.row.original.id)) {
-                            return [...draft, info.row.original]
-                        } else {
-                            return draft.filter(torrent => torrent.id !== info.row.original.id)
-                        }
-                    })}
+                />}>View on NYAA</Tooltip>
+                <Tooltip
+                    trigger={
+                        <div
+                            className={cn(
+                                "text-[.95rem] truncate text-ellipsis cursor-pointer max-w-[90%] overflow-hidden",
+                                {
+                                    "text-brand-300 font-semibold": selectedTorrents.some(torrent => torrent.id === info.row.original.id),
+                                },
+                            )}
+                            onClick={() => setSelectedTorrents(draft => {
+                                if (!draft.find(torrent => torrent.id === info.row.original.id)) {
+                                    return [...draft, info.row.original]
+                                } else {
+                                    return draft.filter(torrent => torrent.id !== info.row.original.id)
+                                }
+                            })}
+                        >
+                            {info.getValue<string>()}
+                        </div>}
                 >
                     {info.getValue<string>()}
-                </span>
+                </Tooltip>
             </div>,
-            size: 120,
+            size: 100,
         },
         {
             accessorKey: "file_size_bytes",
@@ -201,7 +221,7 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
             cell: info => <div className={"text-sm"}>
                 {formatDistanceToNow(new Date(info.getValue<number>() * 1000), { addSuffix: true })} ({new Date(info.getValue<number>() * 1000).toLocaleDateString()})
             </div>,
-            size: 30,
+            size: 50,
         },
     ]), [torrents, selectedTorrents])
 
@@ -212,11 +232,6 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
     return (
         <>
             <div className={"space-y-4 relative"}>
-
-                {/*<Button onClick={handleFindNyaaTorrents}>Search torrents</Button>*/}
-                {/*<Button onClick={async () => {*/}
-                {/*    console.log(await torrentManager.current.getAllTorrents())*/}
-                {/*}}>Test add magnet</Button>*/}
 
                 {selectedTorrents.length > 0 && <div className={"absolute top-0 right-0 z-10"}>
                     <Button onClick={torrentListModal.open}>View selected torrents ({selectedTorrents.length})</Button>
@@ -230,14 +245,24 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
                 <div className={"space-y-2"}>
                     <h4>Quick search parameters</h4>
                     <div className={"inline-flex gap-4 items-center"}>
-                        <Switch label={"Look for batches"} checked={quickSearchIsBatch}
-                                onChange={setQuickSearchIsBatch} labelClassName={"text-md"}/>
-                        <NumberInput label={"Episode number"} value={quickSearchEpisode} onChange={(value) => {
-                            startTransition(() => {
-                                setQuickSearchEpisode(value)
-                            })
-                        }} discrete size="sm" fieldClassName={"flex items-center justify-center gap-3 space-y-0"}
-                                     fieldLabelClassName={"flex-none self-center font-normal !text-md sm:text-md lg:text-md"}/>
+                        <Switch
+                            label={"Look for batches"}
+                            checked={quickSearchIsBatch}
+                            onChange={setQuickSearchIsBatch}
+                            labelClassName={"text-md"}
+                        />
+                        <NumberInput
+                            label={"Episode number"}
+                            value={quickSearchEpisode}
+                            onChange={(value) => {
+                                startTransition(() => {
+                                    setQuickSearchEpisode(value)
+                                })
+                            }}
+                            discrete
+                            size="sm"
+                            fieldClassName={"flex items-center justify-center gap-3 space-y-0"}
+                            fieldLabelClassName={"flex-none self-center font-normal !text-md sm:text-md lg:text-md"}/>
                     </div>
                 </div>
 
@@ -272,9 +297,14 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
 
             </div>
 
-            <Modal isOpen={torrentListModal.isOpen} onClose={torrentListModal.close} size={"xl"} isClosable
+            <Modal isOpen={torrentListModal.isOpen} onClose={torrentListModal.close} size={"2xl"} isClosable
                    title={"Torrents"}>
-                <TorrentList entryAtom={entryAtom} onClose={torrentListModal.close} media={media}/>
+                <TorrentSearchTorrentList
+                    entryAtom={entryAtom}
+                    onClose={torrentListModal.close}
+                    media={media}
+                    downloadInfo={downloadInfo}
+                />
             </Modal>
         </>
     )

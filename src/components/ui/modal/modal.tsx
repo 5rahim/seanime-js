@@ -26,6 +26,7 @@ export const ModalAnatomy = defineStyleAnatomy({
                 md: "sm:max-w-lg",
                 lg: "sm:max-w-xl",
                 xl: "sm:max-w-2xl",
+                "2xl": "sm:max-w-4xl",
             },
         },
         defaultVariants: {

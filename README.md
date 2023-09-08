@@ -13,6 +13,7 @@ similar software.
 
 ## Features
 
+### Local library
 - [x] Scan local library and match local files with corresponding
   anime. [How it works](https://github.com/5rahim/seanime/blob/main/docs/guide.md#how-it-works).
   - [x] Support for various naming/folder
@@ -25,22 +26,48 @@ similar software.
     scans. [Learn more](https://github.com/5rahim/seanime/blob/main/docs/guide.md#locking-files).
   - [x] Ignore files or folders
   - [x] Resolve unmatched files
-  - [x] Logs
-  - [ ] Filename tag system for faster matching
+  - [x] Logs*
   - [ ] Update file metadata
-- [x] Open files with VLC or MPC-HC
-- [x] Automatic progress tracking
-  - [x] Sync progress with AniList
-  - [ ] Sync progress with MAL
-- [x] Resolve unmatched files feature
+- [x] Resolve unmatched files
   - [x] Match single files or folders to a media
   - [x] Option to match files using AniList ID
-- [x] Download additional episodes using qBittorent (embedded) and Nyaa (search)
+
+### Download
+
+- [x] qBittorent support
+- [x] Detect un-downloaded episodes
+- [x] In-app torrent search via NYAA
+  - [x] Automatic smart filters for search
+- [x] Option to automatically select needed files in
+  batches. [Learn more](https://github.com/5rahim/seanime/blob/main/docs/torrents.md#batches).
+- [ ] "Auto-pick" feature
+- [ ] "Schedule" feature
+
+### Progress tracking
+
+- [x] Open files with favorite player (VLC or MPC-HC)
+- [x] Automatically track progress with VLC or MPC-HC
+- [x] Sync progress with AniList
+- [ ] Sync progress with MAL
+
+### AniList
+
 - [x] Browse and manage AniList entries
+  - [x] Browse your watch lists
   - [x] Add, edit, AniList entries (status, score, progress…)
-- [x] Stream episodes from web sources with custom player
+- [x] See trending, search and filter
+  - [x] Discover page
+  - [x] Advanced search
+
+### Streaming
+
+- [x] Stream episodes from web sources
+  - [x] Support for GogoAnime
+  - [x] Support for Zoro (AniWatch)
   - [ ] Support for Crunchyroll
-- [ ] See trending, search and filter
+
+### Other
+
 - [ ] Offline mode
 
 <img src="docs/img_8.png" alt="preview" width="700"/>
@@ -96,17 +123,20 @@ Features that may be implemented
 
 ## TODO
 
-- [ ] Move Torrent Search to modal
-- [ ] Edit file metadata
-- [ ] Show a section with new, un-downloaded episodes
-- [ ] Preliminary scan to hydrate AniList (for users without anilist data)
-- [ ] Update settings local directory picker
-- [ ] Manage/Un-ignore ignored files
-- [ ] Optimize episode number normalization during scan with cache (library-entry.ts L171)
-- [ ] (Search) Filter by studios
-- [ ] Delete files
+- [ ] (torrent search) Improve smart filters for batches
+- [ ] (local file) Edit file metadata
+- [ ] (schedule) Show a section with new, un-downloaded episodes
+- [ ] (library) Preliminary scan to hydrate AniList (for users without anilist data)
+- [ ] (settings) Update settings local directory picker
+- [ ] (local file) Manage/Un-ignore ignored files
+- [ ] (library) Optimize episode number normalization during scan with cache (library-entry.ts L171)
+- [ ] (advanced search) Filter by studios
+- [ ] (library) Filename tag system for faster matching
+- [ ] (repository) Delete files
 - [ ] Offline mode
 - [ ] Logs settings, directory, display logs in-app
+- [ ] Option to automatically update progress without confirmation
+- [ ] Start qBittorrent if it is not launched
 
 ## Resources
 

@@ -39,7 +39,7 @@ export const getMediaDownloadInfo = (
     const progressOrEpisodeNumber = !libraryEntryExists ? progress : (downloadedEpisodeNumber ?? progress)
 
     let result = undefined
-    let rewatch = status && status === "COMPLETED"
+    let rewatch = status ? status === "COMPLETED" : false
     let batch = false
 
     // If the media is finished
@@ -90,12 +90,14 @@ export const getMediaDownloadInfo = (
         isMovie: media.format === "MOVIE",
         episodeNumbers,
         rewatch,
-        batch, // If there are some episodes to download, whether we can download a batch (finished releasing and user has no episodes downloaded/watched)
+        batch, // Media finished airing and user has no episodes downloaded/watched
         canBatch: (media.status === "FINISHED" || media.status === "CANCELLED") && !!media.episodes && media.episodes > 1,
     }
 
 
 }
+
+export type MediaDownloadInfo = ReturnType<typeof getMediaDownloadInfo>
 
 export function useDownloadPageData(media: AnilistDetailedMedia) {
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(media.id)
