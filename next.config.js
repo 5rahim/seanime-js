@@ -10,6 +10,8 @@ const nextConfig = {
             {hostname: "cdn.myanimelist.net"},
             {hostname: "artworks.thetvdb.com"},
             {hostname: "media.kitsu.io"},
+            {hostname: "simkl.in"},
+            {hostname: "img1.ak.crunchyroll.com"},
         ]
     },
 }

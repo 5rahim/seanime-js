@@ -76,7 +76,10 @@ export const AnimeListItem = ((props: AnimeListItemProps) => {
                             {/*<Tooltip trigger={*/}
                             {/*    <p className={"text-center font-medium text-sm min-[2000px]:text-lg px-4 truncate text-ellipsis"}>{media.title?.userPreferred}</p>*/}
                             {/*}>{media.title?.userPreferred}</Tooltip>*/}
-                            <p className={"text-center font-medium text-sm min-[2000px]:text-lg px-4 line-clamp-3"}>{media.title?.userPreferred}</p>
+                            <Link
+                                href={`/view/${media.id}`}
+                                className={"text-center font-medium text-sm min-[2000px]:text-lg px-4 line-clamp-3"}
+                            >{media.title?.userPreferred}</Link>
                         </div>
                         {!!media.startDate?.year && <div>
                             <p className={"justify-center text-sm text-[--muted] flex w-full gap-1 items-center"}>
@@ -197,7 +200,7 @@ const MainActionButton = (props: { media: AnilistShowcaseMedia }) => {
         <>
             {!!entryAtom ? <div>
                 <div className={"py-1"}>
-                    <Link href={`/view/${props.media.id}`}>
+                    <Link href={`/view/${props.media.id}?playNext=true`}>
                         <Button
                             leftIcon={<BiPlay/>}
                             intent={"white"}

@@ -99,7 +99,7 @@ export const getMediaDownloadInfo = (
 
 export type MediaDownloadInfo = ReturnType<typeof getMediaDownloadInfo>
 
-export function useDownloadPageData(media: AnilistDetailedMedia) {
+export function useMediaDownloadInfo(media: AnilistDetailedMedia) {
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(media.id)
     const collectionEntryProgress = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress)
     const collectionEntryStatus = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.status)

@@ -27,47 +27,23 @@ import axios from "axios"
  * Get anime info from page params
  */
 export const getAnimeInfo = cache(async (params: { id: string }) => {
-    try {
-        if (!params.id || isNaN(Number(params.id))) redirect("/")
+    if (!params.id || isNaN(Number(params.id))) redirect("/")
 
-        const [animeRes, aniZipRes] = await Promise.all([
-            useAniListAsyncQuery(AnimeByIdDocument, { id: Number(params.id) }),
-            axios.get<AniZipData>("https://api.ani.zip/mappings?anilist_id=" + Number(params.id)),
-        ])
+    const [animeRes, aniZipRes] = await Promise.allSettled([
+        useAniListAsyncQuery(AnimeByIdDocument, { id: Number(params.id) }),
+        axios.get<AniZipData>("https://api.ani.zip/mappings?anilist_id=" + Number(params.id)),
+    ])
 
-        if (!animeRes.Media) redirect("/")
+    if (animeRes.status === "rejected") redirect("/")
+    if (!animeRes.value.Media) redirect("/")
 
-        logger("view/id").info("Fetched media data for " + animeRes.Media.title?.english)
+    logger("view/id").info("Fetched media data for " + animeRes.value.Media.title?.english)
 
-        return {
-            media: animeRes.Media,
-            aniZipData: aniZipRes.data,
-        }
-    } catch (e) {
-
-        logger("view/id").warning("Failed to fetch media data for " + params.id, "Retrying...")
-
-        try {
-            const animeRes = await useAniListAsyncQuery(AnimeByIdDocument, { id: Number(params.id) })
-
-            if (!animeRes.Media) redirect("/")
-
-            logger("view/id").info("Fetched media data for " + animeRes.Media.title?.english)
-            logger("view/id").warning("No aniZip data for " + animeRes.Media.title?.english)
-
-            return {
-                media: animeRes.Media,
-                aniZipData: undefined,
-            }
-
-        } catch (e) {
-
-            logger("view/id").error("Fetched media data for " + params.id)
-
-            redirect("/")
-        }
-
+    return {
+        media: animeRes.value.Media,
+        aniZipData: aniZipRes.status === "fulfilled" ? (aniZipRes.value.data || undefined) : undefined,
     }
+
 })
 
 /* -------------------------------------------------------------------------------------------------

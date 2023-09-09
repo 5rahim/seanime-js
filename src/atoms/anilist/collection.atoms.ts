@@ -9,7 +9,7 @@ import { AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import toast from "react-hot-toast"
 import { atomWithStorage } from "jotai/utils"
 import { useAtom } from "jotai/react"
-import { useMemo } from "react"
+import { useCallback } from "react"
 
 import { allUserMediaAtom } from "@/atoms/anilist/media.atoms"
 import { shortMediaToShowcaseMedia } from "@/lib/anilist/utils"
@@ -23,7 +23,7 @@ export type AnilistCollection = AnimeCollectionQuery["MediaListCollection"]
  * We will store the fetched Anilist Collection
  */
 export const anilistCollectionAtom = atomWithStorage<AnilistCollection>("sea-anilist-user-list", undefined, undefined, { unstable_getOnInit: true })
-export const getAnilistCollectionAtom = atom(null, async (get, set) => {
+export const getAnilistCollectionAtom = atom(null, async (get, set, options: { muteAlert: boolean }) => {
     try {
         const token = get(aniListTokenAtom)
         const user = get(userAtom)
@@ -57,7 +57,7 @@ export const getAnilistCollectionAtom = atom(null, async (get, set) => {
                 set(allUserMediaAtom, _.uniqBy([...watchListMedia, ...relatedMedia], media => media.id))
 
             }
-            toast.success("AniList is up to date")
+            if (!options.muteAlert) toast.success("AniList is up to date")
         } else {
             toast.error("Unauthenticated")
             // set(anilistCollectionAtom, undefined)
@@ -73,5 +73,9 @@ export const getAnilistCollectionAtom = atom(null, async (get, set) => {
  */
 export const useRefreshAnilistCollection = () => {
     const [, get] = useAtom(getAnilistCollectionAtom)
-    return useMemo(() => get, [])
+    return useCallback((options?: { muteAlert: boolean }) => {
+        return get({
+            muteAlert: options?.muteAlert || false,
+        })
+    }, [])
 }

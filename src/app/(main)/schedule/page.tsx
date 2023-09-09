@@ -1,14 +1,15 @@
 "use client"
+
 import { AppLayoutStack } from "@/components/ui/app-layout"
-import { UndownloadedEpisodes } from "@/app/(main)/schedule/_containers/missed-episodes/missed-episodes"
+import { MissedEpisodes } from "@/app/(main)/schedule/_containers/missed-episodes/missed-episodes"
 
 export default function Page() {
 
     return (
         <div className={"px-4 pt-8 space-y-10"}>
             <AppLayoutStack>
-                <h2>New episodes</h2>
-                <UndownloadedEpisodes/>
+                {/*<h2>Episodes you've missed</h2>*/}
+                <MissedEpisodes/>
             </AppLayoutStack>
             <h2>Coming up next</h2>
             {/*Next airing episodes from currently watching (à la Moopa)*/}

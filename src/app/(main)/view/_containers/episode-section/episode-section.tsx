@@ -1,5 +1,5 @@
 "use client"
-import React from "react"
+import React, { useEffect } from "react"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
 import { useLibraryEntryAtomByMediaId } from "@/atoms/library/library-entry.atoms"
 import { Divider } from "@/components/ui/divider"
@@ -23,11 +23,13 @@ import { atomWithImmer } from "jotai-immer"
 import { LocalFile } from "@/lib/local-library/local-file"
 import { Button } from "@/components/ui/button"
 import { FiPlayCircle } from "@react-icons/all-files/fi/FiPlayCircle"
-import { useMount } from "react-use"
 import {
     ProgressTrackingButton,
     ProgressTrackingModal,
 } from "@/app/(main)/view/_containers/episode-section/_components/progress-tracking"
+import { useAnifyEpisodeCovers } from "@/lib/anify/client"
+import { PlayNextFile } from "@/app/(main)/view/_containers/episode-section/_components/play-next-file"
+import { EpisodeSectionSlider } from "@/app/(main)/view/_containers/episode-section/_components/episode-section-slider"
 
 interface EpisodeSectionProps {
     children?: React.ReactNode
@@ -44,29 +46,29 @@ export const __progressTrackingAtom = atomWithImmer<{ open: boolean, filesWatche
 export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
 
     const { children, detailedMedia, aniZipData, ...rest } = props
+    const maxEp = detailedMedia.nextAiringEpisode?.episode ? detailedMedia.nextAiringEpisode.episode - 1 : detailedMedia.episodes!
 
     const entryAtom = useLibraryEntryAtomByMediaId(detailedMedia.id)
-    const { toWatch, watched } = useMainLocalFileAtomsByMediaId(detailedMedia.id)
+    const { toWatch, toWatchSlider, watched } = useMainLocalFileAtomsByMediaId(detailedMedia.id)
     const ovaFileAtoms = useSpecialsLocalFileAtomsByMediaId(detailedMedia.id)
     const ncFileAtoms = useNCLocalFileAtomsByMediaId(detailedMedia.id)
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(detailedMedia.id)
-    const status = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.media?.status)
+    const mediaStatus = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.media?.status)
     const progress = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress)
-    const nextUpFilePath = useStableSelectAtom(toWatch[0], file => file?.path)
+    const status = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.status)
 
-    // const consumetEpisodeData = useConsumetMediaEpisodes(detailedMedia.id)
-    const consumetEpisodeData = null // TODO Replace with anify episode cover
-
-    const maxEp = detailedMedia.nextAiringEpisode?.episode ? detailedMedia.nextAiringEpisode.episode - 1 : detailedMedia.episodes!
     const canTrackProgress = (!progress || progress < maxEp) && progress !== maxEp
+    const nextUpFilePath = useStableSelectAtom(canTrackProgress ? toWatch[0] : toWatch[toWatch.length - 1], file => file?.path)
+    const { anifyEpisodeCovers } = useAnifyEpisodeCovers(detailedMedia.id)
+
 
     const setProgressTracking = useSetAtom(__progressTrackingAtom)
 
-    useMount(() => {
+    useEffect(() => {
         setProgressTracking(draft => {
             return { open: false, filesWatched: [] }
         })
-    })
+    }, [])
 
     const getFile = useSetAtom(getLocalFileByNameAtom)
     // Video player
@@ -91,11 +93,11 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
 
     if (!entryAtom) {
         return <div className={"space-y-10"}>
-            {status !== "NOT_YET_RELEASED" ? <p>Not in your library</p> : <p>Not yet released</p>}
+            {mediaStatus !== "NOT_YET_RELEASED" ? <p>Not in your library</p> : <p>Not yet released</p>}
             <UndownloadedEpisodeList
                 media={detailedMedia}
                 aniZipData={aniZipData}
-                consumetEpisodeData={consumetEpisodeData}
+                anifyEpisodeCovers={anifyEpisodeCovers}
             />
         </div>
     }
@@ -103,6 +105,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
     return (
         <>
             <div>
+                <PlayNextFile playFile={playFile} path={nextUpFilePath}/>
                 <div className={"mb-8 flex items-center justify-between"}>
 
                     <div className={"flex items-center gap-8"}>
@@ -113,7 +116,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
                                 intent={"white"}
                                 rightIcon={<FiPlayCircle/>}
                                 iconClassName={"text-2xl"}
-                                onClick={() => playFile(nextUpFilePath)}
+                                onClick={async () => await playFile(nextUpFilePath)}
                             >
                                 {detailedMedia.format === "MOVIE" ? "Watch" : "Play next episode"}
                             </Button>
@@ -130,13 +133,26 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
 
                 <div className={"space-y-10"}>
 
-                    <EpisodeList
+                    {(status !== "COMPLETED" && toWatchSlider.length > 0) && (
+                        <>
+                            <EpisodeSectionSlider
+                                fileAtoms={toWatchSlider}
+                                onPlayFile={playFile}
+                                media={detailedMedia}
+                                aniZipData={aniZipData}
+                                anifyEpisodeCovers={anifyEpisodeCovers}
+                            />
+                            <Divider/>
+                        </>
+                    )}
+
+                    {toWatch.length > 0 && <EpisodeList
                         fileAtoms={toWatch}
                         onPlayFile={playFile}
                         media={detailedMedia}
                         aniZipData={aniZipData}
-                        consumetEpisodeData={consumetEpisodeData}
-                    />
+                        anifyEpisodeCovers={anifyEpisodeCovers}
+                    />}
 
                     {watched.length > 0 && <>
                         {toWatch.length > 0 && <Divider/>}
@@ -146,14 +162,14 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
                             onPlayFile={playFile}
                             media={detailedMedia}
                             aniZipData={aniZipData}
-                            consumetEpisodeData={consumetEpisodeData}
+                            anifyEpisodeCovers={anifyEpisodeCovers}
                         />
                     </>}
 
                     <UndownloadedEpisodeList
                         media={detailedMedia}
                         aniZipData={aniZipData}
-                        consumetEpisodeData={consumetEpisodeData}
+                        anifyEpisodeCovers={anifyEpisodeCovers}
                     />
 
                     {ovaFileAtoms.length > 0 && <>
@@ -165,7 +181,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
                             onPlayFile={playFile}
                             media={detailedMedia}
                             aniZipData={aniZipData}
-                            consumetEpisodeData={consumetEpisodeData}
+                            anifyEpisodeCovers={anifyEpisodeCovers}
                         />
                     </>}
 
@@ -178,7 +194,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
                             onPlayFile={playFile}
                             media={detailedMedia}
                             aniZipData={aniZipData}
-                            consumetEpisodeData={consumetEpisodeData}
+                            anifyEpisodeCovers={anifyEpisodeCovers}
                         />
                     </>}
 

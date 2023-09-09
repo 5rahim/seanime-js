@@ -14,12 +14,12 @@ import { NumberInput } from "@/components/ui/number-input"
 import { useDebounce } from "@/hooks/use-debounce"
 import { Button, IconButton } from "@/components/ui/button"
 import { cn } from "@/components/ui/core"
-import { useMount } from "react-use"
+import { useMount, useSearchParam } from "react-use"
 import { Drawer, Modal } from "@/components/ui/modal"
 import { useDisclosure } from "@/hooks/use-disclosure"
 import { normalizeMediaEpisode } from "@/lib/anilist/actions"
 import { BiLinkExternal } from "@react-icons/all-files/bi/BiLinkExternal"
-import { useDownloadPageData } from "@/lib/download/helpers"
+import { useMediaDownloadInfo } from "@/lib/download/helpers"
 import {
     TorrentSearchTorrentList,
 } from "@/app/(main)/view/_containers/torrent-search/_components/torrent-search-torrent-list"
@@ -29,6 +29,7 @@ import { atomWithImmer } from "jotai-immer"
 import { SearchTorrentData } from "@/lib/download/types"
 import { Tooltip } from "@/components/ui/tooltip"
 import { extractHashFromMagnetLink } from "@/lib/download/torrent-helpers"
+import { usePathname, useRouter } from "next/navigation"
 
 interface Props {
     media: AnilistDetailedMedia,
@@ -53,6 +54,19 @@ export const __torrentSearch_sortedSelectedTorrentsAtom = atom((get) => {
 export function TorrentSearchModal(props: Props) {
 
     const [status, setStatus] = useAtom(__torrentSearch_isOpenAtom)
+    const _downloadParam = useSearchParam("download")
+    const router = useRouter()
+    const pathname = usePathname()
+
+    useMount(() => {
+        if (_downloadParam && !isNaN(parseInt(_downloadParam))) {
+            setStatus({
+                isOpen: true,
+                episode: Number(_downloadParam),
+            })
+            router.replace(pathname)
+        }
+    })
 
     return <Drawer
         isOpen={status.isOpen}
@@ -74,7 +88,7 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
         entryAtom,
         lastFile,
         downloadInfo,
-    } = useDownloadPageData(media)
+    } = useMediaDownloadInfo(media)
     const { episode } = useAtomValue(__torrentSearch_isOpenAtom)
 
     const [globalFilter, setGlobalFilter] = useState<string>("")

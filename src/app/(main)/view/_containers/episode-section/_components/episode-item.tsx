@@ -8,38 +8,39 @@ import { IconButton } from "@/components/ui/button"
 import { BiDotsHorizontal } from "@react-icons/all-files/bi/BiDotsHorizontal"
 import { VscVerified } from "@react-icons/all-files/vsc/VscVerified"
 import { BiLockOpenAlt } from "@react-icons/all-files/bi/BiLockOpenAlt"
-import { ConsumetAnimeEpisodeData } from "@/lib/consumet/types"
 import { valueContainsNC, valueContainsSpecials } from "@/lib/local-library/utils"
 import { EpisodeListItem } from "@/components/shared/episode-list-item"
+import { AnifyEpisodeCover } from "@/lib/anify/types"
 
 export const EpisodeItem = React.memo((props: {
     fileAtom: PrimitiveAtom<LocalFile>,
     aniZipData?: AniZipData,
     onPlayFile: (path: string) => void
     media: AnilistDetailedMedia
-    consumetEpisodeData?: ConsumetAnimeEpisodeData
+    anifyEpisodeCovers?: AnifyEpisodeCover[]
 }) => {
 
-    const { fileAtom, aniZipData, onPlayFile, media, consumetEpisodeData } = props
+    const { fileAtom, aniZipData, onPlayFile, media, anifyEpisodeCovers } = props
 
     const mediaID = useSelectAtom(fileAtom, file => file.mediaId) // Listen to changes in order to unmount when we unmatch
     const metadata = useSelectAtom(fileAtom, file => file.metadata)
     const parsedInfo = useSelectAtom(fileAtom, file => file.parsedInfo)
     const path = useSelectAtom(fileAtom, file => file.path)
+    const fileName = useSelectAtom(fileAtom, file => file.name)
     const setFileLocked = useFocusSetAtom(fileAtom, "locked")
     const setFileMediaId = useFocusSetAtom(fileAtom, "mediaId")
 
     const aniZipEpisode = aniZipData?.episodes[metadata.aniDBEpisodeNumber || String(metadata.episode)]
-    const consumetEpisode = consumetEpisodeData?.find(n => Number(n.number) === metadata.episode)
+    const anifyEpisodeCover = anifyEpisodeCovers?.find(n => n.episode === metadata.episode)?.img
     const fileTitle = useMemo(() => parsedInfo?.original?.replace(/.(mkv|mp4)/, "")?.replaceAll(/(\[)[a-zA-Z0-9 ._~-]+(\])/ig, "")?.replaceAll(/[_,-]/g, " "), [parsedInfo])
 
     const image = () => {
-        if (!!path && (!valueContainsSpecials(path) && !valueContainsNC(path))) {
-            return (consumetEpisode?.image || aniZipEpisode?.image)
-        } else if (!!path) {
+        if (!!fileName && (!valueContainsSpecials(fileName) && !valueContainsNC(fileName))) {
+            return (anifyEpisodeCover || aniZipEpisode?.image)
+        } else if (!!fileName) {
             return undefined
         }
-        return (consumetEpisode?.image || aniZipEpisode?.image)
+        return (aniZipEpisode?.image || anifyEpisodeCover)
     }
 
     const displayedTitle = useMemo(() => {
@@ -58,7 +59,7 @@ export const EpisodeItem = React.memo((props: {
             onClick={async () => onPlayFile(path)}
             title={displayedTitle}
             showImagePlaceholder={!metadata.isNC}
-            episodeTitle={aniZipEpisode?.title?.en || consumetEpisode?.title}
+            episodeTitle={aniZipEpisode?.title?.en}
             fileName={parsedInfo?.original?.replace(/.(mkv|mp4)/, "")?.replaceAll(/(\[)[a-zA-Z0-9 ._~-]+(\])/ig, "")?.replaceAll(/[_,-]/g, " ")}
             action={<>
                 <EpisodeItemLockButton fileAtom={fileAtom}/>

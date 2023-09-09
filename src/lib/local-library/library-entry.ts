@@ -103,7 +103,7 @@ export const inspectProspectiveLibraryEntry = async (props: {
         // We will keep these OVAs, NC,... files even if they don't meet all parameters
         // Why? the folder rating might be very low because they are in a folder named "Specials"
         const containsSpecialsOrNC = (file: LocalFileWithMedia) => {
-            return valueContainsSpecials(file.path) || valueContainsNC(file.path)
+            return valueContainsSpecials(file.name) || valueContainsNC(file.name)
         }
 
 
@@ -196,13 +196,13 @@ export const inspectProspectiveLibraryEntry = async (props: {
                 // We already know the media isn't a movie
                 // eg: One Punch Man > One Punch Man OVA 01.mkv -> Matched with "One Punch Man" whose format is TV -> isSpecial = true
                 // Marking an episode as Special will allow better mapping with AniDB -> episodes[aniDBEpisodeNumber]
-                if (valueContainsSpecials(file.path)) {
+                if (valueContainsSpecials(file.name)) {
                     mostAccurateFiles[i].metadata.isSpecial = true
                     mostAccurateFiles[i].metadata.aniDBEpisodeNumber = "S" + String(mostAccurateFiles[i].metadata.episode ?? 1)
                     _scanLogging.add(file.path, `   -> isSpecial = true`)
                     _scanLogging.add(file.path, `   -> aniDBEpisodeNumber = S${String(mostAccurateFiles[i].metadata.episode ?? 1)}`)
                 }
-                if (valueContainsNC(file.path)) {
+                if (valueContainsNC(file.name)) {
                     mostAccurateFiles[i].metadata.isNC = true
                     _scanLogging.add(file.path, `   -> isNC = true`)
                 }

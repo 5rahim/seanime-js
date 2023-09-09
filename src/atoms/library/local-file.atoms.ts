@@ -67,17 +67,16 @@ const get_Main_LocalFileAtomsByMediaIdAtom = atom(null,
         }) ?? []
 
         const maxEp = (collectionEntry?.media?.nextAiringEpisode?.episode ? collectionEntry?.media?.nextAiringEpisode?.episode - 1 : undefined) || collectionEntry?.media?.episodes
-        if (mainFileAtoms.length > 0 && !!collectionEntry?.progress && !!maxEp && !(collectionEntry.progress === Number(maxEp))) {
-            return {
-                toWatch: mainFileAtoms?.filter(n => !!get(n).metadata.episode && get(n).metadata.episode! > collectionEntry?.progress!) ?? [],
-                watched: mainFileAtoms?.filter(n => !!get(n).metadata.episode && get(n).metadata.episode! <= collectionEntry?.progress!) ?? [],
-            }
-        } else {
-            return {
-                toWatch: mainFileAtoms ?? [],
-                watched: [],
-            }
+        const canTrackProgress = mainFileAtoms.length > 0 && !!maxEp && (!!collectionEntry?.progress && collectionEntry.progress < Number(maxEp) || !collectionEntry?.progress)
+        // /\ (!progress || progress < maxEp) && progress !== maxEp
+
+        const toWatch = canTrackProgress ? (mainFileAtoms?.filter(n => !!get(n).metadata.episode && get(n).metadata.episode! > collectionEntry?.progress!) ?? []) : []
+        return {
+            toWatch,
+            toWatchSlider: (!canTrackProgress) ? [...mainFileAtoms].reverse() : toWatch,
+            watched: mainFileAtoms?.filter(n => !!get(n).metadata.episode && get(n).metadata.episode! <= collectionEntry?.progress!) ?? [],
         }
+
     },
 )
 
@@ -178,6 +177,7 @@ export const useMainLocalFileAtomsByMediaId = (mediaId: number) => {
     const [, get] = useAtom(get_Main_LocalFileAtomsByMediaIdAtom)
     return useMemo(() => get(mediaId), [progress, status]) as {
         toWatch: Array<PrimitiveAtom<LocalFile>>,
+        toWatchSlider: Array<PrimitiveAtom<LocalFile>>
         watched: Array<PrimitiveAtom<LocalFile>>
     }
 }
