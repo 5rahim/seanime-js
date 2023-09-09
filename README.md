@@ -2,7 +2,7 @@
 
 <h4 align="center">Feature-packed, user-friendly app for managing your local library with AniList integration</h4>
 
-<img src="docs/main.png" alt="preview" width="100%"/>
+<img src="docs/assets/main.png" alt="preview" width="100%"/>
 
 🚨 This project is a hobby and doesn't aim to solve every unique issue or address all complaints you may have about
 similar software.
@@ -14,7 +14,8 @@ similar software.
 ## Features
 
 ### Local library
-- [x] Scan local library and match local files with corresponding
+
+- [x] Scan local library and automatically match local files with corresponding
   anime. [How it works](https://github.com/5rahim/seanime/blob/main/docs/guide.md#how-it-works).
   - [x] Support for various naming/folder
     structures. [Learn more](https://github.com/5rahim/seanime/blob/main/docs/guide.md#tldr).
@@ -31,6 +32,7 @@ similar software.
 - [x] Resolve unmatched files
   - [x] Match single files or folders to a media
   - [x] Option to match files using AniList ID
+- [ ] Manual hydration
 
 ### Download
 
@@ -69,9 +71,9 @@ similar software.
 
 - [ ] Offline mode
 
-<img src="docs/img_8.png" alt="preview" width="700"/>
+<img src="docs/assets/img_8.png" alt="preview" width="700"/>
 <br/>
-<img src="docs/img_9.png" alt="preview" width="700"/>
+<img src="docs/assets/img_9.png" alt="preview" width="700"/>
 
 ## Caveats
 
@@ -123,10 +125,9 @@ Features that may be implemented
 
 ## TODO
 
-- [ ] (torrent search) Improve smart filters for batches
-- [ ] (local file) Edit file metadata
 - [ ] (schedule) Show a section with new, un-downloaded episodes
-- [ ] (library) Preliminary scan to hydrate AniList (for users without anilist data)
+- [ ] (local file) Edit file metadata
+- [ ] (library) Manual hydration - similar to "resolve unmatched"
 - [ ] (settings) Update settings local directory picker
 - [ ] (local file) Manage/Un-ignore ignored files
 - [ ] (library) Optimize episode number normalization during scan with cache (library-entry.ts L171)
@@ -137,6 +138,10 @@ Features that may be implemented
 - [ ] Logs settings, directory, display logs in-app
 - [ ] Option to automatically update progress without confirmation
 - [ ] Start qBittorrent if it is not launched
+- [ ] Splashscreen
+- [ ] Migrate to Tauri v2 (when stable)
+- [ ] Alpha Release
+- [ ] Tests
 
 ## Resources
 

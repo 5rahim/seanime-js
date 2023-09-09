@@ -19,7 +19,7 @@ import { FiSearch } from "@react-icons/all-files/fi/FiSearch"
 import { BiDownload } from "@react-icons/all-files/bi/BiDownload"
 import { useRefreshAnilistCollection } from "@/atoms/anilist/collection.atoms"
 import { useSetAtom } from "jotai"
-import { __globalSearch_isOpenAtom } from "@/components/application/global-search/global-search"
+import { __globalSearch_isOpenAtom } from "@/components/application/global-search"
 import { BiTestTube } from "@react-icons/all-files/bi/BiTestTube"
 
 interface MainSidebarProps {

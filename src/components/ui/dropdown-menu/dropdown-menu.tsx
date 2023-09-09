@@ -14,6 +14,7 @@ import { Menu, Transition } from "@headlessui/react"
 import { Divider, DividerProps } from "../divider"
 import { Modal, ModalProps } from "../modal"
 import { useDropdownOutOfBounds } from "./use-dropdown-out-of-bounds"
+import Link from "next/link"
 
 /* -------------------------------------------------------------------------------------------------
  * Anatomy
@@ -230,14 +231,14 @@ export const DropdownMenuLink: React.FC<DropdownMenuLinkProps> = React.forwardRe
 
     return <Menu.Item as={Fragment}>
         {({ active }) => (
-            <a
+            <Link
                 href={href}
                 className={cn(DropdownMenuItemAnatomy.item({ active }), itemClassName, className)}
                 ref={ref}
                 {...rest}
             >
                 {children}
-            </a>
+            </Link>
         )}
     </Menu.Item>
 

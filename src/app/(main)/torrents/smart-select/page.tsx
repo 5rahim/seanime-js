@@ -16,7 +16,7 @@ import { valueContainsNC, valueContainsSpecials } from "@/lib/local-library/util
 import path from "path"
 import { LoadingOverlay } from "@/components/ui/loading-spinner"
 import { useRouter } from "next/navigation"
-import { smartSelect_normalizeEpisodes } from "@/app/(main)/torrents/smart-select/_lib/helpers"
+import { smartSelect_normalizeEpisodes } from "@/app/(main)/torrents/smart-select/_lib/utils"
 
 export default function Page() {
 

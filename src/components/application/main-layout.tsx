@@ -5,7 +5,7 @@ import { MainSidebar } from "@/components/application/main-sidebar"
 import { useAtomValue } from "jotai/react"
 import { userAtom } from "@/atoms/user"
 import { LoadingOverlay } from "@/components/ui/loading-spinner"
-import { GlobalSearch } from "@/components/application/global-search/global-search"
+import { GlobalSearch } from "@/components/application/global-search"
 
 export const MainLayout = ({ children }: { children: React.ReactNode }) => {
 

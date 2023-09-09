@@ -174,9 +174,6 @@ export function ResolveUnmatched(props: { isOpen: boolean, close: () => void }) 
                                     to separate and appropriately named folders</li>}
                             {episodeDetected && <li>Episodes were detected:</li>}
                             {episodeDetected && <li>{`-->`} The anime was not added to your watch list</li>}
-                            {episodeDetected &&
-                                <li>{`-->`} It was unmatched because the episode number is greater than the original
-                                    media's number of episodes</li>}
                             {episodeDetected && <li>{`-->`} Your structure or naming is inconsistent</li>}
                         </ul>
                     </>}

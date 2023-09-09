@@ -1,8 +1,8 @@
 import React from "react"
 import Image from "next/image"
 import { Skeleton } from "@/components/ui/skeleton"
-import { EpisodeSection } from "@/app/(main)/view/_containers/episode-section"
-import { MetaSection } from "@/app/(main)/view/_containers/meta-section"
+import { EpisodeSection } from "@/app/(main)/view/_containers/episode-section/episode-section"
+import { MetaSection } from "@/app/(main)/view/_containers/meta-section/meta-section"
 
 import { getAnimeInfo } from "@/lib/anilist/actions"
 import { TorrentSearchModal } from "@/app/(main)/view/_containers/torrent-search/torrent-search-modal"

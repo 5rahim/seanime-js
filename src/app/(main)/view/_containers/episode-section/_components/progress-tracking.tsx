@@ -6,7 +6,7 @@ import _ from "lodash"
 import { Modal } from "@/components/ui/modal"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { __progressTrackingAtom } from "@/app/(main)/view/_containers/episode-section"
+import { __progressTrackingAtom } from "@/app/(main)/view/_containers/episode-section/episode-section"
 
 interface ProgressTrackingModalProps {
     children?: React.ReactNode
