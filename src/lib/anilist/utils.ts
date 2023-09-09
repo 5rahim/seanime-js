@@ -3,6 +3,8 @@ import { MediaRelation } from "@/gql/graphql"
 import _ from "lodash"
 import { AnilistCollectionEntry } from "@/atoms/anilist/entries.atoms"
 import { LibraryEntry } from "@/atoms/library/library-entry.atoms"
+import rakun from "@/lib/rakun/rakun"
+import { valueContainsSeason } from "@/lib/local-library/utils"
 
 type _RelationEdge = { relationType: MediaRelation, node: AnilistShowcaseMedia | null | undefined }
 
@@ -24,6 +26,19 @@ export function findMediaEdge(media: AnilistShortMedia | null | undefined, relat
         res = findMediaEdge(media, relation, formats = ["TV", "TV_SHORT", "OVA"], true)
     }
     return res
+}
+
+export function findMediaSeason(media: AnilistShortMedia | null | undefined) {
+    const seasons = [
+        rakun.parse(media?.title?.english || "")?.season,
+        rakun.parse(media?.title?.romaji || "")?.season,
+        rakun.parse(media?.title?.userPreferred || "")?.season,
+        ...(media?.synonyms?.filter(valueContainsSeason).map(syn => {
+            return rakun.parse(syn || "")?.season
+        }) || []),
+    ].filter(Boolean).map(n => Number(n))
+
+    return _.head(seasons)
 }
 
 /**

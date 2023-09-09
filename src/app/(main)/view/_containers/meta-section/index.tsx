@@ -165,20 +165,23 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
 
                 </div>
 
-                {detailedMedia.status !== "NOT_YET_RELEASED" && (
-                    <TorrentDownloadButton
-                        entryAtom={entryAtom}
-                        collectionEntryAtom={collectionEntryAtom}
-                        detailedMedia={detailedMedia}
-                    />
-                )}
+                <div className={"space-y-4"}>
+                    {detailedMedia.status !== "NOT_YET_RELEASED" && (
+                        <TorrentDownloadButton
+                            entryAtom={entryAtom}
+                            collectionEntryAtom={collectionEntryAtom}
+                            detailedMedia={detailedMedia}
+                        />
+                    )}
 
-                {detailedMedia.status !== "NOT_YET_RELEASED" && (
-                    <Link href={`/watch/${detailedMedia.id}?episode=${nextEpisode}`} className={"block"}>
-                        <Button className={"w-full"} intent={"white-outline"} size={"lg"} leftIcon={<AiFillPlayCircle/>}
-                                iconClassName={"text-xl"}>Stream online</Button>
-                    </Link>
-                )}
+                    {detailedMedia.status !== "NOT_YET_RELEASED" && (
+                        <Link href={`/watch/${detailedMedia.id}?episode=${nextEpisode}`} className={"block"}>
+                            <Button className={"w-full"} intent={"white-outline"} size={"lg"}
+                                    leftIcon={<AiFillPlayCircle/>}
+                                    iconClassName={"text-xl"}>Stream online</Button>
+                        </Link>
+                    )}
+                </div>
 
                 <NextAiringEpisode detailedMedia={detailedMedia}/>
 

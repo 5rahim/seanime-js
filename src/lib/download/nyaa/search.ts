@@ -113,12 +113,14 @@ export async function unstable_findNyaaTorrents(props: {
             const digits = Math.max(2, Math.log(media.episodes ?? 0) * Math.LOG10E + 1 | 0)
 
             let _rest = `(${zeropad(1, digits)} - ${zeropad(media.episodes ?? 0, digits)}|${zeropad(1, digits)}-${zeropad(media.episodes ?? 0, digits)}|${zeropad(1, digits)} ~ ${zeropad(media.episodes ?? 0, digits)}`
-            _rest += `|Batch|Complete|+ OVA|+ Movie|+ Specials)`
+            _rest += `|Batch|Seasons|Complete|+ OVA|+ Movie|+ Specials)`
 
-            if (season) _search_string += _seasons_string // Increment
+            if (season) _search_string += `(${_seasons_string}|(Seasons|+ Special|+ Specials|+ OVA|Complete|Season))` // Increment
 
             _search_string += _rest // Increment
             _search_string_without_seasons += _rest // Increment
+
+            _search_string += `|((${prospectiveTitleArr.join(")|(")}))`
 
         } else {
             // >>> Episode search terms

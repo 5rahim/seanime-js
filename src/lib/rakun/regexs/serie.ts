@@ -90,6 +90,7 @@ export default {
         single: {
             extract: [
                 /\b[Cc]our[-._ ](?<cour>\d)\b/,
+                /\b[Cc]our[-._ ](?<cour>0\d)\b/,
             ],
             keep: [],
         },

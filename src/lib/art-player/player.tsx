@@ -241,16 +241,6 @@ export function ArtPlayer(
             ].filter(Boolean),
         })
 
-        art.on("video:timeupdate", () => {
-            // const session = navigator.mediaSession
-            // if (!session) return
-            // session.setPositionState({
-            //     duration: art.duration,
-            //     playbackRate: art.playbackRate,
-            //     position: art.currentTime,
-            // })
-        })
-
         art.events.proxy(document, "keydown", async (event: Event | KeyboardEvent) => {
             try {
                 if ("key" in event) {

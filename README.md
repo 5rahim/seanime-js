@@ -40,7 +40,6 @@ similar software.
   - [x] Automatic smart filters for search
 - [x] Option to automatically select needed files in
   batches. [Learn more](https://github.com/5rahim/seanime/blob/main/docs/torrents.md#batches).
-- [ ] "Auto-pick" feature
 - [ ] "Schedule" feature
 
 ### Progress tracking
@@ -120,6 +119,7 @@ npm run dev
 Features that may be implemented
 
 - Manga support
+- Auto-download new episodes
 
 ## TODO
 

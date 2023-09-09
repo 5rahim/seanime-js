@@ -16,6 +16,7 @@ import { valueContainsNC, valueContainsSpecials } from "@/lib/local-library/util
 import path from "path"
 import { LoadingOverlay } from "@/components/ui/loading-spinner"
 import { useRouter } from "next/navigation"
+import { smartSelect_normalizeEpisodes } from "@/app/(main)/torrents/smart-select/_lib/helpers"
 
 export default function Page() {
 
@@ -98,12 +99,14 @@ export default function Page() {
                     .flatMap(n => n.content)
                     .filter(Boolean)
                     .flatMap(content => ({ // Parse anime data from each file
-                        ...content,
+                        info: content,
                         originalName: path.basename(content.name),
-                        parsed: rakun.parse(content.name),
+                        parsed: rakun.parse(path.basename(content.name)),
                     }))
 
-                const episodeContent = torrentContent.filter(content => !!content.parsed.episode) // Keep files that have an episode
+                // Keep files that have an episode
+                // Normalize episode numbers if needed, and return `trueEpisode`
+                const episodeContent = smartSelect_normalizeEpisodes(torrentContent.filter(content => !!content.parsed.episode))
                 const rest = torrentContent.filter(content => !content.parsed.episode) // Files that don't have an episode
 
                 return {
@@ -112,23 +115,23 @@ export default function Page() {
                         .filter(content => queueInfo?.downloadInfo.episodeNumbers.includes(Number(content.parsed.episode!)) && !valueContainsNC(content.originalName) && !valueContainsSpecials(content.originalName))
                         .filter(Boolean)
                         //@ts-ignore
-                        .map(content => String(content.index))
+                        .map(content => String(content.info.index))
                         .filter(Boolean) as string[]
                     ,
                     rejectedFileIndices: [
                         // Episode files that are not NC/Specials
                         ...episodeContent
                             .filter(content => (
-                                !queueInfo?.downloadInfo.episodeNumbers.includes(Number(content.parsed.episode!))
+                                !queueInfo?.downloadInfo.episodeNumbers.includes(Number(content.trueEpisode!))
                                 || valueContainsNC(content.originalName)
                                 || valueContainsSpecials(content.originalName)
                             ))
                             // @ts-ignore
-                            .map(content => String(content.index))
+                            .map(content => String(content.info.index))
                             .filter(Boolean) as string[],
                         // Also ignore the rest
                         //@ts-ignore
-                        ...rest.map(content => String(content.index)),
+                        ...rest.map(content => String(content.info.index)),
                     ],
                 }
             })

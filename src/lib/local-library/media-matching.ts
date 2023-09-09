@@ -101,10 +101,6 @@ export async function findBestCorrespondingMedia(
 
     let _titleVariations: (string | undefined)[] = []
 
-    if (noSeasonsOrParts || eitherSeasonIsFirst) {
-        _titleVariations.push(_folderTitle) // Title
-        _titleVariations.push(parsed.title) // Title
-    }
     if (!!courAsNumber) {
         [_folderTitle, parsed.title].filter(Boolean).map(value => {
             _titleVariations.push(`${value} Part ${courAsNumber}`) // Title Part 2
@@ -120,6 +116,10 @@ export async function findBestCorrespondingMedia(
             _titleVariations.push(`${value} Cour ${partAsNumber}`) // Title Cour 2
             _titleVariations.push(`${value} Cour ${toRomanNumber(partAsNumber)}`) // Title Cour II
         })
+    }
+    if (noSeasonsOrParts || eitherSeasonIsFirst) {
+        _titleVariations.push(_folderTitle) // Title
+        _titleVariations.push(parsed.title) // Title
     }
     if (!!partAsNumber && eitherSeasonExists) {
         [_folderTitle, parsed.title].filter(Boolean).map(value => {
