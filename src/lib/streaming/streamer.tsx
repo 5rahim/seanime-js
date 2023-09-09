@@ -5,7 +5,7 @@ import { ArtPlayer } from "../art-player/player"
 import { useEffect, useState } from "react"
 import artplayerPluginHlsQuality from "artplayer-plugin-hls-quality"
 import { useRouter } from "next/navigation"
-import { ConsumetProvider, ConsumetStreamingData } from "@/lib/consumet/types"
+import { ConsumetProvider, ConsumetStreamingProviderData } from "@/lib/consumet/types"
 import Artplayer from "artplayer"
 import { useAtom } from "jotai/react"
 import { streamingAutoplayAtom, streamingResolutionAtom } from "@/atoms/streaming/streaming.atoms"
@@ -18,7 +18,7 @@ const fontSizes = [
 ]
 
 type VideoStreamerProps = {
-    data: ConsumetStreamingData,
+    data: ConsumetStreamingProviderData,
     id: string, // Check
     skip?: { op: SkipTime | null, ed: SkipTime | null }, // Check
     title?: string, // Check
@@ -40,7 +40,7 @@ export function VideoStreamer(
         skip,
         title,
         poster,
-        proxy = "https://cors.moopa.workers.dev/?url=",
+        proxy = "https://proxy.anistreme.live/",
         provider = "gogoanime",
         timeWatched,
         onVideoEnd,
@@ -51,7 +51,7 @@ export function VideoStreamer(
     }: VideoStreamerProps,
 ) {
     const [url, setUrl] = useState<string>("")
-    const [sources, setSources] = useState<ConsumetStreamingData["sources"]>([])
+    const [sources, setSources] = useState<ConsumetStreamingProviderData["sources"]>([])
 
     const router = useRouter()
 

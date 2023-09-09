@@ -1,14 +1,19 @@
 "use client"
 
-import React from "react"
-import { Button } from "@/components/ui/button"
+import React, { useEffect } from "react"
+import { LuffyError } from "@/components/shared/luffy-error"
 
 export default function Error({ error, reset }: any) {
 
+    useEffect(() => {
+        console.error(error)
+    }, [error])
+
     return (
         <div>
-            <p>Oops!</p>
-            <Button onClick={reset}>Retry</Button>
+            <LuffyError reset={reset}>
+                <span>Something went wrong!</span>
+            </LuffyError>
         </div>
     )
 }

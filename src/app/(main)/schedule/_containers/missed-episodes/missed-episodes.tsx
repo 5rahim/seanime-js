@@ -10,7 +10,7 @@ export const UndownloadedEpisodes: React.FC<UndownloadedEpisodesProps> = (props)
     const { children, ...rest } = props
 
     // 1. currently watching
-    // 2. Map them in subcomponents, useDownloadPageData() for each and list new episodes with download button
+    // 2. Map them in subcomponents, useDownloadPageData() for each and list new episodes (either not-watched or un-downloaded) with download button
 
     return (
         <div>

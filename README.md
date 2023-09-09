@@ -138,6 +138,7 @@ Features that may be implemented
 - [ ] Logs settings, directory, display logs in-app
 - [ ] Option to automatically update progress without confirmation
 - [ ] Start qBittorrent if it is not launched
+- [ ] Auto-pick page
 - [ ] Splashscreen
 - [ ] Migrate to Tauri v2 (when stable)
 - [ ] Alpha Release
@@ -161,7 +162,7 @@ Resources used to build Seanime.
 - [MPC-HC API](https://github.com/rzcoder/mpc-hc-control) - Original MPC-HC API code
 - [VLC API](https://github.com/alexandrucancescu/node-vlc-client) - Original VLC API code
 - [GraphQL Codegen](https://the-guild.dev/graphql/codegen) - GraphQL code generation
-- [Moopa](https://github.com/Ani-Moopa/Moopa) - Video streaming Proxy (Temporary)
+- [M3U8Proxy](https://github.com/chaycee/M3U8Proxy) - Video streaming proxy
 
 ## Credit
 

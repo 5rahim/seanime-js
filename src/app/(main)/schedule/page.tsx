@@ -1,6 +1,6 @@
 "use client"
 import { AppLayoutStack } from "@/components/ui/app-layout"
-import { UndownloadedEpisodes } from "@/app/(main)/schedule/_containers/undownloaded-episodes"
+import { UndownloadedEpisodes } from "@/app/(main)/schedule/_containers/missed-episodes/missed-episodes"
 
 export default function Page() {
 

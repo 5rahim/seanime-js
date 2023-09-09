@@ -28,6 +28,7 @@ import { FiPlayCircle } from "@react-icons/all-files/fi/FiPlayCircle"
 import { useEpisodeStreamingData, useProviderEpisodes, useSkipData } from "@/app/(main)/watch/_lib/queries"
 
 import { EpisodeListItem } from "@/components/shared/episode-list-item"
+import { LuffyError } from "@/components/shared/luffy-error"
 
 interface WatchPageProps {
     children?: React.ReactNode
@@ -102,7 +103,6 @@ export function WatchPage(props: WatchPageProps) {
     const {
         data: providerEpisodeData,
         isLoading: providerEpisodeDataLoading,
-        isError: providerEpisodeDataError,
     } = useProviderEpisodes(media.id, server)
 
     /** Derived **/
@@ -126,6 +126,10 @@ export function WatchPage(props: WatchPageProps) {
         })
     }, [episodes, episodeNumber])
 
+    useEffect(() => {
+        console.log(episodeStreamingData)
+    }, [episodeStreamingData])
+
     function goToNextEpisode() {
         setEpisodeNumber(ep => {
             return ep + 1 < maxEp ? ep + 1 : ep
@@ -144,10 +148,22 @@ export function WatchPage(props: WatchPageProps) {
         </div>
     </>
 
+    if ((!providerEpisodeData || providerEpisodeData.length === 0) && !providerEpisodeDataLoading) return <>
+        <div className={"col-span-full flex gap-4 items-center relative"}>
+            <Link href={`/view/${media.id}`}>
+                <IconButton icon={<AiOutlineArrowLeft/>} rounded intent={"white-outline"} size={"md"}/>
+            </Link>
+            <h3>{media.title?.userPreferred}</h3>
+        </div>
+        <LuffyError className={"col-span-full"}>
+            Something went wrong! Verify your Consumet API.
+        </LuffyError>
+    </>
+
 
     return (
         <>
-            <div className={"col-span-1 2xl:col-span-8 flex gap-4 items-center relative"}>
+            <div className={"col-span-1 2xl:col-span-full flex gap-4 items-center relative"}>
                 <Link href={`/view/${media.id}`}>
                     <IconButton icon={<AiOutlineArrowLeft/>} rounded intent={"white-outline"} size={"md"}/>
                 </Link>

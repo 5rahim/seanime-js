@@ -1,10 +1,10 @@
 "use server"
 import {
-    ConsumetAnimeEpisodeMeta,
+    ConsumetAnimeEpisode,
     ConsumetAnimeMeta,
     ConsumetErrorResponse,
     ConsumetProvider,
-    ConsumetStreamingData,
+    ConsumetStreamingProviderData,
     GogoAnimeServer,
     ZoroServer,
 } from "@/lib/consumet/types"
@@ -15,33 +15,6 @@ import _ from "lodash"
 
 const CONSUMET_API_URL = process.env.CONSUMET_API_URL
 
-/**
- * @link https://docs.consumet.org/rest-api/Meta/anilist-anime/get-anime-info
- * @param mediaId
- * @param provider
- */
-export async function getConsumetMediaEpisodes(mediaId: number = 1, provider: ConsumetProvider = "gogoanime") {
-    try {
-
-        const { data } = await axios.get<ConsumetAnimeMeta | ConsumetErrorResponse>(`${CONSUMET_API_URL}/meta/anilist/info/${mediaId}`, {
-            method: "GET",
-            params: {
-                provider: provider,
-            },
-        })
-
-        if (!(<ConsumetErrorResponse>data).message) {
-            return (<ConsumetAnimeMeta>data)?.episodes?.reverse()
-        } else {
-            logger("lib/consumet/getConsumetMediaEpisodes").error("Media not found")
-            return null
-        }
-    } catch (e) {
-        logger("lib/consumet/getConsumetMediaEpisodes").error("Could not fetch data")
-        logger("lib/consumet/getConsumetMediaEpisodes").error(e)
-        return null
-    }
-}
 
 /**
  * Get metadata of all episodes from all providers
@@ -49,19 +22,21 @@ export async function getConsumetMediaEpisodes(mediaId: number = 1, provider: Co
  * @param server
  * @param skipCache
  */
-export async function getConsumetEpisodeMeta<P extends ConsumetProvider>(
+export async function getConsumetEpisodes<P extends ConsumetProvider>(
     mediaId: number,
     server?: P extends "gogoanime" ? GogoAnimeServer : ZoroServer,
     skipCache?: boolean,
-): Promise<{ provider: ConsumetProvider, episodes: ConsumetAnimeEpisodeMeta[] }[]> {
+): Promise<{ provider: ConsumetProvider, episodes: ConsumetAnimeEpisode[] }[]> {
 
-    const data: { provider: ConsumetProvider, episodes: ConsumetAnimeEpisodeMeta[] }[] = []
+    const data: { provider: ConsumetProvider, episodes: ConsumetAnimeEpisode[] }[] = []
+
+    logger("lib/consumet/getConsumetEpisodeMeta").info(`Fetching all episodes from all providers`, mediaId, server)
 
     const key = `${mediaId}`
     if (!skipCache) {
         const cached = cache.get(key)
         if (cached) {
-            console.log("cache hit", data)
+            logger("lib/consumet/getConsumetEpisodeMeta").info(`CACHE HIT`)
             return cached
         }
     } else {
@@ -69,38 +44,39 @@ export async function getConsumetEpisodeMeta<P extends ConsumetProvider>(
     }
 
     async function fetchData(provider: ConsumetProvider) {
-        try {
-            const resData = await fetch(
-                `${CONSUMET_API_URL}/meta/anilist/info/${mediaId}?provider=${provider}`,
-            ).then((res) => {
-                if (!res.ok) {
-                    switch (res.status) {
-                        case 404: {
-                            return null
-                        }
-                    }
-                }
-                return res.json() as Promise<ConsumetAnimeMeta>
-            })
-            if (!!resData && resData.episodes.length > 0) {
-                data.push({
+
+        const _temp_data: { provider: ConsumetProvider, episodes: ConsumetAnimeEpisode[] }[] = []
+
+        const [consumetResult] = await Promise.allSettled([
+            axios.get<ConsumetAnimeMeta>(`${CONSUMET_API_URL}/meta/anilist/info/${mediaId}?provider=${provider}`),
+            // ...
+        ])
+
+        if (consumetResult.status === "fulfilled") {
+            const { data } = consumetResult.value
+            if (!!data && data.episodes.length > 0) {
+                _temp_data.push({
                     provider: provider,
-                    episodes: _.sortBy(resData.episodes, n => n.number),
+                    episodes: _.sortBy(data.episodes, n => n.number),
                 })
             }
-        } catch (error) {
-            console.error(
-                `Error fetching data for provider '${provider}':`,
-                error,
-            )
+        } else {
+            if (!CONSUMET_API_URL)
+                throw new Error("Consumet API URL is missing")
+            else
+                throw new Error("Could not retrieve data from your Consumet API")
         }
+
+        data.push(..._temp_data)
+
     }
 
-    await Promise.all((["gogoanime", "zoro"] as ConsumetProvider[]).map((provider) => fetchData(provider)))
+    await Promise.allSettled((["gogoanime", "zoro"] as ConsumetProvider[]).map((provider) => fetchData(provider)))
 
     if (data.length > 0) {
         cache.put(key, data, 1000 * 60 * 60 * 10)
     }
+
     return data
 }
 
@@ -116,9 +92,9 @@ export async function getConsumetEpisodeStreamingData<P extends ConsumetProvider
     provider: P,
     server?: P extends "gogoanime" ? GogoAnimeServer : ZoroServer,
     skipCache?: boolean,
-): Promise<ConsumetStreamingData | undefined> {
+): Promise<ConsumetStreamingProviderData | undefined> {
     const key = `${episodeId}/${provider}/${server || "-"}`
-    logger("lib/consumet/getConsumetEpisodeStreamingData").info(`Fetching episode streaming data from ${provider}`, "Key:", key)
+    logger("lib/consumet/getConsumetEpisodeStreamingData").info(`Fetching episode streaming data`, provider, key)
     if (!skipCache) {
         const cached = cache.get(key)
         if (cached) {
@@ -131,7 +107,7 @@ export async function getConsumetEpisodeStreamingData<P extends ConsumetProvider
     if (provider === "gogoanime") {
         const data = await getConsumetGogoAnimeEpisodeStreamingData(episodeId, server as any)
         if (data) {
-            logger("lib/consumet/getConsumetEpisodeStreamingData").info(episodeId, `Returning data for`, provider)
+            logger("lib/consumet/getConsumetEpisodeStreamingData").info(episodeId, provider)
             cache.put(key, data)
             return data
         } else {
@@ -140,7 +116,7 @@ export async function getConsumetEpisodeStreamingData<P extends ConsumetProvider
     } else if (provider === "zoro") {
         const data = await getConsumetZoroEpisodeStreamingData(episodeId, server as any)
         if (data) {
-            logger("lib/consumet/getConsumetEpisodeStreamingData").info(episodeId, `Returning data for`, provider)
+            logger("lib/consumet/getConsumetEpisodeStreamingData").info(episodeId, provider)
             cache.put(key, data)
             return data
         } else {
@@ -156,7 +132,7 @@ export async function getConsumetEpisodeStreamingData<P extends ConsumetProvider
  */
 export async function getConsumetZoroEpisodeStreamingData(episodeId: string, server: ZoroServer = "vidstreaming") {
     try {
-        const { data } = await axios.get<ConsumetStreamingData | ConsumetErrorResponse>(`${CONSUMET_API_URL}/anime/zoro/watch`, {
+        const { data } = await axios.get<ConsumetStreamingProviderData | ConsumetErrorResponse>(`${CONSUMET_API_URL}/anime/zoro/watch`, {
             method: "GET",
             params: {
                 episodeId: episodeId,
@@ -165,7 +141,7 @@ export async function getConsumetZoroEpisodeStreamingData(episodeId: string, ser
         })
 
         if (!(<ConsumetErrorResponse>data).message) {
-            return data as ConsumetStreamingData
+            return data as ConsumetStreamingProviderData
         } else {
             logger("lib/consumet/getConsumetZoroEpisodeStreamingData").error("Not found")
             return undefined
@@ -185,14 +161,14 @@ export async function getConsumetZoroEpisodeStreamingData(episodeId: string, ser
  */
 export async function getConsumetGogoAnimeEpisodeStreamingData(episodeId: string, server: GogoAnimeServer = "gogocdn") {
     try {
-        const { data } = await axios.get<ConsumetStreamingData | ConsumetErrorResponse>(`${CONSUMET_API_URL}/anime/gogoanime/watch/${episodeId}`, {
+        const { data } = await axios.get<ConsumetStreamingProviderData | ConsumetErrorResponse>(`${CONSUMET_API_URL}/anime/gogoanime/watch/${episodeId}`, {
             method: "GET",
             params: {
                 server: server,
             },
         })
         if (!(<ConsumetErrorResponse>data).message) {
-            return data as ConsumetStreamingData
+            return data as ConsumetStreamingProviderData
         } else {
             logger("lib/consumet/getConsumetGogoAnimeEpisodeStreamingData").error("Not found")
             return undefined

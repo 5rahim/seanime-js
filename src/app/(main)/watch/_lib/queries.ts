@@ -2,8 +2,9 @@
 
 import { useQuery } from "@tanstack/react-query"
 import { SkipTime } from "@/lib/aniskip/types"
-import { ConsumetAnimeEpisodeMeta, ConsumetProvider } from "@/lib/consumet/types"
-import { getConsumetEpisodeMeta, getConsumetEpisodeStreamingData } from "@/lib/consumet/actions"
+import { ConsumetAnimeEpisode, ConsumetProvider } from "@/lib/consumet/types"
+import { getConsumetEpisodes, getConsumetEpisodeStreamingData } from "@/lib/consumet/actions"
+import { logger } from "@/lib/helpers/debug"
 
 /**
  * Get an episode streaming data from a specific provider
@@ -12,11 +13,12 @@ import { getConsumetEpisodeMeta, getConsumetEpisodeStreamingData } from "@/lib/c
  * @param provider
  * @param server
  */
-export function useEpisodeStreamingData(episodes: ConsumetAnimeEpisodeMeta[], episodeNumber: number, provider: ConsumetProvider, server: any | undefined) {
+export function useEpisodeStreamingData(episodes: ConsumetAnimeEpisode[], episodeNumber: number, provider: ConsumetProvider, server: any | undefined) {
     const episodeId = episodes.find(episode => episode.number === episodeNumber)?.id
     const res = useQuery(
         ["episode-streaming-data", episodes, episodeNumber, server || "-"],
         async () => {
+            logger("watch/lib/useEpisodeStreamingData").info(`Fetching episode ${episodeNumber} streaming data (${provider}, ${server})`)
             return await getConsumetEpisodeStreamingData(episodeId!, provider, server, false)
         },
         { enabled: !!episodeId, retry: false, keepPreviousData: false, refetchOnWindowFocus: false },
@@ -33,11 +35,12 @@ export function useProviderEpisodes(mediaId: number, server: any) {
     const res = useQuery(
         ["episode-data", mediaId, server],
         async () => {
-            return await getConsumetEpisodeMeta(mediaId, server, false)
+            logger("watch/lib/useProviderEpisodes").info("Fetching episodes from all providers", mediaId)
+            return await getConsumetEpisodes(mediaId, server, false)
         },
         { keepPreviousData: false, refetchOnWindowFocus: false },
     )
-    return { data: res.data, isLoading: res.isLoading || res.isFetching, isError: res.isError }
+    return { data: res.data, isLoading: res.isLoading || res.isFetching, isError: res.isError, error: res.error }
 }
 
 /**

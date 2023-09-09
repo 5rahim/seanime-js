@@ -28,7 +28,6 @@ import {
     ProgressTrackingButton,
     ProgressTrackingModal,
 } from "@/app/(main)/view/_containers/episode-section/_components/progress-tracking"
-import { useConsumetMediaEpisodes } from "@/lib/consumet/client"
 
 interface EpisodeSectionProps {
     children?: React.ReactNode
@@ -55,7 +54,8 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
     const progress = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress)
     const nextUpFilePath = useStableSelectAtom(toWatch[0], file => file?.path)
 
-    const consumetEpisodeData = useConsumetMediaEpisodes(detailedMedia.id)
+    // const consumetEpisodeData = useConsumetMediaEpisodes(detailedMedia.id)
+    const consumetEpisodeData = null // TODO Replace with anify episode cover
 
     const maxEp = detailedMedia.nextAiringEpisode?.episode ? detailedMedia.nextAiringEpisode.episode - 1 : detailedMedia.episodes!
     const canTrackProgress = (!progress || progress < maxEp) && progress !== maxEp
