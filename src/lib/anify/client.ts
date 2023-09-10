@@ -6,7 +6,6 @@ export function useAnifyEpisodeCovers(mediaId: number) {
         queryKey: ["anify-episode-covers", mediaId],
         queryFn: async () => {
             const res = await getAnifyEpisodeCovers(mediaId)
-            console.log(res)
             if (!!res && Array.isArray(res))
                 return res
             // logger("lib/anify/useAnifyEpisodeCovers").error(res)

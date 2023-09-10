@@ -62,8 +62,8 @@ export const AnimeListItem = ((props: AnimeListItemProps) => {
                     {/*METADATA SECTION*/}
                     <div className={"space-y-1"}>
                         <div className={"aspect-[4/2] relative rounded-md overflow-hidden mb-2"}>
-                            {!!media.bannerImage ? <Image
-                                src={media.bannerImage || ""}
+                            {(!!media.bannerImage || !!media.coverImage?.large) ? <Image
+                                src={media.bannerImage || media.coverImage?.large || ""}
                                 alt={""}
                                 fill
                                 quality={100}
@@ -234,7 +234,7 @@ const LockFilesButton = (props: { media: AnilistShowcaseMedia }) => {
 
     const files = useLocalFilesByMediaId_UNSTABLE(props.media.id)
     const allFilesLocked = files.every(file => file.locked)
-    const setFiles = useSetLocalFiles()
+    const setLocalFiles = useSetLocalFiles()
 
     if (files.length === 0) return null
 
@@ -245,7 +245,7 @@ const LockFilesButton = (props: { media: AnilistShowcaseMedia }) => {
                 intent={allFilesLocked ? "success" : "warning-subtle"}
                 size={"sm"}
                 className={"hover:opacity-60"}
-                onClick={() => setFiles(draft => {
+                onClick={() => setLocalFiles(draft => {
                     for (const draftFile of draft) {
                         if (draftFile.mediaId === props.media.id) {
                             draftFile.locked = !allFilesLocked

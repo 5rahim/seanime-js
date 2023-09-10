@@ -1,6 +1,6 @@
 "use client"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
-import React, { startTransition, useEffect, useMemo, useState } from "react"
+import React, { startTransition, useMemo, useState } from "react"
 import { unstable_findNyaaTorrents, unstable_handleSearchTorrents } from "@/lib/download/nyaa/search"
 import { SearchTorrent } from "@/lib/download/nyaa/api/types"
 import { createDataGridColumns, DataGrid } from "@/components/ui/datagrid"
@@ -117,9 +117,6 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
         })()
     })
 
-    useEffect(() => {
-        console.log(downloadInfo)
-    }, [downloadInfo])
 
     const { data: torrents, isLoading, isFetching } = useQuery<SearchTorrentData[]>(
         ["fetching-torrents", media.id, debouncedEpisode, globalFilter, quickSearchIsBatch, episodeOffset],

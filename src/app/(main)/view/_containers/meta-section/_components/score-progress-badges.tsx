@@ -1,17 +1,17 @@
 import { PrimitiveAtom } from "jotai"
-import { useSelectAtom } from "@/atoms/helpers"
+import { useStableSelectAtom } from "@/atoms/helpers"
 import React from "react"
 import { AnilistCollectionEntry } from "@/atoms/anilist/entries.atoms"
 import { Badge } from "@/components/ui/badge"
 import { BiStar } from "@react-icons/all-files/bi/BiStar"
 
 export function ScoreProgressBadges({ collectionEntryAtom, episodes }: {
-    collectionEntryAtom: PrimitiveAtom<AnilistCollectionEntry>,
+    collectionEntryAtom: PrimitiveAtom<AnilistCollectionEntry> | undefined,
     episodes: number | null | undefined
 }) {
 
-    const score = useSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.score)
-    const progress = useSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress)
+    const score = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.score)
+    const progress = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress)
 
     const scoreColor = score ? (
         score < 5 ? "bg-red-500" :
@@ -19,8 +19,6 @@ export function ScoreProgressBadges({ collectionEntryAtom, episodes }: {
                 score < 9 ? "bg-green-500" :
                     "bg-brand-500 text-white"
     ) : ""
-
-    if (!progress) return null
 
     return (
         <>
@@ -31,7 +29,7 @@ export function ScoreProgressBadges({ collectionEntryAtom, episodes }: {
                 size={"xl"}
                 className={"!text-lg font-bold !text-yellow-50"}
             >
-                {`${progress}/${episodes || "-"}`}
+                {`${progress ?? 0}/${episodes || "-"}`}
             </Badge>
         </>
     )

@@ -82,10 +82,10 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
 
                     {/*PROGRESS*/}
                     <div className={"flex gap-4 items-center"}>
-                        {collectionEntryAtom &&
-                            <ScoreProgressBadges collectionEntryAtom={collectionEntryAtom}
-                                                 episodes={detailedMedia.episodes}/>
-                        }
+                        <ScoreProgressBadges
+                            collectionEntryAtom={collectionEntryAtom}
+                            episodes={detailedMedia.episodes}
+                        />
                         <AnilistMediaEntryModal media={detailedMedia}/>
                     </div>
 
@@ -93,7 +93,7 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
 
                     {/*STUDIO*/}
                     {!!detailedMedia.studios?.edges?.[0] && <div>
-                        <span className={"font-bold"}>Studio </span>
+                        <span className={"font-bold"}>Studio</span>
                         <Badge
                             className={"ml-2"} size={"lg"}
                             intent={"gray"}
@@ -168,8 +168,6 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
                 <div className={"space-y-4"}>
                     {detailedMedia.status !== "NOT_YET_RELEASED" && (
                         <TorrentDownloadButton
-                            entryAtom={entryAtom}
-                            collectionEntryAtom={collectionEntryAtom}
                             detailedMedia={detailedMedia}
                         />
                     )}

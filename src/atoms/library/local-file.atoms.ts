@@ -6,7 +6,6 @@ import { useCallback, useMemo } from "react"
 import { atom, PrimitiveAtom } from "jotai"
 import deepEquals from "fast-deep-equal"
 import _ from "lodash"
-import { ANIDB_RX } from "@/lib/series-scanner/regex"
 import { focusAtom } from "jotai-optics"
 import { anilistCollectionEntryAtoms, useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist/entries.atoms"
 import { useStableSelectAtom } from "@/atoms/helpers"
@@ -26,6 +25,8 @@ export const localFileAtoms = splitAtom(localFilesAtom, localFile => localFile.p
 
 // Derived atom for updates using Immer
 const localFilesAtomWithImmer = withImmer(localFilesAtom)
+
+const __localFiles_globalUpdateAtom = atom(0)
 
 
 /* -------------------------------------------------------------------------------------------------
@@ -62,19 +63,19 @@ const get_Main_LocalFileAtomsByMediaIdAtom = atom(null,
         // Sort the local files atoms by episode number
         const mainFileAtoms = _.sortBy(fileAtoms, fileAtom => Number(get(fileAtom).parsedInfo?.episode)).filter(fileAtom => {
             const file = get(fileAtom)
-            return !ANIDB_RX[0].test(file.path) && !ANIDB_RX[1].test(file.path) && !ANIDB_RX[2].test(file.path) &&
-                !ANIDB_RX[4].test(file.path) && !ANIDB_RX[5].test(file.path) && !ANIDB_RX[6].test(file.path)
+            return !file.metadata.isSpecial && !file.metadata.isNC
         }) ?? []
 
         const maxEp = (collectionEntry?.media?.nextAiringEpisode?.episode ? collectionEntry?.media?.nextAiringEpisode?.episode - 1 : undefined) || collectionEntry?.media?.episodes
         const canTrackProgress = mainFileAtoms.length > 0 && !!maxEp && (!!collectionEntry?.progress && collectionEntry.progress < Number(maxEp) || !collectionEntry?.progress)
         // /\ (!progress || progress < maxEp) && progress !== maxEp
 
-        const toWatch = canTrackProgress ? (mainFileAtoms?.filter(n => !!get(n).metadata.episode && get(n).metadata.episode! > collectionEntry?.progress!) ?? []) : []
+        const toWatch = canTrackProgress ? (mainFileAtoms?.filter(atom => !!get(atom).metadata.episode && get(atom).metadata.episode! > collectionEntry?.progress!) ?? []) : []
+        const watched = mainFileAtoms?.filter(atom => !!get(atom).metadata.episode && get(atom).metadata.episode! <= collectionEntry?.progress!) ?? []
         return {
-            toWatch,
+            toWatch: toWatch.length === 0 && watched.length === 0 ? mainFileAtoms || [] : toWatch,
             toWatchSlider: (!canTrackProgress) ? [...mainFileAtoms].reverse() : toWatch,
-            watched: mainFileAtoms?.filter(n => !!get(n).metadata.episode && get(n).metadata.episode! <= collectionEntry?.progress!) ?? [],
+            watched,
         }
 
     },
@@ -165,7 +166,8 @@ export const getLocalFilesByMediaIdAtom = atom(null,
  */
 export const useLocalFileAtomsByMediaId = (mediaId: number) => {
     const [, get] = useAtom(getLocalFileAtomsByMediaIdAtom)
-    return useMemo(() => get(mediaId), []) as Array<PrimitiveAtom<LocalFile>>
+    const __ = __useListenToLocalFiles()
+    return useMemo(() => get(mediaId), [__]) as Array<PrimitiveAtom<LocalFile>>
 }
 
 export const useMainLocalFileAtomsByMediaId = (mediaId: number) => {
@@ -173,29 +175,34 @@ export const useMainLocalFileAtomsByMediaId = (mediaId: number) => {
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(mediaId)
     const progress = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress) ?? 0
     const status = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.status) ?? ""
+    const __ = __useListenToLocalFiles()
 
     const [, get] = useAtom(get_Main_LocalFileAtomsByMediaIdAtom)
-    return useMemo(() => get(mediaId), [progress, status]) as {
+    return useMemo(() => get(mediaId), [progress, status, __]) as {
         toWatch: Array<PrimitiveAtom<LocalFile>>,
         toWatchSlider: Array<PrimitiveAtom<LocalFile>>
         watched: Array<PrimitiveAtom<LocalFile>>
     }
 }
+
 export const useSpecialsLocalFileAtomsByMediaId = (mediaId: number) => {
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(mediaId)
     const progress = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress) ?? 0
     const status = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.status) ?? ""
+    const __ = __useListenToLocalFiles()
 
     const [, get] = useAtom(get_OVA_LocalFileAtomsByMediaIdAtom)
-    return useMemo(() => get(mediaId), [progress, status]) as Array<PrimitiveAtom<LocalFile>>
+    return useMemo(() => get(mediaId), [progress, status, __]) as Array<PrimitiveAtom<LocalFile>>
 }
+
 export const useNCLocalFileAtomsByMediaId = (mediaId: number) => {
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(mediaId)
     const progress = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress) ?? 0
     const status = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.status) ?? ""
+    const __ = __useListenToLocalFiles()
 
     const [, get] = useAtom(get_NC_LocalFileAtomsByMediaIdAtom)
-    return useMemo(() => get(mediaId), [progress, status]) as Array<PrimitiveAtom<LocalFile>>
+    return useMemo(() => get(mediaId), [progress, status, __]) as Array<PrimitiveAtom<LocalFile>>
 }
 
 /**
@@ -208,19 +215,28 @@ export const useNCLocalFileAtomsByMediaId = (mediaId: number) => {
  * @param mediaId
  */
 export const useLocalFilesByMediaId_UNSTABLE = (mediaId: number) => {
+    const __ = __useListenToLocalFiles()
     return useAtomValue(
         selectAtom(
             localFilesAtom,
-            useCallback(files => files.filter(file => file.mediaId === mediaId), []),
+            useCallback(files => files.filter(file => file.mediaId === mediaId), [__]),
             deepEquals, // Equality check
         ),
     )
 }
 
 export const useLocalFileAtomByPath = (path: string) => {
+    const __ = __useListenToLocalFiles()
     const [, get] = useAtom(getLocalFileAtomByPathAtom)
-    return useMemo(() => get(path), []) as (PrimitiveAtom<LocalFile> | undefined)
+    return useMemo(() => get(path), [__]) as (PrimitiveAtom<LocalFile> | undefined)
 }
+
+export const useLastMainLocalFileByMediaId = (mediaId: number) => {
+    const getLastFile = useSetAtom(getLastMainLocalFileByMediaIdAtom)
+    const __ = __useListenToLocalFiles()
+    return useMemo(() => getLastFile(mediaId), [__])
+}
+
 
 /* -------------------------------------------------------------------------------------------------
  * Write
@@ -242,4 +258,22 @@ export const useLocalFileAtomByPath = (path: string) => {
  */
 export const useSetLocalFiles = () => {
     return useSetAtom(localFilesAtomWithImmer)
+}
+
+export const __useRerenderLocalFiles = () => {
+    const emit = useSetAtom(__localFiles_globalUpdateAtom)
+    return useCallback(() => {
+        emit(prev => prev + 1)
+    }, [])
+}
+
+/**
+ * @description Re-render on demand
+ * @example
+ * const __ = __useListenToLocalFiles()
+ *
+ * const file = useMemo(() => getFile(path), [__])
+ */
+export const __useListenToLocalFiles = () => {
+    return useAtomValue(__localFiles_globalUpdateAtom)
 }

@@ -75,10 +75,11 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
     const { playFile } = useVideoPlayer({
         onTick: console.log,
         onVideoComplete: (fileName) => {
-            if (!!getFile(fileName)) {
+            const file = getFile(fileName)
+            if (!!file && !file.metadata.isSpecial && !file.metadata.isNC) {
                 console.log("video completed")
                 setProgressTracking(draft => {
-                    draft.filesWatched.push(getFile(fileName)!)
+                    draft.filesWatched.push(file)
                     return
                 })
             }

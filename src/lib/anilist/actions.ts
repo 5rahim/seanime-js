@@ -147,8 +147,6 @@ export async function experimental__fetchRelatedMedia(
 ): Promise<AnilistShortMedia[]> {
     const relatedMedia: AnilistShortMedia[] = []
 
-    console.log(media.relations?.edges)
-
     async function getEdges() {
         // Find prequel if we don't increment
         const prequel = findMediaEdge(media, "PREQUEL")?.node

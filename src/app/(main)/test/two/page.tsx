@@ -112,10 +112,10 @@ const ToggleAll = (props: { mediaId: number }) => {
 
     const files = useLocalFilesByMediaId_UNSTABLE(props.mediaId)
     const allFilesLocked = files.every(file => file.locked)
-    const setFiles = useSetLocalFiles()
+    const setLocalFiles = useSetLocalFiles()
 
     return (
-        <button onClick={() => setFiles(draft => {
+        <button onClick={() => setLocalFiles(draft => {
             for (const draftFile of draft) {
                 if (draftFile.mediaId === props.mediaId) {
                     draftFile.locked = !allFilesLocked

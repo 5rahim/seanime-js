@@ -19,6 +19,7 @@ import { LargeEpisodeListItem } from "@/components/shared/large-episode-list-ite
 import { AiOutlineDownload } from "@react-icons/all-files/ai/AiOutlineDownload"
 import { useRouter } from "next/navigation"
 import { AppLayoutStack } from "@/components/ui/app-layout"
+import { useLastMainLocalFileByMediaId } from "@/atoms/library/local-file.atoms"
 
 type Props = {}
 
@@ -73,13 +74,15 @@ export function MissedEpisodesFromMedia(props: MissedEpisodesFromMediaProps) {
     const currentlyWatching = useSelectAtom(props.entryAtom, entry => entry.collectionEntry?.status === "CURRENT")
     const progress = useSelectAtom(props.entryAtom, entry => entry.collectionEntry?.progress)
 
+    const lastFile = useLastMainLocalFileByMediaId(media.id)
+
     const upToDate = useSetAtom(_upToDateAtom)
 
     const nextEpisode = useMemo(() => {
         if (currentlyWatching && progress) {
             const availableEp = media?.nextAiringEpisode?.episode ? media?.nextAiringEpisode?.episode - 1 : media.episodes!
             // const missed = availableEp-progress
-            if (availableEp > progress) {
+            if (availableEp > progress && lastFile?.metadata?.episode && progress + 1 <= lastFile.metadata.episode) {
                 return progress + 1
             }
         }
@@ -95,7 +98,6 @@ export function MissedEpisodesFromMedia(props: MissedEpisodesFromMediaProps) {
     const { data, isLoading } = useQuery({
         queryKey: ["missed-episode-data", media.id, nextEpisode, downloadInfo.episodeNumbers],
         queryFn: async () => {
-            console.log("ran for", media.id)
             await new Promise((acc) => setTimeout(() => acc(""), 2000))
             const { data } = await axios.get<AniZipData>("https://api.ani.zip/mappings?anilist_id=" + Number(media.id))
             return data

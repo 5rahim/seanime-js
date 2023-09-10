@@ -4,9 +4,12 @@ import { MediaListStatus } from "@/gql/graphql"
 import { useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist/entries.atoms"
 import { useStableSelectAtom } from "@/atoms/helpers"
 import { useLibraryEntryAtomByMediaId } from "@/atoms/library/library-entry.atoms"
-import { useSetAtom } from "jotai/react"
-import { getLastMainLocalFileByMediaIdAtom } from "@/atoms/library/local-file.atoms"
+import { useLastMainLocalFileByMediaId } from "@/atoms/library/local-file.atoms"
 import { useMemo } from "react"
+
+// FIXME
+// Known issue: It will not detect missing episode if the episode number is less than the latest file.
+// e.g., it will not detect that episode 62 is missing if the user has 63+
 
 /**
  * @description
@@ -104,10 +107,8 @@ export function useMediaDownloadInfo(media: AnilistDetailedMedia) {
     const collectionEntryProgress = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress)
     const collectionEntryStatus = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.status)
     const entryAtom = useLibraryEntryAtomByMediaId(media.id)
-    const entryFileCount = useStableSelectAtom(entryAtom, entry => entry.files.length) || 0
 
-    const getLastFile = useSetAtom(getLastMainLocalFileByMediaIdAtom)
-    const lastFile = useMemo(() => getLastFile(media.id), [entryFileCount]) // Refetch the last file when the number of file changes
+    const lastFile = useLastMainLocalFileByMediaId(media.id)
 
     const downloadInfo = useMemo(() => getMediaDownloadInfo({
         media: media,

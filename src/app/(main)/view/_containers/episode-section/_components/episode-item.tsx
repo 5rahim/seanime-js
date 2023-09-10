@@ -1,5 +1,5 @@
 import React, { startTransition, useMemo } from "react"
-import { PrimitiveAtom } from "jotai"
+import { atom, PrimitiveAtom } from "jotai"
 import { LocalFile } from "@/lib/local-library/local-file"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
 import { useFocusSetAtom, useSelectAtom } from "@/atoms/helpers"
@@ -8,9 +8,17 @@ import { IconButton } from "@/components/ui/button"
 import { BiDotsHorizontal } from "@react-icons/all-files/bi/BiDotsHorizontal"
 import { VscVerified } from "@react-icons/all-files/vsc/VscVerified"
 import { BiLockOpenAlt } from "@react-icons/all-files/bi/BiLockOpenAlt"
-import { valueContainsNC, valueContainsSpecials } from "@/lib/local-library/utils"
 import { EpisodeListItem } from "@/components/shared/episode-list-item"
 import { AnifyEpisodeCover } from "@/lib/anify/types"
+import { Modal } from "@/components/ui/modal"
+import { createIsolation } from "jotai-scope"
+import { createTypesafeFormSchema, Field, TypesafeForm } from "@/components/ui/typesafe-form"
+import toast from "react-hot-toast"
+import { __useRerenderLocalFiles } from "@/atoms/library/local-file.atoms"
+
+const { Provider: ScopedProvider, useAtom: useScopedAtom } = createIsolation()
+
+const _metadataModalIsOpenAtom = atom(false)
 
 export const EpisodeItem = React.memo((props: {
     fileAtom: PrimitiveAtom<LocalFile>,
@@ -35,7 +43,7 @@ export const EpisodeItem = React.memo((props: {
     const fileTitle = useMemo(() => parsedInfo?.original?.replace(/.(mkv|mp4)/, "")?.replaceAll(/(\[)[a-zA-Z0-9 ._~-]+(\])/ig, "")?.replaceAll(/[_,-]/g, " "), [parsedInfo])
 
     const image = () => {
-        if (!!fileName && (!valueContainsSpecials(fileName) && !valueContainsNC(fileName))) {
+        if (!!fileName && (!metadata.isSpecial && !metadata.isNC)) {
             return (anifyEpisodeCover || aniZipEpisode?.image)
         } else if (!!fileName) {
             return undefined
@@ -53,42 +61,124 @@ export const EpisodeItem = React.memo((props: {
     if (mediaID !== media.id) return null
 
     return (
-        <EpisodeListItem
-            media={media}
-            image={image()}
-            onClick={async () => onPlayFile(path)}
-            title={displayedTitle}
-            showImagePlaceholder={!metadata.isNC}
-            episodeTitle={aniZipEpisode?.title?.en}
-            fileName={parsedInfo?.original?.replace(/.(mkv|mp4)/, "")?.replaceAll(/(\[)[a-zA-Z0-9 ._~-]+(\])/ig, "")?.replaceAll(/[_,-]/g, " ")}
-            action={<>
-                <EpisodeItemLockButton fileAtom={fileAtom}/>
+        <ScopedProvider>
+            <EpisodeListItem
+                media={media}
+                image={image()}
+                onClick={async () => onPlayFile(path)}
+                title={displayedTitle}
+                showImagePlaceholder={!metadata.isNC}
+                episodeTitle={aniZipEpisode?.title?.en}
+                fileName={parsedInfo?.original?.replace(/.(mkv|mp4)/, "")?.replaceAll(/(\[)[a-zA-Z0-9 ._~-]+(\])/ig, "")?.replaceAll(/[_,-]/g, " ")}
+                action={<>
+                    <EpisodeItemLockButton fileAtom={fileAtom}/>
 
-                <DropdownMenu trigger={
-                    <IconButton
-                        icon={<BiDotsHorizontal/>}
-                        intent={"gray-basic"}
-                        size={"xs"}
-                    />
-                }>
-                    <DropdownMenu.Item
-                        onClick={() => {
-                            startTransition(() => {
-                                setFileMediaId(null)
-                                setFileLocked(false)
-                            })
-                        }}
-                    >Un-match</DropdownMenu.Item>
-                    <DropdownMenu.Item
-                        onClick={() => {
-                            // TODO: Open metadata modal
-                        }}
-                    >Update metadata</DropdownMenu.Item>
-                </DropdownMenu>
-            </>}
-        />
+                    <DropdownMenu trigger={
+                        <IconButton
+                            icon={<BiDotsHorizontal/>}
+                            intent={"gray-basic"}
+                            size={"xs"}
+                        />
+                    }>
+                        <DropdownMenu.Item
+                            onClick={() => {
+                                startTransition(() => {
+                                    setFileMediaId(null)
+                                    setFileLocked(false)
+                                })
+                            }}
+                        >Un-match</DropdownMenu.Item>
+                        <MetadataModalButton/>
+                    </DropdownMenu>
+                </>}
+            />
+            <MetadataModal
+                title={displayedTitle}
+                metadata={metadata}
+                fileAtom={fileAtom}
+            />
+        </ScopedProvider>
     )
 })
+
+type MetadataModalProps = {
+    title: string,
+    metadata: LocalFile["metadata"]
+    fileAtom: PrimitiveAtom<LocalFile>
+}
+
+const metadataSchema = createTypesafeFormSchema(({ z }) => z.object({
+    episode: z.number().min(0),
+    aniDBEpisodeNumber: z.string().transform(value => value.length > 0 ? value.toUpperCase() : undefined),
+    isVersion: z.boolean().optional().transform(value => !!value ? value : undefined),
+    isSpecial: z.boolean().optional().transform(value => !!value ? value : undefined),
+    isNC: z.boolean().optional().transform(value => !!value ? value : undefined),
+}))
+
+export function MetadataModal({ title, metadata, fileAtom }: MetadataModalProps) {
+
+    const [isOpen, setIsOpen] = useScopedAtom(_metadataModalIsOpenAtom)
+    const setFileMetadata = useFocusSetAtom(fileAtom, "metadata")
+    const rerenderFiles = __useRerenderLocalFiles()
+
+    // const router = useRouter()
+
+    //{episode?: number, isVersion?: boolean, isSpecial?: boolean, aniDBEpisodeNumber?: string, isNC?: boolean}
+    return (
+        <Modal
+            isOpen={isOpen}
+            onClose={() => setIsOpen(false)}
+            isClosable
+            title={title}
+            titleClassName={"text-center"}
+            size={"lg"}
+        >
+            <TypesafeForm
+                schema={metadataSchema}
+                onSubmit={data => {
+                    const aniDBEpisodeNumber = !data.isSpecial
+                        ? data.aniDBEpisodeNumber?.replace("S", "")
+                        : (
+                            !!data.aniDBEpisodeNumber && !data.aniDBEpisodeNumber?.startsWith("S")
+                                ? "S" + data.aniDBEpisodeNumber
+                                : data.aniDBEpisodeNumber
+                        )
+                    setFileMetadata({
+                        ...data,
+                        aniDBEpisodeNumber,
+                    })
+                    setIsOpen(false)
+                    startTransition(() => {
+                        toast.success("Metadata saved")
+                        rerenderFiles()
+                    })
+                }}
+                onError={console.log}
+                //@ts-ignore
+                defaultValues={metadata}
+            >
+                <Field.Number label={"Episode number"} name={"episode"}
+                              help={"Relative episode number. If movie, episode number = 1"} discrete isRequired/>
+                <Field.Text
+                    label={"AniDB episode number"}
+                    name={"aniDBEpisodeNumber"}
+                    help={"Specials typically contain the letter S"}
+                />
+                <Field.Switch label={"Special/OVA"} name={"isSpecial"}/>
+                <Field.Switch label={"NC (OP/ED)"} name={"isNC"}/>
+                <Field.Switch label={"Versioned"} name={"isVersion"} isDisabled/>
+                <div className={"w-full flex justify-end"}>
+                    <Field.Submit role={"save"} intent={"success"}/>
+                </div>
+            </TypesafeForm>
+        </Modal>
+    )
+}
+
+export function MetadataModalButton() {
+    const [, setIsOpen] = useScopedAtom(_metadataModalIsOpenAtom)
+    return <DropdownMenu.Item onClick={() => setIsOpen(true)}>Update metadata</DropdownMenu.Item>
+}
 
 const EpisodeItemLockButton = (props: { fileAtom: PrimitiveAtom<LocalFile> }) => {
     const locked = useSelectAtom(props.fileAtom, file => file.locked)

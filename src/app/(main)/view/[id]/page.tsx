@@ -21,8 +21,8 @@ export default async function Page({ params }: { params: { id: string } }) {
                         <div
                             className={"w-full absolute z-[2] top-0 h-[15rem] bg-gradient-to-b from-[--background-color] to-transparent via"}
                         />
-                        {media.bannerImage && <Image
-                            src={media.bannerImage || ""}
+                        {(!!media.bannerImage || !!media.coverImage?.extraLarge) && <Image
+                            src={media.bannerImage || media.coverImage?.extraLarge || ""}
                             alt={"banner image"}
                             fill
                             quality={100}

@@ -90,9 +90,6 @@ export function WatchPage(props: WatchPageProps) {
     /** AniSkip **/
     const { data: aniSkipData } = useSkipData(media.idMal, episodeNumber)
 
-    useEffect(() => {
-        console.log(aniSkipData)
-    }, [aniSkipData])
 
     /** Update episode number **/
     useUpdateEffect(() => {
@@ -126,9 +123,6 @@ export function WatchPage(props: WatchPageProps) {
         })
     }, [episodes, episodeNumber])
 
-    useEffect(() => {
-        console.log(episodeStreamingData)
-    }, [episodeStreamingData])
 
     function goToNextEpisode() {
         setEpisodeNumber(ep => {

@@ -68,6 +68,7 @@
     "jotai-cache": "^0.3.0",
     "jotai-immer": "^0.2.0",
     "jotai-optics": "^0.3.1",
+    "jotai-scope": "^0.1.1",
     "js-levenshtein": "^1.1.6",
     "libphonenumber-js": "^1.10.39",
     "lodash": "^4.17.21",

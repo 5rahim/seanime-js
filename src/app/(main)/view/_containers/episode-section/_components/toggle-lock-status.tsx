@@ -13,7 +13,7 @@ export const ToggleLockStatusButton = (props: { entryAtom: Atom<LibraryEntry> })
     const files = useSelectAtom(props.entryAtom, entry => entry.files)
     const mediaId = useSelectAtom(props.entryAtom, entry => entry.media.id)
     const allFilesLocked = files.every(file => file.locked)
-    const setFiles = useSetLocalFiles()
+    const setLocalFiles = useSetLocalFiles()
 
     return (
         <Tooltip trigger={
@@ -24,7 +24,7 @@ export const ToggleLockStatusButton = (props: { entryAtom: Atom<LibraryEntry> })
                 className={"hover:opacity-60"}
                 onClick={() => {
                     startTransition(() => {
-                        setFiles(draft => {
+                        setLocalFiles(draft => {
                             for (const draftFile of draft) {
                                 if (draftFile.mediaId === mediaId) {
                                     draftFile.locked = !allFilesLocked
