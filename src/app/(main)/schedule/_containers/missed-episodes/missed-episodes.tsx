@@ -70,6 +70,9 @@ export function MissedEpisodesFromMedia(props: MissedEpisodesFromMediaProps) {
     const currentlyWatching = useSelectAtom(props.entryAtom, entry => entry.collectionEntry?.status === "CURRENT")
     const progress = useSelectAtom(props.entryAtom, entry => entry.collectionEntry?.progress)
 
+    const {
+        downloadInfo,
+    } = useMediaDownloadInfo(media)
     const lastFile = useLastMainLocalFileByMediaId(media.id)
 
     const setEpisodesUpToDate = useSetAtom(__episodesUptToDateAtom)
@@ -78,16 +81,13 @@ export function MissedEpisodesFromMedia(props: MissedEpisodesFromMediaProps) {
         if (currentlyWatching && progress) {
             const availableEp = media?.nextAiringEpisode?.episode ? media?.nextAiringEpisode?.episode - 1 : media.episodes!
             // const missed = availableEp-progress
-            if (availableEp > progress && lastFile?.metadata?.episode && progress + 1 <= lastFile.metadata.episode) {
+            if (availableEp > progress && lastFile?.metadata?.episode && !downloadInfo.episodeNumbers.includes(progress + 1)) {
                 return progress + 1
             }
         }
         return undefined
     }, [media, currentlyWatching, progress])
 
-    const {
-        downloadInfo,
-    } = useMediaDownloadInfo(media)
 
     const eps = [...downloadInfo.episodeNumbers, nextEpisode].filter(Boolean)
 
