@@ -126,7 +126,6 @@ Features that may be implemented
 ## TODO
 
 - [ ] (library) Manual hydration - similar to "resolve unmatched"
-- [ ] (settings) Update settings local directory picker
 - [ ] (local file) Manage/Un-ignore ignored files
 - [ ] (library) Optimize episode number normalization during scan with cache (library-entry.ts L171)
 - [ ] (advanced search) Filter by studios
