@@ -28,7 +28,7 @@ similar software.
   - [x] Ignore files or folders
   - [x] Resolve unmatched files
   - [x] Logs*
-  - [ ] Update file metadata
+  - [x] Update file metadata
 - [x] Resolve unmatched files
   - [x] Match single files or folders to a media
   - [x] Option to match files using AniList ID
@@ -125,8 +125,6 @@ Features that may be implemented
 
 ## TODO
 
-- [ ] (schedule) Show a section with new, un-downloaded episodes
-- [ ] (local file) Edit file metadata
 - [ ] (library) Manual hydration - similar to "resolve unmatched"
 - [ ] (settings) Update settings local directory picker
 - [ ] (local file) Manage/Un-ignore ignored files

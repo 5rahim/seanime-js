@@ -13,7 +13,7 @@ import { useVideoPlayer } from "@/lib/video-player/use-video-player"
 import { useSetAtom } from "jotai/react"
 import {
     getLocalFileByNameAtom,
-    useMainLocalFileAtomsByMediaId,
+    useDisplayLocalFileAtomsByMediaId,
     useNCLocalFileAtomsByMediaId,
     useSpecialsLocalFileAtomsByMediaId,
 } from "@/atoms/library/local-file.atoms"
@@ -49,7 +49,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
     const maxEp = detailedMedia.nextAiringEpisode?.episode ? detailedMedia.nextAiringEpisode.episode - 1 : detailedMedia.episodes!
 
     const entryAtom = useLibraryEntryAtomByMediaId(detailedMedia.id)
-    const { toWatch, toWatchSlider, watched } = useMainLocalFileAtomsByMediaId(detailedMedia.id)
+    const { toWatch, toWatchSlider, watched } = useDisplayLocalFileAtomsByMediaId(detailedMedia.id)
     const ovaFileAtoms = useSpecialsLocalFileAtomsByMediaId(detailedMedia.id)
     const ncFileAtoms = useNCLocalFileAtomsByMediaId(detailedMedia.id)
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(detailedMedia.id)

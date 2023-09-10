@@ -51,7 +51,7 @@ export const getLocalFileAtomsByMediaIdAtom = atom(null,
  *     watched: PrimitiveAtom<LocalFile>[]
  * }
  */
-const get_Main_LocalFileAtomsByMediaIdAtom = atom(null,
+const get_Display_LocalFileAtomsByMediaIdAtom = atom(null,
     // Get the local files from a specific media, split the `watched` and `to watch` files by listening to a specific `anilistCollectionEntryAtom`
     (get, set, mediaId: number) => {
         // Get the AniList Collection Entry Atom by media ID
@@ -170,14 +170,14 @@ export const useLocalFileAtomsByMediaId = (mediaId: number) => {
     return useMemo(() => get(mediaId), [__]) as Array<PrimitiveAtom<LocalFile>>
 }
 
-export const useMainLocalFileAtomsByMediaId = (mediaId: number) => {
+export const useDisplayLocalFileAtomsByMediaId = (mediaId: number) => {
     // Actualize file list when collection entry progress or status change
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(mediaId)
     const progress = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress) ?? 0
     const status = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.status) ?? ""
     const __ = __useListenToLocalFiles()
 
-    const [, get] = useAtom(get_Main_LocalFileAtomsByMediaIdAtom)
+    const [, get] = useAtom(get_Display_LocalFileAtomsByMediaIdAtom)
     return useMemo(() => get(mediaId), [progress, status, __]) as {
         toWatch: Array<PrimitiveAtom<LocalFile>>,
         toWatchSlider: Array<PrimitiveAtom<LocalFile>>

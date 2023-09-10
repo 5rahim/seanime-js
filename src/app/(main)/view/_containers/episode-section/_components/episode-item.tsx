@@ -113,17 +113,17 @@ const metadataSchema = createTypesafeFormSchema(({ z }) => z.object({
     isVersion: z.boolean().optional().transform(value => !!value ? value : undefined),
     isSpecial: z.boolean().optional().transform(value => !!value ? value : undefined),
     isNC: z.boolean().optional().transform(value => !!value ? value : undefined),
+    mediaId: z.string(),
 }))
 
 export function MetadataModal({ title, metadata, fileAtom }: MetadataModalProps) {
 
     const [isOpen, setIsOpen] = useScopedAtom(_metadataModalIsOpenAtom)
     const setFileMetadata = useFocusSetAtom(fileAtom, "metadata")
+    const mediaId = useSelectAtom(fileAtom, file => file.mediaId)
     const rerenderFiles = __useRerenderLocalFiles()
+    // const anilistUserMedia = useAnilistUserMediaAndSimilarById(mediaId)
 
-    // const router = useRouter()
-
-    //{episode?: number, isVersion?: boolean, isSpecial?: boolean, aniDBEpisodeNumber?: string, isNC?: boolean}
     return (
         <Modal
             isOpen={isOpen}
@@ -135,7 +135,8 @@ export function MetadataModal({ title, metadata, fileAtom }: MetadataModalProps)
         >
             <TypesafeForm
                 schema={metadataSchema}
-                onSubmit={data => {
+                onSubmit={({ mediaId, ...data }) => {
+                    // console.log(mediaId, data)
                     const aniDBEpisodeNumber = !data.isSpecial
                         ? data.aniDBEpisodeNumber?.replace("S", "")
                         : (
@@ -155,7 +156,7 @@ export function MetadataModal({ title, metadata, fileAtom }: MetadataModalProps)
                 }}
                 onError={console.log}
                 //@ts-ignore
-                defaultValues={metadata}
+                defaultValues={{ ...metadata, mediaId: String(mediaId) }}
             >
                 <Field.Number label={"Episode number"} name={"episode"}
                               help={"Relative episode number. If movie, episode number = 1"} discrete isRequired/>
@@ -167,6 +168,16 @@ export function MetadataModal({ title, metadata, fileAtom }: MetadataModalProps)
                 <Field.Switch label={"Special/OVA"} name={"isSpecial"}/>
                 <Field.Switch label={"NC (OP/ED)"} name={"isNC"}/>
                 <Field.Switch label={"Versioned"} name={"isVersion"} isDisabled/>
+                {/*<Field.Combobox*/}
+                {/*    label={"AniList ID"}*/}
+                {/*    name={"mediaId"}*/}
+                {/*    returnValueOrLabel={"value"}*/}
+                {/*    allowCustomValue={false}*/}
+                {/*    options={anilistUserMedia.filter(media => !!media.title?.userPreferred || !!media.title?.english).map(media => ({*/}
+                {/*        label: (media.title!.userPreferred || media.title!.english!)!,*/}
+                {/*        value: String(media.id)!*/}
+                {/*    }))}*/}
+                {/*/>*/}
                 <div className={"w-full flex justify-end"}>
                     <Field.Submit role={"save"} intent={"success"}/>
                 </div>

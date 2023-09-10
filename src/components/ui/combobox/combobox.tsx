@@ -6,7 +6,7 @@ import { normalizeProps, useMachine } from "@zag-js/react"
 import { cva } from "class-variance-authority"
 import _find from "lodash/find"
 import _isEmpty from "lodash/isEmpty"
-import React, { useEffect, useId, useMemo, useState } from "react"
+import React, { startTransition, useEffect, useId, useMemo, useState } from "react"
 import { BasicField, BasicFieldOptions, extractBasicFieldProps } from "../basic-field"
 import { InputAddon, InputAnatomy, inputContainerStyle, InputIcon, InputStyling } from "../input"
 
@@ -121,32 +121,38 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>((props
             blurOnSelect: true,
             placeholder: placeholder,
             onOpen() {
-                setData(options)
+                startTransition(() => {
+                    setData(options)
+                })
             },
             onSelect: (details) => {
-                if (returnValueOrLabel === "value") {
-                    setSelectedValue(details.value)
-                    onChange && onChange(details.value)
+                startTransition(() => {
+                    if (returnValueOrLabel === "value") {
+                        setSelectedValue(details.value)
+                        onChange && onChange(details.value)
 
-                } else if (returnValueOrLabel === "label") {
-                    setSelectedValue(details.label)
-                    onChange && onChange(details.label)
-                }
+                    } else if (returnValueOrLabel === "label") {
+                        setSelectedValue(details.label)
+                        onChange && onChange(details.label)
+                    }
+                })
             },
             onInputChange({ value }) {
-                if (withFiltering) {
-                    const filtered = options.filter((item) => {
-                            if (item.label) {
-                                return item.label.toLowerCase().includes(value.toLowerCase())
-                            } else {
-                                return item.value.toLowerCase().includes(value.toLowerCase())
-                            }
-                        },
-                    )
-                    // Do not empty options if there is no 'noOptionsMessage'
-                    setData(filtered.length > 0 ? filtered : noOptionsMessage ? [] : data)
-                }
                 onInputChange && onInputChange(value)
+                startTransition(() => {
+                    if (withFiltering) {
+                        const filtered = options.filter((item) => {
+                                if (item.label) {
+                                    return item.label.toLowerCase().includes(value.toLowerCase())
+                                } else {
+                                    return item.value.toLowerCase().includes(value.toLowerCase())
+                                }
+                            },
+                        )
+                        // Do not empty options if there is no 'noOptionsMessage'
+                        setData(filtered.length > 0 ? filtered : noOptionsMessage ? [] : data)
+                    }
+                })
             },
         }),
     )
@@ -213,20 +219,22 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>((props
                             disabled={basicFieldProps.isDisabled}
                             onBlur={() => {
                                 // If we do not allow custom values and the user blurs the input, we reset the input
-                                if (!allowCustomValue) {
-                                    if (options.length === 0 && !api.selectedValue || (api.selectedValue && api.selectedValue.length === 0)) {
-                                        api.setInputValue("")
-                                    }
+                                startTransition(() => {
+                                    if (!allowCustomValue) {
+                                        if (options.length === 0 && !api.selectedValue || (api.selectedValue && api.selectedValue.length === 0)) {
+                                            api.setInputValue("")
+                                        }
 
-                                    if (
-                                        options.length > 0 &&
-                                        (!_isEmpty(_find(options, ["value", api.selectedValue])?.label)
-                                            || !_isEmpty(_find(options, ["value", api.selectedValue])?.value)
-                                        )
-                                    ) {
-                                        api.selectedValue && api.setValue(api.selectedValue)
+                                        if (
+                                            options.length > 0 &&
+                                            (!_isEmpty(_find(options, ["value", api.selectedValue])?.label)
+                                                || !_isEmpty(_find(options, ["value", api.selectedValue])?.value)
+                                            )
+                                        ) {
+                                            api.selectedValue && api.setValue(api.selectedValue)
+                                        }
                                     }
-                                }
+                                })
                             }}
                             {...rest}
                             ref={ref}

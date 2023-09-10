@@ -3,6 +3,7 @@ import { useAtom, useAtomValue } from "jotai/react"
 import { useMemo } from "react"
 import { AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import { atomWithStorage, splitAtom } from "jotai/utils"
+import { compareTwoStrings } from "string-similarity"
 
 export const allUserMediaAtom = atomWithStorage<AnilistShowcaseMedia[]>("sea-anilist-media", [], undefined, { unstable_getOnInit: true })
 export const allUserMediaAtoms = splitAtom(allUserMediaAtom, media => media.id)
@@ -27,6 +28,15 @@ export const getUserMediaByIdAtom = atom(null,
             return undefined
     },
 )
+export const getUserMediaAndSimilarByIdAtom = atom(null,
+    (get, set, mediaId: number) => {
+        const atom = get(allUserMediaAtoms).find((media) => get(media).id === mediaId)
+        if (atom)
+            return [get(atom), ...get(allUserMediaAtom).filter(n => !!get(atom)!.title?.english! && !!n.title?.english! && compareTwoStrings(get(atom)!.title?.english!, n.title?.english!) > 0.5)]
+        else
+            return []
+    },
+)
 
 /**
  * @example
@@ -38,9 +48,18 @@ export const useAnilistUserMediaAtomById = (mediaId: number) => {
     const [, get] = useAtom(getUserMediaAtomByIdAtom)
     return useMemo(() => get(mediaId), []) as PrimitiveAtom<AnilistShowcaseMedia> | undefined
 }
+export const useAnilistUserMediaAndSimilarById = (mediaId: number) => {
+    const [, get] = useAtom(getUserMediaAndSimilarByIdAtom)
+    return useMemo(() => get(mediaId), []) as AnilistShowcaseMedia[]
+}
 export const useAnilistUserMediaAtoms = () => {
     const value = useAtomValue(allUserMediaAtoms)
     return useMemo(() => value, []) as Array<PrimitiveAtom<AnilistShowcaseMedia>>
+}
+
+export const useAnilistUserMedia = () => {
+    const value = useAtomValue(allUserMediaAtom)
+    return useMemo(() => value, []) as AnilistShowcaseMedia[]
 }
 
 /* -------------------------------------------------------------------------------------------------

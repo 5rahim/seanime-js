@@ -4,8 +4,9 @@ import { MediaListStatus } from "@/gql/graphql"
 import { useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist/entries.atoms"
 import { useStableSelectAtom } from "@/atoms/helpers"
 import { useLibraryEntryAtomByMediaId } from "@/atoms/library/library-entry.atoms"
-import { useLastMainLocalFileByMediaId } from "@/atoms/library/local-file.atoms"
+import { useLastMainLocalFileByMediaId, useLocalFilesByMediaId_UNSTABLE } from "@/atoms/library/local-file.atoms"
 import { useMemo } from "react"
+import _ from "lodash"
 
 // FIXME
 // Known issue: It will not detect missing episode if the episode number is less than the latest file.
@@ -23,7 +24,7 @@ import { useMemo } from "react"
  * @param libraryEntryExists
  * @param status
  */
-export const getMediaDownloadInfo = (
+export const legacy_getMediaDownloadInfo = (
     {
         media, lastEpisodeFile, progress, libraryEntryExists, status,
     }: {
@@ -100,23 +101,70 @@ export const getMediaDownloadInfo = (
 
 }
 
-export type MediaDownloadInfo = ReturnType<typeof getMediaDownloadInfo>
+export const getMediaDownloadInfo = (
+    {
+        media, files, progress, status,
+    }: {
+        media: AnilistDetailedMedia,
+        files: LocalFile[],
+        progress: number | null | undefined,
+        status: MediaListStatus | null | undefined,
+    },
+) => {
+
+    const lastProgress = progress ?? 0
+    // e.g., 12
+    const maxEp = !!media.nextAiringEpisode?.episode ? media.nextAiringEpisode?.episode - 1 : media.episodes!
+    // e.g., [1,2,3,…,12]
+    const originalEpisodeArr = [...Array(maxEp).keys()].map((_, idx) => idx + 1)
+    // e.g., progress = 9 => [10,11,12] | completed => [1,2,3,…,12]
+    const actualEpisodeArr = status !== "COMPLETED" ? [...Array(maxEp).keys()].map((_, idx) => idx + 1).slice(lastProgress) : originalEpisodeArr
+
+    // e.g., [1,2]
+    let downloadedEpisodeArr = files.filter(file => !!file.metadata.episode && !file.metadata.isNC && !file.metadata.isSpecial).map(file => file.metadata.episode).filter(Boolean)
+
+    // e.g., no files with episode number, but we know that the media is a movie, and there is at least a file associated with that media
+    if ((media.format === "MOVIE" || media.episodes === 1) && downloadedEpisodeArr.length === 0 && files.filter(file => !file.metadata.episode && !file.metadata.isNC).length > 0) {
+        downloadedEpisodeArr = [1]
+    }
+
+    let missingArr = _.sortBy(actualEpisodeArr.filter(num => !downloadedEpisodeArr.includes(num)))
+
+    const canBatch = (media.status === "FINISHED" || media.status === "CANCELLED") && !!media.episodes && media.episodes > 1
+
+    console.log(missingArr, downloadedEpisodeArr, originalEpisodeArr)
+
+    return {
+        toDownload: missingArr.length,
+        originalEpisodeCount: media.episodes,
+        isMovie: media.format === "MOVIE",
+        episodeNumbers: missingArr,
+        rewatch: status === "COMPLETED",
+        // batch = `entireBatch`, i.e., should download entire batch
+        batch: canBatch && downloadedEpisodeArr.length === 0 && lastProgress === 0,  // Media finished airing and user has no episodes downloaded/watched
+        canBatch,
+    }
+
+
+}
+
+export type MediaDownloadInfo = ReturnType<typeof legacy_getMediaDownloadInfo>
 
 export function useMediaDownloadInfo(media: AnilistDetailedMedia) {
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(media.id)
     const collectionEntryProgress = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress)
     const collectionEntryStatus = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.status)
     const entryAtom = useLibraryEntryAtomByMediaId(media.id)
-
     const lastFile = useLastMainLocalFileByMediaId(media.id)
+
+    const files = useLocalFilesByMediaId_UNSTABLE(media.id)
 
     const downloadInfo = useMemo(() => getMediaDownloadInfo({
         media: media,
-        lastEpisodeFile: lastFile,
+        files: files,
         progress: collectionEntryProgress,
-        libraryEntryExists: !!entryAtom,
         status: collectionEntryStatus,
-    }), [lastFile])
+    }), [files])
 
     return {
         entryAtom,

@@ -210,9 +210,11 @@ export const inspectProspectiveLibraryEntry = async (props: {
             }
 
         } else {
-            for (let i = 0; i < mostAccurateFiles.length; i++) {
-                mostAccurateFiles[i].metadata.episode = 1
-                mostAccurateFiles[i].metadata.aniDBEpisodeNumber = "1"
+            if (currentMedia.format === "MOVIE" || (currentMedia.episodes && currentMedia.episodes === 1)) {
+                for (let i = 0; i < mostAccurateFiles.length; i++) {
+                    mostAccurateFiles[i].metadata.episode = 1
+                    mostAccurateFiles[i].metadata.aniDBEpisodeNumber = "1"
+                }
             }
         }
 
