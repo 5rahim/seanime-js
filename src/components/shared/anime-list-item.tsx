@@ -104,7 +104,7 @@ export const AnimeListItem = ((props: AnimeListItemProps) => {
                                             <Badge
                                                 size={"sm"}>{media.nextAiringEpisode?.episode}</Badge>
                                         </p>
-                                    }>{formatDistanceToNow(addSeconds(new Date(), media.nextAiringEpisode?.timeUntilAiring), { addSuffix: true })}{}</Tooltip>
+                                    }>{formatDistanceToNow(addSeconds(new Date(), media.nextAiringEpisode?.timeUntilAiring), { addSuffix: true })}</Tooltip>
                             </div>
                         )}
 

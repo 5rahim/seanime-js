@@ -29,7 +29,7 @@ export const LargeEpisodeListItem: React.FC<EpisodeListItemProps & React.Compone
         <div
             className={"rounded-md border border-[--border] overflow-hidden aspect-[4/2] w-96 relative flex items-end flex-none group/missed-episode-item"}
         >
-            <div className={"absolute w-full h-full rounded-md rounded-b-none overflow-hidden mb-2 z-[1]"}>
+            <div className={"absolute w-full h-full rounded-md rounded-b-none overflow-hidden z-[1]"}>
                 {!!image ? <Image
                     src={image}
                     alt={""}

@@ -18,6 +18,7 @@ import { AiFillPlayCircle } from "@react-icons/all-files/ai/AiFillPlayCircle"
 import { LargeEpisodeListItem } from "@/components/shared/large-episode-list-item"
 import { AiOutlineDownload } from "@react-icons/all-files/ai/AiOutlineDownload"
 import { useRouter } from "next/navigation"
+import { AppLayoutStack } from "@/components/ui/app-layout"
 
 type Props = {}
 
@@ -38,14 +39,14 @@ export function MissedEpisodes(props: Props) {
     // 2. Map them in subcomponents, useDownloadPageData() for each and list new episodes (either not-watched or un-downloaded) with download button
 
     return (
-        <>
-            <h3 className={"flex gap-3 items-center"}><AiFillPlayCircle/> Next up</h3>
+        <AppLayoutStack spacing={"lg"}>
+            <h2 className={"flex gap-3 items-center"}><AiFillPlayCircle/> Next up</h2>
             <Slider>
                 {entryAtoms.map(entryAtom => {
                     return <MissedEpisodesFromMedia key={`${entryAtom}`} entryAtom={entryAtom} type={"not-watched"}/>
                 })}
             </Slider>
-            <h3 className={"flex gap-3 items-center"}><IoLibrary/> Missing from your library</h3>
+            <h2 className={"flex gap-3 items-center"}><IoLibrary/> Missing from your library</h2>
             {(!upToDate) && <Slider>
                 {entryAtoms.map(entryAtom => {
                     return <MissedEpisodesFromMedia key={`${entryAtom}`} entryAtom={entryAtom} type={"not-downloaded"}/>
@@ -57,7 +58,7 @@ export function MissedEpisodes(props: Props) {
                     <p className={"font-semibold"}>You are up to date!</p>
                 </div>
             )}
-        </>
+        </AppLayoutStack>
     )
 }
 

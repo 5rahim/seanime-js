@@ -95,6 +95,30 @@ export const _ListAnime = gql`
     }
 `
 
+export const _ListRecentAirings = gql`
+    query ListRecentAirings($page: Int, $perPage: Int, $airingAt_greater: Int, $airingAt_lesser: Int){
+        Page(page: $page, perPage: $perPage){
+            pageInfo{
+                hasNextPage
+                total
+                perPage
+                currentPage
+                lastPage
+            },
+            airingSchedules(notYetAired: false, sort: TIME_DESC, airingAt_greater: $airingAt_greater, airingAt_lesser: $airingAt_lesser){
+                id
+                airingAt
+                episode
+                timeUntilAiring
+                media {
+                    isAdult
+                    ...shortMedia
+                }
+            }
+        }
+    }
+`
+
 
 export const _AnimeByMalId = gql`
     query AnimeByMalId ($id: Int) {

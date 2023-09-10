@@ -15,6 +15,9 @@ export const allUserMediaAtoms = splitAtom(allUserMediaAtom, media => media.id)
 export const getUserMediaAtomByIdAtom = atom(null,
     (get, set, mediaId: number) => get(allUserMediaAtoms).find((media) => get(media).id === mediaId),
 )
+
+export const userAiringMediaAtom = atom(get => get(allUserMediaAtom).filter((media) => media.status === "RELEASING"))
+
 export const getUserMediaByIdAtom = atom(null,
     (get, set, mediaId: number) => {
         const atom = get(allUserMediaAtoms).find((media) => get(media).id === mediaId)
