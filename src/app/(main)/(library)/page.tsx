@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { AppLayoutStack } from "@/components/ui/app-layout"
 import { LocalLibrary } from "@/app/(main)/(library)/_containers/local-library/local-library"
 import { LibraryToolbar } from "@/app/(main)/(library)/_containers/local-library/_components/library-toolbar"
+import { IgnoredFilesDrawer } from "@/app/(main)/(library)/_containers/ignored-files/ignored-files-drawer"
 
 export default function Home() {
 
@@ -43,6 +44,7 @@ export default function Home() {
         <div>
             <LibraryToolbar/>
             <LocalLibrary/>
+            <IgnoredFilesDrawer/>
         </div>
     )
 }

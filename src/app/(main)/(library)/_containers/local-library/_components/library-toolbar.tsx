@@ -23,10 +23,13 @@ import { FiSearch } from "@react-icons/all-files/fi/FiSearch"
 import { GoDiffIgnored } from "@react-icons/all-files/go/GoDiffIgnored"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useManageLibraryEntries } from "@/app/(main)/(library)/_containers/local-library/_lib/scan"
+import { useSetAtom } from "jotai/react"
+import { __ignoredFilesDrawerIsOpenAtom } from "@/app/(main)/(library)/_containers/ignored-files/ignored-files-drawer"
 
 export function LibraryToolbar() {
 
     const { settings } = useSettings()
+    const setOpenIgnoredFilesDrawer = useSetAtom(__ignoredFilesDrawerIsOpenAtom)
 
     const { getMatchingSuggestions, isLoading: recommendationLoading } = useMatchingSuggestions()
 
@@ -99,10 +102,10 @@ export function LibraryToolbar() {
                                 <RiFolderDownloadFill/>
                                 <span>Re-scan library</span>
                             </DropdownMenu.Item>
-                            <DropdownMenu.Link href={"/manage-ignored"}>
+                            <DropdownMenu.Item onClick={() => setOpenIgnoredFilesDrawer(true)}>
                                 <GoDiffIgnored/>
                                 <span>Manage ignored files</span>
-                            </DropdownMenu.Link>
+                            </DropdownMenu.Item>
                         </DropdownMenu>
                     </div>
 

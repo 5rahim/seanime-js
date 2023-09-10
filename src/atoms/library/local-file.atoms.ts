@@ -108,6 +108,11 @@ const get_NC_LocalFileAtomsByMediaIdAtom = atom(null,
 )
 
 /**
+ * @return PrimitiveAtom<LocalFile>[]
+ */
+export const ignoredLocalFileAtomsAtom = atom((get) => get(localFileAtoms).filter((itemAtom) => get(itemAtom).ignored === true))
+
+/**
  * @return PrimitiveAtom<LocalFile>
  */
 export const getLocalFileAtomByPathAtom = atom(null,
