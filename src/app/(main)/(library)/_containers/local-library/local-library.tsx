@@ -12,6 +12,9 @@ import { useSelectAtom } from "@/atoms/helpers"
 import { AnimeListItem } from "@/components/shared/anime-list-item"
 import { Divider } from "@/components/ui/divider"
 import { useAtomValue } from "jotai/react"
+import { Slider } from "@/components/shared/slider"
+import { MissedEpisodesFromMedia } from "@/app/(main)/schedule/_containers/missed-episodes/missed-episodes"
+import { FetchMediaSchedule } from "@/app/(main)/(library)/_containers/local-library/_lib/schedule"
 
 interface LocalLibraryProps {
     children?: React.ReactNode
@@ -29,6 +32,15 @@ export const LocalLibrary: React.FC<LocalLibraryProps> = (props) => {
         <div className={"p-4 space-y-8"}>
             {currentlyWatchingEntryAtoms.length > 0 && <>
                 <h2>Continue watching</h2>
+                <Slider>
+                    {currentlyWatchingEntryAtoms.map(entryAtom => {
+                        return <MissedEpisodesFromMedia key={`${entryAtom}`} entryAtom={entryAtom}
+                                                        type={"not-watched"}/>
+                    })}
+                </Slider>
+                <FetchMediaSchedule entryAtoms={currentlyWatchingEntryAtoms}/>
+                <Divider/>
+                <h2>Currently watching</h2>
                 <div
                     className={"grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 min-[2000px]:grid-cols-8 gap-4"}>
                     {currentlyWatchingEntryAtoms.map(entryAtom => {

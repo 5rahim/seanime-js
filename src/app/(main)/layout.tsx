@@ -1,71 +1,28 @@
 "use client"
-import React, { useMemo } from "react"
-import { usePathname } from "next/navigation"
+import React from "react"
 import { useAuthed } from "@/atoms/auth"
-import { useCurrentUser } from "@/atoms/user"
-import { NavigationTabs } from "@/components/ui/tabs"
-import Image from "next/image"
 import { IoReload } from "@react-icons/all-files/io5/IoReload"
 import { Button } from "@/components/ui/button"
 
 import { useRefreshAnilistCollection } from "@/atoms/anilist/collection.atoms"
-import { IoLibrary } from "@react-icons/all-files/io5/IoLibrary"
+import { TopNavbar } from "@/components/application/top-navbar"
+import { DynamicHeaderBackground } from "@/components/application/dynamic-header-background"
 
 export default function Layout({ children }: {
     children: React.ReactNode,
 }) {
 
-    const pathname = usePathname()
     const { isAuthed } = useAuthed()
-    const { user } = useCurrentUser()
     const refetchCollection = useRefreshAnilistCollection()
-
-    const navigationItems = useMemo(() => {
-        const authedItems = isAuthed ? [
-            {
-                href: "/schedule",
-                icon: null,
-                isCurrent: pathname.startsWith("/schedule"),
-                name: "Schedule",
-            },
-            {
-                href: "/anilist",
-                icon: null,
-                isCurrent: pathname.startsWith("/anilist"),
-                name: "Watch lists",
-            },
-        ] : []
-
-        return [
-            {
-                href: "/",
-                icon: IoLibrary,
-                isCurrent: pathname === "/",
-                name: "My library",
-            },
-            ...authedItems,
-            {
-                href: "/discover",
-                icon: null,
-                isCurrent: pathname.startsWith("/discover"),
-                name: "Discover",
-            },
-        ]
-    }, [isAuthed, pathname])
 
     return (
         <main className="min-h-screen">
             <div className={"w-full h-[8rem] relative overflow-hidden pt-[--titlebar-h]"}>
                 <div className="relative z-10 px-4 w-full flex justify-between items-center">
-                    <NavigationTabs
-                        className="p-0"
-                        iconClassName=""
-                        tabClassName="text-xl"
-                        items={navigationItems}
-                    />
+                    <TopNavbar/>
                     <div className={"flex items-center gap-4"}>
                         {isAuthed && <Button
-                            onClick={refetchCollection}
+                            onClick={() => refetchCollection()}
                             intent={"warning-subtle"}
                             rightIcon={<IoReload/>}
                             leftIcon={<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="24" height="24"
@@ -82,25 +39,7 @@ export default function Layout({ children }: {
                         {/*)}*/}
                     </div>
                 </div>
-                {!pathname.startsWith("/view") && <>
-                    {!pathname.startsWith("/anilist") && <Image
-                        src={"/landscape-beach.jpg"}
-                        alt={"tenki no ko"}
-                        fill
-                        priority
-                        className={"object-cover object-top"}
-                    />}
-                    {pathname.startsWith("/anilist") && <Image
-                        src={"/landscape-tenki-no-ko.jpg"}
-                        alt={"tenki no ko"}
-                        fill
-                        priority
-                        className={"object-cover"}
-                    />}
-                    <div
-                        className={"w-full absolute bottom-0 h-[20rem] bg-gradient-to-t from-[--background-color] to-transparent"}
-                    />
-                </>}
+                <DynamicHeaderBackground/>
             </div>
 
             <div>

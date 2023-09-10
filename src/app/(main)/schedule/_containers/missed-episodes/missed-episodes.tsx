@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useMemo } from "react"
+import React, { memo, useEffect, useMemo } from "react"
 import { useAtomValue, useSetAtom } from "jotai/react"
 import { LibraryEntry, libraryEntryAtoms } from "@/atoms/library/library-entry.atoms"
 import { atom, Atom } from "jotai"
@@ -14,7 +14,6 @@ import { useMount } from "react-use"
 import { useRefreshAnilistCollection } from "@/atoms/anilist/collection.atoms"
 import { Skeleton } from "@/components/ui/skeleton"
 import { IoLibrary } from "@react-icons/all-files/io5/IoLibrary"
-import { AiFillPlayCircle } from "@react-icons/all-files/ai/AiFillPlayCircle"
 import { LargeEpisodeListItem } from "@/components/shared/large-episode-list-item"
 import { AiOutlineDownload } from "@react-icons/all-files/ai/AiOutlineDownload"
 import { useRouter } from "next/navigation"
@@ -23,37 +22,34 @@ import { useLastMainLocalFileByMediaId } from "@/atoms/library/local-file.atoms"
 
 type Props = {}
 
-const _upToDateAtom = atom<boolean | null>(null)
+export const __episodesUptToDateAtom = atom<boolean | null>(null)
 
 export function MissedEpisodes(props: Props) {
 
     const entryAtoms = useAtomValue(libraryEntryAtoms)
     const refetchCollection = useRefreshAnilistCollection()
 
-    const upToDate = useAtomValue(_upToDateAtom)
+    const episodesUpToDate = useAtomValue(__episodesUptToDateAtom)
 
     useMount(() => {
         refetchCollection({ muteAlert: true })
     })
 
-    // 1. currently watching
-    // 2. Map them in subcomponents, useDownloadPageData() for each and list new episodes (either not-watched or un-downloaded) with download button
-
     return (
         <AppLayoutStack spacing={"lg"}>
-            <h2 className={"flex gap-3 items-center"}><AiFillPlayCircle/> Next up</h2>
-            <Slider>
-                {entryAtoms.map(entryAtom => {
-                    return <MissedEpisodesFromMedia key={`${entryAtom}`} entryAtom={entryAtom} type={"not-watched"}/>
-                })}
-            </Slider>
+            {/*<h2 className={"flex gap-3 items-center"}><AiFillPlayCircle/> Next up</h2>*/}
+            {/*<Slider>*/}
+            {/*    {entryAtoms.map(entryAtom => {*/}
+            {/*        return <MissedEpisodesFromMedia key={`${entryAtom}`} entryAtom={entryAtom} type={"not-watched"}/>*/}
+            {/*    })}*/}
+            {/*</Slider>*/}
             <h2 className={"flex gap-3 items-center"}><IoLibrary/> Missing from your library</h2>
-            {(!upToDate) && <Slider>
+            {(!episodesUpToDate) && <Slider>
                 {entryAtoms.map(entryAtom => {
                     return <MissedEpisodesFromMedia key={`${entryAtom}`} entryAtom={entryAtom} type={"not-downloaded"}/>
                 })}
             </Slider>}
-            {upToDate === true && (
+            {episodesUpToDate === true && (
                 <div
                     className={"rounded-md h-auto bg-gray-900 overflow-hidden aspect-[4/2] w-96 relative flex items-center justify-center flex-none"}>
                     <p className={"font-semibold"}>You are up to date!</p>
@@ -76,7 +72,7 @@ export function MissedEpisodesFromMedia(props: MissedEpisodesFromMediaProps) {
 
     const lastFile = useLastMainLocalFileByMediaId(media.id)
 
-    const upToDate = useSetAtom(_upToDateAtom)
+    const setEpisodesUpToDate = useSetAtom(__episodesUptToDateAtom)
 
     const nextEpisode = useMemo(() => {
         if (currentlyWatching && progress) {
@@ -95,20 +91,20 @@ export function MissedEpisodesFromMedia(props: MissedEpisodesFromMediaProps) {
 
     const eps = [...downloadInfo.episodeNumbers, nextEpisode].filter(Boolean)
 
-    const { data, isLoading } = useQuery({
+    const { data, isLoading, isFetching } = useQuery({
         queryKey: ["missed-episode-data", media.id, nextEpisode, downloadInfo.episodeNumbers],
         queryFn: async () => {
-            await new Promise((acc) => setTimeout(() => acc(""), 2000))
             const { data } = await axios.get<AniZipData>("https://api.ani.zip/mappings?anilist_id=" + Number(media.id))
             return data
         },
         keepPreviousData: false,
         enabled: eps.length > 0,
+        refetchInterval: 1000 * 60,
     })
 
     useEffect(() => {
-        if (props.type === "not-downloaded" && !isLoading && downloadInfo.episodeNumbers.length > 0) upToDate(false)
-    }, [isLoading])
+        if (props.type === "not-downloaded" && !isLoading && !isFetching && downloadInfo.episodeNumbers.length > 0) setEpisodesUpToDate(false)
+    }, [isLoading, isFetching])
 
     if (eps.length === 0
         || (props.type === "not-downloaded" && downloadInfo.episodeNumbers.length === 0)
@@ -151,7 +147,7 @@ type EpisodeItemProps = {
     type: "not-watched" | "not-downloaded"
 }
 
-function EpisodeItem({ media, episodeNumber, aniZipData, type }: EpisodeItemProps) {
+const EpisodeItem = memo(({ media, episodeNumber, aniZipData, type }: EpisodeItemProps) => {
 
     const episodeData = aniZipData?.episodes?.[String(episodeNumber)]
 
@@ -178,4 +174,4 @@ function EpisodeItem({ media, episodeNumber, aniZipData, type }: EpisodeItemProp
             />
         </>
     )
-}
+})

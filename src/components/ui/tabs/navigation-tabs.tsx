@@ -14,7 +14,7 @@ export const NavigationTabsAnatomy = defineStyleAnatomy({
     ]),
     tab: cva([
         "UI-NavigationTabs__tab",
-        "group/navtabs inline-flex flex-none shrink-0 basis-auto items-center py-4 px-2 font-normal text-sm transition outline-none px-4 min-w-0 justify-center",
+        "group/navtabs inline-flex flex-none shrink-0 basis-auto items-center py-4 px-2 font-normal text-sm transition outline-none px-4 min-w-0 justify-center relative",
         "focus-visible:bg-[--highlight]",
         "text-[--muted]",
         "hover:text-[--text-color] hover:bg-[--highlight] rounded-md",
@@ -36,6 +36,7 @@ export interface NavigationTabsProps extends React.ComponentPropsWithRef<"nav">,
         href: string | null | undefined,
         icon?: ((props: any) => JSX.Element) | null | undefined,
         isCurrent: boolean
+        addon?: React.ReactNode
     }[]
 }
 
@@ -77,6 +78,7 @@ export const NavigationTabs = React.forwardRef<HTMLElement, NavigationTabsProps>
                         data-selected={tab.isCurrent}
                     />}
                     <span>{tab.name}</span>
+                    {tab.addon}
                 </Link>
             ))}
         </nav>

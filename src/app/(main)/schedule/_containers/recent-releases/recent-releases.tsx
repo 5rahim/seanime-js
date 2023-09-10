@@ -37,7 +37,7 @@ export function RecentReleases(props: Props) {
                             image={item.media?.bannerImage || item.media?.coverImage?.large}
                             topTitle={item.media?.title?.userPreferred}
                             meta={item.airingAt ? formatDistanceToNow(addSeconds(new Date(), item.timeUntilAiring), { addSuffix: true }) : undefined}
-                            onClick={() => router.push(`/view/${item.media?.id}?download=${item.episode}`)}
+                            onClick={() => router.push(`/view/${item.media?.id}`)}
                             actionIcon={<BiLinkExternal/>}
                         />
                     )
