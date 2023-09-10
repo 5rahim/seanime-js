@@ -4,7 +4,7 @@ import { useDraggableScroll } from "@/hooks/use-draggable-scroll"
 import { MdChevronLeft } from "@react-icons/all-files/md/MdChevronLeft"
 import { MdChevronRight } from "@react-icons/all-files/md/MdChevronRight"
 import { cn } from "@/components/ui/core"
-import { useUpdateEffect } from "react-use"
+import { useIsomorphicLayoutEffect, useUpdateEffect } from "react-use"
 
 interface SliderProps {
     children?: React.ReactNode
@@ -25,6 +25,7 @@ export const Slider: React.FC<SliderProps> = (props) => {
 
     const [isScrolledToLeft, setIsScrolledToLeft] = useState(true)
     const [isScrolledToRight, setIsScrolledToRight] = useState(false)
+    const [showChevronRight, setShowChevronRight] = useState(false)
 
     const handleScroll = () => {
         const div = ref.current
@@ -39,7 +40,6 @@ export const Slider: React.FC<SliderProps> = (props) => {
     }
 
     useUpdateEffect(() => {
-        console.log(isScrolledToLeft, isScrolledToRight)
         if (!isScrolledToLeft && isScrolledToRight) {
             onSlideEnd && onSlideEnd()
             const t = setTimeout(() => {
@@ -75,6 +75,14 @@ export const Slider: React.FC<SliderProps> = (props) => {
         }
     }
 
+    useIsomorphicLayoutEffect(() => {
+        if (ref.current.clientWidth < ref.current.scrollWidth) {
+            setShowChevronRight(true)
+        } else {
+            setShowChevronRight(false)
+        }
+    }, [ref.current])
+
     return (
         <div className={cn(
             "relative flex items-center lg:gap-2",
@@ -98,9 +106,10 @@ export const Slider: React.FC<SliderProps> = (props) => {
             </div>
             <div
                 onClick={slideRight}
-                className={`flex items-center cursor-pointer hover:text-action absolute right-0 bg-gradient-to-l from-[--background-color] z-40 h-full w-16 hover:opacity-100 ${
-                    !isScrolledToRight ? "lg:visible" : "invisible"
-                }`}
+                className={cn("flex items-center invisible cursor-pointer hover:text-action absolute right-0 bg-gradient-to-l from-[--background-color] z-40 h-full w-16 hover:opacity-100",
+                    {
+                        "lg:visible": !isScrolledToRight && showChevronRight,
+                    })}
             >
                 <MdChevronRight className="w-7 h-7 stroke-2 mx-auto"/>
             </div>

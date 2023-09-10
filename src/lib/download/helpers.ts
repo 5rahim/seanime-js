@@ -132,8 +132,6 @@ export const getMediaDownloadInfo = (
 
     const canBatch = (media.status === "FINISHED" || media.status === "CANCELLED") && !!media.episodes && media.episodes > 1
 
-    console.log(missingArr, downloadedEpisodeArr, originalEpisodeArr)
-
     return {
         toDownload: missingArr.length,
         originalEpisodeCount: media.episodes,

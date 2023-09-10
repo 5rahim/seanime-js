@@ -4,11 +4,12 @@
 
 import { createTypesafeFormSchema, InferType } from "@/components/ui/typesafe-form"
 import { atomWithStorage } from "jotai/utils"
-import { useImmerAtom } from "jotai-immer"
+import { useImmerAtom, withImmer } from "jotai-immer"
 import { useCallback } from "react"
 
 
 import { fileOrDirectoryExists } from "@/lib/helpers/file"
+import { useSetAtom } from "jotai/react"
 
 export const settingsSchema = createTypesafeFormSchema(({ z }) => z.object({
     library: z.object({
@@ -79,6 +80,8 @@ export const initialSettings: Settings = {
 
 export const settingsAtoms = atomWithStorage<Settings>("sea-settings", initialSettings, undefined, { unstable_getOnInit: true })
 
+export const _settingsAtom = withImmer(settingsAtoms)
+
 /* -------------------------------------------------------------------------------------------------
  * Hooks
  * -----------------------------------------------------------------------------------------------*/
@@ -109,4 +112,8 @@ export function useSettings() {
         }, [])
     }
 
+}
+
+export function useUpdateSettings() {
+    return useSetAtom(_settingsAtom)
 }
