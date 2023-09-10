@@ -42,7 +42,7 @@ similar software.
   - [x] Automatic smart filters for search
 - [x] Option to automatically select needed files in
   batches. [Learn more](https://github.com/5rahim/seanime/blob/main/docs/torrents.md#batches).
-- [ ] "Schedule" feature
+- [x] "Schedule" section with releases, future releases and missed episodes
 
 ### Progress tracking
 
