@@ -2,7 +2,7 @@
 
 <h4 align="center">Feature-packed, user-friendly app for managing your local library with AniList integration</h4>
 
-<img src="docs/assets/main.png" alt="preview" width="100%"/>
+<img src="docs/assets/main_1.png" alt="preview" width="100%"/>
 <img src="docs/assets/main_2.png" alt="preview" width="100%"/>
 
 🚨 This project is a hobby and doesn't aim to solve every unique issue or address all complaints you may have about
