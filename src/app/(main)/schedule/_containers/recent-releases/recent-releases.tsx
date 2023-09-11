@@ -33,6 +33,7 @@ export function RecentReleases(props: Props) {
                 {data?.Page?.airingSchedules?.filter(item => item?.media?.isAdult === false && item?.media?.type === "ANIME").filter(Boolean).map(item => {
                     return (
                         <LargeEpisodeListItem
+                            key={item.id}
                             title={`Episode ${item.episode}`}
                             image={item.media?.bannerImage || item.media?.coverImage?.large}
                             topTitle={item.media?.title?.userPreferred}

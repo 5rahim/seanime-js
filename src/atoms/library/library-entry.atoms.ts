@@ -109,7 +109,6 @@ export const useLibraryEntryAtomByMediaId = (mediaId: number) => {
 
 /**
  * @description Used in local library to display anime list
- * @deprecated Replaced by filtered atoms
  */
 export const useLibraryEntryAtoms = () => {
     // Refresh entry atom list when number of entries changes

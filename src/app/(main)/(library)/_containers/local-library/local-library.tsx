@@ -14,7 +14,8 @@ import { Divider } from "@/components/ui/divider"
 import { useAtomValue } from "jotai/react"
 import { Slider } from "@/components/shared/slider"
 import { MissedEpisodesFromMedia } from "@/app/(main)/schedule/_containers/missed-episodes/missed-episodes"
-import { FetchMediaSchedule } from "@/app/(main)/(library)/_containers/local-library/_lib/schedule"
+
+// import { FetchMediaSchedule } from "@/app/(main)/(library)/_containers/local-library/_lib/schedule"
 
 interface LocalLibraryProps {
     children?: React.ReactNode
@@ -38,7 +39,7 @@ export const LocalLibrary: React.FC<LocalLibraryProps> = (props) => {
                                                         type={"not-watched"}/>
                     })}
                 </Slider>
-                <FetchMediaSchedule entryAtoms={currentlyWatchingEntryAtoms}/>
+                {/*<FetchMediaSchedule entryAtoms={currentlyWatchingEntryAtoms}/>*/}
                 <Divider/>
                 <h2>Currently watching</h2>
                 <div

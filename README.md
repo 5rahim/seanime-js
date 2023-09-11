@@ -127,7 +127,6 @@ Features that may be implemented
 ## TODO
 
 - [ ] (library) Manual hydration - similar to "resolve unmatched"
-- [ ] (local file) Manage/Un-ignore ignored files
 - [ ] (library) Optimize episode number normalization during scan with cache (library-entry.ts L171)
 - [ ] (advanced search) Filter by studios
 - [ ] (library) Filename tag system for faster matching
@@ -135,6 +134,7 @@ Features that may be implemented
 - [ ] Offline mode
 - [ ] Logs settings, directory, display logs in-app
 - [ ] Option to automatically update progress without confirmation
+- [ ] (torrent downloader) Improve sanitized default dir name
 - [ ] Start qBittorrent if it is not launched
 - [ ] Auto-pick page
 - [ ] Splashscreen

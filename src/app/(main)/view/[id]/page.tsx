@@ -49,7 +49,8 @@ export default async function Page({ params }: { params: { id: string } }) {
                 </div>
             </div>
             <TorrentSearchModal
-                media={media} aniZipData={aniZipData}
+                media={media}
+                aniZipData={aniZipData}
             />
         </>
     )

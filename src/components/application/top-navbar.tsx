@@ -4,9 +4,6 @@ import { NavigationTabs, NavigationTabsProps } from "@/components/ui/tabs"
 import { usePathname } from "next/navigation"
 import { useAuthed } from "@/atoms/auth"
 import { IoLibrary } from "@react-icons/all-files/io5/IoLibrary"
-import { useAtomValue } from "jotai/react"
-import { __episodesUptToDateAtom } from "@/app/(main)/schedule/_containers/missed-episodes/missed-episodes"
-import { Badge } from "@/components/ui/badge"
 
 interface TopNavbarProps {
     children?: React.ReactNode
@@ -19,7 +16,6 @@ export const TopNavbar: React.FC<TopNavbarProps> = (props) => {
     const pathname = usePathname()
     const { isAuthed } = useAuthed()
 
-    const missedEpisodesIsUpToDate = useAtomValue(__episodesUptToDateAtom)
 
     const navigationItems = useMemo<NavigationTabsProps["items"]>(() => {
         const authedItems = isAuthed ? [
@@ -28,9 +24,9 @@ export const TopNavbar: React.FC<TopNavbarProps> = (props) => {
                 icon: null,
                 isCurrent: pathname.startsWith("/schedule"),
                 name: "Schedule",
-                addon: missedEpisodesIsUpToDate === false ? <Badge
-                    intent={"alert-solid"}
-                    className={"rounded-full block h-3 w-3 p-0 absolute top-3 right-1"}/> : undefined,
+                // addon: missedEpisodesIsUpToDate === false ? <Badge
+                //     intent={"alert-solid"}
+                //     className={"rounded-full block h-3 w-3 p-0 absolute top-3 right-1"}/> : undefined,
             },
             {
                 href: "/anilist",
@@ -55,7 +51,7 @@ export const TopNavbar: React.FC<TopNavbarProps> = (props) => {
                 name: "Discover",
             },
         ]
-    }, [isAuthed, pathname, missedEpisodesIsUpToDate])
+    }, [isAuthed, pathname])
 
     return (
         <NavigationTabs

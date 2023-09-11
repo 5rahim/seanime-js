@@ -57,7 +57,6 @@ export function TorrentSearchModal(props: Props) {
     const _downloadParam = useSearchParam("download")
     const router = useRouter()
     const pathname = usePathname()
-
     useMount(() => {
         if (_downloadParam && !isNaN(parseInt(_downloadParam))) {
             setStatus({
@@ -74,6 +73,7 @@ export function TorrentSearchModal(props: Props) {
             draft.isOpen = false
             return
         })}
+        isClosable
         size={"2xl"}
     >
         <Content media={props.media} aniZipData={props.aniZipData}/>
@@ -249,9 +249,13 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
                 </div>}
 
                 <div>
-                    Episode to
+                    Episodes to
                     download: {downloadInfo.episodeNumbers.slice(0, 12).join(", ")}{downloadInfo.episodeNumbers.length > 12 ? ", ..." : "."}
                 </div>
+                {episodeOffset && episodeOffset > 0 && <div>
+                    Episodes with
+                    offset: {downloadInfo.episodeNumbers.slice(0, 12).map(n => n + episodeOffset).join(", ")}{downloadInfo.episodeNumbers.length > 12 ? ", ..." : "."}
+                </div>}
 
                 <div className={"space-y-2"}>
                     <h4>Quick search parameters</h4>

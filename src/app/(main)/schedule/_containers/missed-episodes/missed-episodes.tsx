@@ -1,8 +1,7 @@
 "use client"
-import React, { memo, useEffect, useMemo } from "react"
-import { useAtomValue, useSetAtom } from "jotai/react"
-import { LibraryEntry, libraryEntryAtoms } from "@/atoms/library/library-entry.atoms"
-import { atom, Atom } from "jotai"
+import React, { memo, useMemo } from "react"
+import { LibraryEntry, useLibraryEntryAtoms } from "@/atoms/library/library-entry.atoms"
+import { Atom } from "jotai"
 import { Slider } from "@/components/shared/slider"
 import { useSelectAtom } from "@/atoms/helpers"
 import { useMediaDownloadInfo } from "@/lib/download/helpers"
@@ -10,8 +9,6 @@ import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
 import { AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import { formatDistanceToNow } from "date-fns"
-import { useMount } from "react-use"
-import { useRefreshAnilistCollection } from "@/atoms/anilist/collection.atoms"
 import { Skeleton } from "@/components/ui/skeleton"
 import { IoLibrary } from "@react-icons/all-files/io5/IoLibrary"
 import { LargeEpisodeListItem } from "@/components/shared/large-episode-list-item"
@@ -22,18 +19,9 @@ import { useLastMainLocalFileByMediaId } from "@/atoms/library/local-file.atoms"
 
 type Props = {}
 
-export const __episodesUptToDateAtom = atom<boolean | null>(null)
-
 export function MissedEpisodes(props: Props) {
 
-    const entryAtoms = useAtomValue(libraryEntryAtoms)
-    const refetchCollection = useRefreshAnilistCollection()
-
-    const episodesUpToDate = useAtomValue(__episodesUptToDateAtom)
-
-    useMount(() => {
-        refetchCollection({ muteAlert: true })
-    })
+    const entryAtoms = useLibraryEntryAtoms()
 
     return (
         <AppLayoutStack spacing={"lg"}>
@@ -44,17 +32,11 @@ export function MissedEpisodes(props: Props) {
             {/*    })}*/}
             {/*</Slider>*/}
             <h2 className={"flex gap-3 items-center"}><IoLibrary/> Missing from your library</h2>
-            {(!episodesUpToDate) && <Slider>
+            <Slider>
                 {entryAtoms.map(entryAtom => {
                     return <MissedEpisodesFromMedia key={`${entryAtom}`} entryAtom={entryAtom} type={"not-downloaded"}/>
                 })}
-            </Slider>}
-            {episodesUpToDate === true && (
-                <div
-                    className={"rounded-md h-auto bg-gray-900 overflow-hidden aspect-[4/2] w-96 relative flex items-center justify-center flex-none"}>
-                    <p className={"font-semibold"}>You are up to date!</p>
-                </div>
-            )}
+            </Slider>
         </AppLayoutStack>
     )
 }
@@ -75,7 +57,6 @@ export function MissedEpisodesFromMedia(props: MissedEpisodesFromMediaProps) {
     } = useMediaDownloadInfo(media)
     const lastFile = useLastMainLocalFileByMediaId(media.id)
 
-    const setEpisodesUpToDate = useSetAtom(__episodesUptToDateAtom)
 
     const nextEpisode = useMemo(() => {
         if (currentlyWatching && progress) {
@@ -101,11 +82,6 @@ export function MissedEpisodesFromMedia(props: MissedEpisodesFromMediaProps) {
         enabled: eps.length > 0,
         refetchInterval: 1000 * 60,
     })
-
-    useEffect(() => {
-        if (props.type === "not-downloaded" && !isLoading && !isFetching && downloadInfo.episodeNumbers.length > 0) setEpisodesUpToDate(false)
-    }, [isLoading, isFetching])
-
     if (eps.length === 0
         || (props.type === "not-downloaded" && downloadInfo.episodeNumbers.length === 0)
         || (props.type === "not-watched" && !nextEpisode)

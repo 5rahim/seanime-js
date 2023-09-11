@@ -1,3 +1,8 @@
+/* -------------------------------------------------------------------------------------------------
+ * - List torrents that are about to be downloaded
+ * - Add torrent magnets
+ * - Redirect to download page
+ * -----------------------------------------------------------------------------------------------*/
 import React, { useCallback, useMemo, useRef, useState } from "react"
 import { Atom } from "jotai"
 import { LibraryEntry } from "@/atoms/library/library-entry.atoms"
@@ -40,9 +45,13 @@ export const TorrentSearchTorrentList: React.FC<TorrentListProps> = (props) => {
     const router = useRouter()
     const { settings } = useSettings()
     const torrentManager = useRef(TorrentManager(settings))
+
+    const [isLoading, setIsLoading] = useState(false)
+
     const setSelectedTorrents = useSetAtom(__torrentSearch_selectedTorrentsAtom)
     const selectedTorrents = useAtomValue(__torrentSearch_sortedSelectedTorrentsAtom)
     const sharedPath = useStableSelectAtom(entryAtom, entry => entry.sharedPath)
+
     const [selectedDir, setSelectedDir] = useState<string | undefined>(sharedPath || settings.library.localDirectory + "\\" + sanitizeDirectoryName(media.title?.romaji || ""))
 
     const { addTorrentToQueue } = useTorrentSmartSelectQueue()
@@ -65,7 +74,7 @@ export const TorrentSearchTorrentList: React.FC<TorrentListProps> = (props) => {
         // Replace disallowed characters with an underscore
         const sanitized = input.replace(disallowedChars, " ")
         // Remove leading/trailing spaces and dots (periods) which are not allowed
-        const trimmed = sanitized.trim().replace(/^\.+|\.+$/g, "")
+        const trimmed = sanitized.trim().replace(/^\.+|\.+$/g, "").replace(/\s+/g, " ")
         // Ensure the directory name is not empty after sanitization
         return trimmed || "Untitled"
     }
@@ -89,8 +98,15 @@ export const TorrentSearchTorrentList: React.FC<TorrentListProps> = (props) => {
         }
     }, [selectedDir])
 
+    async function kickstartTorrentManager() {
+        setIsLoading(true)
+        await torrentManager.current.kickstart()
+        await new Promise(acc => setTimeout(() => acc(""), 2000))
+        setIsLoading(false)
+    }
 
     const handleAddTorrents = useCallback(async () => {
+        await kickstartTorrentManager()
         if (selectedDir && selectedTorrents) {
 
             await Promise.all(selectedTorrents.map(torrent => (
@@ -108,6 +124,7 @@ export const TorrentSearchTorrentList: React.FC<TorrentListProps> = (props) => {
     }, [selectedDir, selectedTorrents])
 
     const handleSmartAddTorrents = useCallback(async () => {
+        await kickstartTorrentManager()
         if (selectedDir && selectedTorrents) {
 
             await Promise.all(selectedTorrents.map(torrent => (
@@ -181,11 +198,13 @@ export const TorrentSearchTorrentList: React.FC<TorrentListProps> = (props) => {
                     leftIcon={<BiDownload/>}
                     intent={"white"}
                     onClick={handleAddTorrents}
+                    isDisabled={isLoading}
                 >Download</Button>}
                 {(selectedTorrents.length > 0 && canDownloadUnwatched) && <Button
                     leftIcon={<BiCollection/>}
                     intent={"success"}
                     onClick={handleSmartAddTorrents}
+                    isDisabled={isLoading}
                 >Download non-watched only</Button>}
             </div>
         </div>

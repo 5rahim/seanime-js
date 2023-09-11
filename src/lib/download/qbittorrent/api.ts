@@ -23,11 +23,12 @@ export async function _qBit_refreshSettings(settings: Settings) {
 
 }
 
-export async function _qBit_getClient() {
-    return {
-        getAllData: client.getAllData,
-        addMagnet: client.addMagnet,
-        pauseTorrent: client.pauseTorrent,
+export async function _qBit_isUp() {
+    try {
+        await client.getAppVersion()
+        return true
+    } catch (e) {
+        return false
     }
 }
 
@@ -35,8 +36,56 @@ export async function _qBit_getClient() {
  * Get all torrents
  * -----------------------------------------------------------------------------------------------*/
 
-export async function _qBit_getAllTorrents() {
-    return await client.getAllData()
+export type TorrentManager_Torrent = {
+    id: string,
+    name: string,
+    eta: number,
+    isCompleted: boolean,
+    savePath: string,
+    downloadSpeed: number,
+    uploadSpeed: number,
+    size: number,
+    peers: number,
+    seeds: number,
+    dateAdded: Date,
+    state: string,
+    hash: string,
+    progress: number,
+}
+
+export async function _qBit_getAllTorrents(): Promise<TorrentManager_Torrent[] | undefined> {
+    const data = await client.getAllData()
+    return data?.torrents?.map(item => ({
+        id: item.id,
+        name: item.name,
+        eta: item.eta,
+        isCompleted: item.isCompleted,
+        savePath: item.savePath,
+        downloadSpeed: item.downloadSpeed,
+        uploadSpeed: item.uploadSpeed,
+        size: item.totalSize,
+        peers: item.totalPeers,
+        seeds: item.totalSeeds,
+        dateAdded: new Date(item.dateAdded),
+        state: item.raw?.state,
+        hash: item.raw?.hash,
+        progress: item.progress,
+    })).sort((a, b) => b.dateAdded.getTime() - a.dateAdded.getTime())
+}
+
+export async function _qBit_getDownloadingTorrents(): Promise<TorrentManager_Torrent[] | undefined> {
+    return (await _qBit_getAllTorrents())?.filter(torrent => torrent.state === "stalledUP"
+        || torrent.state === "allocating"
+        || torrent.state === "downloading"
+        || torrent.state === "metaDL"
+        || torrent.state === "pausedDL"
+        || torrent.state === "queuedDL"
+        || torrent.state === "checkingDL"
+        || torrent.state === "forcedDL"
+        || torrent.state === "uploading"
+        || torrent.state === "stalledDL"
+        || torrent.state === "queuedUP",
+    )
 }
 
 /* -------------------------------------------------------------------------------------------------
