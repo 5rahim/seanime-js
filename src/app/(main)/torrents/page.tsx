@@ -26,14 +26,14 @@ export default function Page() {
 
     return (
         <AppLayoutStack className={"p-4"}>
-            <h2>Downloading</h2>
+            <h2>Active torrents</h2>
             <div className={""}>
                 <Link href={`/torrents/embedded`}>
                     <Button intent={"white"} rightIcon={<BiLinkExternal/>}>Embedded client</Button>
                 </Link>
             </div>
 
-            <div className={""}>
+            <div className={"pb-10"}>
                 <Content/>
             </div>
         </AppLayoutStack>
