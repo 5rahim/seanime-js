@@ -4,7 +4,7 @@
     "beforeBuildCommand": "npm run build",
     "beforeDevCommand": "npm run next:dev",
     "devPath": "http://127.0.0.1:7777",
-    "distDir": "../out"
+    "distDir": "../.next"
   },
   "package": {
     "productName": "seanime",
@@ -45,7 +45,7 @@
         "icons/favicon-32x32.png",
         "icons/favicon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "app.seanime.dev",
       "longDescription": "",
       "macOS": {
         "entitlements": null,

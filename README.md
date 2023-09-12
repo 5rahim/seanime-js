@@ -28,22 +28,27 @@ similar software.
     scans. [Learn more](https://github.com/5rahim/seanime/blob/main/docs/guide.md#locking-files).
   - [x] Ignore files or folders
   - [x] Resolve unmatched files
-  - [x] Logs*
   - [x] Update file metadata
+    - [x] Episode number, AniDB episode number, Special/OVA or NC status
+  - [x] Detailed logs for each scan
 - [x] Resolve unmatched files
-  - [x] Match single files or folders to a media
+  - [x] Option to match single files or single folders to a suggested media
   - [x] Option to match files using AniList ID
+- [x] Detect episodes missing from your local library
+- [ ] Delete files
 - [ ] Manual hydration
 
 ### Download
 
-- [x] qBittorent support
-- [x] Detect un-downloaded episodes
+Powered by qBittorrent and Nyaa
+
+- [x] qBittorrent support via Web API
+- [x] In-app basic active torrent list
+- [x] In-app embedded qBittorrent client
 - [x] In-app torrent search via NYAA
   - [x] Automatic smart filters for search
 - [x] Option to automatically select needed files in
   batches. [Learn more](https://github.com/5rahim/seanime/blob/main/docs/torrents.md#batches).
-- [x] "Schedule" section with releases, future releases and missed episodes
 
 ### Progress tracking
 
@@ -56,10 +61,11 @@ similar software.
 
 - [x] Browse and manage AniList entries
   - [x] Browse your watch lists
-  - [x] Add, edit, AniList entries (status, score, progress…)
-- [x] See trending, search and filter
-  - [x] Discover page
-  - [x] Advanced search
+  - [x] Add, edit AniList entries (status, score, progress…)
+  - [x] Delete AniList entries (from Planning list only)
+- [x] See trending, popular shows, recent releases
+- [x] Search and filter
+  - [x] Advanced search (multiple filters)
 
 ### Streaming
 
@@ -72,9 +78,9 @@ similar software.
 
 - [ ] Offline mode
 
-<img src="docs/assets/img_8.png" alt="preview" width="700"/>
+<img src="docs/assets/img_8.png" alt="preview" width="100%"/>
 <br/>
-<img src="docs/assets/img_9.png" alt="preview" width="700"/>
+<img src="docs/assets/img_9.png" alt="preview" width="100%"/>
 
 ## Caveats
 
@@ -85,13 +91,32 @@ effectively.
 Failure to do so may result in incorrect matches, especially when dealing with different seasons
 of the same series.
 
+## Use
+
+### Self-hosted
+
+Seanime requires a Node.js server to run since it uses Next.js SSR and server actions.
+Since Tauri does not bundle Node.js by design, I'm still trying out multiple ways to release a production build with
+Node.js embedded.
+
+For now, users with Node.js installed can run Seanime's production build by following these steps:
+
+`Soon`
+
+### Release
+
+`Soon`
+
 ## Development
 
 1. Update `.env` file
 
 ```dotenv
+# Consumet is needed for streaming
 # Deploy your Consumet API https://github.com/consumet/api.consumet.org#vercel
 CONSUMET_API_URL="https://consumet-api-example.vercel.app"
+# Anify is currently used to get better episode covers
+ANIFY_API_KEY=""
 ```
 
 2. Install packages
@@ -100,7 +125,7 @@ CONSUMET_API_URL="https://consumet-api-example.vercel.app"
 npm install
 ```
 
-3. Enjoy
+3. Run
 
 ```shell
 npm run dev
@@ -108,6 +133,7 @@ npm run dev
 
 ## Known issues
 
+- Authentication is hit or miss
 - :shrug:
 
 ## Not planned
@@ -126,20 +152,26 @@ Features that may be implemented
 
 ## TODO
 
-- [ ] (library) Manual hydration - similar to "resolve unmatched"
-- [ ] (library) Optimize episode number normalization during scan with cache (library-entry.ts L171)
+Pre-release
+
+- [x] (release) Standalone Next.js server build
+- [ ] Package Next.js server to executable
+- [ ] Sidecar and run Node.js
+- [ ] Improve security
+- [ ] qbittorrent settings (executable path)
 - [ ] (advanced search) Filter by studios
-- [ ] (library) Filename tag system for faster matching
+- [ ] Splashscreen
+
+Post-release
+
 - [ ] (repository) Delete files
-- [ ] Offline mode
+- [ ] (library) Manual hydration - similar to "resolve unmatched"
 - [ ] Logs settings, directory, display logs in-app
 - [ ] Option to automatically update progress without confirmation
-- [ ] (torrent downloader) Improve sanitized default dir name
-- [ ] Start qBittorrent if it is not launched
+- [ ] (library) Filename tag system for faster matching
 - [ ] Auto-pick page
-- [ ] Splashscreen
 - [ ] Migrate to Tauri v2 (when stable)
-- [ ] Alpha Release
+- [ ] Offline mode
 - [ ] Tests
 
 ## Resources
@@ -147,7 +179,7 @@ Features that may be implemented
 Resources used to build Seanime.
 
 - [React](https://react.dev/)
-- [Tauri](https://tauri.app/) - Like Electron.js but better
+- [Tauri](https://tauri.app/)
 - [Next.js 13](https://nextjs.org/) - React framework + Server actions
 - [AniList](https://github.com/AniList/ApiV2-GraphQL-Docs) - API upon which Seanime is built
 - [Jotai](https://jotai.org/docs/recipes/large-objects) - State management library

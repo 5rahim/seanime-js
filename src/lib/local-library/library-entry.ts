@@ -168,7 +168,7 @@ export const inspectProspectiveLibraryEntry = async (props: {
                         media: prequel || fetchedMedia,
                         episode: episode,
                         increment: null,
-                        // _cache: _queriedMediaCache, // TODO: Implement cache
+                        _cache: _queriedMediaCache,
                         // increment: !season ? null : true,
                         // force: true
                     })

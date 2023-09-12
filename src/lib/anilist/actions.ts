@@ -95,6 +95,7 @@ export async function normalizeMediaEpisode(opts: {
     offset?: number,
     rootMedia?: AnilistShortMedia,
     force?: boolean
+    _cache?: Map<number, AnilistShortMedia>,
 }) {
     // media, episode, increment, offset, force
     if (!opts.media || !(opts.episode || opts.force)) return undefined
@@ -123,7 +124,13 @@ export async function normalizeMediaEpisode(opts: {
         }
         return obj
     }
-    media = (await useAniListAsyncQuery(AnimeShortMediaByIdDocument, { id: edge.id })).Media!
+
+    if (opts._cache?.has(edge.id)) {
+        media = opts._cache.get(edge.id)!
+    } else {
+        media = (await useAniListAsyncQuery(AnimeShortMediaByIdDocument, { id: edge.id })).Media!
+        opts._cache?.set(edge.id, media)
+    }
 
     const highest = media.nextAiringEpisode?.episode || media.episodes!
 
@@ -137,7 +144,7 @@ export async function normalizeMediaEpisode(opts: {
         return { media, episode, offset, increment, rootMedia }
     }
 
-    return normalizeMediaEpisode({ media, episode, increment, offset, rootMedia, force })
+    return normalizeMediaEpisode({ media, episode, increment, offset, rootMedia, force, _cache: opts?._cache })
 }
 
 export async function experimental__fetchRelatedMedia(

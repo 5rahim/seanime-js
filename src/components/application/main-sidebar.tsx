@@ -118,7 +118,9 @@ export const MainSidebar: React.FC<MainSidebarProps> = (props) => {
                             onSubmit={data => {
                                 authenticate(data.token)
                                 loginModal.close()
-                                refreshCollection()
+                                setTimeout(() => {
+                                    refreshCollection()
+                                }, 1000)
                             }}
                         >
                             <Field.Textarea name={"token"} className={"h-24"}/>
