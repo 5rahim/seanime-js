@@ -43,7 +43,7 @@ export class ScanLogging {
                 if (waitTime > 0) {
                     _output += `time to next task - ${(obj.timestamp - previousTimestamp)}ms\n`
                 }
-                _output += `[${obj.timestamp}] ${obj.log}\n`
+                _output += `[${new Date(obj.timestamp / 1000).toISOString()}] ${obj.log}\n`
                 previousTimestamp = obj.timestamp
             })
         }
@@ -57,7 +57,7 @@ export class ScanLogging {
         }
         // Generate the timestamp for the snapshot file name
         const timestamp = new Date().toISOString().replace(/:/g, "-")
-        const snapshotFilename = `scan_${timestamp}.txt`
+        const snapshotFilename = `scan_${timestamp}.log`
         const snapshotPath = path.join(snapshotDir, snapshotFilename)
 
         await fs.writeFile(snapshotPath, this.outputWithTime(), { encoding: "utf-8" })
