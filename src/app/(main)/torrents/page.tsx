@@ -132,6 +132,10 @@ function TorrentItem({ torrent, readableState, torrentManager, refetch }: Torren
                     <BiTime className={"inline-block mx-2 mb-0.5"}/>
                     {eta}
                     {` - `}
+                    <span>{torrent.seeds} {torrent.seeds !== 1 ? "seeds" : "seed"}</span>
+                    {` - `}
+                    <span>{torrent.peers} {torrent.peers !== 1 ? "peers" : "peer"}</span>
+                    {` - `}
                     <strong
                         className={cn({
                             "text-blue-300": state === "Seeding",
