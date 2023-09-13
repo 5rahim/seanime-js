@@ -89,6 +89,7 @@
     "react-stately": "^3.25.0",
     "react-use": "^17.4.0",
     "recharts": "^2.7.3",
+    "sharp": "^0.32.5",
     "string-similarity": "^4.0.4",
     "tailwind-merge": "^1.14.0",
     "tailwind-scrollbar-hide": "^1.1.7",

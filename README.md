@@ -1,6 +1,6 @@
 <h2 align="center"><b>Seanime</b></h2>
 
-<h4 align="center">Feature-packed, user-friendly app for managing your local library with AniList integration</h4>
+<h4 align="center">User-friendly, self-hosted web app for managing your local library with AniList integration</h4>
 
 <img src="docs/assets/main_4.png" alt="preview" width="100%"/>
 
@@ -35,7 +35,8 @@ similar software.
   - [x] Option to match files using AniList ID
 - [x] Detect episodes missing from your local library
 - [ ] Delete files
-- [ ] Manual hydration
+
+[//]: # (- [ ] Manual hydration)
 
 ### Download
 
@@ -90,15 +91,10 @@ effectively.
 Failure to do so may result in incorrect matches, especially when dealing with different seasons
 of the same series.
 
-## Use
+## Set up
 
 ### Self-hosted
 
-Seanime requires a Node.js server to run since it uses Next.js SSR and server actions.
-Since Tauri does not bundle Node.js by design, I'm still trying out multiple ways to release a production build with
-Node.js embedded.
-
-For now, users with Node.js installed can run Seanime's production build by following these steps:
 
 `Soon`
 
@@ -147,29 +143,23 @@ npm run dev
 Features that may be implemented
 
 - Manga support
+- Standalone Tauri/Electron app
 - Auto-download new episodes
 
 ## TODO
 
-Pre-release
-
-- [x] (release) Standalone Next.js server build
+- [ ] Remove Tauri
 - [ ] Package Next.js server to executable
-- [ ] Sidecar and run Node.js
 - [ ] Improve security
 - [ ] qbittorrent settings (executable path)
 - [ ] (advanced search) Filter by studios
 - [ ] Splashscreen
-
-Post-release
-
 - [ ] (repository) Delete files
 - [ ] (library) Manual hydration - similar to "resolve unmatched"
 - [ ] Logs settings, directory, display logs in-app
 - [ ] Option to automatically update progress without confirmation
 - [ ] (library) Filename tag system for faster matching
 - [ ] Auto-pick page
-- [ ] Migrate to Tauri v2 (when stable)
 - [ ] Offline mode
 - [ ] Tests
 
@@ -178,7 +168,6 @@ Post-release
 Resources used to build Seanime.
 
 - [React](https://react.dev/)
-- [Tauri](https://tauri.app/)
 - [Next.js 13](https://nextjs.org/) - React framework + Server actions
 - [AniList](https://github.com/AniList/ApiV2-GraphQL-Docs) - API upon which Seanime is built
 - [Jotai](https://jotai.org/docs/recipes/large-objects) - State management library

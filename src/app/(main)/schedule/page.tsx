@@ -23,7 +23,7 @@ export default function Page() {
                 <ComingUpNext/>
             </AppLayoutStack>
             <AppLayoutStack>
-                <h2>Releases</h2>
+                <h2>Recent releases</h2>
                 <RecentReleases/>
             </AppLayoutStack>
             {/*New releases from other media (à la Crunchyroll New section)*/}

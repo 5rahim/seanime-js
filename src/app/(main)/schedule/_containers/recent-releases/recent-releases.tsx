@@ -19,9 +19,9 @@ export function RecentReleases(props: Props) {
         queryFn: async () => {
             return await useAniListAsyncQuery(ListRecentAiringsDocument, {
                 page: 1,
-                perPage: 30,
+                perPage: 50,
                 airingAt_lesser: Math.floor(new Date().getTime() / 1000),
-                airingAt_greater: Math.floor(subDays(new Date(), 7).getTime() / 1000),
+                airingAt_greater: Math.floor(subDays(new Date(), 14).getTime() / 1000),
             })
         },
         keepPreviousData: false,
@@ -30,7 +30,7 @@ export function RecentReleases(props: Props) {
     return (
         <>
             <Slider>
-                {data?.Page?.airingSchedules?.filter(item => item?.media?.isAdult === false && item?.media?.type === "ANIME").filter(Boolean).map(item => {
+                {data?.Page?.airingSchedules?.filter(item => item?.media?.isAdult === false && item?.media?.type === "ANIME" && item?.media?.countryOfOrigin === "JP").filter(Boolean).map(item => {
                     return (
                         <LargeEpisodeListItem
                             key={item.id}
