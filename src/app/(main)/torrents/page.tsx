@@ -15,7 +15,6 @@ import { BiPause } from "@react-icons/all-files/bi/BiPause"
 import { BiPlay } from "@react-icons/all-files/bi/BiPlay"
 import { BiFolder } from "@react-icons/all-files/bi/BiFolder"
 import { openDirectoryInExplorer } from "@/lib/helpers/directory"
-import { type } from "@tauri-apps/api/os"
 import { Tooltip } from "@/components/ui/tooltip"
 import { BiStop } from "@react-icons/all-files/bi/BiStop"
 import { BiUpArrow } from "@react-icons/all-files/bi/BiUpArrow"
@@ -151,7 +150,7 @@ function TorrentItem({ torrent, readableState, torrentManager, refetch }: Torren
                         intent={"gray-subtle"}
                         className={"flex-none"}
                         onClick={async () => {
-                            openDirectoryInExplorer(torrent.savePath, await type())
+                            openDirectoryInExplorer(torrent.savePath)
                         }}
                     />
                 </div>

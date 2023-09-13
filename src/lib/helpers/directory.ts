@@ -3,7 +3,6 @@
 import fs from "fs/promises"
 import { Settings } from "@/atoms/settings"
 import { runCommand } from "@/lib/helpers/child-process"
-import { OsType } from "@tauri-apps/api/os"
 import { fileOrDirectoryExists } from "@/lib/helpers/file"
 import { PathLike } from "fs"
 
@@ -18,18 +17,19 @@ export async function openDirectory(path: PathLike) {
     }
 }
 
-export async function openLocalDirectoryInExplorer(settings: Settings, osType: OsType) {
+export async function openLocalDirectoryInExplorer(settings: Settings) {
     const path = settings.library.localDirectory
+    const osType = process.platform
 
     let explorer
     switch (osType) {
-        case "Windows_NT":
+        case "win32":
             explorer = "explorer"
             break
-        case "Linux":
+        case "linux":
             explorer = "xdg-open"
             break
-        case "Darwin":
+        case "darwin":
             explorer = "open"
             break
     }
@@ -40,17 +40,18 @@ export async function openLocalDirectoryInExplorer(settings: Settings, osType: O
 }
 
 
-export async function openDirectoryInExplorer(path: string, osType: OsType) {
+export async function openDirectoryInExplorer(path: string) {
 
     let explorer
+    const osType = process.platform
     switch (osType) {
-        case "Windows_NT":
+        case "win32":
             explorer = "explorer"
             break
-        case "Linux":
+        case "linux":
             explorer = "xdg-open"
             break
-        case "Darwin":
+        case "darwin":
             explorer = "open"
             break
     }

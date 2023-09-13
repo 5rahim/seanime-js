@@ -11,8 +11,7 @@ import { useSettings } from "@/atoms/settings"
 import { useRouter } from "next/navigation"
 import { useAtomValue, useSetAtom } from "jotai/react"
 import { useStableSelectAtom } from "@/atoms/helpers"
-import { useAsyncFn, useMount } from "react-use"
-import { open } from "@tauri-apps/api/dialog"
+import { useMount } from "react-use"
 import { TorrentManager } from "@/lib/download"
 import { FcFolder } from "@react-icons/all-files/fc/FcFolder"
 import { Tooltip } from "@/components/ui/tooltip"
@@ -86,18 +85,6 @@ export const TorrentSearchTorrentList: React.FC<TorrentListProps> = (props) => {
         }
     })
 
-    const [state, selectDir] = useAsyncFn(async () => {
-        const selected = await open({
-            directory: true,
-            multiple: false,
-            defaultPath: selectedDir,
-        })
-        if (selected) {
-            setSelectedDir((selected ?? undefined) as string | undefined)
-            return selected
-        }
-    }, [selectedDir])
-
     async function kickstartTorrentManager() {
         setIsLoading(true)
         await torrentManager.current.kickstart()
@@ -153,7 +140,7 @@ export const TorrentSearchTorrentList: React.FC<TorrentListProps> = (props) => {
             <Tooltip trigger={<p
                 className={"text-sm font-medium flex items-center gap-2 rounded-md border border-[--border] p-2 cursor-pointer mb-2"}
                 onClick={async () => {
-                    await selectDir()
+                    // TODO Select dir
                 }}
             >
                 <FcOpenedFolder className={"text-2xl"}/>

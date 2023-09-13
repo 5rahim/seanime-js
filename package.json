@@ -3,14 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "concurrent:dev": "concurrently \"npm:cli:dev\" \"npm:next:dev\"",
-    "cli:dev": "tsx watch src/cli/bin.ts",
-    "next:dev": "next dev --port=7777",
-    "dev": "tauri dev",
+    "dev": "next dev --port=7777",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "tauri": "tauri",
     "codegen": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
@@ -34,7 +30,6 @@
     "@tailwindcss/typography": "^0.5.9",
     "@tanstack/react-query": "^4.32.6",
     "@tanstack/react-table": "^8.9.3",
-    "@tauri-apps/api": "^1.4.0",
     "@total-typescript/ts-reset": "^0.4.2",
     "@types/node": "20.4.9",
     "@types/react": "18.2.20",

@@ -16,7 +16,6 @@ import {
 import toast from "react-hot-toast"
 import { Nullish } from "@/types/common"
 import { openDirectoryInExplorer } from "@/lib/helpers/directory"
-import { type } from "@tauri-apps/api/os"
 
 export const TorrentManager = (settings: Settings) => {
 
@@ -26,7 +25,7 @@ export const TorrentManager = (settings: Settings) => {
             try {
                 const isUp = await _qBit_isUp()
                 if (!isUp) {
-                    await openDirectoryInExplorer(`C:\\Program Files\\qBittorrent\\qbittorrent.exe`, await type())
+                    await openDirectoryInExplorer(`C:\\Program Files\\qBittorrent\\qbittorrent.exe`)
                 }
             } catch (e) {
 
