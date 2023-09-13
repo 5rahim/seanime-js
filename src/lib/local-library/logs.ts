@@ -41,9 +41,9 @@ export class ScanLogging {
             value.forEach(obj => {
                 const waitTime = (obj.timestamp - previousTimestamp)
                 if (waitTime > 0) {
-                    _output += `time to next task - ${(obj.timestamp - previousTimestamp)}ms\n`
+                    _output += `waited ${(obj.timestamp - previousTimestamp)}ms\n`
                 }
-                _output += `[${new Date(obj.timestamp / 1000).toISOString()}] ${obj.log}\n`
+                _output += `[${new Date(obj.timestamp).toISOString()}] ${obj.log}\n`
                 previousTimestamp = obj.timestamp
             })
         }

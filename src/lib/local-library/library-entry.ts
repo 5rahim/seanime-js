@@ -32,7 +32,8 @@ export type ProspectiveLibraryEntry = {
 
 /**
  * This function inspects all the files that were grouped under a same media
- * It rates them and reject files with certain parameters
+ * - Rejects files with certain parameters
+ * - Hydrates file metadata
  */
 export const inspectProspectiveLibraryEntry = async (props: {
     media: AnilistShowcaseMedia,
@@ -135,24 +136,22 @@ export const inspectProspectiveLibraryEntry = async (props: {
                 const season = getLocalFileParsedSeason(file.parsedInfo, file.parsedFolderInfo)
                 const episode = getLocalFileParsedEpisode(file.parsedInfo)
 
-                _scanLogging.add(file.path, `Checking for absolute episode number`)
+                _scanLogging.add(file.path, "Hydrating metadata")
 
                 // The parser got an absolute episode number, we will normalize it and give the file the correct ID
                 if (!!highestEp && !!episode && episode > highestEp) {
 
-                    logger("library-entry/inspectProspectiveLibraryEntry").warning(currentMedia.title?.userPreferred, `Absolute episode number detected`)
                     _scanLogging.add(file.path, "warning - Absolute episode number detected")
 
                     // Fetch the same media but with all necessary info (relations prop) to find the relative episode
                     let fetchedMedia: AnilistShortMedia | null | undefined
-                    _scanLogging.add(file.path, "   -> Fetching necessary relations details [AnimeShortMediaByIdDocument]")
+                    _scanLogging.add(file.path, "   -> Analyzing media relations [AnimeShortMediaByIdDocument]")
                     if (!_queriedMediaCache.has(currentMedia.id)) {
-                        logger("library-entry/inspectProspectiveLibraryEntry").warning(`    -> Cache MISS - Querying necessary relations details for media`)
+                        _scanLogging.add(file.path, "   -> Cache MISS - Querying media relations")
                         fetchedMedia = (await useAniListAsyncQuery(AnimeShortMediaByIdDocument, { id: currentMedia.id })).Media
                         if (fetchedMedia) _queriedMediaCache.set(currentMedia.id, fetchedMedia)
                     } else {
-                        _scanLogging.add(file.path, "   -> Cache HIT - Retrieving necessary relations details for media")
-                        logger("library-entry/inspectProspectiveLibraryEntry").warning(`    -> Fetching necessary relations details (Cache HIT)`)
+                        _scanLogging.add(file.path, "   -> Cache HIT - Related media retrieved")
                         fetchedMedia = _queriedMediaCache.get(currentMedia.id)
                     }
 
@@ -163,6 +162,8 @@ export const inspectProspectiveLibraryEntry = async (props: {
                             : undefined)
                     ) : undefined
 
+                    _scanLogging.add(file.path, "   -> Normalizing episode number")
+
                     // value bigger than episode count
                     const result = await normalizeMediaEpisode({
                         media: prequel || fetchedMedia,
@@ -172,27 +173,46 @@ export const inspectProspectiveLibraryEntry = async (props: {
                         // increment: !season ? null : true,
                         // force: true
                     })
-                    _scanLogging.add(file.path, `   -> Normalized episode ${episode} to ${result?.episode}`)
-                    logger("library-entry/inspectProspectiveLibraryEntry").warning(`    -> Normalized episode ${episode} to ${result?.episode}`)
-                    if (result?.episode && result?.episode > 0) {
-                        // Replace episode and mediaId
-                        mostAccurateFiles[i].metadata.episode = result.episode
-                        mostAccurateFiles[i].metadata.aniDBEpisodeNumber = String(result.episode)
-                        mostAccurateFiles[i].mediaId = result.rootMedia.id
-
-                        _scanLogging.add(file.path, `   -> Overriding Media ID ${currentMedia.id} to ${result.rootMedia.id}`)
+                    if (result?.episode === episode) { // This might happen only when the media format is not defined,and it might be a movie
+                        _scanLogging.add(file.path, `   -> Normalization found the same episode numbers (${result?.episode})`)
+                        if (currentMedia.episodes && currentMedia.episodes < episode) {
+                            _scanLogging.add(file.path, `   -> Ceiling is ${currentMedia.episodes}, changing episode ${episode} to ${currentMedia.episodes}`)
+                            mostAccurateFiles[i].metadata.episode = currentMedia.episodes
+                            mostAccurateFiles[i].metadata.aniDBEpisodeNumber = String(currentMedia.episodes)
+                        }
                     } else {
-                        mostAccurateFiles[i].metadata.episode = episode
-                        mostAccurateFiles[i].metadata.aniDBEpisodeNumber = String(episode)
-                        _scanLogging.add(file.path, `   -> error - Could not normalize the episode number`)
+                        _scanLogging.add(file.path, `   -> Normalization mapped episode ${episode} to ${result?.episode}`)
+                        if (result?.episode && result?.episode > 0) {
+                            // Replace episode and mediaId
+                            mostAccurateFiles[i].metadata.episode = result.episode
+                            mostAccurateFiles[i].metadata.aniDBEpisodeNumber = String(result.episode)
+                            mostAccurateFiles[i].mediaId = result.rootMedia.id
+
+                            _scanLogging.add(file.path, `   -> Overriding Media ID ${currentMedia.id} to ${result.rootMedia.id}`)
+                        } else {
+                            mostAccurateFiles[i].metadata.episode = episode
+                            mostAccurateFiles[i].metadata.aniDBEpisodeNumber = String(episode)
+                            _scanLogging.add(file.path, `   -> error - Could not normalize the episode number`)
+                        }
                     }
                 } else {
-                    mostAccurateFiles[i].metadata.episode = episode
-                    mostAccurateFiles[i].metadata.aniDBEpisodeNumber = String(episode)
-                    _scanLogging.add(file.path, `   -> Did not detect absolute episode number`)
+                    if (!!episode) {
+                        _scanLogging.add(file.path, `   -> episode = ${episode}`)
+                        _scanLogging.add(file.path, `   -> aniDBEpisodeNumber = ${episode}`)
+                        mostAccurateFiles[i].metadata.episode = episode
+                        mostAccurateFiles[i].metadata.aniDBEpisodeNumber = String(episode)
+                    } else {
+                        _scanLogging.add(file.path, `   -> No episode parsed but media format is not "MOVIE"`)
+                        if ((!!currentMedia.episodes && currentMedia.episodes === 1)) {
+                            _scanLogging.add(file.path, `   -> Ceiling is 1, setting episode number 1`)
+                            mostAccurateFiles[i].metadata.episode = 1
+                            mostAccurateFiles[i].metadata.aniDBEpisodeNumber = "1"
+                        } else {
+                            _scanLogging.add(file.path, `error - Potential parsing error, episode number is undefined`)
+                        }
+                    }
                 }
 
-                _scanLogging.add(file.path, `Hydrating Specials/NC metadata if needed`)
                 // We already know the media isn't a movie
                 // eg: One Punch Man > One Punch Man OVA 01.mkv -> Matched with "One Punch Man" whose format is TV -> isSpecial = true
                 // Marking an episode as Special will allow better mapping with AniDB -> episodes[aniDBEpisodeNumber]
@@ -210,8 +230,10 @@ export const inspectProspectiveLibraryEntry = async (props: {
             }
 
         } else {
-            if (currentMedia.format === "MOVIE" || (currentMedia.episodes && currentMedia.episodes === 1)) {
+            if ((currentMedia.format === "MOVIE" && currentMedia.episodes === 1) || (!!currentMedia.episodes && currentMedia.episodes === 1)) {
                 for (let i = 0; i < mostAccurateFiles.length; i++) {
+                    _scanLogging.add(mostAccurateFiles[i].path, "Hydrating movie metadata")
+
                     mostAccurateFiles[i].metadata.episode = 1
                     mostAccurateFiles[i].metadata.aniDBEpisodeNumber = "1"
                 }

@@ -3,9 +3,9 @@ import { PrimitiveAtom } from "jotai"
 import { LocalFile } from "@/lib/local-library/local-file"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
 import { AnifyEpisodeCover } from "@/lib/anify/types"
-import React from "react"
+import React, { useMemo } from "react"
 import { useSelectAtom } from "@/atoms/helpers"
-import { formatDistanceToNow } from "date-fns"
+import { formatDistanceToNow, isBefore, subYears } from "date-fns"
 import { LargeEpisodeListItem } from "@/components/shared/large-episode-list-item"
 import { valueContainsNC, valueContainsSpecials } from "@/lib/local-library/utils"
 
@@ -45,19 +45,25 @@ function Item({ fileAtom, aniZipData, anifyEpisodeCovers, onPlayFile, media }: I
 
     const image = () => {
         if (!!fileName && (!valueContainsSpecials(fileName) && !valueContainsNC(fileName))) {
-            return (anifyEpisodeCover || aniZipEpisode?.image)
+            return (anifyEpisodeCover || aniZipEpisode?.image || media.bannerImage || media.coverImage?.large)
         } else if (!!fileName) {
             return undefined
         }
-        return (aniZipEpisode?.image || anifyEpisodeCover)
+        return (aniZipEpisode?.image || anifyEpisodeCover || media.bannerImage || media.coverImage?.large)
     }
+
+    const mediaIsOlder = useMemo(() => date ? isBefore(date, subYears(new Date(), 2)) : undefined, [])
 
     return (
         <LargeEpisodeListItem
             image={image()}
-            title={`Episode ${metadata.episode}`}
-            topTitle={aniZipEpisode?.title?.en}
-            meta={(date) ? `Aired ${formatDistanceToNow(date, { addSuffix: true })}` : undefined}
+            title={(media.format === "MOVIE" && metadata.episode === 1) ? "Complete movie" : (!!metadata.episode ? `Episode ${metadata.episode}` : media.title?.userPreferred || "")}
+            topTitle={!((media.format === "MOVIE" && metadata.episode === 1)) ? aniZipEpisode?.title?.en : ``}
+            meta={(date) ? (!mediaIsOlder ? `${formatDistanceToNow(date, { addSuffix: true })}` : new Intl.DateTimeFormat("en-US", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "2-digit",
+            }).format(date)) : undefined}
             onClick={() => {
                 onPlayFile(path)
             }}

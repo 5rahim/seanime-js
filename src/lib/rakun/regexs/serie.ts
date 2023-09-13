@@ -27,8 +27,8 @@ export default {
                 /[-._](?<episode>\d{1,2})[-._]/,
                 /(?<episode>\d{2,})\s+END(?: |$)/,
                 /#(?<episode>\d+)(?: |$)/,
-                /\s(?<episode>0?\d+)'(?: |$)/, // 01'
-                /\s(?<episode>\d+)[.v]([1-9]|0\d|2[0-9])(?: |$)/, //` 01v2` `01v2 `
+                /(\s|E)(?<episode>0?\d+)'(?: |$)/, // 01'
+                /(\s|E)(?<episode>\d+)[.v]([1-9]|0\d|2[0-9])(?: |$)/, //` 01v2` `01v2 `
             ],
             keep: [
                 /- \b(?<episode>\d+)(?= |$)\b/, // KEEP `This - 01 - [02]`, NOT `Not this - 01 Text here`

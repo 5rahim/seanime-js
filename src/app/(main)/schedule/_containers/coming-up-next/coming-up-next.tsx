@@ -22,6 +22,7 @@ export function ComingUpNext(props: Props) {
                 {media.map(item => {
                     return (
                         <div
+                            key={item.id}
                             className={"rounded-md border border-gray-800 overflow-hidden aspect-[4/2] w-96 relative flex items-end flex-none group/missed-episode-item"}
                         >
                             <div

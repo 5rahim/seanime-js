@@ -73,6 +73,7 @@ export function TorrentSearchModal(props: Props) {
             draft.isOpen = false
             return
         })}
+        title={"Torrent search"}
         isClosable
         size={"2xl"}
     >
@@ -248,14 +249,16 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
                     <Button onClick={torrentListModal.open}>View selected torrents ({selectedTorrents.length})</Button>
                 </div>}
 
-                <div>
-                    Episodes to
-                    download: {downloadInfo.episodeNumbers.slice(0, 12).join(", ")}{downloadInfo.episodeNumbers.length > 12 ? ", ..." : "."}
-                </div>
-                {episodeOffset && episodeOffset > 0 && <div>
-                    Episodes with
-                    offset: {downloadInfo.episodeNumbers.slice(0, 12).map(n => n + episodeOffset).join(", ")}{downloadInfo.episodeNumbers.length > 12 ? ", ..." : "."}
-                </div>}
+                {(media.format !== "MOVIE" && media.episodes !== 1) && <>
+                    <div>
+                        Episodes to
+                        download: {downloadInfo.episodeNumbers.slice(0, 12).join(", ")}{downloadInfo.episodeNumbers.length > 12 ? ", ..." : "."}
+                    </div>
+                    {!!(episodeOffset && episodeOffset > 0) && <div>
+                        Episodes with
+                        offset: {downloadInfo.episodeNumbers.slice(0, 12).map(n => n + episodeOffset).join(", ")}{downloadInfo.episodeNumbers.length > 12 ? ", ..." : "."}
+                    </div>}
+                </>}
 
                 <div className={"space-y-2"}>
                     <h4>Quick search parameters</h4>

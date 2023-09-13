@@ -134,7 +134,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
 
                 <div className={"space-y-10"}>
 
-                    {(status !== "COMPLETED" && toWatchSlider.length > 0) && (
+                    {(toWatchSlider.length > 0) && (
                         <>
                             <EpisodeSectionSlider
                                 fileAtoms={toWatchSlider}

@@ -11,7 +11,7 @@ export default function Page() {
 
     useMount(() => {
 
-        console.log(rakun.parse("[Erai-raws] Spy x Family Cour 02 - 04 [1080p][Multiple Subtitle][46F7D7A1].mkv"))
+        console.log(rakun.parse("[Judas] Blue Lock - S01E01v2.mkv"))
     })
 
     return (
