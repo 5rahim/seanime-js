@@ -17,7 +17,6 @@ import { BiCollection } from "@react-icons/all-files/bi/BiCollection"
 import { FcFile } from "@react-icons/all-files/fc/FcFile"
 import { BiFolder } from "@react-icons/all-files/bi/BiFolder"
 import { openDirectoryInExplorer } from "@/lib/helpers/directory"
-import { type } from "@tauri-apps/api/os"
 
 export const __ignoredFilesDrawerIsOpenAtom = atom(false)
 
@@ -86,7 +85,7 @@ export function Item(props: Props) {
                             intent={"gray-subtle"}
                             className={"flex-none"}
                             onClick={async () => {
-                                openDirectoryInExplorer(path.replace(name, ""), await type())
+                                openDirectoryInExplorer(path.replace(name, ""))
                             }}
                         />
                     </div>

@@ -148,7 +148,6 @@ Features that may be implemented
 
 ## TODO
 
-- [ ] Remove Tauri
 - [ ] Package Next.js server to executable
 - [ ] Improve security
 - [ ] qbittorrent settings (executable path)

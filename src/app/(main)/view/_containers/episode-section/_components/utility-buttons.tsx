@@ -7,7 +7,6 @@ import { VideoPlayerRepository } from "@/lib/video-player"
 import { BiFolder } from "@react-icons/all-files/bi/BiFolder"
 import toast from "react-hot-toast"
 import { openDirectoryInExplorer } from "@/lib/helpers/directory"
-import { type } from "@tauri-apps/api/os"
 import React from "react"
 import { useSetLocalFiles } from "@/atoms/library/local-file.atoms"
 import { DropdownMenu } from "@/components/ui/dropdown-menu"
@@ -30,7 +29,7 @@ export const UtilityButtons = (props: { entryAtom: Atom<LibraryEntry> }) => {
                 className={"hover:opacity-60"}
                 onClick={async () => {
                     const tID = toast.loading("Opening")
-                    await openDirectoryInExplorer(sharedPath, await type())
+                    await openDirectoryInExplorer(sharedPath)
                     setTimeout(() => {
                         toast.remove(tID)
                     }, 1000)

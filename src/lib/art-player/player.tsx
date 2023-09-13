@@ -6,7 +6,6 @@ import { useEffect, useRef } from "react"
 import Artplayer from "artplayer"
 import Hls from "hls.js"
 import { type Option } from "artplayer/types/option"
-import { appWindow } from "@tauri-apps/api/window"
 import { useAtom } from "jotai/react"
 import { streamingAutoplayAtom, streamingResolutionAtom } from "@/atoms/streaming/streaming.atoms"
 import { BiPlay } from "@react-icons/all-files/bi/BiPlay"
@@ -246,8 +245,6 @@ export function ArtPlayer(
                 if ("key" in event) {
                     if ((event as KeyboardEvent).key === "f" || (event as KeyboardEvent).key === "F") {
                         art.fullscreen = !art.fullscreen
-                        await appWindow.setFullscreen(!art.fullscreen)
-                        await appWindow.maximize()
                         // await appWindow.setPosition(new LogicalPosition(1, 0));
                     }
                 }

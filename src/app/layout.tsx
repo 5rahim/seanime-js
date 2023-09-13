@@ -4,11 +4,8 @@ import { Inter } from "next/font/google"
 import { ClientProviders } from "@/components/client-providers"
 import { MainLayout } from "@/components/application/main-layout"
 import { AtomPreloader } from "@/atoms/storage"
-import dynamic from "next/dynamic"
 import { Suspense } from "react"
 import { LoadingOverlay } from "@/components/ui/loading-spinner"
-
-const TitleBar = dynamic(() => import("@/components/application/titlebar"), { ssr: false })
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -29,7 +26,6 @@ export default async function RootLayout(
         <html lang="en" suppressHydrationWarning>
         <body className={inter.className}>
         <script src="http://127.0.0.1:8097"></script>
-        <TitleBar/>
         <ClientProviders>
             <Suspense fallback={<LoadingOverlay/>}>
                 <AtomPreloader/>
