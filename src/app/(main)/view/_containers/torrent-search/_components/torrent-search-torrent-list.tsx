@@ -194,18 +194,18 @@ export const TorrentSearchTorrentList: React.FC<TorrentListProps> = (props) => {
                 ))}
             </div>
             <div className={"mt-4 flex w-full justify-end gap-2"}>
+                {(selectedTorrents.length > 0 && canDownloadUnwatched) && <Button
+                    leftIcon={<BiCollection/>}
+                    intent={"white-outline"}
+                    onClick={handleSmartAddTorrents}
+                    isDisabled={isLoading}
+                >Download non-watched/missing only</Button>}
                 {selectedTorrents.length > 0 && <Button
                     leftIcon={<BiDownload/>}
                     intent={"white"}
                     onClick={handleAddTorrents}
                     isDisabled={isLoading}
                 >Download</Button>}
-                {(selectedTorrents.length > 0 && canDownloadUnwatched) && <Button
-                    leftIcon={<BiCollection/>}
-                    intent={"success"}
-                    onClick={handleSmartAddTorrents}
-                    isDisabled={isLoading}
-                >Download non-watched only</Button>}
             </div>
         </div>
     </>
