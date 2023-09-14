@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
 import { ListRecentAiringsDocument } from "@/gql/graphql"
 import { addSeconds, formatDistanceToNow, subDays } from "date-fns"
-import React from "react"
+import React, { useEffect } from "react"
 import { Slider } from "@/components/shared/slider"
 import { LargeEpisodeListItem } from "@/components/shared/large-episode-list-item"
 import { useRouter } from "next/navigation"
@@ -27,10 +27,18 @@ export function RecentReleases(props: Props) {
         keepPreviousData: false,
     })
 
+    useEffect(() => {
+        console.log(data)
+    }, [data])
+
     return (
         <>
             <Slider>
-                {data?.Page?.airingSchedules?.filter(item => item?.media?.isAdult === false && item?.media?.type === "ANIME" && item?.media?.countryOfOrigin === "JP").filter(Boolean).map(item => {
+                {data?.Page?.airingSchedules?.filter(item => item?.media?.isAdult === false
+                    && item?.media?.type === "ANIME"
+                    && item?.media?.countryOfOrigin === "JP"
+                    && item?.media?.format !== "TV_SHORT",
+                ).filter(Boolean).map(item => {
                     return (
                         <LargeEpisodeListItem
                             key={item.id}

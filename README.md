@@ -95,25 +95,7 @@ of the same series.
 
 1. Install [Node.js](https://nodejs.org/en/download)
 
-2. Download Seanime and unzip files
-
-`Soon`
-
-[//]: # (```shell)
-
-[//]: # (cd %PATH%)
-
-[//]: # (```)
-
-3. Run the CLI
-
-`Soon`
-
-[//]: # (```shell)
-
-[//]: # (npx seanime-cli init)
-
-[//]: # (```)
+2. `Soon`
 
 
 ## Development
@@ -140,6 +122,15 @@ npm install
 npm run dev
 ```
 
+## Build
+
+```shell
+npm run build
+```
+
+- Copy `.next/static` to `.next/standalone/.next/static`
+- Copy `public` to `.next/standalone/public`
+
 ## Known issues
 
 - Authentication is hit or miss
@@ -158,7 +149,7 @@ npm run dev
 Features that may be implemented
 
 - Manga support
-- Standalone Tauri/Electron app
+- Desktop app
 - Auto-download new episodes
 
 ## TODO
