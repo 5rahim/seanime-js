@@ -31,7 +31,7 @@ export default function Page() {
                 defaultValues={settings.library}
             >
                 <Field.Text
-                    label={"Local directory"}
+                    // label={"Local directory"}
                     help={"Where your anime files are located/will be downloaded."}
                     name={"localDirectory"}
                 />

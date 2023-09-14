@@ -6,7 +6,7 @@ const nextConfig = {
     },
     swcMinify: true,
     images: {
-        // unoptimized: true,
+        unoptimized: true,
         remotePatterns: [
             {hostname: "s4.anilist.co"},
             {hostname: "cdn.myanimelist.net"},
