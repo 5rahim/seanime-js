@@ -79,8 +79,6 @@ Powered by qBittorrent and Nyaa
 - [ ] Offline mode
 
 <img src="docs/assets/img_8.png" alt="preview" width="100%"/>
-<br/>
-<img src="docs/assets/img_9.png" alt="preview" width="100%"/>
 
 ## Caveats
 
@@ -95,12 +93,28 @@ of the same series.
 
 ### Self-hosted
 
+1. Install [Node.js](https://nodejs.org/en/download)
+
+2. Download Seanime and unzip files
 
 `Soon`
 
-### Release
+[//]: # (```shell)
+
+[//]: # (cd %PATH%)
+
+[//]: # (```)
+
+3. Run the CLI
 
 `Soon`
+
+[//]: # (```shell)
+
+[//]: # (npx seanime-cli init)
+
+[//]: # (```)
+
 
 ## Development
 
@@ -129,6 +143,7 @@ npm run dev
 ## Known issues
 
 - Authentication is hit or miss
+- Initial settings are not applied
 - :shrug:
 
 ## Not planned
@@ -148,6 +163,7 @@ Features that may be implemented
 
 ## TODO
 
+- [ ] Directory picker
 - [ ] Package Next.js server to executable
 - [ ] Improve security
 - [ ] qbittorrent settings (executable path)

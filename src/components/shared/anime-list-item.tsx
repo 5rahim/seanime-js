@@ -78,7 +78,7 @@ export const AnimeListItem = ((props: AnimeListItemProps) => {
                             {/*}>{media.title?.userPreferred}</Tooltip>*/}
                             <Link
                                 href={`/view/${media.id}`}
-                                className={"text-center font-medium text-sm min-[2000px]:text-lg px-4 line-clamp-3"}
+                                className={"text-center font-medium text-sm lg:text-lg min-[2000px]:text-lg px-4 line-clamp-2"}
                             >{media.title?.userPreferred}</Link>
                         </div>
                         {!!media.startDate?.year && <div>
@@ -174,7 +174,7 @@ export const AnimeListItem = ((props: AnimeListItemProps) => {
             </div>
             <div className={"pt-2 space-y-2 flex flex-col justify-between h-full"}>
                 <div>
-                    <p className={"text-center font-semibold text-sm min-[2000px]:text-lg line-clamp-3"}>{media.title?.userPreferred}</p>
+                    <p className={"text-center font-semibold text-sm lg:text-md min-[2000px]:text-lg line-clamp-3"}>{media.title?.userPreferred}</p>
                 </div>
                 <div>
                     <div>
