@@ -179,7 +179,7 @@ export function useDraggableScroll(
                 hasReachedHorizontalEdges
             ) {
                 internalState.current.scrollSpeedX = 0
-                clearInterval(keepMovingX)
+                clearInterval(keepMovingX as any)
             }
         }, timing)
 
@@ -200,7 +200,7 @@ export function useDraggableScroll(
                 hasReachedVerticalEdges
             ) {
                 internalState.current.scrollSpeedY = 0
-                clearInterval(keepMovingY)
+                clearInterval(keepMovingY as any)
             }
         }, timing)
 
@@ -346,8 +346,8 @@ export function useDraggableScroll(
             window.removeEventListener("mousemove", onMouseMove)
             window.removeEventListener("resize", handleResize)
 
-            clearInterval(keepMovingX)
-            clearInterval(keepMovingY)
+            clearInterval(keepMovingX as any)
+            clearInterval(keepMovingY as any)
             clearTimeout(rubberBandAnimationTimer)
         }
     }, [isMounted])

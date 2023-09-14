@@ -3,7 +3,8 @@
 import fs from "fs/promises"
 import { Settings } from "@/atoms/settings"
 import { runCommand } from "@/lib/helpers/child-process"
-import { fileOrDirectoryExists } from "@/lib/helpers/file"
+import { directoryExists, fileOrDirectoryExists } from "@/lib/helpers/file"
+import path from "path"
 import { PathLike } from "fs"
 
 export async function openDirectory(path: PathLike) {
@@ -16,6 +17,32 @@ export async function openDirectory(path: PathLike) {
         }
     }
 }
+
+export async function getSafeFoldersFromDirectory(_path: string): Promise<{ data: { name: string, path: string }[], error: string | null, parentFolder: string | null }> {
+    if (_path && path.isAbsolute(_path)) {
+
+        const parentPath = path.dirname(_path)
+
+        if (!await directoryExists(_path)) {
+            return { data: [], error: "Directory does not exist", parentFolder: parentPath }
+        }
+
+        try {
+            const folders = await fs.readdir(_path, { withFileTypes: true })
+            return {
+                data: folders.filter(dirent => dirent.isDirectory()).map(folder => ({ name: folder.name, path: folder.path + "\\" + folder.name })),
+                error: null,
+                parentFolder: parentPath,
+            }
+        } catch (e) {
+            return { data: [], error: "Could not retrieve folders", parentFolder: parentPath }
+        }
+    } else {
+        return { data: [], error: "Empty path", parentFolder: null }
+    }
+}
+
+
 
 export async function openLocalDirectoryInExplorer(settings: Settings) {
     const path = settings.library.localDirectory

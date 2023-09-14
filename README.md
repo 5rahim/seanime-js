@@ -91,12 +91,7 @@ of the same series.
 
 ## Set up
 
-### Self-hosted
-
-1. Install [Node.js](https://nodejs.org/en/download)
-
-2. `Soon`
-
+[How to set up Seanime.](https://github.com/5rahim/seanime/blob/main/docs/set-up.md)
 
 ## Development
 
@@ -133,8 +128,6 @@ npm run build
 
 ## Known issues
 
-- Authentication is hit or miss
-- Initial settings are not applied
 - :shrug:
 
 ## Not planned
@@ -155,11 +148,9 @@ Features that may be implemented
 ## TODO
 
 - [ ] Directory picker
-- [ ] Package Next.js server to executable
 - [ ] Improve security
 - [ ] qbittorrent settings (executable path)
 - [ ] (advanced search) Filter by studios
-- [ ] Splashscreen
 - [ ] (repository) Delete files
 - [ ] (library) Manual hydration - similar to "resolve unmatched"
 - [ ] Logs settings, directory, display logs in-app

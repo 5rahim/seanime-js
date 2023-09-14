@@ -43,7 +43,7 @@ export const LocalLibrary: React.FC<LocalLibraryProps> = (props) => {
                 <Divider/>
                 <h2>Currently watching</h2>
                 <div
-                    className={"grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 min-[2000px]:grid-cols-8 gap-4"}>
+                    className={"grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 min-[2000px]:grid-cols-8 gap-4"}>
                     {currentlyWatchingEntryAtoms.map(entryAtom => {
                         return <EntryAnimeItem key={`${entryAtom}`} entryAtom={entryAtom}/>
                     })}
@@ -51,7 +51,7 @@ export const LocalLibrary: React.FC<LocalLibraryProps> = (props) => {
                 <Divider/>
             </>}
             <div
-                className={"grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 min-[2000px]:grid-cols-8 gap-4"}>
+                className={"grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 min-[2000px]:grid-cols-8 gap-4"}>
                 {restEntryAtoms.map(entryAtom => {
                     return <EntryAnimeItem key={`${entryAtom}`} entryAtom={entryAtom}/>
                 })}
@@ -60,7 +60,7 @@ export const LocalLibrary: React.FC<LocalLibraryProps> = (props) => {
                 <Divider/>
                 <h2>Completed</h2>
                 <div
-                    className={"grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 min-[2000px]:grid-cols-8 gap-4"}>
+                    className={"grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 min-[2000px]:grid-cols-8 gap-4"}>
                     {completedEntryAtoms.map(entryAtom => {
                         return <EntryAnimeItem key={`${entryAtom}`} entryAtom={entryAtom}/>
                     })}

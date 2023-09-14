@@ -18,7 +18,10 @@ export const settingsSchema = createTypesafeFormSchema(({ z }) => z.object({
                 return await fileOrDirectoryExists(value)
             }
             return false
-        }, { message: "Directory does not exist" }).transform(value => value?.replaceAll("/", "\\")),
+        }, { message: "Directory does not exist" }).transform(value => {
+            const _val = value?.replaceAll("/", "\\")
+            return _val?.endsWith("\\") ? _val?.slice(0, -1) : _val
+        }),
     }),
     player: z.object({
         defaultPlayer: z.enum(["mpc-hc", "vlc"]),
@@ -48,7 +51,7 @@ export type Settings = InferType<typeof settingsSchema>
 
 export const initialSettings: Settings = {
     library: {
-        localDirectory: "E\\:ANIME",
+        localDirectory: undefined,
     },
     player: {
         defaultPlayer: "mpc-hc",

@@ -41,3 +41,13 @@ export async function fileExists(path: PathLike) {
         return false
     }
 }
+
+export async function directoryExists(path: PathLike) {
+    try {
+        const stat = await fs.stat(path)
+        return stat.isDirectory()
+
+    } catch (e) {
+        return false
+    }
+}

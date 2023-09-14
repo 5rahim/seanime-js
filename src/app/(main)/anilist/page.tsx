@@ -92,7 +92,8 @@ const WatchList = React.memo(({ collectionEntriesAtom }: { collectionEntriesAtom
     const collectionEntriesMedia = useSelectAtom(collectionEntriesAtom, entries => entries.map(entry => entry?.media).filter(Boolean))
 
     return (
-        <div className={"px-4 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 min-[2000px]:grid-cols-8 gap-4"}>
+        <div
+            className={"px-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 min-[2000px]:grid-cols-8 gap-4"}>
             {collectionEntriesMedia.map(media => (
                 <AnimeListItem key={`${media.id}`} mediaId={media.id} showLibraryBadge={true}/>
             ))}

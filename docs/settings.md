@@ -1,4 +1,4 @@
-# Config
+# Settings
 
 ## MPC-HC
 

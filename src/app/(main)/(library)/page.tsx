@@ -9,10 +9,29 @@ import { AppLayoutStack } from "@/components/ui/app-layout"
 import { LocalLibrary } from "@/app/(main)/(library)/_containers/local-library/local-library"
 import { LibraryToolbar } from "@/app/(main)/(library)/_containers/local-library/_components/library-toolbar"
 import { IgnoredFilesDrawer } from "@/app/(main)/(library)/_containers/ignored-files/ignored-files-drawer"
+import { useAuthed } from "@/atoms/auth"
+import { ANILIST_OAUTH_URL } from "@/lib/anilist/config"
+import { BiCog } from "@react-icons/all-files/bi/BiCog"
 
 export default function Home() {
 
+    const { isAuthed } = useAuthed()
     const { settings } = useSettings()
+
+    if (!isAuthed) return (
+        <AppLayoutStack>
+            <div className={"pt-10 text-center space-y-4"}>
+                <h1>Welcome!</h1>
+                <Button
+                    onClick={() => {
+                        window.open(ANILIST_OAUTH_URL, "_self")
+                    }}
+                    intent={"primary-outline"}
+                    size={"xl"}
+                >Log in with AniList</Button>
+            </div>
+        </AppLayoutStack>
+    )
 
     if (!settings.library.localDirectory) return (
         <AppLayoutStack className={"mt-10"}>
@@ -30,10 +49,13 @@ export default function Home() {
             </div>}
             <div className={"text-center space-y-4"}>
                 <h2>Local library</h2>
-                <p>First, you need to select your local library directory in the settings.</p>
+                <div>
+                    <p>First, you need to select your <strong>local library</strong> directory in the settings.</p>
+                    <p>Then, make sure to update other settings to ensure a perfect experience.</p>
+                </div>
                 <div>
                     <Link href={"/settings"}>
-                        <Button intent={"warning-subtle"}>Choose the directory</Button>
+                        <Button intent={"warning-subtle"} leftIcon={<BiCog/>}>Go to the settings</Button>
                     </Link>
                 </div>
             </div>

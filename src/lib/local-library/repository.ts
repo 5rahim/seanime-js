@@ -39,11 +39,15 @@ export async function scanLocalFiles(
     { ignored, locked }: { ignored: string[], locked: string[] },
 ) {
     const _scanLogging = new ScanLogging()
+    _scanLogging.add("repository/scanLocalFiles", `Local directory: ${settings.library.localDirectory}`)
+    logger("repository/scanLocalFiles").error("Local directory", settings.library.localDirectory)
 
     // Check if the library exists
     if (!settings.library.localDirectory || !_fs.existsSync(settings.library.localDirectory)) {
         logger("repository/scanLocalFiles").error("Directory does not exist")
         _scanLogging.add("repository/scanLocalFiles", "Directory does not exist")
+        await _scanLogging.writeSnapshot()
+        _scanLogging.clear()
         return { error: "Couldn't find the local directory." }
     }
 

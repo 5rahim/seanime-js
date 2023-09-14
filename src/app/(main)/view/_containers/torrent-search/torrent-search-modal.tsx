@@ -30,6 +30,7 @@ import { SearchTorrentData } from "@/lib/download/types"
 import { Tooltip } from "@/components/ui/tooltip"
 import { extractHashFromMagnetLink } from "@/lib/download/torrent-helpers"
 import { usePathname, useRouter } from "next/navigation"
+import { useSettings } from "@/atoms/settings"
 
 interface Props {
     media: AnilistDetailedMedia,
@@ -57,6 +58,7 @@ export function TorrentSearchModal(props: Props) {
     const _downloadParam = useSearchParam("download")
     const router = useRouter()
     const pathname = usePathname()
+    const { settings } = useSettings()
 
     useMount(() => {
         if (_downloadParam && !isNaN(parseInt(_downloadParam))) {
@@ -83,7 +85,9 @@ export function TorrentSearchModal(props: Props) {
         isClosable
         size={"2xl"}
     >
-        <Content media={props.media} aniZipData={props.aniZipData}/>
+        {!settings.library.localDirectory ? <p>Your local library is not configured</p> :
+            <Content media={props.media} aniZipData={props.aniZipData}/>}
+
     </Drawer>
 
 }
@@ -261,8 +265,8 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
                         download: {downloadInfo.episodeNumbers.slice(0, 12).join(", ")}{downloadInfo.episodeNumbers.length > 12 ? ", ..." : "."}
                     </div>
                     {!!(episodeOffset && episodeOffset > 0) && <div>
-                        Episodes with
-                        offset: {downloadInfo.episodeNumbers.slice(0, 12).map(n => n + episodeOffset).join(", ")}{downloadInfo.episodeNumbers.length > 12 ? ", ..." : "."}
+                        Absolute episode
+                        numbers: {downloadInfo.episodeNumbers.slice(0, 12).map(n => n + episodeOffset).join(", ")}{downloadInfo.episodeNumbers.length > 12 ? ", ..." : "."}
                     </div>}
                 </>}
 

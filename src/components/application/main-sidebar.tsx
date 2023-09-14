@@ -4,13 +4,12 @@ import { VerticalNav } from "@/components/ui/vertical-nav"
 import { AppSidebar } from "@/components/ui/app-layout"
 import { RiHome2Line } from "@react-icons/all-files/ri/RiHome2Line"
 import { Avatar } from "@/components/ui/avatar"
-import { loginSchema, useAnilistLogin, useAuthed } from "@/atoms/auth"
+import { useAnilistLogin, useAuthed } from "@/atoms/auth"
 import { ANILIST_OAUTH_URL } from "@/lib/anilist/config"
 import { FiLogIn } from "@react-icons/all-files/fi/FiLogIn"
 import { useDisclosure } from "@/hooks/use-disclosure"
 import { Modal } from "@/components/ui/modal"
 import { Button } from "@/components/ui/button"
-import { Field, TypesafeForm } from "@/components/ui/typesafe-form"
 import { DropdownMenu, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import { useCurrentUser } from "@/atoms/user"
 import { usePathname } from "next/navigation"
@@ -90,7 +89,7 @@ export const MainSidebar: React.FC<MainSidebarProps> = (props) => {
                         <div>
                             <VerticalNav items={[
                                 {
-                                    icon: FiLogIn, name: "Login", onClick: () => loginModal.open(),
+                                    icon: FiLogIn, name: "Login", onClick: () => window.open(ANILIST_OAUTH_URL, "_self"),
                                 },
                             ]}/>
                         </div>
@@ -110,23 +109,8 @@ export const MainSidebar: React.FC<MainSidebarProps> = (props) => {
             <Modal title={"Login"} isOpen={loginModal.isOpen} onClose={loginModal.close} isClosable>
                 <div className={"mt-5 text-center space-y-4"}>
                     <Button onClick={() => {
-                        window.open(ANILIST_OAUTH_URL, "_blank", "popup")
+                        window.open(ANILIST_OAUTH_URL)
                     }} intent={"primary-outline"}>Login with AniList</Button>
-                    <div className={""}>
-                        <TypesafeForm
-                            schema={loginSchema}
-                            onSubmit={data => {
-                                authenticate(data.token)
-                                loginModal.close()
-                                setTimeout(() => {
-                                    refreshCollection()
-                                }, 1000)
-                            }}
-                        >
-                            <Field.Textarea name={"token"} className={"h-24"}/>
-                            <Field.Submit intent={"primary"}>Login</Field.Submit>
-                        </TypesafeForm>
-                    </div>
                 </div>
             </Modal>
         </>

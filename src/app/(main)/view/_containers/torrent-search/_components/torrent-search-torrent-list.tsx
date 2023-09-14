@@ -25,9 +25,10 @@ import { useTorrentSmartSelectQueue } from "@/atoms/torrent/torrent-smart-select
 import { SearchTorrentData } from "@/lib/download/types"
 import { MediaDownloadInfo } from "@/lib/download/helpers"
 import { BiCollection } from "@react-icons/all-files/bi/BiCollection"
-import { FcOpenedFolder } from "@react-icons/all-files/fc/FcOpenedFolder"
 import { FcFilmReel } from "@react-icons/all-files/fc/FcFilmReel"
 import { BiX } from "@react-icons/all-files/bi/BiX"
+import { AppLayoutStack } from "@/components/ui/app-layout"
+import { DirectoryInput } from "@/components/shared/directory-input"
 
 interface TorrentListProps {
     children?: React.ReactNode
@@ -136,18 +137,13 @@ export const TorrentSearchTorrentList: React.FC<TorrentListProps> = (props) => {
     }, [selectedDir, selectedTorrents])
 
     return <>
-        <div>
-            <Tooltip trigger={<p
-                className={"text-sm font-medium flex items-center gap-2 rounded-md border border-[--border] p-2 cursor-pointer mb-2"}
-                onClick={async () => {
-                    // TODO Select dir
+        <AppLayoutStack>
+            <DirectoryInput
+                value={selectedDir}
+                onSelect={() => {
                 }}
-            >
-                <FcOpenedFolder className={"text-2xl"}/>
-                {selectedDir}
-            </p>}>
-                Change directory
-            </Tooltip>
+                prefix={settings.library.localDirectory}
+            />
             <div className={"space-y-2"}>
                 {selectedTorrents.map(torrent => (
                     <Tooltip
@@ -194,7 +190,7 @@ export const TorrentSearchTorrentList: React.FC<TorrentListProps> = (props) => {
                     isDisabled={isLoading}
                 >Download</Button>}
             </div>
-        </div>
+        </AppLayoutStack>
     </>
 
 }

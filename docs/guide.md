@@ -15,7 +15,7 @@ Seanime does not currently support media matching using MAL data. I recommend yo
 tool like
 MAL-Sync to automatically sync data effortlessly.
 
-## Unmatched/Incorrectly matched files
+## Mis-matched files
 
 When some episode files are unmatched it generally means that:
 
