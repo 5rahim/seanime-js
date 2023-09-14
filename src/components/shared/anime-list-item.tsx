@@ -164,7 +164,7 @@ export const AnimeListItem = ((props: AnimeListItemProps) => {
                 <ScoreBadge mediaId={media.id}/>
 
                 <Image
-                    src={media.coverImage?.large || ""}
+                    src={media.coverImage?.extraLarge || ""}
                     alt={""}
                     fill
                     quality={100}

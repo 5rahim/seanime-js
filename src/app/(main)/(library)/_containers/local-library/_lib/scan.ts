@@ -57,6 +57,8 @@ export function useManageLibraryEntries(options: UseManageEntriesOptions) {
             options.onComplete()
             toast.remove(tID)
             setIsLoading(false)
+        } else {
+            unauthenticatedAlert()
         }
     }, [user, token, settings, lockedPaths, ignoredPaths])
 
@@ -100,29 +102,37 @@ export function useManageLibraryEntries(options: UseManageEntriesOptions) {
             options.onComplete
             toast.remove(tID)
             setIsLoading(false)
+        } else {
+            unauthenticatedAlert()
         }
     }, [user, token, settings, lockedPaths, ignoredPaths, options.preserveLockedFileStatus, options.preserveIgnoredFileStatus])
 
 
     const handleCleanRepository = useCallback(async () => {
 
-        const { pathsToClean } = await cleanupFiles(settings, {
-            ignored: lockedPaths,
-            locked: ignoredPaths,
-        })
-        const pathsToCleanSet = new Set(pathsToClean)
-        // Delete local files
-        setLocalFiles(prev => {
-            return prev.filter(file => !pathsToCleanSet.has(file.path))
-        })
+        if (user && token) {
+            const { pathsToClean } = await cleanupFiles(settings, {
+                ignored: lockedPaths,
+                locked: ignoredPaths,
+            })
+            const pathsToCleanSet = new Set(pathsToClean)
+            // Delete local files
+            setLocalFiles(prev => {
+                return prev.filter(file => !pathsToCleanSet.has(file.path))
+            })
+        }
 
-    }, [lockedPaths, ignoredPaths])
+    }, [lockedPaths, ignoredPaths, user, token])
 
     return {
         handleRescanEntries,
         handleRefreshEntries,
         handleCleanRepository,
         isScanning: isLoading,
+    }
+
+    function unauthenticatedAlert() {
+        toast.error("You need to be authenticated to perform this action")
     }
 
 }

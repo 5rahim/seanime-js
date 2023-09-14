@@ -57,6 +57,7 @@ export function TorrentSearchModal(props: Props) {
     const _downloadParam = useSearchParam("download")
     const router = useRouter()
     const pathname = usePathname()
+
     useMount(() => {
         if (_downloadParam && !isNaN(parseInt(_downloadParam))) {
             setStatus({
@@ -64,6 +65,11 @@ export function TorrentSearchModal(props: Props) {
                 episode: Number(_downloadParam),
             })
             router.replace(pathname)
+        } else {
+            setStatus({
+                isOpen: false,
+                episode: undefined,
+            })
         }
     })
 
