@@ -140,8 +140,7 @@ export const TorrentSearchTorrentList: React.FC<TorrentListProps> = (props) => {
         <AppLayoutStack>
             <DirectoryInput
                 value={selectedDir}
-                onSelect={() => {
-                }}
+                onSelect={(dir) => setSelectedDir(dir)}
                 prefix={settings.library.localDirectory}
             />
             <div className={"space-y-2"}>

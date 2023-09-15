@@ -19,10 +19,11 @@ export default function Page() {
 
     return (
         <AppLayoutStack spacing={"sm"}>
-            <p className={"font-semibold"}>Local library directory</p>
+            {/*<p className={"font-semibold"}>Local library directory</p>*/}
             <TypesafeForm
                 schema={settingsSchema.shape.library}
                 onSubmit={data => {
+                    console.log(data)
                     updateSettings("library", {
                         ...data,
                     })
@@ -30,10 +31,11 @@ export default function Page() {
                 }}
                 defaultValues={settings.library}
             >
-                <Field.Text
-                    // label={"Local directory"}
+                <Field.Directory
+                    label={"Local directory"}
                     help={"Where your anime files are located/will be downloaded."}
                     name={"localDirectory"}
+                    directoryShouldExist={true}
                 />
                 <Field.Submit role={"save"}/>
             </TypesafeForm>

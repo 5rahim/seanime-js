@@ -33,6 +33,7 @@ import { AddressInput, AddressInputProps } from "../address-input"
 import { ColorInput, ColorInputProps } from "../color-input"
 import { Dropzone, DropzoneProps, FileUploadHandler } from "../file-upload"
 import { TimeValue } from "react-aria"
+import { DirectoryInput, DirectoryInputProps } from "@/components/shared/directory-input"
 
 /**
  * Add the BasicField types to any Field
@@ -131,6 +132,19 @@ const TextInputField = React.memo(withControlledInput(forwardRef<HTMLInputElemen
         return <TextInput
             {...props}
             value={props.value ?? ""}
+            ref={ref}
+        />
+    },
+)))
+type DirectoryInputFieldProps = Omit<DirectoryInputProps, "onSelect" | "value"> & { value?: string }
+
+const DirectoryInputField = React.memo(withControlledInput(forwardRef<HTMLInputElement, FieldComponent<DirectoryInputFieldProps>>(
+    (props, ref) => {
+        const controller = useController({ name: props.name })
+        return <DirectoryInput
+            {...props}
+            value={props.value}
+            onSelect={value => controller.field.onChange(value)}
             ref={ref}
         />
     },
@@ -582,6 +596,7 @@ const DropzoneField = React.memo(withControlledInput(forwardRef<HTMLInputElement
 _Field.Text = TextInputField
 _Field.Textarea = TextareaField
 _Field.Select = SelectField
+_Field.Directory = DirectoryInputField
 _Field.Switch = SwitchField
 _Field.Checkbox = CheckboxField
 _Field.CheckboxGroup = CheckboxGroupField
@@ -603,6 +618,7 @@ _Field.Submit = SubmitField
 
 export const Field = createPolymorphicComponent<"div", FieldProps, {
     Text: typeof TextInputField,
+    Directory: typeof DirectoryInputField,
     Textarea: typeof TextareaField,
     Select: typeof SelectField,
     Switch: typeof SwitchField,
