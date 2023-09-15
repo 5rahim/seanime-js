@@ -51,7 +51,7 @@ export class ScanLogging {
     }
 
     async writeSnapshot() {
-        const snapshotDir = path.resolve("snapshot")
+        const snapshotDir = path.resolve("logs")
         if (!existsSync(snapshotDir)) {
             await fs.mkdir(snapshotDir)
         }

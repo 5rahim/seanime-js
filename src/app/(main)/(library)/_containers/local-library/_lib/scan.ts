@@ -4,15 +4,14 @@ import { logger } from "@/lib/helpers/debug"
 import { useCallback, useState } from "react"
 import { useAuthed } from "@/atoms/auth"
 import { useCurrentUser } from "@/atoms/user"
-import { useSetLocalFiles } from "@/atoms/library/local-file.atoms"
+import { localFilesAtom, useSetLocalFiles } from "@/atoms/library/local-file.atoms"
 import { useSettings } from "@/atoms/settings"
+import { useSelectAtom } from "@/atoms/helpers"
 
 type UseManageEntriesOptions = {
     onComplete: () => void
-    preserveLockedFileStatus: boolean
-    preserveIgnoredFileStatus: boolean
-    lockedPaths: string[],
-    ignoredPaths: string[],
+    preserveLockedFileStatus?: boolean
+    preserveIgnoredFileStatus?: boolean
 }
 
 export function useManageLibraryEntries(options: UseManageEntriesOptions) {
@@ -21,7 +20,8 @@ export function useManageLibraryEntries(options: UseManageEntriesOptions) {
     const { user } = useCurrentUser()
     const { settings } = useSettings()
 
-    const { lockedPaths, ignoredPaths } = options
+    const lockedPaths = useSelectAtom(localFilesAtom, files => files.filter(file => file.locked).map(file => file.path))
+    const ignoredPaths = useSelectAtom(localFilesAtom, files => files.filter(file => file.ignored).map(file => file.path))
 
     const [isLoading, setIsLoading] = useState(false)
 
@@ -124,11 +124,41 @@ export function useManageLibraryEntries(options: UseManageEntriesOptions) {
 
     }, [lockedPaths, ignoredPaths, user, token])
 
+    const handleLockAllFiles = useCallback(async () => {
+        setLocalFiles(prev => {
+            for (const file of prev) {
+                if (!file.ignored && !file.locked) {
+                    file.locked = true
+                }
+            }
+            return
+        })
+        toast.success("All files are locked")
+
+    }, [])
+
+    const handleUnlockAllFiles = useCallback(async () => {
+        setLocalFiles(prev => {
+            for (const file of prev) {
+                if (!file.ignored && file.locked) {
+                    file.locked = false
+                }
+            }
+            return
+        })
+        toast.success("All files are unlocked")
+
+    }, [])
+
     return {
         handleRescanEntries,
         handleRefreshEntries,
         handleCleanRepository,
+        handleLockAllFiles,
+        handleUnlockAllFiles,
         isScanning: isLoading,
+        lockedPaths,
+        ignoredPaths,
     }
 
     function unauthenticatedAlert() {

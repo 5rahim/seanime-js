@@ -24,6 +24,10 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { useManageLibraryEntries } from "@/app/(main)/(library)/_containers/local-library/_lib/scan"
 import { useSetAtom } from "jotai/react"
 import { __ignoredFilesDrawerIsOpenAtom } from "@/app/(main)/(library)/_containers/ignored-files/ignored-files-drawer"
+import { BiCollection } from "@react-icons/all-files/bi/BiCollection"
+import { AppLayoutStack } from "@/components/ui/app-layout"
+import { BiLockAlt } from "@react-icons/all-files/bi/BiLockAlt"
+import { BiLockOpenAlt } from "@react-icons/all-files/bi/BiLockOpenAlt"
 
 export function LibraryToolbar() {
 
@@ -33,15 +37,32 @@ export function LibraryToolbar() {
     const { getMatchingSuggestions, isLoading: recommendationLoading } = useMatchingSuggestions()
 
     const unresolvedFileCount = useSelectAtom(localFilesAtom, files => files.filter(file => !file.mediaId && !file.ignored).length)
-    const lockedPaths = useSelectAtom(localFilesAtom, files => files.filter(file => file.locked).map(file => file.path))
-    const ignoredPaths = useSelectAtom(localFilesAtom, files => files.filter(file => file.ignored).map(file => file.path))
 
     const resolveUnmatchedDrawer = useDisclosure(false)
     const refreshModal = useDisclosure(false)
     const rescanModal = useDisclosure(false)
+    const bulkActionModal = useDisclosure(false)
 
     const rescan_preserveLockedFileStatus = useBoolean(true)
     const rescan_preserveIgnoredFileStatus = useBoolean(true)
+
+    const {
+        handleRefreshEntries,
+        handleRescanEntries,
+        handleCleanRepository,
+        handleLockAllFiles,
+        handleUnlockAllFiles,
+        lockedPaths,
+        ignoredPaths,
+        isScanning,
+    } = useManageLibraryEntries({
+        onComplete: () => {
+            refreshModal.close()
+            rescanModal.close()
+        },
+        preserveIgnoredFileStatus: rescan_preserveIgnoredFileStatus.active,
+        preserveLockedFileStatus: rescan_preserveLockedFileStatus.active,
+    })
 
     const handleOpenLocalDirectory = async () => {
         const tID = toast.loading("Opening")
@@ -50,17 +71,6 @@ export function LibraryToolbar() {
             toast.remove(tID)
         }, 1000)
     }
-
-    const { handleRefreshEntries, handleRescanEntries, handleCleanRepository, isScanning } = useManageLibraryEntries({
-        onComplete: () => {
-            refreshModal.close()
-            rescanModal.close()
-        },
-        preserveIgnoredFileStatus: rescan_preserveIgnoredFileStatus.active,
-        preserveLockedFileStatus: rescan_preserveLockedFileStatus.active,
-        lockedPaths,
-        ignoredPaths,
-    })
 
 
     return (
@@ -104,6 +114,10 @@ export function LibraryToolbar() {
                             <DropdownMenu.Item onClick={() => setOpenIgnoredFilesDrawer(true)}>
                                 <GoDiffIgnored/>
                                 <span>Manage ignored files</span>
+                            </DropdownMenu.Item>
+                            <DropdownMenu.Item onClick={bulkActionModal.open}>
+                                <BiCollection/>
+                                <span>Bulk actions</span>
                             </DropdownMenu.Item>
                         </DropdownMenu>
                     </div>
@@ -167,6 +181,35 @@ export function LibraryToolbar() {
                 >
                     Re-scan
                 </Button>
+            </Modal>
+
+            <Modal isOpen={bulkActionModal.isOpen} onClose={bulkActionModal.close} isClosable title={"Bulk actions"}
+                   bodyClassName={"space-y-4"}>
+                <AppLayoutStack spacing={"sm"}>
+                    <p>These actions do not affect ignored files.</p>
+                    <Button
+                        leftIcon={<BiLockAlt/>}
+                        intent={"white-subtle"}
+                        className={"w-full"}
+                        onClick={() => {
+                            handleLockAllFiles()
+                            bulkActionModal.close()
+                        }}
+                    >
+                        Lock all files
+                    </Button>
+                    <Button
+                        leftIcon={<BiLockOpenAlt/>}
+                        intent={"white-subtle"}
+                        className={"w-full"}
+                        onClick={() => {
+                            handleUnlockAllFiles()
+                            bulkActionModal.close()
+                        }}
+                    >
+                        Unlock all files
+                    </Button>
+                </AppLayoutStack>
             </Modal>
         </>
     )
