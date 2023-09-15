@@ -19,7 +19,7 @@ export function useEpisodeStreamingData(episodes: ConsumetAnimeEpisode[], episod
         ["episode-streaming-data", episodes, episodeNumber, server || "-"],
         async () => {
             logger("watch/lib/useEpisodeStreamingData").info(`Fetching episode ${episodeNumber} streaming data (${provider}, ${server})`)
-            return await getConsumetEpisodeStreamingData(episodeId!, provider, server, false)
+            return await getConsumetEpisodeStreamingData(episodeId!, provider, server, true)
         },
         { enabled: !!episodeId, retry: false, keepPreviousData: false, refetchOnWindowFocus: false },
     )
@@ -36,7 +36,7 @@ export function useProviderEpisodes(mediaId: number, server: any) {
         ["episode-data", mediaId, server],
         async () => {
             logger("watch/lib/useProviderEpisodes").info("Fetching episodes from all providers", mediaId)
-            return await getConsumetEpisodes(mediaId, server, false)
+            return await getConsumetEpisodes(mediaId, server, true)
         },
         { keepPreviousData: false, refetchOnWindowFocus: false },
     )

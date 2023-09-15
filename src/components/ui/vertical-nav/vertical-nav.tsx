@@ -5,6 +5,7 @@ import { cn, ComponentWithAnatomy, defineStyleAnatomy } from "../core"
 import { cva } from "class-variance-authority"
 import { Disclosure } from "@headlessui/react"
 import Link from "next/link"
+import { Tooltip } from "@/components/ui/tooltip"
 
 /* -------------------------------------------------------------------------------------------------
  * Anatomy
@@ -13,7 +14,7 @@ import Link from "next/link"
 export const VerticalNavAnatomy = defineStyleAnatomy({
     nav: cva([
         "UI-VerticalNav__nav",
-        "block space-y-1"
+        "block space-y-1",
     ]),
     item: cva([
         "UI-VerticalNav__tab",
@@ -82,7 +83,7 @@ export const VerticalNav = React.forwardRef<HTMLDivElement, VerticalNavProps>((p
             {...rest}
         >
             {items.map((item, idx) => !item.content ? (
-                <Link
+                <Tooltip side={"right"} sideOffset={4} align={"start"} trigger={<Link
                     key={item.name}
                     href={item.href ?? "#"}
                     className={cn(
@@ -103,7 +104,9 @@ export const VerticalNav = React.forwardRef<HTMLDivElement, VerticalNavProps>((p
                     />}
                     <span>{item.name}</span>
                     {item.addon}
-                </Link>
+                </Link>}>
+                    {item.name}
+                </Tooltip>
             ) : (
                 <Disclosure as={Fragment} key={item.name}>
                     {({ open }) => (

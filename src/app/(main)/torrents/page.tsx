@@ -20,16 +20,19 @@ import { BiStop } from "@react-icons/all-files/bi/BiStop"
 import { BiUpArrow } from "@react-icons/all-files/bi/BiUpArrow"
 import { BiDownArrow } from "@react-icons/all-files/bi/BiDownArrow"
 import { BiTime } from "@react-icons/all-files/bi/BiTime"
+import { LuffyError } from "@/components/shared/luffy-error"
 
 export default function Page() {
 
     return (
         <AppLayoutStack className={"p-4"}>
-            <h2>Active torrents</h2>
-            <div className={""}>
-                <Link href={`/torrents/embedded`}>
-                    <Button intent={"white"} rightIcon={<BiLinkExternal/>}>Embedded client</Button>
-                </Link>
+            <div className={"flex items-center w-full justify-between"}>
+                <h2>Active torrents</h2>
+                <div className={""}>
+                    <Link href={`/torrents/embedded`}>
+                        <Button intent={"white"} rightIcon={<BiLinkExternal/>}>Embedded client</Button>
+                    </Link>
+                </div>
             </div>
 
             <div className={"pb-10"}>
@@ -80,6 +83,7 @@ function Content(props: Props) {
                     refetch={refetch}
                 />
             })}
+            {(!!data && data?.length === 0) && <LuffyError title={null}>No active torrents</LuffyError>}
         </AppLayoutStack>
     )
 }

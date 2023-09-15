@@ -7,10 +7,6 @@
 🚨 This project is a hobby and doesn't aim to solve every unique issue or address all complaints you may have about
 similar software.
 
-## Disclaimer
-
-[Read the disclaimer](https://github.com/5rahim/seanime/blob/main/DISCLAIMER.md).
-
 ## Features
 
 ### Local library
@@ -21,7 +17,6 @@ similar software.
     structures. [Learn more](https://github.com/5rahim/seanime/blob/main/docs/guide.md#tldr).
   - [x] Support for absolute episode
     numbers. [Learn more](https://github.com/5rahim/seanime/blob/main/docs/guide.md#absolute-episode-number).
-    - e.g., JJK 01 -> Season 1, JJK 29 -> Season 2
   - [x] Support for movies. [Learn more](https://github.com/5rahim/seanime/blob/main/docs/guide.md#finding-movie).
   - [x] Lock files to speed up subsequent
     scans. [Learn more](https://github.com/5rahim/seanime/blob/main/docs/guide.md#locking-files).
@@ -78,8 +73,6 @@ Powered by qBittorrent and Nyaa
 
 - [ ] Offline mode
 
-<img src="docs/assets/img_8.png" alt="preview" width="100%"/>
-
 ## Caveats
 
 For the time being, users must ensure their AniList watchlist includes all media present in their local library before
@@ -92,6 +85,10 @@ of the same series.
 ## Set up
 
 [How to set up Seanime.](https://github.com/5rahim/seanime/blob/main/docs/set-up.md)
+
+## Disclaimer
+
+[Read the disclaimer.](https://github.com/5rahim/seanime/blob/main/DISCLAIMER.md)
 
 ## Development
 
@@ -147,16 +144,14 @@ Features that may be implemented
 
 ## TODO
 
-- [ ] Directory picker
 - [ ] Improve security
-- [ ] qbittorrent settings (executable path)
 - [ ] (advanced search) Filter by studios
-- [ ] (repository) Delete files
+- [ ] (repository) Delete files (?)
 - [ ] (library) Manual hydration - similar to "resolve unmatched"
-- [ ] Logs settings, directory, display logs in-app
 - [ ] Option to automatically update progress without confirmation
 - [ ] (library) Filename tag system for faster matching
-- [ ] Auto-pick page
+- [ ] logs directory
+- [ ] torrent auto-pick system
 - [ ] Offline mode
 - [ ] Tests
 
@@ -184,3 +179,7 @@ Resources used to build Seanime.
 - [Anikki](https://github.com/Kylart/Anikki/) - Inspired some GraphQL fragments and nomenclatures
 - [Miru](https://github.com/ThaUnknown/miru/) - Inspired some AniList utility functions
 - [Moopa](https://github.com/Ani-Moopa/Moopa) - Artplayer integration code
+
+<br/>
+
+<img src="docs/assets/img_8.png" alt="preview" width="100%"/>

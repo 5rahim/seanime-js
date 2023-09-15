@@ -10,11 +10,13 @@ interface LuffyErrorProps {
     children?: React.ReactNode
     className?: string
     reset?: () => void
+    title?: string | null
+    showRefreshButton?: boolean
 }
 
 export const LuffyError: React.FC<LuffyErrorProps> = (props) => {
 
-    const { children, reset, className, ...rest } = props
+    const { children, reset, className, title = "Oops!", showRefreshButton = false, ...rest } = props
 
     const router = useRouter()
 
@@ -35,12 +37,13 @@ export const LuffyError: React.FC<LuffyErrorProps> = (props) => {
                     />
                 </div>}
                 <div className={"text-center space-y-4"}>
-                    <h2>Oops!</h2>
+                    {!!title && <h2>{title}</h2>}
                     <p>{children}</p>
                     <div>
-                        {!reset ? (
+                        {(showRefreshButton && !reset) && (
                             <Button intent={"warning-subtle"} onClick={() => router.refresh()}>Retry</Button>
-                        ) : (
+                        )}
+                        {!!reset && (
                             <Button intent={"warning-subtle"} onClick={reset}>Retry</Button>
                         )}
                     </div>

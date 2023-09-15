@@ -35,8 +35,11 @@ export const LocalLibrary: React.FC<LocalLibraryProps> = (props) => {
                 <h2>Continue watching</h2>
                 <Slider>
                     {currentlyWatchingEntryAtoms.map(entryAtom => {
-                        return <MissedEpisodesFromMedia key={`${entryAtom}`} entryAtom={entryAtom}
-                                                        type={"not-watched"}/>
+                        return <MissedEpisodesFromMedia
+                            key={`${entryAtom}`}
+                            entryAtom={entryAtom}
+                            type={"not-watched"}
+                        />
                     })}
                 </Slider>
                 {/*<FetchMediaSchedule entryAtoms={currentlyWatchingEntryAtoms}/>*/}

@@ -175,7 +175,7 @@ export function LibraryToolbar() {
                 </div>
                 <Button
                     onClick={handleRescanEntries}
-                    intent={"warning"}
+                    intent={"primary"}
                     leftIcon={<IoReload/>}
                     isDisabled={isScanning}
                 >

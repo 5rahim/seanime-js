@@ -308,7 +308,7 @@ export async function findBestCorrespondingMedia(
     }
     debug(bestTitleMatching?.bestMatch, "best", bestMedia)
 
-    logger("media-matching").error("Cache MISS: [File title]", _title, `(${(seasonAsNumber || folderSeasonAsNumber || "-")})`, "| [Media title]", bestMedia?.title?.english, "| [Rating]", rating)
+    logger("media-matching").warning("Cache MISS: [File title]", _title, `(${(seasonAsNumber || folderSeasonAsNumber || "-")})`, "| [Media title]", bestMedia?.title?.english, "| [Rating]", rating)
     // Adding it to the cache
     _matchingCache.set(JSON.stringify(titleVariations), bestMedia)
 

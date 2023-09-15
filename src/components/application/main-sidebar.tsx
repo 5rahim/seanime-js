@@ -2,7 +2,6 @@
 import React from "react"
 import { VerticalNav } from "@/components/ui/vertical-nav"
 import { AppSidebar } from "@/components/ui/app-layout"
-import { RiHome2Line } from "@react-icons/all-files/ri/RiHome2Line"
 import { Avatar } from "@/components/ui/avatar"
 import { useAnilistLogin, useAuthed } from "@/atoms/auth"
 import { ANILIST_OAUTH_URL } from "@/lib/anilist/config"
@@ -19,6 +18,9 @@ import { BiDownload } from "@react-icons/all-files/bi/BiDownload"
 import { useRefreshAnilistCollection } from "@/atoms/anilist/collection.atoms"
 import { useSetAtom } from "jotai"
 import { __globalSearch_isOpenAtom } from "@/components/application/global-search"
+import { IoLibrary } from "@react-icons/all-files/io5/IoLibrary"
+import { AiOutlineClockCircle } from "@react-icons/all-files/ai/AiOutlineClockCircle"
+import { BiCollection } from "@react-icons/all-files/bi/BiCollection"
 
 interface MainSidebarProps {
     children?: React.ReactNode
@@ -42,17 +44,34 @@ export const MainSidebar: React.FC<MainSidebarProps> = (props) => {
         <>
             <AppSidebar className={"p-4 h-full flex flex-col justify-between"} sidebarClassName="h-full">
                 <div>
-                    <div className={"mb-8 flex justify-center w-full"}>
-                        {/*<p className={"text-2xl font-bold w-full text-center text-brand"}>Sea</p>*/}
-                        <img src="/android-chrome-192x192.png" alt="logo" className={"w-15 h-10"}/>
+                    <div className={"mb-4 flex justify-center w-full"}>
+                        {/*<p className={"text-2xl font-bold w-full text-center text-white"}>Sea</p>*/}
+                        <img src="/logo.png" alt="logo" className={"w-15 h-10"}/>
                     </div>
                     <VerticalNav
                         itemClassName={"relative"}
                         items={[
-                            { icon: RiHome2Line, name: "Home", href: "/", isCurrent: pathname === "/" },
+                            {
+                                icon: IoLibrary,
+                                name: "Library",
+                                href: "/",
+                                isCurrent: pathname === "/",
+                            },
+                            {
+                                icon: AiOutlineClockCircle,
+                                name: "Schedule",
+                                href: "/schedule",
+                                isCurrent: pathname === "/schedule",
+                            },
+                            {
+                                icon: BiCollection,
+                                name: "Watch lists",
+                                href: "/anilist",
+                                isCurrent: pathname === "/anilist",
+                            },
                             {
                                 icon: FiSearch,
-                                name: "Discover",
+                                name: "Search",
                                 onClick: () => setGlobalSearchIsOpen(true),
                             },
                             {
@@ -60,9 +79,6 @@ export const MainSidebar: React.FC<MainSidebarProps> = (props) => {
                                 name: "Torrents",
                                 href: "/torrents",
                                 isCurrent: pathname === "/torrents",
-                                // addon: <Badge className={"absolute right-0 top-0"} size={"sm"}
-                                //               intent={"alert-solid"}>2</Badge>,
-
                             },
                             // { icon: BiTestTube, name: "Test", href: "/test", isCurrent: pathname === "/test" },
                             // { icon: BiTestTube, name: "Test2", href: "/test/two", isCurrent: pathname === "/test/two" },

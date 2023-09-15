@@ -17,6 +17,7 @@ import { BiCollection } from "@react-icons/all-files/bi/BiCollection"
 import { FcFile } from "@react-icons/all-files/fc/FcFile"
 import { BiFolder } from "@react-icons/all-files/bi/BiFolder"
 import { openDirectoryInExplorer } from "@/lib/helpers/directory"
+import { LuffyError } from "@/components/shared/luffy-error"
 
 export const __ignoredFilesDrawerIsOpenAtom = atom(false)
 
@@ -45,6 +46,9 @@ export const IgnoredFilesDrawer: React.FC<IgnoredFilesDrawerProps> = (props) => 
                 {ignoredLocalFileAtoms.map(fileAtom => {
                     return <Item key={`${fileAtom}`} fileAtom={fileAtom}/>
                 })}
+                {ignoredLocalFileAtoms.length === 0 && (
+                    <LuffyError title={null}>No ignored files</LuffyError>
+                )}
             </AppLayoutStack>
         </Drawer>
     )
