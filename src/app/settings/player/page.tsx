@@ -5,6 +5,8 @@ import { settingsSchema, useSettings } from "@/atoms/settings"
 import { Field, TypesafeForm } from "@/components/ui/typesafe-form"
 import { Divider } from "@/components/ui/divider"
 import { toast } from "react-hot-toast"
+import { FcVlc } from "@react-icons/all-files/fc/FcVlc"
+import { FcVideoFile } from "@react-icons/all-files/fc/FcVideoFile"
 
 export default function Page() {
 
@@ -26,7 +28,7 @@ export default function Page() {
             >
                 {(f) => (
                     <>
-                        <Field.Combobox
+                        <Field.Select
                             label={"Default Video Player"}
                             name={"defaultPlayer"}
                             options={[
@@ -35,41 +37,33 @@ export default function Page() {
                             ]}
                         />
 
-                        <Field.Switch
-                            name={"pauseAfterOpening"}
-                            label={"Disable auto-play"}
-                        />
-
-                        <Divider/>
-
-                        <div className={"flex gap-2"}>
-                            <Field.Text
-                                label={"MPC-HC Player"}
-                                name={"mpc-hc"}
-                            />
-
-                            <Field.Text
-                                label={"VLC Player"}
-                                name={"vlc"}
-                            />
-                        </div>
+                        {/*<Field.Switch*/}
+                        {/*    name={"pauseAfterOpening"}*/}
+                        {/*    label={"Disable auto-play"}*/}
+                        {/*/>*/}
 
                         <Divider/>
 
                         <Field.Text
                             label={"Video Player Web Client Host"}
                             name={"host"}
+                            help={"Default is 127.0.0.1"}
                         />
 
                         <Divider/>
 
-                        <h4>VLC</h4>
+                        <h4 className={"flex gap-2 items-center"}><FcVlc/> VLC</h4>
+
+                        <Field.Text
+                            label={"VLC Player"}
+                            name={"vlc"}
+                        />
 
                         <div className={"gap-2 flex flex-col lg:flex-row"}>
                             <Field.Number
                                 label={"Port"}
                                 name={"vlcPort"}
-                                leftAddon={f.watch("host") + ":"}
+                                leftAddon={"http://" + f.watch("host") + ":"}
                                 discrete
                             />
                             <Field.Text
@@ -85,13 +79,18 @@ export default function Page() {
 
                         <Divider/>
 
-                        <h4>MPC-HC</h4>
+                        <h4 className={"flex gap-2 items-center"}><FcVideoFile/> MPC-HC</h4>
+
+                        <Field.Text
+                            label={"MPC-HC Player"}
+                            name={"mpc-hc"}
+                        />
 
                         <div className={"gap-2 flex flex-col lg:flex-row"}>
                             <Field.Number
                                 label={"Port"}
                                 name={"mpcPort"}
-                                leftAddon={f.watch("host") + ":"}
+                                leftAddon={"http://" + f.watch("host") + ":"}
                                 discrete
                             />
                         </div>

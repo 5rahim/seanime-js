@@ -23,6 +23,10 @@ export default function Page() {
             >
                 {(f) => (
                     <>
+                        <Field.Text
+                            label={"qBittorrent"}
+                            name={"path"}
+                        />
                         <div className={"gap-2 flex flex-col lg:flex-row"}>
                             <Field.Text
                                 label={"Host"}

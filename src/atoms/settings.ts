@@ -13,20 +13,16 @@ import { useSetAtom } from "jotai/react"
 
 export const settingsSchema = createTypesafeFormSchema(({ z }) => z.object({
     library: z.object({
-        localDirectory: z.string().nullable().refine(async (value) => {
-            if (value) {
-                return await fileOrDirectoryExists(value)
-            }
-            return false
-        }, { message: "Directory does not exist" }).transform(value => {
-            const _val = value?.replaceAll("/", "\\")
-            return _val?.endsWith("\\") ? _val?.slice(0, -1) : _val
-        }),
+        localDirectory: z.string().nullable().refine(async (value) => value ? await fileOrDirectoryExists(value) : false, { message: "Directory does not exist" })
+            .transform(value => {
+                const _val = value?.replaceAll("/", "\\")
+                return _val?.endsWith("\\") ? _val?.slice(0, -1) : _val
+            }),
     }),
     player: z.object({
         defaultPlayer: z.enum(["mpc-hc", "vlc"]),
-        "mpc-hc": z.string(),
-        "vlc": z.string(),
+        "mpc-hc": z.string().refine(async (value) => value ? await fileOrDirectoryExists(value) : false, { message: "File does not exist" }),
+        "vlc": z.string().refine(async (value) => value ? await fileOrDirectoryExists(value) : false, { message: "File does not exist" }),
         host: z.string(),
         mpcPort: z.number(),
         vlcPort: z.number(),
@@ -41,6 +37,7 @@ export const settingsSchema = createTypesafeFormSchema(({ z }) => z.object({
         port: z.number(),
         username: z.string().default(""),
         password: z.string().default(""),
+        path: z.string().refine(async (value) => value ? await fileOrDirectoryExists(value) : false, { message: "File does not exist" }),
     }),
     torrent: z.object({
         nyaaUrl: z.string(),
@@ -71,6 +68,7 @@ export const initialSettings: Settings = {
         port: 8081,
         username: "admin",
         password: "adminadmin",
+        path: "C:\\Program Files\\qBittorrent\\qbittorrent.exe",
     },
     torrent: {
         nyaaUrl: "nyaa.si",
@@ -112,7 +110,7 @@ export function useSettings() {
                     ...value(prev[key]),
                 },
             }))
-        }, [])
+        }, []),
     }
 
 }

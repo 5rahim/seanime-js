@@ -1,21 +1,15 @@
 "use client"
 
-import { useCurrentUser } from "@/atoms/user"
 import { settingsSchema, useSettings } from "@/atoms/settings"
 import { toast } from "react-hot-toast"
-import React, { useState } from "react"
+import React from "react"
 import { AppLayoutStack } from "@/components/ui/app-layout"
 import { Field, TypesafeForm } from "@/components/ui/typesafe-form"
 
 
 export default function Page() {
 
-    const { user } = useCurrentUser()
-
     const { settings, updateSettings } = useSettings()
-
-    const [selectedDir, setSelectedDir] = useState<string | undefined>(settings.library.localDirectory)
-
 
     return (
         <AppLayoutStack spacing={"sm"}>
@@ -36,6 +30,7 @@ export default function Page() {
                     help={"Where your anime files are located/will be downloaded."}
                     name={"localDirectory"}
                     directoryShouldExist={true}
+                    showFolderOptions={false}
                 />
                 <Field.Submit role={"save"}/>
             </TypesafeForm>

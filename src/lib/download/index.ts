@@ -25,7 +25,7 @@ export const TorrentManager = (settings: Settings) => {
             try {
                 const isUp = await _qBit_isUp()
                 if (!isUp) {
-                    await openDirectoryInExplorer(`C:\\Program Files\\qBittorrent\\qbittorrent.exe`)
+                    await openDirectoryInExplorer(settings.qbittorrent.path || `C:\\Program Files\\qBittorrent\\qbittorrent.exe`)
                 }
             } catch (e) {
 
