@@ -17,7 +17,7 @@ export default async function Page({ params }: { params: { id: string } }) {
             <div>
                 <div className={"__header h-[30rem] "}>
                     <div
-                        className="h-[35rem] w-[calc(100%-5rem)] flex-none object-cover object-center absolute top-0 overflow-hidden">
+                        className="h-[35rem] w-full md:w-[calc(100%-5rem)] flex-none object-cover object-center absolute top-0 overflow-hidden">
                         <div
                             className={"w-full absolute z-[2] top-0 h-[15rem] bg-gradient-to-b from-[--background-color] to-transparent via"}
                         />
@@ -37,7 +37,8 @@ export default async function Page({ params }: { params: { id: string } }) {
 
                     </div>
                 </div>
-                <div className={"-mt-[8rem] relative z-10 max-w-full px-10 grid grid-cols-1 2xl:grid-cols-2 gap-8 "}>
+                <div
+                    className={"-mt-[8rem] relative z-10 max-w-full px-4 md:px-10 grid grid-cols-1 2xl:grid-cols-2 gap-8 "}>
                     <div
                         className={"-mt-[18rem] h-[fit-content] 2xl:sticky top-[5rem]"}>
                         {/*<div className={"-mt-[18rem] p-8 rounded-xl backdrop-blur-2xl bg-gray-900 bg-opacity-50 backdrop-opacity-80 drop-shadow-md"}>*/}

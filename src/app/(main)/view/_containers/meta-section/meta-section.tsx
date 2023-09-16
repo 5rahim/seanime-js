@@ -190,6 +190,7 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
             </div>
 
             <Accordion
+                containerClassName={"hidden md:block"}
                 triggerClassName={"bg-gray-900 bg-opacity-80 dark:bg-gray-900 dark:bg-opacity-80 hover:bg-gray-800 dark:hover:bg-gray-800 hover:bg-opacity-100 dark:hover:bg-opacity-100"}>
                 {relations.length > 0 && (
                     <Accordion.Item title={"Relations"} defaultOpen={true}>

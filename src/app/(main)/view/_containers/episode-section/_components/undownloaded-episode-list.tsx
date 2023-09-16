@@ -40,7 +40,7 @@ export const UndownloadedEpisodeList: React.FC<UndownloadedEpisodeListProps> = R
                     {downloadInfo.rewatch ? "You have not downloaded the following" : "You have not watched nor downloaded the following"}
                 </p>
             </div>
-            <div className={"grid grid-cols-2 gap-4 opacity-60"}>
+            <div className={"grid grid-cols-1 md:grid-cols-2 gap-4 opacity-60"}>
                 {downloadInfo.episodeNumbers.map((epNumber, index) => {
                     const airDate = aniZipData?.episodes?.[String(epNumber)]?.airdate
                     const anifyEpisodeCover = anifyEpisodeCovers?.find(n => n.episode === epNumber)?.img

@@ -30,6 +30,7 @@ import {
 import { useAnifyEpisodeCovers } from "@/lib/anify/client"
 import { PlayNextFile } from "@/app/(main)/view/_containers/episode-section/_components/play-next-file"
 import { EpisodeSectionSlider } from "@/app/(main)/view/_containers/episode-section/_components/episode-section-slider"
+import { AppLayoutStack } from "@/components/ui/app-layout"
 
 interface EpisodeSectionProps {
     children?: React.ReactNode
@@ -104,9 +105,11 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
 
     return (
         <>
-            <div>
-                <PlayNextFile playFile={playFile} path={nextUpFilePath}/>
-                <div className={"mb-8 flex items-center justify-between"}>
+            <PlayNextFile playFile={playFile} path={nextUpFilePath}/>
+
+            <AppLayoutStack spacing={"lg"}>
+
+                <div className={"mb-8 flex flex-col md:flex-row items-center justify-between"}>
 
                     <div className={"flex items-center gap-8"}>
                         <h2>{detailedMedia.format === "MOVIE" ? "Movie" : "Episodes"}</h2>
@@ -131,20 +134,20 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
 
                 </div>
 
-                <div className={"space-y-10"}>
+                {(toWatchSlider.length > 0) && (
+                    <>
+                        <EpisodeSectionSlider
+                            fileAtoms={toWatchSlider}
+                            onPlayFile={playFile}
+                            media={detailedMedia}
+                            aniZipData={aniZipData}
+                            anifyEpisodeCovers={anifyEpisodeCovers}
+                        />
+                        <Divider/>
+                    </>
+                )}
 
-                    {(toWatchSlider.length > 0) && (
-                        <>
-                            <EpisodeSectionSlider
-                                fileAtoms={toWatchSlider}
-                                onPlayFile={playFile}
-                                media={detailedMedia}
-                                aniZipData={aniZipData}
-                                anifyEpisodeCovers={anifyEpisodeCovers}
-                            />
-                            <Divider/>
-                        </>
-                    )}
+                <div className={"space-y-10 lg:max-h-[800px] overflow-y-auto"}>
 
                     {allMain.length > 0 && <EpisodeList
                         fileAtoms={allMain}
@@ -199,7 +202,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
                     </>}
 
                 </div>
-            </div>
+            </AppLayoutStack>
 
             {canTrackProgress && <ProgressTrackingModal media={detailedMedia} progress={progress}/>}
         </>

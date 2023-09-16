@@ -143,6 +143,7 @@ npm run build
 Features that may be implemented
 
 - Manga support
+- Dubbed streaming
 - Desktop app
 - Auto-download new episodes
 
@@ -158,6 +159,7 @@ Features that may be implemented
 - [ ] logs directory
 - [ ] torrent auto-pick system
 - [ ] Offline mode
+- [ ] Improve responsiveness
 - [ ] Tests
 
 ## Resources
