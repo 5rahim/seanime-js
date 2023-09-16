@@ -22,11 +22,11 @@ export function ContinueWatching(props: { entryAtom: Atom<LibraryEntry> }) {
     const lastFile = useLastMainLocalFileByMediaId(media.id)
 
     const nextEpisode = useMemo(() => {
-        if (currentlyWatching && progress) {
+        if (currentlyWatching) {
             const availableEp = media?.nextAiringEpisode?.episode ? media?.nextAiringEpisode?.episode - 1 : media.episodes!
             // const missed = availableEp-progress
-            if (availableEp > progress && !!lastFile?.metadata?.episode && !downloadInfo.episodeNumbers.includes(progress + 1)) {
-                return progress + 1
+            if (availableEp > (progress || 0) && !!lastFile?.metadata?.episode && !downloadInfo.episodeNumbers.includes((progress || 0) + 1)) {
+                return (progress || 0) + 1
             }
         }
         return undefined
