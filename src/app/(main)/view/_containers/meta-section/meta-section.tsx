@@ -20,6 +20,7 @@ import { AiOutlineHeart } from "@react-icons/all-files/ai/AiOutlineHeart"
 import { Button } from "@/components/ui/button"
 import { useStableSelectAtom } from "@/atoms/helpers"
 import { AiFillPlayCircle } from "@react-icons/all-files/ai/AiFillPlayCircle"
+import { useSettings } from "@/atoms/settings"
 
 interface MetaSectionProps {
     children?: React.ReactNode
@@ -30,9 +31,12 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
 
     const { children, detailedMedia, ...rest } = props
 
+    const { settings } = useSettings()
+
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(detailedMedia.id)
     const entryAtom = useLibraryEntryAtomByMediaId(detailedMedia.id)
     const progress = useStableSelectAtom(collectionEntryAtom, entry => entry?.progress)
+    const status = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.status)
 
     const nextEpisode = useMemo(() => {
         if (!!detailedMedia.nextAiringEpisode?.episode) {
@@ -106,7 +110,7 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
 
                     {/*BADGES*/}
                     <div className={"items-center flex"}>
-                        {detailedMedia.meanScore && (
+                        {!!(detailedMedia.meanScore && settings.anilist.showAudienceScore) && (
                             <Badge
                                 className={"mr-2"}
                                 size={"lg"}

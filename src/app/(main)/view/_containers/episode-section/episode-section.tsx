@@ -55,7 +55,6 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(detailedMedia.id)
     const mediaStatus = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.media?.status)
     const progress = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress)
-    const status = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.status)
 
     const canTrackProgress = (!progress || progress < maxEp) && progress !== maxEp
     const nextUpFilePath = useStableSelectAtom(canTrackProgress ? toWatch[0] : toWatch[toWatch.length - 1], file => file?.path)

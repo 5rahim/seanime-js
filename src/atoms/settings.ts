@@ -42,6 +42,9 @@ export const settingsSchema = createTypesafeFormSchema(({ z }) => z.object({
     torrent: z.object({
         nyaaUrl: z.string(),
     }),
+    anilist: z.object({
+        showAudienceScore: z.boolean(),
+    }),
 }))
 
 export type Settings = InferType<typeof settingsSchema>
@@ -72,6 +75,9 @@ export const initialSettings: Settings = {
     },
     torrent: {
         nyaaUrl: "nyaa.si",
+    },
+    anilist: {
+        showAudienceScore: true,
     },
 }
 
