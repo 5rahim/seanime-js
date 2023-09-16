@@ -72,6 +72,9 @@ Powered by qBittorrent and Nyaa
   - [x] Support for GogoAnime
   - [x] Support for Zoro (AniWatch)
   - [ ] Support for Crunchyroll
+- [x] Progress tracking
+  - [x] Sync progress with AniList
+  - [ ] Sync progress with MAL
 
 ### Other
 
