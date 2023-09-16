@@ -22,8 +22,8 @@ import { IoLibrary } from "@react-icons/all-files/io5/IoLibrary"
 import { AiOutlineClockCircle } from "@react-icons/all-files/ai/AiOutlineClockCircle"
 import { BiCollection } from "@react-icons/all-files/bi/BiCollection"
 import { useAtomValue } from "jotai/react"
-import { missingEpisodeCountAtom } from "@/app/(main)/schedule/_containers/missing-episodes/missing-episodes"
 import { Badge } from "@/components/ui/badge"
+import { missingEpisodeCountAtom } from "@/atoms/anilist/missing-episodes.atoms"
 
 interface MainSidebarProps {
     children?: React.ReactNode

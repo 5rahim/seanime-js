@@ -1,9 +1,5 @@
 "use client"
-import React, { memo, useEffect } from "react"
-import { LibraryEntry, useLibraryEntryAtoms } from "@/atoms/library/library-entry.atoms"
-import { atom, Atom } from "jotai"
-import { useSelectAtom } from "@/atoms/helpers"
-import { MediaDownloadInfo, useMediaDownloadInfo } from "@/lib/download/helpers"
+import React, { memo } from "react"
 import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
 import { AnilistShowcaseMedia } from "@/lib/anilist/fragment"
@@ -14,24 +10,13 @@ import { LargeEpisodeListItem } from "@/components/shared/large-episode-list-ite
 import { AiOutlineDownload } from "@react-icons/all-files/ai/AiOutlineDownload"
 import { useRouter } from "next/navigation"
 import { AppLayoutStack } from "@/components/ui/app-layout"
-import { withImmer } from "jotai-immer"
-import { useAtom, useSetAtom } from "jotai/react"
+import { useAtomValue } from "jotai/react"
 import { Slider } from "@/components/shared/slider"
-
-
-const __missingEpisodesAtom = atom<{ media: AnilistShowcaseMedia, downloadInfo: MediaDownloadInfo }[]>([])
-export const missingEpisodesAtom = withImmer(__missingEpisodesAtom)
-export const missingEpisodeCountAtom = atom(get => get(__missingEpisodesAtom).flatMap(n => n.downloadInfo.episodeNumbers).length)
+import { missingEpisodesAtom } from "@/atoms/anilist/missing-episodes.atoms"
 
 export function MissingEpisodes() {
 
-    const entryAtoms = useLibraryEntryAtoms()
-
-    const [missing, setter] = useAtom(missingEpisodesAtom)
-
-    useEffect(() => {
-        return () => setter([])
-    }, [])
+    const missing = useAtomValue(missingEpisodesAtom)
 
     const { data, isLoading } = useQuery({
         queryKey: ["missed-episode-data", missing],
@@ -50,68 +35,30 @@ export function MissingEpisodes() {
 
     return (
         <>
-            {missing.length > 0 && <>
-                <AppLayoutStack spacing={"lg"}>
+            {missing.length > 0 && <AppLayoutStack spacing={"lg"}>
 
-                    <h2 className={"flex gap-3 items-center"}><IoLibrary/> Missing from your library</h2>
+                <h2 className={"flex gap-3 items-center"}><IoLibrary/> Missing from your library</h2>
 
-                    <Slider>
-                        {!isLoading && missing.map(n => {
-                            return n.downloadInfo.episodeNumbers.map(ep => {
-                                return <EpisodeItem
-                                    key={`${n.media.id}${ep}`}
-                                    media={n.media}
-                                    episodeNumber={ep}
-                                    aniZipData={data?.find(k => k?.mappings?.anilist_id === n.media.id)}
-                                />
-                            })
-                        })}
-                        {isLoading && missing.map(n => n.downloadInfo.episodeNumbers.map(k => (
-                            <Skeleton
-                                className={"rounded-md h-auto overflow-hidden aspect-[4/2] w-96 relative flex items-end flex-none"}
+                <Slider>
+                    {!isLoading && missing.map(n => {
+                        return n.downloadInfo.episodeNumbers.map(ep => {
+                            return <EpisodeItem
+                                key={`${n.media.id}${ep}`}
+                                media={n.media}
+                                episodeNumber={ep}
+                                aniZipData={data?.find(k => k?.mappings?.anilist_id === n.media.id)}
                             />
-                        )))}
-                    </Slider>
-
-
-                </AppLayoutStack>
-            </>}
-            {/*Hidden*/}
-            {entryAtoms.map(entryAtom => {
-                return <MissingEpisodesLoader key={`${entryAtom}`} entryAtom={entryAtom}/>
-            })}
+                        })
+                    })}
+                    {isLoading && missing.map(n => n.downloadInfo.episodeNumbers.map(k => (
+                        <Skeleton
+                            className={"rounded-md h-auto overflow-hidden aspect-[4/2] w-96 relative flex items-end flex-none"}
+                        />
+                    )))}
+                </Slider>
+            </AppLayoutStack>}
         </>
     )
-}
-
-type Props = {
-    entryAtom: Atom<LibraryEntry>
-}
-
-export function MissingEpisodesLoader(props: Props) {
-    const media = useSelectAtom(props.entryAtom, entry => entry.media)
-    const setter = useSetAtom(missingEpisodesAtom)
-
-    const { downloadInfo } = useMediaDownloadInfo(media)
-
-    useEffect(() => {
-        setter(draft => {
-            const idx = draft?.findIndex(n => n.media.id === media.id)
-            if (idx === -1 && downloadInfo.episodeNumbers.length > 0) {
-                draft?.push({
-                    media,
-                    downloadInfo,
-                })
-            }
-            if (idx !== -1 && downloadInfo.episodeNumbers.length === 0) {
-                draft.splice(idx, 1)
-            }
-            return
-        })
-        // return () => setter([])
-    }, [])
-
-    return null
 }
 
 

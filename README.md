@@ -1,11 +1,15 @@
+<p align="center">
+<img src="public/icons/android-chrome-512x512.png" alt="preview" width="75px"/>
+</p>
+
 <h2 align="center"><b>Seanime</b></h2>
 
 <h4 align="center">User-friendly, self-hosted web app for managing your local library with AniList integration</h4>
 
-<img src="docs/assets/main_4.png" alt="preview" width="100%"/>
+<img src="docs/assets/main_5.png" alt="preview" width="100%"/>
 
-🚨 This project is a hobby and doesn't aim to solve every unique issue or address all complaints you may have about
-similar software.
+🚨 This project is just a hobby, it's not meant to fix every problem or include every requested feature. Some features
+might not work as planned.
 
 ## Features
 
@@ -181,6 +185,33 @@ Resources used to build Seanime.
 - [Miru](https://github.com/ThaUnknown/miru/) - Inspired some AniList utility functions
 - [Moopa](https://github.com/Ani-Moopa/Moopa) - Artplayer integration code
 
-<br/>
+## Screenshots
 
-<img src="docs/assets/img_8.png" alt="preview" width="100%"/>
+### Library
+
+<img src="docs/assets/img_17.png" alt="preview" width="100%"/>
+
+### View
+
+<img src="docs/assets/img_12.png" alt="preview" width="100%"/>
+
+### Discover
+
+<img src="docs/assets/img_11.png" alt="preview" width="100%"/>
+
+### Schedule
+
+<img src="docs/assets/img_13.png" alt="preview" width="100%"/>
+
+### Torrent search & download
+
+<img src="docs/assets/img_14.png" alt="preview" width="100%"/>
+<img src="docs/assets/img_15.png" alt="preview" width="100%"/>
+
+### Progress tracking
+
+<img src="docs/assets/img_16.png" alt="preview" width="100%"/>
+
+### Streaming
+
+<img src="docs/assets/img_18.png" alt="preview" width="100%"/>

@@ -4,8 +4,8 @@ import { NavigationTabs, NavigationTabsProps } from "@/components/ui/tabs"
 import { usePathname } from "next/navigation"
 import { useAuthed } from "@/atoms/auth"
 import { useAtomValue } from "jotai/react"
-import { missingEpisodeCountAtom } from "@/app/(main)/schedule/_containers/missing-episodes/missing-episodes"
 import { Badge } from "@/components/ui/badge"
+import { missingEpisodeCountAtom } from "@/atoms/anilist/missing-episodes.atoms"
 
 interface TopNavbarProps {
     children?: React.ReactNode
@@ -53,7 +53,7 @@ export const TopNavbar: React.FC<TopNavbarProps> = (props) => {
                 name: "Discover",
             },
         ]
-    }, [isAuthed, pathname])
+    }, [isAuthed, pathname, missingEpisodes])
 
     return (
         <NavigationTabs

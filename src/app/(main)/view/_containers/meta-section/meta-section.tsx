@@ -180,7 +180,7 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
                         <Link href={`/watch/${detailedMedia.id}?episode=${nextEpisode}`} className={"block"}>
                             <Button className={"w-full"} intent={"white-outline"} size={"lg"}
                                     leftIcon={<AiFillPlayCircle/>}
-                                    iconClassName={"text-xl"}>Stream online</Button>
+                                    iconClassName={"text-xl"}>Stream</Button>
                         </Link>
                     )}
                 </div>

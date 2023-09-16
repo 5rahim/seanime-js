@@ -49,7 +49,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
     const maxEp = detailedMedia.nextAiringEpisode?.episode ? detailedMedia.nextAiringEpisode.episode - 1 : detailedMedia.episodes!
 
     const entryAtom = useLibraryEntryAtomByMediaId(detailedMedia.id)
-    const { toWatch, toWatchSlider, watched } = useDisplayLocalFileAtomsByMediaId(detailedMedia.id)
+    const { toWatch, toWatchSlider, watched, allMain } = useDisplayLocalFileAtomsByMediaId(detailedMedia.id)
     const ovaFileAtoms = useSpecialsLocalFileAtomsByMediaId(detailedMedia.id)
     const ncFileAtoms = useNCLocalFileAtomsByMediaId(detailedMedia.id)
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(detailedMedia.id)
@@ -146,25 +146,25 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
                         </>
                     )}
 
-                    {toWatch.length > 0 && <EpisodeList
-                        fileAtoms={toWatch}
+                    {allMain.length > 0 && <EpisodeList
+                        fileAtoms={allMain}
                         onPlayFile={playFile}
                         media={detailedMedia}
                         aniZipData={aniZipData}
                         anifyEpisodeCovers={anifyEpisodeCovers}
                     />}
 
-                    {watched.length > 0 && <>
-                        {toWatch.length > 0 && <Divider/>}
-                        <h3>Watched</h3>
-                        <EpisodeList
-                            fileAtoms={watched}
-                            onPlayFile={playFile}
-                            media={detailedMedia}
-                            aniZipData={aniZipData}
-                            anifyEpisodeCovers={anifyEpisodeCovers}
-                        />
-                    </>}
+                    {/*{watched.length > 0 && <>*/}
+                    {/*    {toWatch.length > 0 && <Divider/>}*/}
+                    {/*    <h3>Watched</h3>*/}
+                    {/*    <EpisodeList*/}
+                    {/*        fileAtoms={watched}*/}
+                    {/*        onPlayFile={playFile}*/}
+                    {/*        media={detailedMedia}*/}
+                    {/*        aniZipData={aniZipData}*/}
+                    {/*        anifyEpisodeCovers={anifyEpisodeCovers}*/}
+                    {/*    />*/}
+                    {/*</>}*/}
 
                     <UndownloadedEpisodeList
                         media={detailedMedia}

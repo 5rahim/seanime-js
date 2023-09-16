@@ -24,7 +24,9 @@ export function ContinueWatching(props: { entryAtom: Atom<LibraryEntry> }) {
     const nextEpisode = useMemo(() => {
         if (currentlyWatching) {
             const availableEp = media?.nextAiringEpisode?.episode ? media?.nextAiringEpisode?.episode - 1 : media.episodes!
-            // const missed = availableEp-progress
+            // Next episode has not been watched
+            // Latest sorted file has an episode
+            // The episode has been downloaded
             if (availableEp > (progress || 0) && !!lastFile?.metadata?.episode && !downloadInfo.episodeNumbers.includes((progress || 0) + 1)) {
                 return (progress || 0) + 1
             }

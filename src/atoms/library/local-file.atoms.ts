@@ -75,6 +75,7 @@ const get_Display_LocalFileAtomsByMediaIdAtom = atom(null,
         return {
             toWatch: toWatch.length === 0 && watched.length === 0 ? mainFileAtoms || [] : toWatch,
             toWatchSlider: (!canTrackProgress) ? [...mainFileAtoms].reverse() : toWatch,
+            allMain: mainFileAtoms.filter(atom => !!get(atom).metadata.episode),
             watched,
         }
 
@@ -187,6 +188,7 @@ export const useDisplayLocalFileAtomsByMediaId = (mediaId: number) => {
         toWatch: Array<PrimitiveAtom<LocalFile>>,
         toWatchSlider: Array<PrimitiveAtom<LocalFile>>
         watched: Array<PrimitiveAtom<LocalFile>>
+        allMain: Array<PrimitiveAtom<LocalFile>>
     }
 }
 

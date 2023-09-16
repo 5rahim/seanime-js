@@ -5,7 +5,6 @@ import {
     completed_libraryEntryAtoms,
     currentlyWatching_libraryEntryAtoms,
     LibraryEntry,
-    libraryEntryAtoms,
     rest_libraryEntryAtoms,
 } from "@/atoms/library/library-entry.atoms"
 import { Atom } from "jotai"
@@ -15,7 +14,6 @@ import { Divider } from "@/components/ui/divider"
 import { useAtomValue } from "jotai/react"
 import { Slider } from "@/components/shared/slider"
 import { ContinueWatching } from "@/app/(main)/(library)/_containers/continue-watching/continue-watching"
-import { MissingEpisodesLoader } from "@/app/(main)/schedule/_containers/missing-episodes/missing-episodes"
 
 // import { FetchMediaSchedule } from "@/app/(main)/(library)/_containers/local-library/_lib/schedule"
 
@@ -27,7 +25,6 @@ export const LocalLibrary: React.FC<LocalLibraryProps> = (props) => {
 
     const { children, ...rest } = props
 
-    const entryAtoms = useAtomValue(libraryEntryAtoms)
     const currentlyWatchingEntryAtoms = useAtomValue(currentlyWatching_libraryEntryAtoms)
     const restEntryAtoms = useAtomValue(rest_libraryEntryAtoms)
     const completedEntryAtoms = useAtomValue(completed_libraryEntryAtoms)
@@ -71,9 +68,6 @@ export const LocalLibrary: React.FC<LocalLibraryProps> = (props) => {
                     })}
                 </div>
             </>}
-            {entryAtoms.map(entryAtom => (
-                <MissingEpisodesLoader key={`${entryAtom}`} entryAtom={entryAtom}/>
-            ))}
         </div>
     )
 
