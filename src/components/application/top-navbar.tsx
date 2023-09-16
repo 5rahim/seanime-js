@@ -4,6 +4,9 @@ import { NavigationTabs, NavigationTabsProps } from "@/components/ui/tabs"
 import { usePathname } from "next/navigation"
 import { useAuthed } from "@/atoms/auth"
 import { IoLibrary } from "@react-icons/all-files/io5/IoLibrary"
+import { useAtomValue } from "jotai/react"
+import { missingEpisodeCountAtom } from "@/app/(main)/schedule/_containers/missing-episodes/missing-episodes"
+import { Badge } from "@/components/ui/badge"
 
 interface TopNavbarProps {
     children?: React.ReactNode
@@ -15,6 +18,7 @@ export const TopNavbar: React.FC<TopNavbarProps> = (props) => {
 
     const pathname = usePathname()
     const { isAuthed } = useAuthed()
+    const missingEpisodes = useAtomValue(missingEpisodeCountAtom)
 
 
     const navigationItems = useMemo<NavigationTabsProps["items"]>(() => {
@@ -24,9 +28,8 @@ export const TopNavbar: React.FC<TopNavbarProps> = (props) => {
                 icon: null,
                 isCurrent: pathname.startsWith("/schedule"),
                 name: "Schedule",
-                // addon: missedEpisodesIsUpToDate === false ? <Badge
-                //     intent={"alert-solid"}
-                //     className={"rounded-full block h-3 w-3 p-0 absolute top-3 right-1"}/> : undefined,
+                addon: missingEpisodes > 0 ? <Badge className={"absolute top-4 right-2 h-2 w-2 p-0"} size={"sm"}
+                                                    intent={"alert-solid"}/> : undefined,
             },
             {
                 href: "/anilist",

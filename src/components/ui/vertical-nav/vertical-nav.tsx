@@ -83,28 +83,32 @@ export const VerticalNav = React.forwardRef<HTMLDivElement, VerticalNavProps>((p
             {...rest}
         >
             {items.map((item, idx) => !item.content ? (
-                <Tooltip side={"right"} sideOffset={4} align={"start"} trigger={<Link
+                <Tooltip
+                    side={"right"}
+                    sideOffset={4}
+                    align={"start"}
                     key={item.name}
-                    href={item.href ?? "#"}
-                    className={cn(
-                        VerticalNavAnatomy.item(),
-                        itemClassName,
-                    )}
-                    aria-current={item.isCurrent ? "page" : undefined}
-                    data-selected={item.isCurrent}
-                    onClick={item.onClick}
-                >
-                    {item.icon && <item.icon
+                    trigger={<Link
+                        href={item.href ?? "#"}
                         className={cn(
-                            VerticalNavAnatomy.icon(),
-                            iconClassName,
+                            VerticalNavAnatomy.item(),
+                            itemClassName,
                         )}
-                        aria-hidden="true"
+                        aria-current={item.isCurrent ? "page" : undefined}
                         data-selected={item.isCurrent}
-                    />}
-                    <span>{item.name}</span>
-                    {item.addon}
-                </Link>}>
+                        onClick={item.onClick}
+                    >
+                        {item.icon && <item.icon
+                            className={cn(
+                                VerticalNavAnatomy.icon(),
+                                iconClassName,
+                            )}
+                            aria-hidden="true"
+                            data-selected={item.isCurrent}
+                        />}
+                        <span>{item.name}</span>
+                        {item.addon}
+                    </Link>}>
                     {item.name}
                 </Tooltip>
             ) : (

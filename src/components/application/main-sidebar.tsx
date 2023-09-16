@@ -21,6 +21,9 @@ import { __globalSearch_isOpenAtom } from "@/components/application/global-searc
 import { IoLibrary } from "@react-icons/all-files/io5/IoLibrary"
 import { AiOutlineClockCircle } from "@react-icons/all-files/ai/AiOutlineClockCircle"
 import { BiCollection } from "@react-icons/all-files/bi/BiCollection"
+import { useAtomValue } from "jotai/react"
+import { missingEpisodeCountAtom } from "@/app/(main)/schedule/_containers/missing-episodes/missing-episodes"
+import { Badge } from "@/components/ui/badge"
 
 interface MainSidebarProps {
     children?: React.ReactNode
@@ -37,6 +40,7 @@ export const MainSidebar: React.FC<MainSidebarProps> = (props) => {
     const refreshCollection = useRefreshAnilistCollection()
 
     const setGlobalSearchIsOpen = useSetAtom(__globalSearch_isOpenAtom)
+    const missingEpisodes = useAtomValue(missingEpisodeCountAtom)
 
     const loginModal = useDisclosure(false)
 
@@ -62,6 +66,8 @@ export const MainSidebar: React.FC<MainSidebarProps> = (props) => {
                                 name: "Schedule",
                                 href: "/schedule",
                                 isCurrent: pathname === "/schedule",
+                                addon: missingEpisodes > 0 ? <Badge className={"absolute right-0 top-0"} size={"sm"}
+                                                                    intent={"alert-solid"}>{missingEpisodes}</Badge> : undefined,
                             },
                             {
                                 icon: BiCollection,

@@ -4,6 +4,7 @@ import React from "react"
 import { allUserMediaAtom } from "@/atoms/anilist/media.atoms"
 import { addSeconds, formatDistanceToNow } from "date-fns"
 import Image from "next/image"
+import { AppLayoutStack } from "@/components/ui/app-layout"
 
 type Props = {}
 
@@ -16,7 +17,7 @@ export function ComingUpNext(props: Props) {
     if (media.length === 0) return null
 
     return (
-        <>
+        <AppLayoutStack>
             <h2>Coming up next</h2>
             <Slider>
                 {media.map(item => {
@@ -52,6 +53,6 @@ export function ComingUpNext(props: Props) {
                     )
                 })}
             </Slider>
-        </>
+        </AppLayoutStack>
     )
 }

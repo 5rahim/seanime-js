@@ -2,11 +2,12 @@ import { useQuery } from "@tanstack/react-query"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
 import { ListRecentAiringsDocument } from "@/gql/graphql"
 import { addSeconds, formatDistanceToNow, subDays } from "date-fns"
-import React, { useEffect } from "react"
+import React from "react"
 import { Slider } from "@/components/shared/slider"
 import { LargeEpisodeListItem } from "@/components/shared/large-episode-list-item"
 import { useRouter } from "next/navigation"
 import { BiLinkExternal } from "@react-icons/all-files/bi/BiLinkExternal"
+import { AppLayoutStack } from "@/components/ui/app-layout"
 
 type Props = {}
 
@@ -24,15 +25,13 @@ export function RecentReleases(props: Props) {
                 airingAt_greater: Math.floor(subDays(new Date(), 14).getTime() / 1000),
             })
         },
-        keepPreviousData: false,
+        keepPreviousData: true,
+        cacheTime: 1000 * 60 * 10,
     })
 
-    useEffect(() => {
-        console.log(data)
-    }, [data])
-
     return (
-        <>
+        <AppLayoutStack>
+            <h2>Recent releases</h2>
             <Slider>
                 {data?.Page?.airingSchedules?.filter(item => item?.media?.isAdult === false
                     && item?.media?.type === "ANIME"
@@ -52,6 +51,6 @@ export function RecentReleases(props: Props) {
                     )
                 })}
             </Slider>
-        </>
+        </AppLayoutStack>
     )
 }

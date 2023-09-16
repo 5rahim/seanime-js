@@ -5,6 +5,7 @@ import {
     completed_libraryEntryAtoms,
     currentlyWatching_libraryEntryAtoms,
     LibraryEntry,
+    libraryEntryAtoms,
     rest_libraryEntryAtoms,
 } from "@/atoms/library/library-entry.atoms"
 import { Atom } from "jotai"
@@ -13,7 +14,8 @@ import { AnimeListItem } from "@/components/shared/anime-list-item"
 import { Divider } from "@/components/ui/divider"
 import { useAtomValue } from "jotai/react"
 import { Slider } from "@/components/shared/slider"
-import { MissedEpisodesFromMedia } from "@/app/(main)/schedule/_containers/missed-episodes/missed-episodes"
+import { ContinueWatching } from "@/app/(main)/(library)/_containers/continue-watching/continue-watching"
+import { MissingEpisodesLoader } from "@/app/(main)/schedule/_containers/missing-episodes/missing-episodes"
 
 // import { FetchMediaSchedule } from "@/app/(main)/(library)/_containers/local-library/_lib/schedule"
 
@@ -25,6 +27,7 @@ export const LocalLibrary: React.FC<LocalLibraryProps> = (props) => {
 
     const { children, ...rest } = props
 
+    const entryAtoms = useAtomValue(libraryEntryAtoms)
     const currentlyWatchingEntryAtoms = useAtomValue(currentlyWatching_libraryEntryAtoms)
     const restEntryAtoms = useAtomValue(rest_libraryEntryAtoms)
     const completedEntryAtoms = useAtomValue(completed_libraryEntryAtoms)
@@ -35,10 +38,9 @@ export const LocalLibrary: React.FC<LocalLibraryProps> = (props) => {
                 <h2>Continue watching</h2>
                 <Slider>
                     {currentlyWatchingEntryAtoms.map(entryAtom => {
-                        return <MissedEpisodesFromMedia
+                        return <ContinueWatching
                             key={`${entryAtom}`}
                             entryAtom={entryAtom}
-                            type={"not-watched"}
                         />
                     })}
                 </Slider>
@@ -69,6 +71,9 @@ export const LocalLibrary: React.FC<LocalLibraryProps> = (props) => {
                     })}
                 </div>
             </>}
+            {entryAtoms.map(entryAtom => (
+                <MissingEpisodesLoader key={`${entryAtom}`} entryAtom={entryAtom}/>
+            ))}
         </div>
     )
 
