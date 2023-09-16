@@ -6,7 +6,7 @@
 
 <h4 align="center">User-friendly, self-hosted web app for managing your local library with AniList integration</h4>
 
-<img src="docs/assets/main_5.png" alt="preview" width="100%"/>
+<img src="docs/images/main_5.png" alt="preview" width="100%"/>
 
 🚨 This project is just a hobby, it's not meant to fix every problem or include every requested feature. Some features
 might not work as planned.
@@ -194,28 +194,28 @@ Resources used to build Seanime.
 
 ### Library
 
-<img src="docs/assets/img_17.png" alt="preview" width="100%"/>
+<img src="docs/images/img_17.png" alt="preview" width="100%"/>
 
 ### View
 
-<img src="docs/assets/img_12.png" alt="preview" width="100%"/>
+<img src="docs/images/img_12.png" alt="preview" width="100%"/>
 
 ### Discover
 
-<img src="docs/assets/img_11.png" alt="preview" width="100%"/>
+<img src="docs/images/img_11.png" alt="preview" width="100%"/>
 
 ### Schedule
 
-<img src="docs/assets/img_13.png" alt="preview" width="100%"/>
+<img src="docs/images/img_13.png" alt="preview" width="100%"/>
 
 ### Torrent search & download
 
-<img src="docs/assets/img_14.png" alt="preview" width="100%"/>
+<img src="docs/images/img_14.png" alt="preview" width="100%"/>
 
 ### Progress tracking
 
-<img src="docs/assets/img_16.png" alt="preview" width="100%"/>
+<img src="docs/images/img_16.png" alt="preview" width="100%"/>
 
 ### Streaming
 
-<img src="docs/assets/img_18.png" alt="preview" width="100%"/>
+<img src="docs/images/img_18.png" alt="preview" width="100%"/>

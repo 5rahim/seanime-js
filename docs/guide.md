@@ -84,9 +84,9 @@ Fix: Use AniList titles
 
 ### "Resolve unmatched" feature
 
-<img src="assets/img_6.png" alt="preview" width="300"/>
+<img src="images/img_6.png" alt="preview" width="300"/>
 <br/>
-<img src="assets/img_7.png" alt="preview" width="600"/>
+<img src="images/img_7.png" alt="preview" width="600"/>
 
 - This feature allows you to match files to specific anime that you choose either from the suggestions or the AniList ID
   input.
@@ -96,7 +96,7 @@ Fix: Use AniList titles
 
 ## Locking files
 
-<img src="assets/img_4.png" alt="preview" width="600"/>
+<img src="images/img_4.png" alt="preview" width="600"/>
 
 Locking is a feature made to speed up refreshing entries.
 It just tells Seanime that these files were correctly matched and to skip them when **refreshing** entries next time.
@@ -110,7 +110,7 @@ This is because the files might still show up on Seanime when you only **refresh
 
 ## Refresh vs Scan
 
-<img src="assets/img_5.png" alt="preview" width="600"/>
+<img src="images/img_5.png" alt="preview" width="600"/>
 
 ### Refreshing entries
 

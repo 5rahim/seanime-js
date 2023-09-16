@@ -27,4 +27,4 @@ export const useLocalFileAtomsByMediaId = (mediaId: number) => {
 }
 ```
 
-![img_3.png](../assets/img_3.png)
+![img_3.png](../images/img_3.png)

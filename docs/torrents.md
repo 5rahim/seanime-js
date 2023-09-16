@@ -7,7 +7,7 @@
 - This is ideal when you haven't watched an anime in a while and the individual episode torrents are not seeded anymore.
 - Support for absolute episode numbers
 
-![img_10.png](assets/img_10.png)
+![img_10.png](images/img_10.png)
 
 #### Caveats
 
