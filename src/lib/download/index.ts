@@ -51,8 +51,10 @@ export const TorrentManager = (settings: Settings) => {
             this._refreshSettings()
             try {
                 await _qBit_addMagnet(options)
+                return true
             } catch (e) {
                 this._connectionRefused()
+                return false
             }
         },
         async getTorrentContent(hash: Nullish<string>) {

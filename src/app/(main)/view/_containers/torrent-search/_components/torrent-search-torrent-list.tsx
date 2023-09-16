@@ -93,46 +93,47 @@ export const TorrentSearchTorrentList: React.FC<TorrentListProps> = (props) => {
         setIsLoading(false)
     }
 
-    const handleAddTorrents = useCallback(async () => {
+    const handleAddTorrents = useCallback(async (smartSelect: boolean = false) => {
         await kickstartTorrentManager()
+
         if (selectedDir && selectedTorrents) {
 
-            await Promise.all(selectedTorrents.map(torrent => (
-                torrentManager.current.addMagnets({
-                    magnets: [torrent.links.magnet],
-                    savePath: selectedDir,
-                    paused: false,
+            const res = smartSelect
+                ? await Promise.all(selectedTorrents.map(torrent => (
+                    torrentManager.current.addMagnets({
+                        magnets: [torrent.links.magnet],
+                        savePath: selectedDir,
+                        paused: shouldAddToQueue(torrent), // Pause if batch
+                    })
+                )))
+                : await Promise.all(selectedTorrents.map(torrent => (
+                    torrentManager.current.addMagnets({
+                        magnets: [torrent.links.magnet],
+                        savePath: selectedDir,
+                        paused: false,
+                    })
+                )))
+
+            if (smartSelect && res.every(r => r)) {
+
+                // Add torrents to queue
+                selectedTorrents.map(torrent => {
+                    if (shouldAddToQueue(torrent)) {
+                        addTorrentToQueue(torrent, downloadInfo)
+                    }
                 })
-            )))
 
-            setSelectedTorrents([])
-            props.onClose()
-            router.push(`/torrents`)
-        }
-    }, [selectedDir, selectedTorrents])
+            }
 
-    const handleSmartAddTorrents = useCallback(async () => {
-        await kickstartTorrentManager()
-        if (selectedDir && selectedTorrents) {
-
-            await Promise.all(selectedTorrents.map(torrent => (
-                torrentManager.current.addMagnets({
-                    magnets: [torrent.links.magnet],
-                    savePath: selectedDir,
-                    paused: shouldAddToQueue(torrent), // Pause if batch
-                })
-            )))
-
-            // Add torrents to queue
-            selectedTorrents.map(torrent => {
-                if (shouldAddToQueue(torrent)) {
-                    addTorrentToQueue(torrent, downloadInfo)
+            if (res.every(r => r)) {
+                setSelectedTorrents([])
+                props.onClose()
+                if (smartSelect) {
+                    router.push(`/torrents/smart-select`)
+                } else {
+                    router.push(`/torrents`)
                 }
-            })
-
-            setSelectedTorrents([])
-            props.onClose()
-            router.push(`/torrents/smart-select`)
+            }
         }
     }, [selectedDir, selectedTorrents])
 
@@ -179,13 +180,13 @@ export const TorrentSearchTorrentList: React.FC<TorrentListProps> = (props) => {
                 {(selectedTorrents.length > 0 && canDownloadUnwatched) && <Button
                     leftIcon={<BiCollection/>}
                     intent={"white-outline"}
-                    onClick={handleSmartAddTorrents}
+                    onClick={() => handleAddTorrents(true)}
                     isDisabled={isLoading}
                 >Download non-watched/missing only</Button>}
                 {selectedTorrents.length > 0 && <Button
                     leftIcon={<BiDownload/>}
                     intent={"white"}
-                    onClick={handleAddTorrents}
+                    onClick={() => handleAddTorrents()}
                     isDisabled={isLoading}
                 >Download</Button>}
             </div>

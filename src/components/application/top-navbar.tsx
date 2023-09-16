@@ -3,7 +3,6 @@ import React, { useMemo } from "react"
 import { NavigationTabs, NavigationTabsProps } from "@/components/ui/tabs"
 import { usePathname } from "next/navigation"
 import { useAuthed } from "@/atoms/auth"
-import { IoLibrary } from "@react-icons/all-files/io5/IoLibrary"
 import { useAtomValue } from "jotai/react"
 import { missingEpisodeCountAtom } from "@/app/(main)/schedule/_containers/missing-episodes/missing-episodes"
 import { Badge } from "@/components/ui/badge"
@@ -42,7 +41,7 @@ export const TopNavbar: React.FC<TopNavbarProps> = (props) => {
         return [
             {
                 href: "/",
-                icon: IoLibrary,
+                // icon: IoLibrary,
                 isCurrent: pathname === "/",
                 name: "My library",
             },

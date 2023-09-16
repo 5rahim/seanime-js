@@ -1,5 +1,7 @@
 # Set up
 
+Seanime consists of a back-end Node.js server and a front-end Next.js web app.
+
 ## Step-by-step guide
 
 ### 1. Get Node.js and NPM

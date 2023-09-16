@@ -149,7 +149,8 @@ Features that may be implemented
 - [ ] (repository) Delete files (?)
 - [ ] (library) Manual hydration - similar to "resolve unmatched"
 - [ ] Option to automatically update progress without confirmation
-- [ ] (library) Filename tag system for faster matching
+- [ ] (library) Filename tag system
+- [ ] (streaming) working cache
 - [ ] logs directory
 - [ ] torrent auto-pick system
 - [ ] Offline mode

@@ -4,6 +4,7 @@ import { useSettings } from "@/atoms/settings"
 import { useInterval, useToggle, useUpdateEffect } from "react-use"
 import { logger } from "@/lib/helpers/debug"
 import { VideoPlayerRepositoryPlaybackStatus } from "@/lib/video-player/types"
+import toast from "react-hot-toast"
 
 export function useVideoPlayer(props?: {
     onPlayerClosed?: () => void
@@ -69,23 +70,25 @@ export function useVideoPlayer(props?: {
             logger("use-video-player").info("Opening video")
 
             const success = await videoPlayerRepository.current.openVideo(path, { muteAlert: true })
-            if (!success) {
+            if (!success) { // Video player is probably closed, try again
                 logger("use-video-player").warning("Could not open video, starting player")
 
                 toggleTracking(false)
-                await videoPlayerRepository.current.start()
+                await videoPlayerRepository.current.start() // Start player
 
                 logger("use-video-player").info("Player started, retrying")
 
-                startTransition(() => {
+                startTransition(() => { // Wait 1s and try to play file
                     setTimeout(() => {
                         (async () => {
-                            logger("use-video-player").info("Opening video again")
-
                             const success = await videoPlayerRepository.current.openVideo(path)
 
                             if (!success) {
+                                // Sometimes the player might take more than a second to start
+                                // This can cause issues where Seanime thinks it failed
                                 logger("use-video-player").error("Could not open video. Abort.")
+                                toast.error("Tracking was not able to start.", { duration: 5000 })
+                                toast.error("Make sure the player is open and play the episode again.", { duration: 5000 })
                             } else {
                                 logger("use-video-player").info("Video opened, tracking started")
 
@@ -95,7 +98,7 @@ export function useVideoPlayer(props?: {
                         })()
                     }, 1000)
                 })
-            } else {
+            } else { // Video player was open, continue
                 logger("use-video-player").info("Video opened, tracking started")
                 toggleTracking(success)
                 props?.onFilePlay && props.onFilePlay()
