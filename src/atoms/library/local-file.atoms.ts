@@ -177,7 +177,7 @@ export const useLocalFileAtomsByMediaId = (mediaId: number) => {
 }
 
 export const useDisplayLocalFileAtomsByMediaId = (mediaId: number) => {
-    // Actualize file list when collection entry progress or status change
+    // Refresh file list when collection entry progress or status change
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(mediaId)
     const progress = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress) ?? 0
     const status = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.status) ?? ""

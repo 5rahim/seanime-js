@@ -80,7 +80,7 @@ export function useDataGridRowSelection<T extends Record<string, any>>(props: Pr
         if (displayedRows.length > 0 && persistent && !!key && canSelect.current) {
             startTransition(() => {
                 table.resetRowSelection()
-                // Actualize nonexistent rows
+                // Refresh nonexistent rows
                 setNonexistentSelectedRows(prev => {
                     // Find the rows that were selected on the previous page
                     const rowIsSelected = (row: Row<T>) => Object.keys(rowSelection).map(v => parseInt(v)).includes(row.index)
@@ -94,7 +94,7 @@ export function useDataGridRowSelection<T extends Record<string, any>>(props: Pr
 
                     return prev
                 })
-                displayedRowsRef.current = displayedRows // Actualize displayed row
+                displayedRowsRef.current = displayedRows // Refresh displayed row
             })
 
             startTransition(() => {

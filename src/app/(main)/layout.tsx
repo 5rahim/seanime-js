@@ -36,7 +36,7 @@ export default function Layout({ children }: {
                             </svg>}
                             className={"hover:bg-transparent dark:hover:bg-transparent"}
                         >
-                            Actualize AniList
+                            Refresh AniList
                         </Button>}
                     </div>
                 </div>

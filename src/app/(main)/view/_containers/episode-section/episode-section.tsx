@@ -95,11 +95,13 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
     if (!entryAtom) {
         return <div className={"space-y-10"}>
             {mediaStatus !== "NOT_YET_RELEASED" ? <p>Not in your library</p> : <p>Not yet released</p>}
-            <UndownloadedEpisodeList
-                media={detailedMedia}
-                aniZipData={aniZipData}
-                anifyEpisodeCovers={anifyEpisodeCovers}
-            />
+            <div className={"lg:max-h-[1000px] overflow-y-auto pt-4 lg:pt-0 space-y-10"}>
+                <UndownloadedEpisodeList
+                    media={detailedMedia}
+                    aniZipData={aniZipData}
+                    anifyEpisodeCovers={anifyEpisodeCovers}
+                />
+            </div>
         </div>
     }
 
@@ -147,7 +149,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
                     </>
                 )}
 
-                <div className={"space-y-10 lg:max-h-[800px] overflow-y-auto"}>
+                <div className={"space-y-10 lg:max-h-[1000px] overflow-y-auto"}>
 
                     {allMain.length > 0 && <EpisodeList
                         fileAtoms={allMain}

@@ -211,7 +211,6 @@ Resources used to build Seanime.
 ### Torrent search & download
 
 <img src="docs/assets/img_14.png" alt="preview" width="100%"/>
-<img src="docs/assets/img_15.png" alt="preview" width="100%"/>
 
 ### Progress tracking
 
