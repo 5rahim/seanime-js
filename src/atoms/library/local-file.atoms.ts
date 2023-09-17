@@ -70,11 +70,14 @@ const get_Display_LocalFileAtomsByMediaIdAtom = atom(null,
         const canTrackProgress = mainFileAtoms.length > 0 && !!maxEp && (!!collectionEntry?.progress && collectionEntry.progress < Number(maxEp) || !collectionEntry?.progress)
         // /\ (!progress || progress < maxEp) && progress !== maxEp
 
+        // I know all of this is confusing
         const toWatch = canTrackProgress ? (mainFileAtoms?.filter(atom => !!get(atom).metadata.episode && get(atom).metadata.episode! > collectionEntry?.progress!) ?? []) : []
         const watched = mainFileAtoms?.filter(atom => !!get(atom).metadata.episode && get(atom).metadata.episode! <= collectionEntry?.progress!) ?? []
         return {
             toWatch: toWatch.length === 0 && watched.length === 0 ? mainFileAtoms || [] : toWatch,
-            toWatchSlider: (!canTrackProgress) ? [...mainFileAtoms].reverse() : toWatch,
+            // Can't track progress -> show all main files
+            // Can track progress -> show episode user needs to watch OR show all main files
+            toWatchSlider: (!canTrackProgress) ? [...mainFileAtoms].reverse() : (toWatch.length > 0 ? toWatch : [...mainFileAtoms].reverse()),
             allMain: mainFileAtoms.filter(atom => !!get(atom).metadata.episode),
             watched,
         }
