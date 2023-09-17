@@ -43,11 +43,12 @@ export async function findBestCorrespondingMedia(
     },
 ) {
 
-    function debug(...value: any[]) {
-        // if (parsed.original.toLowerCase().includes("(not)")) console.log(...value)
-    }
+    // function debug(...value: any[]) {
+    //     // if (parsed.original.toLowerCase().includes("(not)")) console.log(...value)
+    // }
 
-    _scanLogging.add(file.path, ">>> [media-matching]")
+    _scanLogging.add(file.path, ">>> [media-matching/findBestCorrespondingMedia]")
+    _scanLogging.add(file.path, "Creating title variations")
 
     let folderParsed: AnimeFileInfo | undefined
     let rootFolderParsed: AnimeFileInfo | undefined
@@ -143,7 +144,7 @@ export async function findBestCorrespondingMedia(
     // Remove duplicates and convert to lowercase
     let titleVariations: string[] = [...(new Set(_titleVariations.filter(Boolean).map(value => value.toLowerCase())))]
 
-    _scanLogging.add(file.path, "Created title variations")
+    _scanLogging.add(file.path, "Title variations")
     _scanLogging.add(file.path, "   -> " + JSON.stringify(titleVariations))
 
     // Check if titleVariations are already cached
@@ -159,6 +160,7 @@ export async function findBestCorrespondingMedia(
     }
 
     /* Using string-similarity */
+    _scanLogging.add(file.path, "Title matching using string-similarity")
 
     // Calculate similarity using string-similarity library
     // This section calculates the similarity of the title variations with media titles
@@ -185,7 +187,6 @@ export async function findBestCorrespondingMedia(
             || !!media.synonyms?.filter(Boolean).find(synonym => synonym.toLowerCase() === bestTitle.bestMatch.target.toLowerCase())
     }) : undefined
 
-    _scanLogging.add(file.path, "Title matching using string-similarity")
     _scanLogging.add(file.path, "   -> Result = " + JSON.stringify(correspondingMediaUsingSimilarity?.title))
     _scanLogging.add(file.path, "   -> Rating = " + bestTitle?.bestMatch.rating)
 
@@ -306,7 +307,7 @@ export async function findBestCorrespondingMedia(
             }
         })
     }
-    debug(bestTitleMatching?.bestMatch, "best", bestMedia)
+    // debug(bestTitleMatching?.bestMatch, "best", bestMedia)
 
     logger("media-matching").warning("Cache MISS: [File title]", _title, `(${(seasonAsNumber || folderSeasonAsNumber || "-")})`, "| [Media title]", bestMedia?.title?.english, "| [Rating]", rating)
     // Adding it to the cache

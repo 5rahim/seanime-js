@@ -24,7 +24,7 @@ import {
     TorrentSearchTorrentList,
 } from "@/app/(main)/view/_containers/torrent-search/_components/torrent-search-torrent-list"
 import { useQuery } from "@tanstack/react-query"
-import rakun from "@/lib/rakun/rakun"
+import rakun from "@/lib/rakun"
 import { atomWithImmer } from "jotai-immer"
 import { SearchTorrentData } from "@/lib/download/types"
 import { Tooltip } from "@/components/ui/tooltip"

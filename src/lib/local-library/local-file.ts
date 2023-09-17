@@ -1,5 +1,5 @@
 "use server"
-import rakun from "@/lib/rakun/rakun"
+import rakun from "@/lib/rakun"
 import { Settings } from "@/atoms/settings"
 import { AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import { findBestCorrespondingMedia } from "@/lib/local-library/media-matching"
@@ -44,7 +44,7 @@ export type LocalFile = {
  */
 export const createLocalFile = async (settings: Settings, props: Pick<LocalFile, "name" | "path">, _scanLogging: ScanLogging): Promise<LocalFile> => {
 
-    _scanLogging.add(props.path, ">>> [local-file]")
+    _scanLogging.add(props.path, ">>> [local-file/createLocalFile]")
 
     try {
         const folderPath = props.path.replace(props.name, "").replace(settings.library.localDirectory || "", "")

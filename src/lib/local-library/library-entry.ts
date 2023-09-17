@@ -67,26 +67,26 @@ export const inspectProspectiveLibraryEntry = async (props: {
             let ratingByFolderName = 0
 
             /** Rate how the file's parameters match with the actual anime title **/
-            _scanLogging.add(f.path, ">>> [inspectProspectiveLibraryEntry]")
-            _scanLogging.add(f.path, "Rating file's parameters match with the actual anime title")
+            _scanLogging.add(f.path, ">>> [library-entry/inspectProspectiveLibraryEntry]")
+            _scanLogging.add(f.path, "Rating file's parameters")
 
             // Rate the file's parent folder anime title
             if (fileFolderTitle && mediaTitles.length > 0) {
                 const bestMatch = similarity.findBestMatch(fileFolderTitle.toLowerCase(), mediaTitles)
                 rating = bestMatch.bestMatch.rating
-                _scanLogging.add(f.path, `   -> Rating title from parent folder (${fileFolderTitle}) ` + rating)
+                _scanLogging.add(f.path, `   -> Rating title from parent folder ("${fileFolderTitle}") = ` + rating)
             }
             // Rate the file's anime title
             if (fileTitle && mediaTitles.length > 0) {
                 const bestMatch = similarity.findBestMatch(fileTitle.toLowerCase(), mediaTitles)
                 rating = bestMatch.bestMatch.rating > rating ? bestMatch.bestMatch.rating : rating
-                _scanLogging.add(f.path, `   -> Rating title from file (${fileTitle}) ` + rating)
+                _scanLogging.add(f.path, `   -> Rating title from file ("${fileTitle}") = ` + rating)
             }
             // Rate the file's parent folder original name
             if (fileFolderOriginal) {
                 const bestMatch = similarity.findBestMatch(fileFolderOriginal.toLowerCase(), mediaTitles)
                 ratingByFolderName = bestMatch.bestMatch.rating
-                _scanLogging.add(f.path, `   -> Rating parent folder name (${fileFolderOriginal}) ` + rating)
+                _scanLogging.add(f.path, `   -> Rating parent folder name ("${fileFolderOriginal}") = ` + ratingByFolderName)
             }
 
             _scanLogging.add(f.path, "   -> Final title rating = " + rating + " | Final folder name rating = " + ratingByFolderName)
@@ -220,9 +220,8 @@ export const inspectProspectiveLibraryEntry = async (props: {
                     mostAccurateFiles[i].metadata.isSpecial = true
                     mostAccurateFiles[i].metadata.aniDBEpisodeNumber = "S" + String(mostAccurateFiles[i].metadata.episode ?? 1)
                     _scanLogging.add(file.path, `   -> isSpecial = true`)
-                    _scanLogging.add(file.path, `   -> aniDBEpisodeNumber = S${String(mostAccurateFiles[i].metadata.episode ?? 1)}`)
-                }
-                if (valueContainsNC(file.name)) {
+                    _scanLogging.add(file.path, `   -> aniDBEpisodeNumber = S${String(mostAccurateFiles[i].metadata.episode ?? 1)} (overwritten)`)
+                } else if (valueContainsNC(file.name)) {
                     mostAccurateFiles[i].metadata.isNC = true
                     _scanLogging.add(file.path, `   -> isNC = true`)
                 }
@@ -251,12 +250,8 @@ export const inspectProspectiveLibraryEntry = async (props: {
         })
         mostAccurateFiles.map(f => {
             _scanLogging.add(f.path, `File was accepted`)
-            _scanLogging.add(f.path, `   -> Title rating = ${lFilesWithRating.find(n => n.file.path === f.path)?.rating} | Threshold = ${highestRating}`)
-            _scanLogging.add(f.path, `   -> Folder name rating = ${lFilesWithRating.find(n => n.file.path === f.path)?.ratingByFolderName} | Threshold = ${highestRatingByFolderName}`)
             _scanLogging.add(f.path, `   -> Media ID = ` + (f.mediaId || currentMedia.id))
         })
-
-        logger("library-entry/inspectProspectiveLibraryEntry").info(`${currentMedia.title?.english} |`, "Accuracy", Number(highestRating.toFixed(3)))
 
         return {
             media: currentMedia, // Unused

@@ -4,7 +4,7 @@ import { MediaSort, MediaStatus } from "@/gql/graphql"
 import { Dirent } from "fs"
 import fs from "fs/promises"
 import { logger } from "@/lib/helpers/debug"
-import rakun from "@/lib/rakun/rakun"
+import rakun from "@/lib/rakun"
 import _ from "lodash"
 import { searchUniqueWithAnilist } from "@/lib/anilist/actions"
 

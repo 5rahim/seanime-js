@@ -11,7 +11,7 @@ import {
     useTorrentSmartSelectQueue,
 } from "@/atoms/torrent/torrent-smart-select-queue.atoms"
 import { isTorrentReady } from "@/lib/download/torrent-helpers"
-import rakun from "@/lib/rakun/rakun"
+import rakun from "@/lib/rakun"
 import { valueContainsNC, valueContainsSpecials } from "@/lib/local-library/utils"
 import path from "path"
 import { LoadingOverlay } from "@/components/ui/loading-spinner"

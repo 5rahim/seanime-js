@@ -38,6 +38,7 @@ export async function scanLocalFiles(
     token: string,
     { ignored, locked }: { ignored: string[], locked: string[] },
 ) {
+    const start = performance.now()
     const _scanLogging = new ScanLogging()
     _scanLogging.add("repository/scanLocalFiles", `Local directory: ${settings.library.localDirectory}`)
     logger("repository/scanLocalFiles").error("Local directory", settings.library.localDirectory)
@@ -130,6 +131,10 @@ export async function scanLocalFiles(
             }
         }
 
+        const end = performance.now()
+
+        _scanLogging.add("repository/scanLocalFiles", "Finished")
+        _scanLogging.add("repository/scanLocalFiles", `The scan was completed in ${((end - start) / 1000).toFixed(2)} seconds`)
 
         await _scanLogging.writeSnapshot()
         _scanLogging.clear()
@@ -176,7 +181,8 @@ export async function retrieveHydratedLocalFiles(
         if (localFiles.length > 0) {
             let allUserMedia = data.MediaListCollection?.lists?.map(n => n?.entries).flat().filter(Boolean).map(entry => entry.media) ?? [] as AnilistShortMedia[]
             logger("repository/retrieveHydratedLocalFiles").info("Formatting related media")
-            _scanLogging.add("repository/retrieveHydratedLocalFiles", "Getting related media from user watch list")
+            _scanLogging.add("repository/scanLocalFiles", ">>> [repository/retrieveHydratedLocalFiles]")
+            _scanLogging.add("repository/scanLocalFiles", "Getting related media from user watch list")
 
             // Get sequels, prequels... from each media as [AnilistShowcaseMedia]
             let relatedMedia = allUserMedia.filter(Boolean)
@@ -199,7 +205,7 @@ export async function retrieveHydratedLocalFiles(
             const mediaSynonymsWithSeason = allMedia.flatMap(media => media.synonyms?.filter(valueContainsSeason)).filter(Boolean)
 
             logger("repository/retrieveHydratedLocalFiles").info("Hydrating local files")
-            _scanLogging.add("repository/retrieveHydratedLocalFiles", "Hydrating local files")
+            _scanLogging.add("repository/scanLocalFiles", "Hydrating local files")
             let localFilesWithMedia: LocalFileWithMedia[] = []
 
             // Cache previous matches, key: title variations
@@ -224,7 +230,8 @@ export async function retrieveHydratedLocalFiles(
             }
             _matchingCache.clear()
             logger("repository/retrieveHydratedLocalFiles").success("Finished hydrating")
-            _scanLogging.add("repository/retrieveHydratedLocalFiles", "Finished hydrating files")
+            _scanLogging.add("repository/scanLocalFiles", "Finished hydrating files")
+            _scanLogging.add("repository/scanLocalFiles", "<<< [repository/retrieveHydratedLocalFiles]")
 
             return localFilesWithMedia
         }

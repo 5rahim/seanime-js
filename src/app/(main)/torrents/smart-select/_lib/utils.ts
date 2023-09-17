@@ -1,5 +1,5 @@
 import { TorrentFile } from "@ctrl/qbittorrent"
-import rakun from "@/lib/rakun/rakun"
+import rakun from "@/lib/rakun"
 
 type Input = { info: TorrentFile, originalName: string, parsed: TorrentInfos }
 type Output = Input & {
