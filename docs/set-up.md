@@ -1,6 +1,13 @@
 # Set up
 
-Seanime consists of a back-end Node.js server and a front-end Next.js web app.
+Seanime consists of a back-end Node.js server and a front-end Next.js web app. Data is stored in your browser's local
+storage.
+
+## Prerequisites
+
+- Have an AniList account with hydrated watch lists
+- Have VLC or MPC-HC installed
+- Have qBittorrent installed (for torrent download)
 
 ## Step-by-step guide
 
@@ -27,6 +34,14 @@ Both Consumet and Anify are optional.
 
 1. Rename `.env.example` to `.env`
 2. Update variables
+3.
+
+```dotenv
+# Deploy your Consumet API https://github.com/consumet/api.consumet.org#vercel
+CONSUMET_API_URL="https://consumet-api-example.vercel.app"
+# Get an API Key https://docs.anify.tv/start#api-keys
+ANIFY_API_KEY=""
+```
 
 ### 4. Build
 
@@ -47,3 +62,7 @@ npm run start
 ```
 
 - Go to `http://127.0.0.1:43200`
+
+### 6. Configuration
+
+- [Update your settings.](https://github.com/5rahim/seanime/blob/main/docs/settings.md)
