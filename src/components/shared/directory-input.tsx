@@ -8,13 +8,15 @@ import { FcOpenedFolder } from "@react-icons/all-files/fc/FcOpenedFolder"
 import { BiCheck } from "@react-icons/all-files/bi/BiCheck"
 import { BiFolderPlus } from "@react-icons/all-files/bi/BiFolderPlus"
 import { BiX } from "@react-icons/all-files/bi/BiX"
+import path from "path"
+import { removeTopPath } from "@/lib/helpers/directory.client"
 
 export interface DirectoryInputProps {
     children?: React.ReactNode
     value: string | undefined
     onSelect: (value: string) => void
     prefix?: string
-    directoryShouldExist?: boolean // TODO
+    directoryShouldExist?: boolean
     showFolderOptions?: boolean
 }
 
@@ -22,12 +24,12 @@ export const DirectoryInput: React.FC<DirectoryInputProps & Omit<TextInputProps,
 
     const { children, value, prefix, directoryShouldExist, onSelect, showFolderOptions = true, ...rest } = props
 
-    const [inputValue, setInputValue] = useState((prefix && value) ? value?.replace(prefix + "\\", "") || "" : (value || "C:\\"))
+    const [inputValue, setInputValue] = useState((prefix && value) ? removeTopPath(value, prefix) || "" : (value || ""))
     const debouncedValue = useDebounce(inputValue, 1000)
     const valueRef = useRef(inputValue)
 
     const folders = useAsync(async () => {
-        const val = prefix ? (prefix + "\\" + debouncedValue) : debouncedValue
+        const val = prefix ? (path.join(prefix, debouncedValue)) : debouncedValue
         if (val.length > 0) {
             const res = await getSafeFoldersFromDirectory(val)
             console.log(res)
@@ -37,16 +39,20 @@ export const DirectoryInput: React.FC<DirectoryInputProps & Omit<TextInputProps,
         }
     }, [debouncedValue])
 
+    useEffect(() => {
+        console.log(value, prefix, path.sep)
+    }, [value, prefix, path.sep])
 
-    const handleSelectDir = useCallback((path: string) => {
-        let _path = prefix ? path.replace(prefix + "\\", "") : path
-        _path = _path.startsWith("\\") ? _path.substring(1) : _path
-        _path = _path.replaceAll("\\\\", "\\")
+
+    const handleSelectDir = useCallback((input: string) => {
+        let _path = prefix ? removeTopPath(input, prefix) : input
+        _path = _path.startsWith(path.sep) ? _path.substring(1) : _path
+        _path = _path.replaceAll(path.sep + path.sep, path.sep)
         // actions
         setInputValue(_path)
         onSelect(_path)
         valueRef.current = _path
-    }, [])
+    }, [prefix])
 
     useEffect(() => {
         if (folders.value) {

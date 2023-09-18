@@ -52,6 +52,7 @@ export function MissingEpisodes() {
                     })}
                     {isLoading && missing.map(n => n.downloadInfo.episodeNumbers.map(k => (
                         <Skeleton
+                            key={n.media.id + k}
                             className={"rounded-md h-auto overflow-hidden aspect-[4/2] w-96 relative flex items-end flex-none"}
                         />
                     )))}

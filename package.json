@@ -1,7 +1,6 @@
 {
   "name": "seanime",
   "version": "0.1.0",
-  "private": true,
   "scripts": {
     "dev": "next dev --port=43200",
     "init": "tsx scripts/init.ts",
@@ -97,6 +96,7 @@
     "tailwindcss-animate": "latest",
     "tsx": "^3.12.10",
     "typescript": "5.2.2",
+    "upath": "^2.0.1",
     "use-debounce": "^9.0.4",
     "zod": "^3.22.2"
   },

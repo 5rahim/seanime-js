@@ -12,6 +12,7 @@ import gql from "graphql-tag"
 import { AnilistShortMedia } from "@/lib/anilist/fragment"
 import { aniListTokenAtom } from "@/atoms/auth"
 import axios from "axios"
+import { getDirectoryPath } from "@/lib/helpers/directory.client"
 
 export type MatchingSuggestionGroups = {
     files: LocalFile[],
@@ -38,7 +39,7 @@ const getMatchingSuggestionGroupsAtom = atom(null, async (get, set, payload: "fi
             /** Grouping **/
             const filesWithFolderPath = files.map(file => {
                 if (payload === "folder")
-                    return ({ ...file, folderPath: file.path.replace("\\" + file.name, "") }) // <-- Group by folder path (folder by folder)
+                    return ({ ...file, folderPath: getDirectoryPath(file.path) }) // <-- Group by folder path (folder by folder)
                 else
                     return ({ ...file, folderPath: file.path }) // <-- Group by file path (file by path)
             }) as (LocalFile & { folderPath: string })[]

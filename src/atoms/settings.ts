@@ -6,17 +6,17 @@ import { createTypesafeFormSchema, InferType } from "@/components/ui/typesafe-fo
 import { atomWithStorage } from "jotai/utils"
 import { useImmerAtom, withImmer } from "jotai-immer"
 import { useCallback } from "react"
-
-
 import { fileOrDirectoryExists } from "@/lib/helpers/file"
 import { useSetAtom } from "jotai/react"
+import path from "path"
+import * as upath from "upath"
 
 export const settingsSchema = createTypesafeFormSchema(({ z }) => z.object({
     library: z.object({
         localDirectory: z.string().nullable().refine(async (value) => value ? await fileOrDirectoryExists(value) : false, { message: "Directory does not exist" })
             .transform(value => {
-                const _val = value?.replaceAll("/", "\\")
-                return _val?.endsWith("\\") ? _val?.slice(0, -1) : _val
+                const _v = !!value ? (value.endsWith(path.sep) ? (value.slice(0, -1)) : (value)) : undefined
+                return _v ? upath.normalize(_v) : undefined
             }),
     }),
     player: z.object({

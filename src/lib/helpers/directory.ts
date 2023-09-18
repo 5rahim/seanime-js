@@ -6,6 +6,7 @@ import { runCommand } from "@/lib/helpers/child-process"
 import { directoryExists, fileOrDirectoryExists } from "@/lib/helpers/file"
 import path from "path"
 import { PathLike } from "fs"
+import { getDirectoryPath } from "@/lib/helpers/directory.client"
 
 export async function openDirectory(path: PathLike) {
     if (path) {
@@ -21,7 +22,7 @@ export async function openDirectory(path: PathLike) {
 export async function getSafeFoldersFromDirectory(_path: string): Promise<{ data: { name: string, path: string }[], error: string | null, parentFolder: string | null }> {
     if (_path && path.isAbsolute(_path)) {
 
-        const parentPath = path.dirname(_path)
+        const parentPath = getDirectoryPath(_path)
 
         if (!await directoryExists(_path)) {
             return { data: [], error: "Directory does not exist", parentFolder: parentPath }
@@ -30,7 +31,10 @@ export async function getSafeFoldersFromDirectory(_path: string): Promise<{ data
         try {
             const folders = await fs.readdir(_path, { withFileTypes: true })
             return {
-                data: folders.filter(dirent => dirent.isDirectory()).map(folder => ({ name: folder.name, path: folder.path + "\\" + folder.name })),
+                data: folders.filter(dirent => dirent.isDirectory()).map(folder => ({
+                    name: folder.name,
+                    path: path.join(folder.path, folder.name),
+                })),
                 error: null,
                 parentFolder: parentPath,
             }

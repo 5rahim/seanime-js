@@ -4,6 +4,7 @@ import { Settings } from "@/atoms/settings"
 import { AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import { findBestCorrespondingMedia } from "@/lib/local-library/media-matching"
 import { ScanLogging } from "@/lib/local-library/logs"
+import { getDirectoryPath, removeTopPath, splitFolderPath } from "@/lib/helpers/directory.client"
 
 export type AnimeFileInfo = {
     original: string
@@ -47,7 +48,8 @@ export const createLocalFile = async (settings: Settings, props: Pick<LocalFile,
     _scanLogging.add(props.path, ">>> [local-file/createLocalFile]")
 
     try {
-        const folderPath = props.path.replace(props.name, "").replace(settings.library.localDirectory || "", "")
+        // Remove local directory
+        const folderPath = removeTopPath(getDirectoryPath(props.path), settings.library.localDirectory!)
         const parsed = rakun.parse(props.name)
         const parsedInfo = {
             original: parsed.filename,
@@ -61,8 +63,8 @@ export const createLocalFile = async (settings: Settings, props: Pick<LocalFile,
         }
         _scanLogging.add(props.path, `   -> Parsed from file name ` + JSON.stringify(parsedInfo))
 
-        const folders = folderPath.split("\\").filter(value => !!value && value.length > 0)
-        const parsedFolderInfo = folders.map(folder => {
+        const folders = splitFolderPath(folderPath)
+        const parsedFolderInfo = folders?.map(folder => {
             const obj = rakun.parse(folder)
             // Keep the folder which has a parsed title or parsed season
             if (obj.name || obj.season) {

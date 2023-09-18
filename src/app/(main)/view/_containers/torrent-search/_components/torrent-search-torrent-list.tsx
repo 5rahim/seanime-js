@@ -29,6 +29,7 @@ import { FcFilmReel } from "@react-icons/all-files/fc/FcFilmReel"
 import { BiX } from "@react-icons/all-files/bi/BiX"
 import { AppLayoutStack } from "@/components/ui/app-layout"
 import { DirectoryInput } from "@/components/shared/directory-input"
+import path from "path"
 
 interface TorrentListProps {
     children?: React.ReactNode
@@ -52,7 +53,7 @@ export const TorrentSearchTorrentList: React.FC<TorrentListProps> = (props) => {
     const selectedTorrents = useAtomValue(__torrentSearch_sortedSelectedTorrentsAtom)
     const sharedPath = useStableSelectAtom(entryAtom, entry => entry.sharedPath)
 
-    const [selectedDir, setSelectedDir] = useState<string | undefined>(sharedPath || settings.library.localDirectory + "\\" + sanitizeDirectoryName(media.title?.romaji || ""))
+    const [selectedDir, setSelectedDir] = useState<string | undefined>(sharedPath || (settings.library.localDirectory ? path.join(settings.library.localDirectory, sanitizeDirectoryName(media.title?.romaji || "")) : ""))
 
     const { addTorrentToQueue } = useTorrentSmartSelectQueue()
 

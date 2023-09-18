@@ -41,7 +41,7 @@ export async function scanLocalFiles(
     const start = performance.now()
     const _scanLogging = new ScanLogging()
     _scanLogging.add("repository/scanLocalFiles", `Local directory: ${settings.library.localDirectory}`)
-    logger("repository/scanLocalFiles").error("Local directory", settings.library.localDirectory)
+    logger("repository/scanLocalFiles").info("Local directory", settings.library.localDirectory)
 
     // Check if the library exists
     if (!settings.library.localDirectory || !_fs.existsSync(settings.library.localDirectory)) {

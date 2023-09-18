@@ -21,11 +21,14 @@ describe("Single episode", () => {
         expect.soft(rakun.parse("[Judas] Blue Lock - S01 - E05.mkv")).toHaveProperty("episode", "5")
         expect.soft(rakun.parse("[Judas] Blue Lock - S01 - 05.mkv")).toHaveProperty("episode", "5")
         expect.soft(rakun.parse("[Judas] Blue Lock - S01 05.mkv")).toHaveProperty("episode", "5")
+        expect.soft(rakun.parse("[Judas] Blue Lock - S01x05.mkv")).toHaveProperty("episode", "5")
+        expect.soft(rakun.parse("[Judas] Blue Lock - 01x05.mkv")).toHaveProperty("episode", "5")
         expect.soft(rakun.parse("[Judas] Blue Lock - E05.mkv")).toHaveProperty("episode", "5")
         expect.soft(rakun.parse("[Judas] Blue Lock - 05.mkv")).toHaveProperty("episode", "5")
         expect.soft(rakun.parse("[Judas] Blue Lock - 01x05.mkv")).toHaveProperty("episode", "5")
         expect.soft(rakun.parse("[Judas] Blue Lock - 5.mkv")).toHaveProperty("episode", "5")
         expect.soft(rakun.parse("[Judas] Blue Lock 05.mkv")).toHaveProperty("episode", "5")
+        expect.soft(rakun.parse("[Judas] Blue Lock 15.mkv")).toHaveProperty("episode", "15")
         expect.soft(rakun.parse("[Judas] 05.mkv")).toHaveProperty("episode", "5")
         expect.soft(rakun.parse("[Judas] 05 - Episode title.mkv")).toHaveProperty("episode", "5")
 
@@ -38,7 +41,7 @@ describe("Single episode", () => {
     test("with episode title", () => {
         expect.soft(rakun.parse("[Judas] Blue Lock - 05 - Episode title.mkv")).toHaveProperty("episode", "5")
         expect.soft(rakun.parse("[Judas] One Piece - 1075 - Episode title.mkv")).toHaveProperty("episode", "1075")
-        expect.soft(rakun.parse("[Judas] Blue Lock 05 Episode title.mkv")).toHaveProperty("episode", "5")
+        expect.soft(rakun.parse("[Judas] Blue Lock 05 Episode title.mkv")).toHaveProperty("episode", "5") // Meh
     })
 
     test("with versioning", () => {
@@ -82,6 +85,8 @@ describe("Single season", () => {
         expect.soft(rakun.parse("[Judas] Blue Lock - S01_05.mkv")).toHaveProperty("season", "1")
         expect.soft(rakun.parse("[Judas] Blue Lock S1.mkv")).toHaveProperty("season", "1")
         expect.soft(rakun.parse("[Judas] Blue Lock S04.mkv")).toHaveProperty("season", "4")
+        expect.soft(rakun.parse("[Judas] Blue Lock 01x05.mkv")).toHaveProperty("season", "1")
+        expect.soft(rakun.parse("[Judas] Blue Lock S01x05.mkv")).toHaveProperty("season", "1")
         expect.soft(rakun.parse("[Erai-raws] Edens Zero S2 - 24 [1080p][HEVC][Multiple Subtitle].mkv")).toHaveProperty("season", "2")
     })
     test("in parentheses", () => {
@@ -162,6 +167,8 @@ describe("Episode title", () => {
         expect.soft(rakun.parse("S01E04-The Reason for Her Smile I Want to Be Playful Like a Girl Heroes Fall a Lot [9475473E].mkv")).toHaveProperty("episodeTitle", "The Reason for Her Smile I Want to Be Playful Like a Girl Heroes Fall a Lot")
         expect.soft(rakun.parse("E04-The Reason for Her Smile I Want to Be Playful Like a Girl Heroes Fall a Lot [9475473E].mkv")).toHaveProperty("episodeTitle", "The Reason for Her Smile I Want to Be Playful Like a Girl Heroes Fall a Lot")
         expect.soft(rakun.parse("E04 - The Reason for Her Smile I Want to Be Playful Like a Girl Heroes Fall a Lot [9475473E].mkv")).toHaveProperty("episodeTitle", "The Reason for Her Smile I Want to Be Playful Like a Girl Heroes Fall a Lot")
-        expect.soft(rakun.parse("04 - The Reason for Her Smile I Want to Be Playful Like a Girl Heroes Fall a Lot [9475473E].mkv")).toHaveProperty("episodeTitle", "The Reason for Her Smile I Want to Be Playful Like a Girl Heroes Fall a Lot")
+    })
+    it("should not be parsed", () => {
+        expect.soft(rakun.parse("04 - The Reason for Her Smile I Want to Be Playful Like a Girl Heroes Fall a Lot [9475473E].mkv")).not.toHaveProperty("episodeTitle", "The Reason for Her Smile I Want to Be Playful Like a Girl Heroes Fall a Lot")
     })
 })

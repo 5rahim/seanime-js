@@ -10,6 +10,7 @@ import { useSelectAtom } from "@/atoms/helpers"
 import { allUserMediaAtom } from "@/atoms/anilist/media.atoms"
 import _ from "lodash"
 import { anilistCollectionEntriesAtom, AnilistCollectionEntry } from "@/atoms/anilist/entries.atoms"
+import { getDirectoryPath } from "@/lib/helpers/directory.client"
 
 /* -------------------------------------------------------------------------------------------------
  * LibraryEntry
@@ -37,7 +38,7 @@ export const libraryEntriesAtom = atom(get => {
                 media: get(allUserMediaAtom).filter(Boolean).find(media => media.id === mediaId)!,
                 files: get(localFilesAtom).filter(file => file.mediaId === mediaId),
                 collectionEntry: get(anilistCollectionEntriesAtom).find(entry => entry?.media?.id === mediaId),
-                sharedPath: firstFile.path.replace("\\" + firstFile.name, ""),
+                sharedPath: getDirectoryPath(firstFile.path),
             } satisfies LibraryEntry
         }
     }).filter(Boolean).filter(entry => entry.files.length > 0) as LibraryEntry[]

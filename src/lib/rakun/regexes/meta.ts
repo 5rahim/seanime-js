@@ -32,8 +32,8 @@ export default {
         // /(^|\b|[_-])?(?:S\d+E\d{1,3}) ?-? ?(?<episodeTitle>[a-zA-Z _'`,.…!?()\d-]+)(?: |$)/
         /(^|\b|[_-])?S\d+E\d{1,3} ?[ -] ?(?<episodeTitle>[a-zA-Z].*)(?: |$)/,
         /(^|\b|[_-])?E\d{1,4} ?[ -] ?(?<episodeTitle>[a-zA-Z].*)(?: |$)/,
-        /^\d{2,4} ?[ -] ?(?<episodeTitle>[a-zA-Z].*)(?: |$)/,
         /- \d{1,4} [ -] (?<episodeTitle>[a-zA-Z].*)(?: |$)/,
+        // /^\d{2,4} ?[ -] ?(?<episodeTitle>[a-zA-Z].*)(?: |$)/,
     ],
     releaseGroup: [
         // Brackets with normal phrasing, and no specials characters is probably releaseGroup name
