@@ -8,8 +8,8 @@
 
 <img src="docs/images/main_5.png" alt="preview" width="100%"/>
 
-🚨 This project is just a hobby, it's not meant to fix every problem or include every requested feature. Some features
-might not work as planned.
+🚨 This project is a hobby, it's not meant to fix every problem or include every requested feature. Some features
+might not work as intended.
 
 ## Features
 

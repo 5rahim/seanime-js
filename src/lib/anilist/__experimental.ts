@@ -95,9 +95,9 @@ export async function resolveTitle(name: string) {
 //
 //
 // export async function resolveFileMedia (fileName: any) {
-//     let parseObj = await rakun.parse(fileName) as TorrentInfos
+//     let parseObj = await rakun.parse(fileName) as ParsedTorrentInfo
 //
-//     let parseObjs = [parseObj] as TorrentInfos[]
+//     let parseObjs = [parseObj] as ParsedTorrentInfo[]
 //     // batches promises in 10 at a time, because of CF burst protection, which still sometimes gets triggered :/
 //     await PromiseBatch(resolveTitle, [...new Set(parseObjs.map(obj => obj.name))].filter(title => !(title in relations)), 10)
 //     const fileMedias = []

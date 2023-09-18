@@ -1,9 +1,7 @@
 /**
- * Quality related regexs (sources, resolution, codecs, etc.)
+ * Quality related regexes (sources, resolution, codecs, etc.)
  */
 export default {
-
-    //Codecs
     codecs: [
         /(?<x264>[Xx]264)/i,
         /(?<h264>[Hh]264)/i,
@@ -39,8 +37,6 @@ export default {
         /(?<true_hd>\bTrueHD\b)/i,
         /(?<lpcm>\bLPCM\b)/i,
     ],
-
-    //Distributors
     distributor: [
         /(?<apple_tv>\bATVP\b)/,
         /(?<amazon>\bAMZN-DL\b)/,
@@ -60,8 +56,6 @@ export default {
         /(?<tokyo_tv>\bTokyo TV\b)/,
         /(?<at_x>AT-[Xx])/,
     ],
-
-    //Resolutions
     resolution: [
         /(?:HD\s?)?(?<_1080p>1080[Pp])(?:\s?HD)?/,
         /(?<_1080p>1920x1080)/,
@@ -77,8 +71,6 @@ export default {
         /(?<_4K>4[Kk])/,
         /(?<_16_9>720x480|768x576)/,
     ],
-
-    //Sources
     source: [
         /(?<bluray>[Bb]lu-?[Rr]ay (?:RIP|[Rr]ip))/i,
         /(?<bluray>BD(?:RIP|[Rr]ip))/i,

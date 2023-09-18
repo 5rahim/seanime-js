@@ -1,7 +1,7 @@
 import { TorrentFile } from "@ctrl/qbittorrent"
 import rakun from "@/lib/rakun"
 
-type Input = { info: TorrentFile, originalName: string, parsed: TorrentInfos }
+type Input = { info: TorrentFile, originalName: string, parsed: ParsedTorrentInfo }
 type Output = Input & {
     trueEpisode?: number
     season?: number

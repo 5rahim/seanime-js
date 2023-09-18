@@ -60,7 +60,7 @@ export async function scanLocalFiles(
 
     // Get the hydrated files
     logger("repository/scanLocalFiles").info("Retrieving hydrated local files")
-    _scanLogging.add("repository/scanLocalFiles", "Retrieving hydrated local files")
+    _scanLogging.add("repository/scanLocalFiles", "Retrieving and hydrating local files")
     const files = await retrieveHydratedLocalFiles(settings, userName, data, { ignored, locked }, _scanLogging)
     _scanLogging.add("repository/scanLocalFiles", `Retrieved ${files?.length} files`)
 

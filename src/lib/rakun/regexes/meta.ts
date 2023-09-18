@@ -1,9 +1,8 @@
 /**
- * Torrent metadata related regexs
+ * Torrent metadata
  */
 export default {
-
-    //Metadata
+    // Metadata
     data: [
         /(?<remux>\bREMUX(?:ES)?\b)/,
         /(?<remux>\b[Rr]emux(?:es)?\b)/,
@@ -28,27 +27,24 @@ export default {
         /(?<has_specials>[Ff]ive [Ss]pecials?)/,
         /(?<has_specials>[Ss]ix [Ss]pecials?)/,
     ],
-
     episodeTitle: [
         // `S01E1 - Episode title`
         // /(^|\b|[_-])?(?:S\d+E\d{1,3}) ?-? ?(?<episodeTitle>[a-zA-Z _'`,.…!?()\d-]+)(?: |$)/
-        /(^|\b|[_-])?(?:S\d+E\d{1,3}) ?[ -] ?(?<episodeTitle>[a-zA-Z][a-zA-Z _'`,.…!?()\d-]+)(?: |$)/,
+        /(^|\b|[_-])?S\d+E\d{1,3} ?[ -] ?(?<episodeTitle>[a-zA-Z].*)(?: |$)/,
+        /(^|\b|[_-])?E\d{1,4} ?[ -] ?(?<episodeTitle>[a-zA-Z].*)(?: |$)/,
+        /- \d{1,4} [ -] (?<episodeTitle>[a-zA-Z].*)(?: |$)/,
     ],
-
-    //Subber, translation groups
-    subber: [
-        //Brackets with normal phrasing, and no specials characters is probably subber name
-        /\[(?<subber>[A-Za-z][-A-Za-z&! 0-9.]{5,})\]/,
-        //Subber is usually at start of filename
-        /^\[(?<subber>[^\]]+[-A-Za-z&! 0-9.]{2,})\]/,
-        /^\[(?<subber>[-A-Za-z&! 0-9.]+)\]/,
-        //Subber at end of filename, with special characters but got "Sub" in its name
-        /\s(?<subber>[A-Za-z][-A-Za-z&!0-9.]+[Ss][Uu][Bb])$/,
-        //Subber at end of filename
-        /(?<!\d)-(?<subber>[A-Za-z][A-Za-z&!0-9.]+)$/,
+    releaseGroup: [
+        // Brackets with normal phrasing, and no specials characters is probably releaseGroup name
+        /\[(?<releaseGroup>[A-Za-z][-A-Za-z&! 0-9.]{5,})\]/,
+        // releaseGroup is usually at start of filename
+        /^\[(?<releaseGroup>[^\]]+[-A-Za-z&! 0-9.]{2,})\]/,
+        /^\[(?<releaseGroup>[-A-Za-z&! 0-9.]+)\]/,
+        // releaseGroup at end of filename, with special characters but got "Sub" in its name
+        /\s(?<releaseGroup>[A-Za-z][-A-Za-z&!0-9.]+[Ss][Uu][Bb])$/,
+        // releaseGroup at end of filename
+        /(?<!\d)-(?<releaseGroup>[A-Za-z][A-Za-z&!0-9.]+)$/,
     ],
-
-    //Website
     website: [
         /\[(?<website>[\w]+\.(?:com))\]/,
     ],

@@ -1,16 +1,13 @@
 /**
- * Processors regexs
+ * Executed before and after
  */
 export default {
-
-    //Post-processors
+    // Post-processors
     post: {
-        //Audio
         audio: {
             //Maybe it was impossible to determine whether it was multi subs or multi audio, assuming audio if remaining
             possible_multi_audio: /[Mm]ulti$/,
         },
-        //Codecs
         codecs: {
             //Detect multiple DTS version
             duplicates: [
@@ -18,7 +15,6 @@ export default {
                 [[/\bac3\b/, /\beac3\b/], "eac3"],
             ],
         },
-        //Name
         name: {
             //Isolated characters (including dash)
             isolated: [
@@ -34,7 +30,6 @@ export default {
                 /(?<=[ A-Za-z一-龯])\.(?=[([A-Za-z0-9一-龯])/g,
             ],
         },
-        //Resolution post-processors
         resolution: {
             //Maybe it was impossible to determine whether it was a resolution or not (these are applied after episode post-processing to avoid confusion with episode number)
             possible_resolution: [
@@ -47,8 +42,7 @@ export default {
                 /(?<_480p>\b480\b|[-_. ]480$)/,
             ],
         },
-        //Serie post-processors
-        serie: {
+        series: {
             //Leading zeros
             leading_zero: /^\s*0\d+\s*$/,
             //Maybe it was impossible to match episode number previously (1 is not enough, 4 may be date)
@@ -60,14 +54,12 @@ export default {
             //Single episode
             single: /^\s*(?<a>\d+)\s*$/,
         },
-        //Subber
-        subber: {
-            //Check if attribute may be a possible subber name if none has been detected before
-            possible_subber_name: /\[(?<subber>[-A-Za-z&! 0-9.]+)\]/,
+        releaseGroup: {
+            //Check if attribute may be a possible releaseGroup name if none has been detected before
+            possible_releaseGroup_name: /\[(?<releaseGroup>[-A-Za-z&! 0-9.]+)\]/,
         },
     },
-
-    //Pre-processors
+    // Pre-processors
     pre: {
         //Name
         name: {

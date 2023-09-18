@@ -1,9 +1,7 @@
 /**
- * Language related regexs
+ * Language related regexes
  */
 export default {
-
-    //Audio
     audio: {
         extract: [
             /(?<jp>\b[Jj]apanese [Aa]udio\b)/,
@@ -24,8 +22,6 @@ export default {
         ],
         keep: [],
     },
-
-    //Subtitles
     subtitles: {
         extract: [
             /(?<multi>\b[Mm]ulti[- ][Ll]anguage [Ss]ub(?:title)?s?\b)/,
@@ -51,5 +47,4 @@ export default {
         ],
         keep: [],
     },
-
 }

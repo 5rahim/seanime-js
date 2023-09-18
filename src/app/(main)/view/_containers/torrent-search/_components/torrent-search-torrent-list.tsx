@@ -56,7 +56,7 @@ export const TorrentSearchTorrentList: React.FC<TorrentListProps> = (props) => {
 
     const { addTorrentToQueue } = useTorrentSmartSelectQueue()
 
-    const isFile = useCallback((parsed: TorrentInfos) => {
+    const isFile = useCallback((parsed: ParsedTorrentInfo) => {
         return !!parsed.episode
     }, [])
     // 1. Torrent might be a batch

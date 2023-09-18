@@ -1,9 +1,4 @@
-/**
- * File metadata related regexs
- */
 export default {
-
-    //Extension
     extension: [
         /(?<mkv>[.]mkv$)/,
         /(?<mkv>MKV)/,
@@ -11,10 +6,7 @@ export default {
         /(?<mp4>MP4)/,
         /(?<_7z>[.]7z$)/,
     ],
-
-    //Hash
     hash: [
         /[\[\()](?<hash>[A-F0-9]{8})[\]\)]/,
     ],
-
 }

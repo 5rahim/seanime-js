@@ -1,27 +1,28 @@
 /**
- * Serie related regexs
+ * Series related regexes
  */
 export default {
-
-    //Episode
     episode: {
-        //Episodes ranges
+        // Episodes ranges
         range: {
             extract: [
                 /\b[-._ ]?[Vv]ol[-._ ]?(?<a>\d+)-(?<b>\d+)\b/,
-                /[Ee][Pp][Ss]?\.? (?<a>\d{2,})-(?<b>\d{2,})/,
-                /E(?<a>\d{2,})-E(?<b>\d{2,})/,
-                /(?<a>\d{2,}) ?~ ?(?<b>\d{2,})/,
+                /[Ee][Pp][Ss]?\.? (?<a>\d{2,})-(?<b>\d{2,})/, // Eps 1-5
+                /E(?<a>\d{2,})-E(?<b>\d{2,})/, // E1-E5
+                /(?<a>\d{2,}) ?~ ?(?<b>\d{2,})/, // 1 ~ 5
                 /[Ee]pisodes\s(?<a>\d+)\s?[-~&]\s?(?<b>\d+)/,
-                /(\()(?<a>\d{2,}) ?- ?(?<b>\d{2,})(\))/,
-                /\b(?<a>\d{2,}) ?- ?(?<b>\d{2,})\b/,
+                /(\()(?<a>\d{2,}) ?- ?(?<b>\d{2,})(\))/, // (1 - 5)
+                // Title - 1 - 5
+                // Title 1 - 5 <-- Nope
+                /\b(?<a>\d{2,})-(?<b>\d{2,})\b/,
+                /- \b(?<a>\d{2,}) [-~&] (?<b>\d{2,})\b/,
                 /\b[(\[)]?[Ee](pisode)?s? ?E?(?<a>0?\d+) ?[-~&] ?(?<b>0?\d+)[)\]]?\b/,
             ],
             keep: [
-                /(?<!\d)(?<a>\d{1,3})\s?[-~&]\s?(?<b>\d{1,3})/,
+                // /(?<!\d)(?<a>\d{1,3})\s?[-~&]\s?(?<b>\d{1,3})/,
             ],
         },
-        //Single episode
+        // Single episode
         single: {
             extract: [
                 /[-._](?<episode>\d{1,2})[-._]/,
@@ -31,7 +32,7 @@ export default {
                 /(\s|E)(?<episode>\d+)[.v]([1-9]|0\d|2[0-9])(?: |$)/, //` 01v2` `01v2 `
             ],
             keep: [
-                /- \b(?<episode>\d+)(?= |$)\b/, // KEEP `This - 01 - [02]`, NOT `Not this - 01 Text here`
+                /- ?\b(?<episode>\d+)(?= |$)\b/, // KEEP `This - 01 - ?[02]`, NOT `Not this - 01 Text here`
                 /\bS\d+E(?<episode>\d+)\b/,
                 /\bE(?<episode>0\d+)\b/,
                 /\bE(?<episode>\d{2,3})\b/,
@@ -41,16 +42,8 @@ export default {
                 // /\s(?<episode>\d{1,3})[.v](?<version>\d{0,2})?(?: |$)/,
             ],
         },
-        // Version
-        version: {
-            extract: [],
-            keep: [
-                // /[.vx'](?<episode>\d{0,2})?(?: |$)/
-            ],
-        },
     },
-
-    //Movie
+    // Movie
     movie: {
         range: {
             extract: [
@@ -65,8 +58,7 @@ export default {
             keep: [],
         },
     },
-
-    //Part
+    // Part
     part: {
         range: {
             extract: [],
@@ -80,8 +72,7 @@ export default {
             keep: [],
         },
     },
-
-    //Cour
+    // Cour
     cour: {
         range: {
             extract: [],
@@ -89,15 +80,15 @@ export default {
         },
         single: {
             extract: [
-                /\b[Cc]our[-._ ](?<cour>\d)\b/,
-                /\b[Cc]our[-._ ](?<cour>0\d)\b/,
+                /\b[Cc]our[-._ ](?<cour>0?\d)\b/,
             ],
             keep: [],
         },
     },
 
-    //Season
+    // Season
     season: {
+        // Season ranges
         range: {
             extract: [
                 // /\b[\(\[)]?[Ss]easons (?<a>\d+)\s?[-~&]\s?(?<b>\d+)[\)\]]?\b/,
@@ -110,12 +101,14 @@ export default {
                  * Test `S01-04` Text
                  * Golden Kamuy S1 - 04 <-- Nope
                  */
-                /\b[(\[)]?[Ss](eason)?s? ?S?(?<a>0?\d+) ?[~&+] ?S?(?<b>0?\d+)[)\]]?\b/, // S01 ~ 02 - with word boundary
-                /[ +_-][(\[)]?[Ss](eason)?s? ?S?(?<a>0?\d+) ?[~&+] ?S?(?<b>0?\d+)[)\]]?[ +_-]/, // S01 ~ 02 without
-                /[ +_-][(\[)]?[Ss](eason)?s? ?S?(?<a>0?\d+)[-~&+]S?(?<b>0?\d+)[)\]]?[ +_-]/, //S01-02 S01~02
+                /\b[(\[)]?[Ss](eason)?s? ?S?(?<a>0?\d+) ?[&+] ?S?(?<b>0?\d+)[)\]]?\b/, // S01 & 02 - with word boundary
+                /[ +_-][(\[]?([Ss](eason)|[Ss])(?<a>0?\d+) ?[&+] ?S?(?<b>0?\d+)[)\]]?[+_-]?(?: |$)/, // S01 & 02
+                /[ +_-][(\[]?([Ss](eason)|[Ss])(?<a>0?\d+)[-~&+]S?(?<b>0?\d+)[)\]]?[+_-]?(?: |$)/, // S01-02 S01~02
+                /[ +_-][(\[]?([Ss](eason)|[Ss])(?<a>0?\d+) ?[-~&+] ?S(?<b>0?\d+)[)\]]?[+_-]?(?: |$)/,
             ],
             keep: [],
         },
+        // Single seasons
         single: {
             extract: [
                 /\b(?<season>1)st [Ss]eason\b/,

@@ -32,7 +32,7 @@ export function ContinueWatching(props: { entryAtom: Atom<LibraryEntry> }) {
             }
         }
         return undefined
-    }, [media, currentlyWatching, progress])
+    }, [media, currentlyWatching, progress, lastFile])
 
 
     const { data, isLoading } = useQuery({
@@ -43,7 +43,10 @@ export function ContinueWatching(props: { entryAtom: Atom<LibraryEntry> }) {
         },
         keepPreviousData: false,
         enabled: !!nextEpisode,
+        cacheTime: 1000 * 60 * 60,
     })
+
+    /* aaa/aaa *******/
 
     if (!nextEpisode) return null
 

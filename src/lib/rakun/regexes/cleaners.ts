@@ -1,9 +1,8 @@
 /**
- * Cleaners regexs
+ * Cleaners regexes
  */
 export default {
-
-    //Global cleaners (always executed at cleaning)
+    // Global cleaners (always executed during cleaning)
     global: [
         //Multiples spaces (pre)
         /\s{2,}/g,
@@ -22,25 +21,24 @@ export default {
         //Multiples spaces (post)
         /\s{2,}/g,
     ],
-
-    //Miscelleanous cleaners
+    // Miscellaneous cleaners
     misc: [
         /[(]?WEB/,
         /\bNHKG\b/,
         /\b(?<size>\d+GB)\b/,
     ],
 
-    //Special cleaners
+    // Special cleaners
     special: {
-        //Empty elements
+        // Empty elements
         empty: {
             parenthesis: [
                 /\(\s*\)/g,
             ],
         },
-        //Only brackets, and title not yet found => title is also in brackets
+        // Only brackets, and title not yet found => title is also in brackets
         only_brackets: /^\[(?<name>[^[]+)\]$/,
-        //Unparsable elements, stating from end
+        // Un-parsable elements, stating from end
         unparsable: /(?<unparsable>\[[^[]+?\])/,
     },
 
