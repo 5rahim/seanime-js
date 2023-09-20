@@ -46,7 +46,7 @@ export function findMediaSeasonFromTitles(media: AnilistShortMedia | null | unde
  * @param media
  */
 export function shortMediaToShowcaseMedia(media: AnilistShortMedia | null | undefined): AnilistShowcaseMedia {
-    return _.omit(media, "streamingEpisodes", "relations", "studio", "description", "format", "source", "isAdult", "genres", "trailer", "countryOfOrigin", "studios")
+    return _.omit(media, "streamingEpisodes", "relations", "studio", "description", "source", "isAdult", "genres", "trailer", "countryOfOrigin", "studios")
 }
 
 export function filterEntriesByTitle<T extends AnilistCollectionEntry[] | LibraryEntry[]>(arr: T, input: string) {
