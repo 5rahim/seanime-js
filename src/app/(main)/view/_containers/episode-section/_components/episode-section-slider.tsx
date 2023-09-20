@@ -1,6 +1,5 @@
 import { Slider } from "@/components/shared/slider"
 import { PrimitiveAtom } from "jotai"
-import { LocalFile } from "@/lib/local-library/local-file"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
 import { AnifyEpisodeCover } from "@/lib/anify/types"
 import React, { useMemo } from "react"
@@ -8,6 +7,7 @@ import { useSelectAtom } from "@/atoms/helpers"
 import { formatDistanceToNow, isBefore, subYears } from "date-fns"
 import { LargeEpisodeListItem } from "@/components/shared/large-episode-list-item"
 import { valueContainsNC, valueContainsSpecials } from "@/lib/local-library/utils"
+import { LocalFile } from "@/lib/local-library/types"
 
 type Props = {
     fileAtoms: PrimitiveAtom<LocalFile>[],

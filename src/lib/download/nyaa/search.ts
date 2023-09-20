@@ -1,12 +1,12 @@
 "use server"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
-import { LocalFile } from "@/lib/local-library/local-file"
 import rakun from "@/lib/rakun"
 import { logger } from "@/lib/helpers/debug"
 import { isPast } from "date-fns"
 import { Nyaa } from "@/lib/download/nyaa/api"
 
 import { valueContainsSeason } from "@/lib/local-library/utils"
+import { LocalFile } from "@/lib/local-library/types"
 
 
 export async function unstable_findNyaaTorrents(props: {

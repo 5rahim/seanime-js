@@ -20,7 +20,6 @@ import {
 import { useStableSelectAtom } from "@/atoms/helpers"
 import { useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist/entries.atoms"
 import { atomWithImmer } from "jotai-immer"
-import { LocalFile } from "@/lib/local-library/local-file"
 import { Button } from "@/components/ui/button"
 import { FiPlayCircle } from "@react-icons/all-files/fi/FiPlayCircle"
 import {
@@ -31,6 +30,7 @@ import { useAnifyEpisodeCovers } from "@/lib/anify/client"
 import { PlayNextFile } from "@/app/(main)/view/_containers/episode-section/_components/play-next-file"
 import { EpisodeSectionSlider } from "@/app/(main)/view/_containers/episode-section/_components/episode-section-slider"
 import { AppLayoutStack } from "@/components/ui/app-layout"
+import { LocalFile } from "@/lib/local-library/types"
 
 interface EpisodeSectionProps {
     children?: React.ReactNode

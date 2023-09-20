@@ -6,10 +6,10 @@ import {
     useLocalFilesByMediaId_UNSTABLE,
     useSetLocalFiles,
 } from "@/atoms/library/local-file.atoms"
-import { LocalFile } from "@/lib/local-library/local-file"
 import { PrimitiveAtom } from "jotai"
 import { useEffect } from "react"
 import { useFocusSetAtom, useSelectAtom, useStableSelectAtom } from "@/atoms/helpers"
+import { LocalFile } from "@/lib/local-library/types"
 
 export default function Page() {
 

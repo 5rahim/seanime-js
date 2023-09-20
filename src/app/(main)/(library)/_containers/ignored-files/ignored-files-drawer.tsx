@@ -8,7 +8,6 @@ import {
     __useRerenderLocalFiles,
     ignoredLocalFileAtomsAtom,
 } from "@/atoms/library/local-file.atoms"
-import { LocalFile } from "@/lib/local-library/local-file"
 import { AppLayoutStack } from "@/components/ui/app-layout"
 import { useFocusSetAtom, useSelectAtom } from "@/atoms/helpers"
 import { Tooltip } from "@/components/ui/tooltip"
@@ -18,6 +17,7 @@ import { FcFile } from "@react-icons/all-files/fc/FcFile"
 import { BiFolder } from "@react-icons/all-files/bi/BiFolder"
 import { openDirectoryInExplorer } from "@/lib/helpers/directory"
 import { LuffyError } from "@/components/shared/luffy-error"
+import { LocalFile } from "@/lib/local-library/types"
 
 export const __ignoredFilesDrawerIsOpenAtom = atom(false)
 

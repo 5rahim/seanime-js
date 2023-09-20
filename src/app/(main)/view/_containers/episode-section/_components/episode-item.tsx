@@ -1,6 +1,5 @@
 import React, { startTransition, useMemo } from "react"
 import { atom, PrimitiveAtom } from "jotai"
-import { LocalFile } from "@/lib/local-library/local-file"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
 import { useFocusSetAtom, useSelectAtom } from "@/atoms/helpers"
 import { DropdownMenu } from "@/components/ui/dropdown-menu"
@@ -15,6 +14,7 @@ import { createIsolation } from "jotai-scope"
 import { createTypesafeFormSchema, Field, TypesafeForm } from "@/components/ui/typesafe-form"
 import toast from "react-hot-toast"
 import { __useRerenderLocalFiles } from "@/atoms/library/local-file.atoms"
+import { LocalFile } from "@/lib/local-library/types"
 
 const { Provider: ScopedProvider, useAtom: useScopedAtom } = createIsolation()
 

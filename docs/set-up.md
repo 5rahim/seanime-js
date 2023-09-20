@@ -9,6 +9,12 @@ storage.
 - Have VLC or MPC-HC installed
 - Have qBittorrent installed (for torrent download)
 
+## Good to know
+
+- Seanime doesn't collect your data, everything is stored in your browser's local storage
+- Seanime doesn't modify nor delete any file, only reads them
+- Seanime doesn't read anything outside your local library
+
 ## Step-by-step guide
 
 ### 1. Get Node.js and NPM
@@ -34,7 +40,6 @@ Both Consumet and Anify are optional.
 
 1. Rename `.env.example` to `.env`
 2. Update variables
-3.
 
 ```dotenv
 # Deploy your Consumet API https://github.com/consumet/api.consumet.org#vercel
@@ -66,3 +71,7 @@ npm run start
 ### 6. Configuration
 
 - [Update your settings.](https://github.com/5rahim/seanime/blob/main/docs/settings.md)
+
+## Logs
+
+The scan logs will be located under `<path to seanime>/.next/standalone/logs`

@@ -1,4 +1,3 @@
-import { LocalFile } from "@/lib/local-library/local-file"
 import { atom } from "jotai"
 import { logger } from "@/lib/helpers/debug"
 import _ from "lodash"
@@ -12,7 +11,8 @@ import gql from "graphql-tag"
 import { AnilistShortMedia } from "@/lib/anilist/fragment"
 import { aniListTokenAtom } from "@/atoms/auth"
 import axios from "axios"
-import { getDirectoryPath } from "@/lib/helpers/directory.client"
+import { getDirectoryPath } from "@/lib/helpers/path"
+import { LocalFile } from "@/lib/local-library/types"
 
 export type MatchingSuggestionGroups = {
     files: LocalFile[],

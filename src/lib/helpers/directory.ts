@@ -5,19 +5,7 @@ import { Settings } from "@/atoms/settings"
 import { runCommand } from "@/lib/helpers/child-process"
 import { directoryExists, fileOrDirectoryExists } from "@/lib/helpers/file"
 import path from "path"
-import { PathLike } from "fs"
-import { getDirectoryPath } from "@/lib/helpers/directory.client"
-
-export async function openDirectory(path: PathLike) {
-    if (path) {
-        try {
-            const dir = await fs.opendir(path, { recursive: true })
-            return dir
-        } catch (e) {
-            // return null
-        }
-    }
-}
+import { getDirectoryPath } from "@/lib/helpers/path"
 
 export async function getSafeFoldersFromDirectory(_path: string): Promise<{ data: { name: string, path: string }[], error: string | null, parentFolder: string | null }> {
     if (_path && path.isAbsolute(_path)) {

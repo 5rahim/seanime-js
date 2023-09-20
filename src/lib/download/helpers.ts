@@ -1,5 +1,4 @@
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
-import { LocalFile } from "@/lib/local-library/local-file"
 import { MediaListStatus } from "@/gql/graphql"
 import { useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist/entries.atoms"
 import { useStableSelectAtom } from "@/atoms/helpers"
@@ -7,6 +6,7 @@ import { useLibraryEntryAtomByMediaId } from "@/atoms/library/library-entry.atom
 import { useLastMainLocalFileByMediaId, useLocalFilesByMediaId_UNSTABLE } from "@/atoms/library/local-file.atoms"
 import { useMemo } from "react"
 import _ from "lodash"
+import { LocalFile } from "@/lib/local-library/types"
 
 export const getMediaDownloadInfo = (
     {

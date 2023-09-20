@@ -3,7 +3,6 @@ import { AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import _ from "lodash"
 import { ordinalize } from "inflection"
 import similarity from "string-similarity"
-import { AnimeFileInfo, LocalFile } from "@/lib/local-library/local-file"
 import { logger } from "@/lib/helpers/debug"
 import { ScanLogging } from "@/lib/local-library/logs"
 
@@ -14,6 +13,7 @@ import {
     valueContainsSeason,
 } from "@/lib/local-library/utils"
 import { advancedSearchWithMAL } from "@/lib/mal/actions"
+import { AnimeFileInfo, LocalFile } from "@/lib/local-library/types"
 
 /**
  * This method employs 3 comparison algorithms: Dice's coefficient (string-similarity), Levenshtein's algorithm, and MAL's elastic search algorithm
@@ -149,7 +149,8 @@ export async function findBestCorrespondingMedia(
 
     // Check if titleVariations are already cached
     if (_matchingCache.has(JSON.stringify(titleVariations))) {
-        logger("media-matching").success("Cache HIT:", _title, (seasonAsNumber || folderSeasonAsNumber) || "")
+        logger("media-matching").success(file.path)
+        logger("media-matching").success("   -> Cache HIT:", _matchingCache.get(JSON.stringify(titleVariations))?.title?.english)
         _scanLogging.add(file.path, `Cache HIT - File with same title variations found`)
         _scanLogging.add(file.path, `   -> Media ID = ${_matchingCache.get(JSON.stringify(titleVariations))?.id}`)
         return {
@@ -309,11 +310,13 @@ export async function findBestCorrespondingMedia(
     }
     // debug(bestTitleMatching?.bestMatch, "best", bestMedia)
 
-    logger("media-matching").warning("Cache MISS: [File title]", _title, `(${(seasonAsNumber || folderSeasonAsNumber || "-")})`, "| [Media title]", bestMedia?.title?.english, "| [Rating]", rating)
+    logger("media-matching").warning(file.path)
+    logger("media-matching").warning("   -> Cache MISS:", bestMedia?.title?.english, "| [Rating]", rating)
     // Adding it to the cache
     _matchingCache.set(JSON.stringify(titleVariations), bestMedia)
 
     if (+rating < 0.5) {
+        logger("media-matching").error("   -> Un-matching, rating is below the threshold (0.5)")
         _scanLogging.add(file.path, "warning - Rating is below the threshold (0.5)")
         _scanLogging.add(file.path, `   -> Rating = ${rating}`)
         _scanLogging.add(file.path, "   -> File was not matched")

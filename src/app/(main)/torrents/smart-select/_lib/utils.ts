@@ -1,7 +1,7 @@
 import { TorrentFile } from "@ctrl/qbittorrent"
 import rakun from "@/lib/rakun"
 import path from "path"
-import { getDirectoryPath } from "@/lib/helpers/directory.client"
+import { getDirectoryPath } from "@/lib/helpers/path"
 
 type Input = { info: TorrentFile, originalName: string, parsed: ParsedTorrentInfo }
 type Output = Input & {

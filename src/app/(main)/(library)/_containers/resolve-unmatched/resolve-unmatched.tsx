@@ -64,18 +64,21 @@ export function ResolveUnmatched(props: { isOpen: boolean, close: () => void }) 
             setIsLoading(true)
             // props.close()
             const {
+                files,
                 error,
                 mediaId,
-            } = await manuallyMatchFiles(currentGroup.files.map(n => n.path), "match", user?.name, token, Number(selectedAnimeId))
+            } = await manuallyMatchFiles(currentGroup.files.map(n => n), "match", user?.name, token, Number(selectedAnimeId))
 
-            if (mediaId) {
+            if (mediaId && files) {
+                console.log(files)
                 // Update stored local files
-                setLocalFiles(files => {
-                    for (const path of currentGroup.files.map(n => n.path)) {
-                        const fileIndex = files.findIndex(file => file.path === path)
-                        files[fileIndex].mediaId = mediaId
-                        files[fileIndex].locked = true
-                        files[fileIndex].ignored = false
+                setLocalFiles(draft => {
+                    for (const hydratedFile of files) {
+                        const fileIndex = draft.findIndex(file => file.path === hydratedFile.path)
+                        draft[fileIndex].mediaId = mediaId
+                        draft[fileIndex].locked = true
+                        draft[fileIndex].ignored = false
+                        draft[fileIndex].metadata = hydratedFile.metadata
                     }
                     return
                 })

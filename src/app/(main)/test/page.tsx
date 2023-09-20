@@ -3,10 +3,10 @@
 import React, { useState } from "react"
 import { useLogger } from "react-use"
 import { PrimitiveAtom } from "jotai"
-import { LocalFile } from "@/lib/local-library/local-file"
 import { useAtom } from "jotai/react"
 import { useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist/entries.atoms"
 import { useStableSelectAtom } from "@/atoms/helpers"
+import { LocalFile } from "@/lib/local-library/types"
 
 export default function Page() {
 

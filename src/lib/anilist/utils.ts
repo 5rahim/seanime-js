@@ -28,7 +28,7 @@ export function findMediaEdge(media: AnilistShortMedia | null | undefined, relat
     return res
 }
 
-export function findMediaSeason(media: AnilistShortMedia | null | undefined) {
+export function findMediaSeasonFromTitles(media: AnilistShortMedia | null | undefined) {
     const seasons = [
         rakun.parse(media?.title?.english || "")?.season,
         rakun.parse(media?.title?.romaji || "")?.season,
@@ -45,7 +45,7 @@ export function findMediaSeason(media: AnilistShortMedia | null | undefined) {
  * Normalize [AnilistShortMedia] to [AnilistShowcaseMedia]
  * @param media
  */
-export function shortMediaToShowcaseMedia(media: AnilistShortMedia): AnilistShowcaseMedia {
+export function shortMediaToShowcaseMedia(media: AnilistShortMedia | null | undefined): AnilistShowcaseMedia {
     return _.omit(media, "streamingEpisodes", "relations", "studio", "description", "format", "source", "isAdult", "genres", "trailer", "countryOfOrigin", "studios")
 }
 

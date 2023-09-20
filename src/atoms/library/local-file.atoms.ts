@@ -1,5 +1,4 @@
 import { atomWithStorage, selectAtom, splitAtom } from "jotai/utils"
-import { LocalFile } from "@/lib/local-library/local-file"
 import { useAtom, useAtomValue, useSetAtom } from "jotai/react"
 import { withImmer } from "jotai-immer"
 import { useCallback, useMemo } from "react"
@@ -9,6 +8,7 @@ import _ from "lodash"
 import { focusAtom } from "jotai-optics"
 import { anilistCollectionEntryAtoms, useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist/entries.atoms"
 import { useStableSelectAtom } from "@/atoms/helpers"
+import { LocalFile } from "@/lib/local-library/types"
 
 /* -------------------------------------------------------------------------------------------------
  * Main atoms

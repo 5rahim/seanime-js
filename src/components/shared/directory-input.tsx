@@ -9,7 +9,7 @@ import { BiCheck } from "@react-icons/all-files/bi/BiCheck"
 import { BiFolderPlus } from "@react-icons/all-files/bi/BiFolderPlus"
 import { BiX } from "@react-icons/all-files/bi/BiX"
 import path from "path"
-import { removeTopPath } from "@/lib/helpers/directory.client"
+import { removeTopPath } from "@/lib/helpers/path"
 
 export interface DirectoryInputProps {
     children?: React.ReactNode

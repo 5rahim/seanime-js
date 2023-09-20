@@ -111,8 +111,10 @@
     "@types/lodash": "^4.14.198",
     "@types/memory-cache": "^0.2.3",
     "@types/string-similarity": "^4.0.0",
+    "@vitest/browser": "^0.34.4",
     "encoding": "^0.1.13",
-    "vitest": "^0.34.4"
+    "vitest": "^0.34.4",
+    "webdriverio": "^8.16.11"
   },
   "overrides": {
     "mpc-hc-control": {

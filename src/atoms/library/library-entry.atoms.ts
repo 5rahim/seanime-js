@@ -5,12 +5,12 @@ import { splitAtom } from "jotai/utils"
 import { localFilesAtom } from "@/atoms/library/local-file.atoms"
 import { Atom, atom } from "jotai"
 import { AnilistShowcaseMedia } from "@/lib/anilist/fragment"
-import { LocalFile } from "@/lib/local-library/local-file"
 import { useSelectAtom } from "@/atoms/helpers"
 import { allUserMediaAtom } from "@/atoms/anilist/media.atoms"
 import _ from "lodash"
 import { anilistCollectionEntriesAtom, AnilistCollectionEntry } from "@/atoms/anilist/entries.atoms"
-import { getDirectoryPath } from "@/lib/helpers/directory.client"
+import { getDirectoryPath } from "@/lib/helpers/path"
+import { LocalFile } from "@/lib/local-library/types"
 
 /* -------------------------------------------------------------------------------------------------
  * LibraryEntry

@@ -51,6 +51,7 @@ export const UtilityButtons = (props: { entryAtom: Atom<LibraryEntry> }) => {
                                     draftFile.locked = false
                                     draftFile.ignored = false
                                     draftFile.mediaId = null
+                                    draftFile.metadata = {}
                                 }
                             }
                             return

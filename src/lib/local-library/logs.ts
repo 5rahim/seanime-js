@@ -1,5 +1,6 @@
 import path from "path"
 import { existsSync, promises as fs } from "fs"
+import { logger } from "@/lib/helpers/debug"
 
 export class ScanLogging {
 
@@ -16,6 +17,18 @@ export class ScanLogging {
         } else {
             this._scanLogs.set(path, [{ log, timestamp: (new Date()).getTime() }])
         }
+    }
+
+    addAndLog(key: string, type: "info" | "warning", path: string, log: string) {
+        if (this._scanLogs.has(path)) {
+            this._scanLogs.set(path, [...this._scanLogs.get(path)!, { log, timestamp: (new Date()).getTime() }])
+        } else {
+            this._scanLogs.set(path, [{ log, timestamp: (new Date()).getTime() }])
+        }
+        if (type === "info")
+            logger(key).info(path, log)
+        if (type === "warning")
+            logger(key).warning(path, log)
     }
 
     clear() {
@@ -56,8 +69,8 @@ export class ScanLogging {
             await fs.mkdir(snapshotDir)
         }
         // Generate the timestamp for the snapshot file name
-        const timestamp = new Date().toISOString().replace(/:/g, "-")
-        const snapshotFilename = `scan_${timestamp}.log`
+        const timestamp = new Date().toISOString().replace(/:/g, "_")
+        const snapshotFilename = `${timestamp.replaceAll(".", "_")}-scan.txt`
         const snapshotPath = path.join(snapshotDir, snapshotFilename)
 
         await fs.writeFile(snapshotPath, this.outputWithTime(), { encoding: "utf-8" })

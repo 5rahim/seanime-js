@@ -1,9 +1,9 @@
 import React from "react"
 import { PrimitiveAtom } from "jotai"
-import { LocalFile } from "@/lib/local-library/local-file"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
 import { EpisodeItem } from "@/app/(main)/view/_containers/episode-section/_components/episode-item"
 import { AnifyEpisodeCover } from "@/lib/anify/types"
+import { LocalFile } from "@/lib/local-library/types"
 
 export const EpisodeList = React.memo((props: {
     fileAtoms: PrimitiveAtom<LocalFile>[],

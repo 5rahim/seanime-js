@@ -22,6 +22,12 @@ export function splitFolderPath(inputPath: string): string[] {
     return folderNames.filter((folder) => folder.length > 0)
 }
 
+/**
+ * @param inputPath
+ * @example
+ * removeTopDirectory("E:/Anime/Jujutsu Kaisen")
+ * // => Anime/Jujutsu Kaisen
+ */
 export function removeTopDirectory(inputPath: string): string | null {
     // Normalize the path to handle different platform-specific path separators
     const normalizedPath = upath.normalize(inputPath)
@@ -44,6 +50,13 @@ export function removeTopDirectory(inputPath: string): string | null {
     return null
 }
 
+/**
+ * @param inputPath
+ * @param topPath
+ * @example
+ * removeTopPath("E:/Anime/Jujutsu Kaisen/01.mkv", "E:/Anime")
+ * // => Jujutsu Kaisen/01.mkv
+ */
 export function removeTopPath(inputPath: string, topPath: string) {
     // Normalize the paths to handle different platform-specific path separators
     const normalizedInputPath = upath.normalize(inputPath)
@@ -73,4 +86,13 @@ export function removeTopPath(inputPath: string, topPath: string) {
 export function getDirectoryPath(input: string) {
     const normalized = upath.normalize(input)
     return upath.dirname(normalized)
+}
+
+/**
+ * /!\ Doesn't work in browser
+ * @param input
+ */
+export function isPathAbsolute_SERVER(input: string) {
+    const normalized = upath.normalize(input)
+    return upath.isAbsolute(normalized)
 }

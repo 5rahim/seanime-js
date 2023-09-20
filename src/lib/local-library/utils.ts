@@ -1,8 +1,8 @@
-import { AnimeFileInfo } from "@/lib/local-library/local-file"
-import { ANIDB_RX } from "@/lib/series-scanner/regex"
+import { SPECIALIZED_RX } from "@/lib/series-scanner/regex"
 import similarity from "string-similarity"
 import { AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import lavenshtein from "js-levenshtein"
+import { AnimeFileInfo } from "@/lib/local-library/types"
 
 export function getLocalFileParsedSeason(fileParsed: AnimeFileInfo | undefined, folderParsed: AnimeFileInfo[]) {
 
@@ -38,20 +38,12 @@ export const valueContainsSeason = (value: string | null | undefined) => (
 
 export function valueContainsSpecials(value: string | null | undefined) {
     if (!value) return false
-    return (ANIDB_RX[0].test(value) ||
-        ANIDB_RX[5].test(value) ||
-        ANIDB_RX[6].test(value)) && !(ANIDB_RX[1].test(value) ||
-        ANIDB_RX[2].test(value) ||
-        ANIDB_RX[3].test(value) ||
-        ANIDB_RX[4].test(value))
+    return SPECIALIZED_RX.SPECIAL.some(rx => rx.test(value)) && !SPECIALIZED_RX.NC.some(rx => rx.test(value))
 }
 
 export function valueContainsNC(value: string | null | undefined) {
     if (!value) return false
-    return (ANIDB_RX[1].test(value) ||
-        ANIDB_RX[2].test(value) ||
-        ANIDB_RX[3].test(value) ||
-        ANIDB_RX[4].test(value))
+    return SPECIALIZED_RX.NC.some(rx => rx.test(value))
 }
 
 /* -------------------------------------------------------------------------------------------------
