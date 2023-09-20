@@ -179,7 +179,7 @@ Resources used to build Seanime.
 - [Consumet](https://github.com/consumet/api.consumet.org) - API for streaming sources
 - [rakun](https://github.com/lowlighter/rakun/) - JS Parser for folder and file names
 - [nyaasi-api](https://github.com/ejnshtein/nyaasi-api) - Nyaa search API
-- [@ctrl/qbittorrent](https://www.npmjs.com/package/@ctrl/qbittorren) - qBittorent API NPM package
+- ~~[@ctrl/qbittorrent](https://www.npmjs.com/package/@ctrl/qbittorren) - qBittorent API NPM package~~
 - [MPC-HC API](https://github.com/rzcoder/mpc-hc-control) - Original MPC-HC API code
 - [VLC API](https://github.com/alexandrucancescu/node-vlc-client) - Original VLC API code
 - [GraphQL Codegen](https://the-guild.dev/graphql/codegen) - GraphQL code generation

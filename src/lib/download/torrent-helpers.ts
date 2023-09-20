@@ -1,5 +1,5 @@
 import { Nullish } from "@/types/common"
-import { NormalizedTorrent } from "@ctrl/shared-torrent"
+import { NormalizedTorrent } from "@/lib/download/qbittorrent/types"
 
 // type TorrentRawState = "metaDL"
 

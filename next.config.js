@@ -15,7 +15,7 @@ const nextConfig = {
             {hostname: "simkl.in"},
             {hostname: "img1.ak.crunchyroll.com"},
         ]
-    },
+    }
 }
 
 module.exports = nextConfig
