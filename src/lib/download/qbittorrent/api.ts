@@ -1,31 +1,18 @@
 "use server"
-import { QBittorrent, TorrentFilePriority } from "@ctrl/qbittorrent"
 import { Settings } from "@/atoms/settings"
 import { Nullish } from "@/types/common"
-
 import { qBittorrentClient } from "@robertklep/qbittorrent"
+import { NormalizedTorrent, Torrent, TorrentFile, TorrentFilePriority } from "@/lib/download/qbittorrent/types"
+import { _normalizeTorrentData } from "@/lib/download/qbittorrent/utils"
 
 /* -------------------------------------------------------------------------------------------------
  * Config
  * -----------------------------------------------------------------------------------------------*/
 
-const client = new QBittorrent({
-    baseUrl: "http://127.0.0.1:8081/",
-    username: "admin",
-    password: "adminadmin",
-})
-
-export async function _qBit_refreshSettings(settings: Settings) {
-    client.config.baseUrl = "http://" + settings.qbittorrent.host + ":" + settings.qbittorrent.port
-    client.config.username = settings.qbittorrent.username
-    client.config.password = settings.qbittorrent.password
-
-
-}
-
-export async function _qBit_isUp() {
+export async function _qBit_isUp(settings: Settings) {
+    const client2 = new qBittorrentClient("http://" + settings.qbittorrent.host + ":" + settings.qbittorrent.port, settings.qbittorrent.username, settings.qbittorrent.password)
     try {
-        await client.getAppVersion()
+        await client2.app.version()
         return true
     } catch (e) {
         return false
@@ -53,28 +40,35 @@ export type TorrentManager_Torrent = {
     progress: number,
 }
 
-export async function _qBit_getAllTorrents(): Promise<TorrentManager_Torrent[] | undefined> {
-    const data = await client.getAllData()
-    return data?.torrents?.map(item => ({
-        id: item.id,
-        name: item.name,
-        eta: item.eta,
-        isCompleted: item.isCompleted,
-        savePath: item.savePath,
-        downloadSpeed: item.downloadSpeed,
-        uploadSpeed: item.uploadSpeed,
-        size: item.totalSize,
-        peers: item.totalPeers,
-        seeds: item.totalSeeds,
-        dateAdded: new Date(item.dateAdded),
-        state: item.raw?.state,
-        hash: item.raw?.hash,
-        progress: item.progress,
-    })).sort((a, b) => b.dateAdded.getTime() - a.dateAdded.getTime())
+
+export async function _qBit_getAllTorrents(settings: Settings): Promise<TorrentManager_Torrent[] | undefined> {
+    const client2 = new qBittorrentClient("http://" + settings.qbittorrent.host + ":" + settings.qbittorrent.port, settings.qbittorrent.username, settings.qbittorrent.password)
+
+    const torrents = (await client2.torrents.info({ filter: "all" })) as Torrent[]
+    return !!torrents ? torrents.map(torrent => {
+        let item = _normalizeTorrentData(torrent)
+        return ({
+            id: item.id,
+            name: item.name,
+            eta: item.eta,
+            isCompleted: item.isCompleted,
+            savePath: item.savePath,
+            downloadSpeed: item.downloadSpeed,
+            uploadSpeed: item.uploadSpeed,
+            size: item.totalSize,
+            peers: item.totalPeers,
+            seeds: item.totalSeeds,
+            dateAdded: new Date(item.dateAdded),
+            state: item.raw?.state,
+            hash: item.raw?.hash,
+            progress: item.progress,
+        })
+    }).sort((a, b) => b.dateAdded.getTime() - a.dateAdded.getTime()) : undefined
 }
 
-export async function _qBit_getDownloadingTorrents(): Promise<TorrentManager_Torrent[] | undefined> {
-    return (await _qBit_getAllTorrents())?.filter(torrent => torrent.state === "stalledUP"
+
+export async function _qBit_getDownloadingTorrents(settings: Settings): Promise<TorrentManager_Torrent[] | undefined> {
+    return (await _qBit_getAllTorrents(settings))?.filter(torrent => torrent.state === "stalledUP"
         || torrent.state === "allocating"
         || torrent.state === "downloading"
         || torrent.state === "metaDL"
@@ -98,58 +92,58 @@ export type TorrentManager_AddMagnetOptions = {
     paused: boolean
 }
 
-export async function _qBit_addMagnet(options: TorrentManager_AddMagnetOptions) {
-    return await client.addMagnet(
-        options.magnets.join("\n"),
-        {
-            savepath: options.savePath,
-            paused: options.paused ? "true" : "false",
-        },
-    )
-}
-
-/* -------------------------------------------------------------------------------------------------
- * Stop torrent
- * -----------------------------------------------------------------------------------------------*/
-
-export type TorrentManager_StopTorrentOptions = {
-    hashes: string[] | "all",
-}
-
-export async function _qBit_stopTorrent(options: TorrentManager_StopTorrentOptions) {
-    return await client.pauseTorrent(options.hashes)
+export async function _qBit_addMagnet(settings: Settings, options: TorrentManager_AddMagnetOptions) {
+    const client2 = new qBittorrentClient("http://" + settings.qbittorrent.host + ":" + settings.qbittorrent.port, settings.qbittorrent.username, settings.qbittorrent.password)
+    // @ts-ignore
+    return await client2.torrents.add({
+        urls: options.magnets,
+        savepath: options.savePath,
+        paused: options.paused,
+    })
 }
 
 /* -------------------------------------------------------------------------------------------------
  *
  * -----------------------------------------------------------------------------------------------*/
 
-export async function _qBit_getTorrentContent(hash: Nullish<string>) {
+
+export async function _qBit_getTorrentContent(settings: Settings, hash: Nullish<string>) {
+    const client2 = new qBittorrentClient("http://" + settings.qbittorrent.host + ":" + settings.qbittorrent.port, settings.qbittorrent.username, settings.qbittorrent.password)
     if (!hash)
         return undefined
 
-    return await client.torrentFiles(hash)
+    return (await client2.torrents.files(hash)) as TorrentFile[] | undefined
 }
 
-export async function _qBit_getTorrent(hash: Nullish<string>) {
+/* -------------------------------------------------------------------------------------------------
+ *
+ * -----------------------------------------------------------------------------------------------*/
+
+export async function _qBit_getTorrent(settings: Settings, hash: Nullish<string>): Promise<NormalizedTorrent | undefined> {
+    const client2 = new qBittorrentClient("http://" + settings.qbittorrent.host + ":" + settings.qbittorrent.port, settings.qbittorrent.username, settings.qbittorrent.password)
     if (!hash)
         return undefined
 
-    return await client.getTorrent(hash)
+    const torrent = (await client2.torrents.info({ hashes: hash }))?.[0] as Torrent
+    return torrent ? _normalizeTorrentData(torrent) : undefined
 }
 
-export async function _qBit_pauseTorrent(hash: Nullish<string>) {
+/* -------------------------------------------------------------------------------------------------
+ *
+ * -----------------------------------------------------------------------------------------------*/
+
+export async function _qBit_pauseTorrent(settings: Settings, hash: Nullish<string>) {
+    const client2 = new qBittorrentClient("http://" + settings.qbittorrent.host + ":" + settings.qbittorrent.port, settings.qbittorrent.username, settings.qbittorrent.password)
     if (!hash)
         return false
-
-    return await client.pauseTorrent(hash)
+    return await client2.torrents.pause(hash)
 }
 
-export async function _qBit_startTorrent(hash: Nullish<string>) {
+export async function _qBit_startTorrent(settings: Settings, hash: Nullish<string>) {
+    const client2 = new qBittorrentClient("http://" + settings.qbittorrent.host + ":" + settings.qbittorrent.port, settings.qbittorrent.username, settings.qbittorrent.password)
     if (!hash)
         return false
-
-    return await client.resumeTorrent(hash)
+    return await client2.torrents.resume(hash)
 }
 
 export type TorrentManager_SetFilePriorityOptions = {
@@ -164,20 +158,6 @@ export async function _qBit_setFilePriority(settings: Settings, hash: Nullish<st
     if (!hash)
         return false
 
-    // return await client.setFilePriority(hash, options.ids, options.priority) <- Doesn't work
     return await client2.torrents.filePrio(hash, options.ids, options.priority)
 
 }
-
-
-// Future<List<Torrent>> getTorrents();
-//
-// Future<Torrent> addTorrent(String magnet);
-//
-// Future<bool> stopTorrent(Torrent torrent);
-//
-// Future<bool> startTorrent(Torrent torrent);
-//
-// Future<bool> removeTorrent(Torrent torrent, [bool deleteLocal = false]);
-//
-// Future<bool> streamTorrent(Torrent torrent);

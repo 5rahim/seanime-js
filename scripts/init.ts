@@ -65,7 +65,7 @@ async function main() {
     try {
         let data = await fsp.readFile(serverFilePath, "utf8")
 
-        data = data.replace(" || 'localhost'", " || '127.0.0.1'")
+        data = data.replace(" || '0.0.0.0'", " || '127.0.0.1'")
 
         data = data.replace(" || 3000", " || 43200")
 

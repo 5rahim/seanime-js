@@ -9,7 +9,7 @@ import { localFilesAtom } from "@/atoms/library/local-file.atoms"
  */
 export const missingEpisodesAtom = atom<{ media: AnilistShowcaseMedia, downloadInfo: MediaDownloadInfo }[]>(get => {
     const entries = get(libraryEntriesAtom)
-    let arr = []
+    let arr: { media: AnilistShowcaseMedia, downloadInfo: MediaDownloadInfo }[] = []
     // Go through each entry
     for (const entry of entries) {
         // Get the files, `getMediaDownloadInfo` will automatically detect the appropriate episode files

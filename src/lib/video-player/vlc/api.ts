@@ -675,7 +675,7 @@ export class VlcApi extends EventEmitter {
         command?: string | null,
         options?: { [key: string]: any },
     ): Promise<T> {
-        let query = null
+        let query: any = null
 
         if (command) {
             query = querystring.stringify({ command, ...options })

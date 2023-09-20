@@ -7,6 +7,7 @@ import { logger } from "@/lib/helpers/debug"
 import rakun from "@/lib/rakun"
 import _ from "lodash"
 import { searchUniqueWithAnilist } from "@/lib/anilist/actions"
+import { AnilistShortMedia } from "@/lib/anilist/fragment"
 
 async function PromiseBatch(task: any, items: any, batchSize: number) {
     let position = 0
@@ -40,7 +41,7 @@ export async function resolveTitle(name: string) {
         sort: "SEARCH_MATCH",
     } as { name: string, method: string, perPage: number, status: MediaStatus[], sort: MediaSort }
 
-    let media = null
+    let media: AnilistShortMedia | null | undefined = null
     try {
         // change S2 into Season 2 or 2nd Season
         const match = method.name.match(/ S(\d+)/)
