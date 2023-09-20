@@ -132,6 +132,9 @@ npm run build
 
 ## Known issues
 
+- Loading toast may persist after scan is complete (area: react-hot-toast)
+- Directory selection input may not work correctly (area: components)
+- Form data in AniList entry's modal is not updated after progress updates (area: view/meta-section)
 - :shrug:
 
 ## Not planned
@@ -153,18 +156,19 @@ Features that may be implemented
 
 ## TODO
 
-- [ ] Improve security
 - [ ] (advanced search) Filter by studios
 - [ ] (repository) Delete files (?)
 - [ ] (library) Manual hydration - similar to "resolve unmatched"
-- [ ] Option to automatically update progress without confirmation
-- [ ] (library) Filename tag system
 - [ ] (streaming) working cache
-- [ ] logs directory
-- [ ] torrent auto-pick system
 - [ ] Offline mode
 - [ ] Quick start screen
+- [ ] (library) Filename tag system
 - [ ] Tests
+  - [x] Parsing
+  - [x] Scan/Local files/Library Entries/Metadata
+  - [x] Torrents
+  - [ ] Torrent search
+  - [ ] Build
 
 ## Resources
 
@@ -179,7 +183,7 @@ Resources used to build Seanime.
 - [Consumet](https://github.com/consumet/api.consumet.org) - API for streaming sources
 - [rakun](https://github.com/lowlighter/rakun/) - JS Parser for folder and file names
 - [nyaasi-api](https://github.com/ejnshtein/nyaasi-api) - Nyaa search API
-- ~~[@ctrl/qbittorrent](https://www.npmjs.com/package/@ctrl/qbittorren) - qBittorent API NPM package~~
+- [@robertklep/qbittorrent](https://github.com/robertklep/qbittorrent) Original qBittorent API code
 - [MPC-HC API](https://github.com/rzcoder/mpc-hc-control) - Original MPC-HC API code
 - [VLC API](https://github.com/alexandrucancescu/node-vlc-client) - Original VLC API code
 - [GraphQL Codegen](https://the-guild.dev/graphql/codegen) - GraphQL code generation

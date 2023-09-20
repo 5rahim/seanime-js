@@ -37,6 +37,7 @@ export function useManageLibraryEntries(options: UseManageEntriesOptions) {
                 locked: lockedPaths,
                 ignored: ignoredPaths,
             })
+
             if (result && result.checkedFiles && !result.error) {
                 const incomingFiles = result.checkedFiles
 
@@ -54,6 +55,7 @@ export function useManageLibraryEntries(options: UseManageEntriesOptions) {
             } else if (result && result.error) {
                 toast.error(result.error)
             }
+
             options.onComplete()
             toast.remove(tID)
             setIsLoading(false)

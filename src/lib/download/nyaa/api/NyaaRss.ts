@@ -1,4 +1,5 @@
 import RssParser from "rss-parser"
+// @ts-ignore
 import { decode } from "html-entities"
 
 import { getParams } from "./lib/get-params"

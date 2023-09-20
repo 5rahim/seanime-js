@@ -1,5 +1,6 @@
 import { initialSettings } from "@/atoms/settings"
-import { describe } from "vitest"
+import { describe, expect, test } from "vitest"
+import { _qBit_getTorrent } from "@/lib/download/qbittorrent/api"
 
 const settings = {
     ...initialSettings,
@@ -8,15 +9,13 @@ const settings = {
     },
 }
 
-describe.skip("Experimental qBittorrent API", () => {
-
+describe.skip("qBittorrent API", () => {
+    test("torrent data", async () => {
+        const torrent = await _qBit_getTorrent(settings, "2dc4ed060501d60a166ddc32ae4dec9c160ea4c0")
+        expect(torrent).toBeDefined()
+    })
 })
 //
-//     test.skip("torrent data", async () => {
-//         const torrent = await _qBit_getTorrent(settings, "2dc4ed060501d60a166ddc32ae4dec9c160ea4c0")
-//         const torrent2 = await LEGACY_qBit_getTorrent("2dc4ed060501d60a166ddc32ae4dec9c160ea4c0")
-//         expect(torrent).toEqual(torrent2)
-//     })
 //
 //     test.skip("torrent files", async () => {
 //         const files = await _qBit_getTorrentContent(settings, "d301832a07da24c21955d6319df28799f92c0bcb")

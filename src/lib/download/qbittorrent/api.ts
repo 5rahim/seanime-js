@@ -1,7 +1,7 @@
 "use server"
 import { Settings } from "@/atoms/settings"
 import { Nullish } from "@/types/common"
-import { qBittorrentClient } from "@robertklep/qbittorrent"
+import { qBittorrentClient } from "@/lib/download/qbittorrent/client"
 import { NormalizedTorrent, Torrent, TorrentFile, TorrentFilePriority } from "@/lib/download/qbittorrent/types"
 import { _normalizeTorrentData } from "@/lib/download/qbittorrent/utils"
 
