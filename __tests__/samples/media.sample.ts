@@ -270,4 +270,36 @@ export const __SampleMedia = {
         },
         "nextAiringEpisode": null,
     },
+    "Golden Kamuy Season 2": {
+        "id": 102977,
+        "idMal": 37989,
+        "siteUrl": "https://anilist.co/anime/102977",
+        "status": "FINISHED",
+        "season": "FALL",
+        "type": "ANIME",
+        "format": "TV",
+        "title": {
+            "userPreferred": "Golden Kamuy 2nd Season",
+            "romaji": "Golden Kamuy 2nd Season",
+            "english": "Golden Kamuy Season 2",
+            "native": "ゴールデンカムイ 第二期",
+        },
+        "coverImage": {
+            "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/nx102977-gUejfwQWpnzX.png",
+            "large": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/nx102977-gUejfwQWpnzX.png",
+            "medium": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/small/nx102977-gUejfwQWpnzX.png",
+            "color": "#e4c90d",
+        },
+        "bannerImage": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/102977-kqlenTvimAZj.jpg",
+        "episodes": 12,
+        "synonyms": [
+            "Golden Kamui 2",
+        ],
+        "startDate": {
+            "year": 2018,
+            "month": 10,
+            "day": 8,
+        },
+        "nextAiringEpisode": null,
+    },
 } satisfies { [key: string]: AnilistShowcaseMedia }

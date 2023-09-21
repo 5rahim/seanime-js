@@ -139,4 +139,32 @@ export const __SampleLocalFiles = {
         ignored: false,
         mediaId: null,
     },
+    "Golden Kamuy Season 2 Episode 2 (Episode 14)": {
+        path: "E:/ANIME/[Judas] Golden Kamuy (Seasons 1-2) [BD 1080p][HEVC x265 10bit][Eng-Subs]/[Judas] Golden Kamuy - S2/[Judas] Golden Kamuy S2 - 14.mkv",
+        name: "[Judas] Golden Kamuy S2 - 14.mkv",
+        parsedInfo: {
+            original: "[Judas] Golden Kamuy S2 - 14.mkv",
+            title: "Golden Kamuy",
+            releaseGroup: "Judas",
+            season: "2",
+            episode: "14",
+        },
+        parsedFolderInfo: [
+            {
+                original: "[Judas] Golden Kamuy (Seasons 1-2) [BD 1080p][HEVC x265 10bit][Eng-Subs]",
+                title: "Golden Kamuy",
+                releaseGroup: "Judas",
+            },
+            {
+                original: "[Judas] Golden Kamuy - S2",
+                title: "Golden Kamuy",
+                releaseGroup: "Judas",
+                season: "2",
+            },
+        ],
+        metadata: {},
+        locked: false,
+        ignored: false,
+        mediaId: null,
+    },
 } satisfies { [key: string]: LocalFile }

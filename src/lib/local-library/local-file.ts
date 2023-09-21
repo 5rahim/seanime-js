@@ -214,19 +214,21 @@ export async function hydrateLocalFileWithInitialMetadata(props: {
                     : undefined)
             ) : undefined
 
+            // TODO Find a better way
 
             // Don't know how but this works for now
             let result = await normalizeMediaEpisode({
                 media: prequel || fetchedMedia,
                 episode: episode,
                 _cache: _cache,
-                increment: !season ? null : true,
+                // increment: !season ? null : true,
             })
             if (result?.offset === 0) {
                 result = await normalizeMediaEpisode({
-                    media: fetchedMedia,
+                    media: prequel || fetchedMedia,
                     episode: episode,
                     _cache: _cache,
+                    increment: !season ? null : true,
                     force: true,
                 })
             }
@@ -234,6 +236,7 @@ export async function hydrateLocalFileWithInitialMetadata(props: {
             let normalizedEpisodeNumber = result?.episode
 
             // Double-check with AniZip
+
             // Why? [normalizeMediaEpisode] might sometimes return the wrong offset but hopefully `result.rootMedia` is the correct one
             // Get AniZip data for the appropriate media
             let aniZipData: AniZipData | null | undefined = null
@@ -249,12 +252,20 @@ export async function hydrateLocalFileWithInitialMetadata(props: {
                 }
             }
             if (aniZipData && aniZipData?.episodes?.["1"]?.absoluteEpisodeNumber && result?.episode) {
-                const offset = aniZipData.episodes["1"].absoluteEpisodeNumber - 1 // Get the offset from AniZip
+                let offset = aniZipData.episodes["1"].absoluteEpisodeNumber - 1 // Get the offset from AniZip
+
+                if (offset === 0) { // -> We matched the right season
+                    offset = highestEp - 1
+                    file.mediaId = media.id
+                }
+
                 const aniZipCurrentRelativeEpisode = episode - offset
-                if (aniZipCurrentRelativeEpisode !== result.episode) { // If the relative episodes differ, replace it
+                console.log(file.path, `   -> Retrieved AniZip info, offset = ${offset}, normalized = ${aniZipCurrentRelativeEpisode}`)
+                if (aniZipCurrentRelativeEpisode !== result.episode && aniZipCurrentRelativeEpisode > 0) { // If the relative episodes differ, replace it
                     normalizedEpisodeNumber = aniZipCurrentRelativeEpisode
                 }
             }
+            console.log(normalizedEpisodeNumber)
 
             if (normalizedEpisodeNumber === episode) { // This might happen only when the media format is not defined,and it might be a movie
                 _scanLogging.add(file.path, `   -> Normalization found the same episode numbers (${normalizedEpisodeNumber})`)
@@ -265,11 +276,11 @@ export async function hydrateLocalFileWithInitialMetadata(props: {
                 }
             } else {
                 _scanLogging.add(file.path, `   -> Normalization mapped episode ${episode} to ${normalizedEpisodeNumber}`)
-                if (result?.rootMedia && normalizedEpisodeNumber && normalizedEpisodeNumber > 0) {
+                if (!!result?.rootMedia && !!normalizedEpisodeNumber) {
                     // Replace episode and mediaId
                     file.metadata.episode = normalizedEpisodeNumber
                     file.metadata.aniDBEpisodeNumber = String(normalizedEpisodeNumber)
-                    file.mediaId = result.rootMedia.id
+                    file.mediaId = file.mediaId || result.rootMedia.id
 
                     _scanLogging.add(file.path, `   -> Overriding Media ID ${media.id} to ${result.rootMedia.id}`)
                 } else {

@@ -30,13 +30,13 @@ describe("Local file", () => {
 
     it.each(cases.createLocalFile)("should be created from $initialProps.path", async ({ initialProps, expected }) => {
         const localFile = await createLocalFile(settings, initialProps, scanLogging)
-        // console.log(localFile)
+        console.log(localFile)
         expect(localFile).toEqual(expected)
     })
 })
 
 
-describe.skip.sequential("Initial metadata hydration", () => {
+describe.sequential("Initial metadata hydration", () => {
 
     const _cache = new Map<number, AnilistShortMedia>
     const _aniZipCache = new Map<number, AniZipData>

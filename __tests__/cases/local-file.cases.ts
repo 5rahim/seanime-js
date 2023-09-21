@@ -120,5 +120,18 @@ export default {
                 mediaId: __SampleMedia["86 - Eighty Six Season 2"].id, // No overriding since it is the right season
             },
         },
+        {
+            localFile: __SampleLocalFiles["Golden Kamuy Season 2 Episode 2 (Episode 14)"],
+            media: __SampleMedia["Golden Kamuy Season 2"], // Correct season match
+            expected: {
+                metadata: {
+                    episode: 2,
+                    aniDBEpisodeNumber: "2",
+                    isSpecial: undefined,
+                    isNC: undefined,
+                },
+                mediaId: __SampleMedia["Golden Kamuy Season 2"].id, // No overriding since it is the right season
+            },
+        },
     ],
 }
