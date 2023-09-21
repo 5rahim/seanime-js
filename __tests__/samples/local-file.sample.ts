@@ -55,14 +55,14 @@ export const __SampleLocalFiles = {
         ignored: false,
         mediaId: null,
     },
-    "Bungou Stray Dogs Season 5 Episode 1 (Episode 50)": {
-        path: "E:/ANIME/Bungou Stray Dogs 5th Season/[SubsPlease] Bungou Stray Dogs - 50 (1080p) [CA46D012].mkv",
-        name: "[SubsPlease] Bungou Stray Dogs - 50 (1080p) [CA46D012].mkv",
+    "Bungou Stray Dogs Season 5 Episode 1 (Episode 51)": {
+        path: "E:/ANIME/Bungou Stray Dogs 5th Season/[SubsPlease] Bungou Stray Dogs - 51 (1080p) [CA46D012].mkv",
+        name: "[SubsPlease] Bungou Stray Dogs - 51 (1080p) [CA46D012].mkv",
         parsedInfo: {
-            original: "[SubsPlease] Bungou Stray Dogs - 50 (1080p) [CA46D012].mkv",
+            original: "[SubsPlease] Bungou Stray Dogs - 51 (1080p) [CA46D012].mkv",
             releaseGroup: "SubsPlease",
             title: "Bungou Stray Dogs",
-            episode: "50",
+            episode: "51",
         },
         parsedFolderInfo: [
             {
@@ -76,14 +76,14 @@ export const __SampleLocalFiles = {
         ignored: false,
         mediaId: null,
     },
-    "Bungou Stray Dogs Season 5 Episode 2 (Episode 51)": {
-        path: "E:/ANIME/Bungou Stray Dogs 5th Season/[SubsPlease] Bungou Stray Dogs - 51 (1080p) [CA46D012].mkv",
-        name: "[SubsPlease] Bungou Stray Dogs - 51 (1080p) [CA46D012].mkv",
+    "Bungou Stray Dogs Season 5 Episode 2 (Episode 52)": {
+        path: "E:/ANIME/Bungou Stray Dogs 5th Season/[SubsPlease] Bungou Stray Dogs - 52 (1080p) [CA46D012].mkv",
+        name: "[SubsPlease] Bungou Stray Dogs - 52 (1080p) [CA46D012].mkv",
         parsedInfo: {
-            original: "[SubsPlease] Bungou Stray Dogs - 51 (1080p) [CA46D012].mkv",
+            original: "[SubsPlease] Bungou Stray Dogs - 52 (1080p) [CA46D012].mkv",
             releaseGroup: "SubsPlease",
             title: "Bungou Stray Dogs",
-            episode: "51",
+            episode: "52",
         },
         parsedFolderInfo: [
             {

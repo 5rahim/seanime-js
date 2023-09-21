@@ -16,6 +16,7 @@ import { AnimeShortMediaByIdDocument } from "@/gql/graphql"
 import { findMediaEdge } from "@/lib/anilist/utils"
 import { normalizeMediaEpisode } from "@/lib/anilist/actions"
 import { LocalFile, LocalFileWithMedia } from "@/lib/local-library/types"
+import axios from "axios"
 
 /**
  * @description
@@ -166,10 +167,11 @@ export async function hydrateLocalFileWithInitialMetadata(props: {
     file: LocalFile,
     media: AnilistShowcaseMedia
     _cache: Map<number, AnilistShortMedia>
+    _aniZipCache?: Map<number, AniZipData>
     _scanLogging: ScanLogging
 }) {
 
-    const { file: _originalFile, media, _cache, _scanLogging } = props
+    const { file: _originalFile, media, _cache, _scanLogging, _aniZipCache } = props
 
     let file = structuredClone(_originalFile)
 
@@ -215,7 +217,7 @@ export async function hydrateLocalFileWithInitialMetadata(props: {
 
             // Don't know how but this works for now
             let result = await normalizeMediaEpisode({
-                media: fetchedMedia,
+                media: prequel || fetchedMedia,
                 episode: episode,
                 _cache: _cache,
                 increment: !season ? null : true,
@@ -228,27 +230,45 @@ export async function hydrateLocalFileWithInitialMetadata(props: {
                     force: true,
                 })
             }
-            // const result = await normalizeMediaEpisode({
-            //     media: prequel || fetchedMedia,
-            //     episode: episode,
-            //     increment: null,
-            //     _cache: _cache,
-            //     // increment: !season ? null : true,
-            //     // force: true
-            // })
-            if (result?.episode === episode) { // This might happen only when the media format is not defined,and it might be a movie
-                _scanLogging.add(file.path, `   -> Normalization found the same episode numbers (${result?.episode})`)
+
+            let normalizedEpisodeNumber = result?.episode
+
+            // Double-check with AniZip
+            // Why? [normalizeMediaEpisode] might sometimes return the wrong offset but hopefully `result.rootMedia` is the correct one
+            // Get AniZip data for the appropriate media
+            let aniZipData: AniZipData | null | undefined = null
+            if (result?.rootMedia?.id) {
+                if (_aniZipCache?.has(result.rootMedia.id)) {
+                    aniZipData = _aniZipCache?.get(result.rootMedia.id)
+                } else {
+                    const aniZipRes = await Promise.allSettled([axios.get<AniZipData>(`https://api.ani.zip/mappings?anilist_id=${result.rootMedia.id}`)])
+                    if (aniZipRes[0].status === "fulfilled") {
+                        aniZipData = aniZipRes[0].value.data
+                        _aniZipCache?.set(result.rootMedia.id, aniZipData)
+                    }
+                }
+            }
+            if (aniZipData && aniZipData?.episodes?.["1"]?.absoluteEpisodeNumber && result?.episode) {
+                const offset = aniZipData.episodes["1"].absoluteEpisodeNumber - 1 // Get the offset from AniZip
+                const aniZipCurrentRelativeEpisode = episode - offset
+                if (aniZipCurrentRelativeEpisode !== result.episode) { // If the relative episodes differ, replace it
+                    normalizedEpisodeNumber = aniZipCurrentRelativeEpisode
+                }
+            }
+
+            if (normalizedEpisodeNumber === episode) { // This might happen only when the media format is not defined,and it might be a movie
+                _scanLogging.add(file.path, `   -> Normalization found the same episode numbers (${normalizedEpisodeNumber})`)
                 if (media.episodes && media.episodes < episode) {
                     _scanLogging.add(file.path, `   -> Ceiling is ${media.episodes}, changing episode ${episode} to ${media.episodes}`)
                     file.metadata.episode = media.episodes
                     file.metadata.aniDBEpisodeNumber = String(media.episodes)
                 }
             } else {
-                _scanLogging.add(file.path, `   -> Normalization mapped episode ${episode} to ${result?.episode}`)
-                if (result?.episode && result?.episode > 0) {
+                _scanLogging.add(file.path, `   -> Normalization mapped episode ${episode} to ${normalizedEpisodeNumber}`)
+                if (result?.rootMedia && normalizedEpisodeNumber && normalizedEpisodeNumber > 0) {
                     // Replace episode and mediaId
-                    file.metadata.episode = result.episode
-                    file.metadata.aniDBEpisodeNumber = String(result.episode)
+                    file.metadata.episode = normalizedEpisodeNumber
+                    file.metadata.aniDBEpisodeNumber = String(normalizedEpisodeNumber)
                     file.mediaId = result.rootMedia.id
 
                     _scanLogging.add(file.path, `   -> Overriding Media ID ${media.id} to ${result.rootMedia.id}`)

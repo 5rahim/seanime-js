@@ -53,7 +53,7 @@ export default {
             },
         },
         {
-            localFile: __SampleLocalFiles["Bungou Stray Dogs Season 5 Episode 1 (Episode 50)"],
+            localFile: __SampleLocalFiles["Bungou Stray Dogs Season 5 Episode 1 (Episode 51)"],
             media: __SampleMedia["Bungou Stray Dogs Season 1"], // Incorrect season match
             expected: {
                 metadata: {
@@ -66,7 +66,7 @@ export default {
             },
         },
         {
-            localFile: __SampleLocalFiles["Bungou Stray Dogs Season 5 Episode 2 (Episode 51)"],
+            localFile: __SampleLocalFiles["Bungou Stray Dogs Season 5 Episode 2 (Episode 52)"],
             media: __SampleMedia["Bungou Stray Dogs Season 1"], // Incorrect season match
             expected: {
                 metadata: {
@@ -82,7 +82,7 @@ export default {
          * Correct season match but absolute episode number
          */
         {
-            localFile: __SampleLocalFiles["Bungou Stray Dogs Season 5 Episode 2 (Episode 51)"],
+            localFile: __SampleLocalFiles["Bungou Stray Dogs Season 5 Episode 2 (Episode 52)"],
             media: __SampleMedia["Bungou Stray Dogs Season 5"], // Correct season match
             expected: {
                 metadata: {

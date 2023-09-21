@@ -7,6 +7,7 @@ type Episode = {
     airdate: string
     seasonNumber: number
     episodeNumber: number
+    absoluteEpisodeNumber: number
     title: TitleTranslations
     image: string
     length: number

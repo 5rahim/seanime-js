@@ -39,12 +39,14 @@ describe("Local file", () => {
 describe.skip.sequential("Initial metadata hydration", () => {
 
     const _cache = new Map<number, AnilistShortMedia>
+    const _aniZipCache = new Map<number, AniZipData>
 
     it.each(cases.initialMetadata)("should be hydrated correctly from $localFile.path", async ({ localFile, media, expected }) => {
         const hydratedLocalFile = await hydrateLocalFileWithInitialMetadata({
             file: localFile,
             media: media,
             _cache,
+            _aniZipCache,
             _scanLogging: scanLogging,
         })
         expect.soft(hydratedLocalFile).toHaveProperty("metadata", expected.metadata)
@@ -52,6 +54,7 @@ describe.skip.sequential("Initial metadata hydration", () => {
         console.log(hydratedLocalFile)
     })
 
+    _aniZipCache.clear()
     _cache.clear()
 
 })

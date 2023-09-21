@@ -17,7 +17,6 @@ import { cn } from "@/components/ui/core"
 import { useMount, useSearchParam } from "react-use"
 import { Drawer, Modal } from "@/components/ui/modal"
 import { useDisclosure } from "@/hooks/use-disclosure"
-import { normalizeMediaEpisode } from "@/lib/anilist/actions"
 import { BiLinkExternal } from "@react-icons/all-files/bi/BiLinkExternal"
 import { useMediaDownloadInfo } from "@/lib/download/helpers"
 import {
@@ -109,23 +108,12 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
     const [quickSearchEpisode, setQuickSearchEpisode] = useState<number | undefined>(episode || downloadInfo.episodeNumbers[0])
     const debouncedEpisode = useDebounce(quickSearchEpisode, 500)
 
-    const [episodeOffset, setEpisodeOffset] = useState<number | undefined>(undefined)
+    const [episodeOffset, setEpisodeOffset] = useState<number | undefined>(aniZipData?.episodes?.["1"]?.absoluteEpisodeNumber ? aniZipData?.episodes?.["1"]?.absoluteEpisodeNumber - 1 : undefined)
 
     const torrentListModal = useDisclosure(false)
 
     useMount(() => {
-        (async () => {
-            if (media && downloadInfo) {
-                setSelectedTorrents([])
-
-                const object = await normalizeMediaEpisode({
-                    media: media,
-                    episode: downloadInfo.episodeNumbers[0],
-                    force: true,
-                })
-                setEpisodeOffset(object?.offset ?? 0)
-            }
-        })()
+        setSelectedTorrents([])
     })
 
 
