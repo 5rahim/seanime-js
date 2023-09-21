@@ -29,6 +29,8 @@ export const inspectProspectiveLibraryEntry = async (props: {
     _scanLogging: ScanLogging
 }): Promise<ProspectiveLibraryEntry> => {
 
+    const _aniZipCache = new Map<number, AniZipData>
+
     const { _queriedMediaCache, _scanLogging } = props
     const currentMedia = props.media
     const files = props.files.filter(f => f.media?.id === currentMedia?.id)
@@ -120,6 +122,7 @@ export const inspectProspectiveLibraryEntry = async (props: {
                 file: mostAccurateFiles[i],
                 media: currentMedia,
                 _cache: _queriedMediaCache,
+                _aniZipCache: _aniZipCache,
                 _scanLogging,
             }) as LocalFileWithMedia
         }
@@ -137,12 +140,16 @@ export const inspectProspectiveLibraryEntry = async (props: {
             _scanLogging.add(f.path, `   -> Media ID = ` + (f.mediaId || currentMedia.id))
         })
 
+        _aniZipCache.clear()
+
         return {
             media: currentMedia, // Unused
             acceptedFiles: mostAccurateFiles,
             rejectedFiles: rejectedFiles,
         }
     }
+
+    _aniZipCache.clear()
 
     return {
         media: currentMedia,
