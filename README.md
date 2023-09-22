@@ -191,8 +191,7 @@ Resources used to build Seanime.
 
 ## Credit
 
-- [Anikki](https://github.com/Kylart/Anikki/) - Inspired some GraphQL fragments and nomenclatures
-- [Miru](https://github.com/ThaUnknown/miru/) - Inspired some AniList utility functions
+- [Anikki](https://github.com/Kylart/Anikki/) - Inspired some GraphQL fragments
 - [Moopa](https://github.com/Ani-Moopa/Moopa) - Artplayer integration code
 
 ## Screenshots
