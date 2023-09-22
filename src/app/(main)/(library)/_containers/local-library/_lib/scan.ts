@@ -38,6 +38,8 @@ export function useManageLibraryEntries(options: UseManageEntriesOptions) {
                 ignored: ignoredPaths,
             })
 
+            console.log("Finished scan")
+
             if (result && result.checkedFiles && !result.error) {
                 const incomingFiles = result.checkedFiles
 

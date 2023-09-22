@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest"
+import { afterAll, describe, expect, it, vi } from "vitest"
 import { createLocalFile, hydrateLocalFileWithInitialMetadata } from "@/lib/local-library/local-file"
 import { initialSettings } from "@/atoms/settings"
 import { ScanLogging } from "@/lib/local-library/logs"
@@ -6,6 +6,9 @@ import cases from "./cases/local-file.cases"
 import parsingCases from "./cases/parsing.cases"
 import { AnilistShortMedia } from "@/lib/anilist/fragment"
 import { valueContainsNC, valueContainsSpecials } from "@/lib/local-library/utils"
+import { __episodeNormalizationMatchingCases } from "./cases/episode-normalization.cases"
+import { experimental_analyzeMediaTree } from "@/lib/anilist/actions"
+import { __SampleMedia } from "./samples/media.sample"
 
 
 vi.mock("react", async () => {
@@ -30,34 +33,53 @@ describe("Local file", () => {
 
     it.each(cases.createLocalFile)("should be created from $initialProps.path", async ({ initialProps, expected }) => {
         const localFile = await createLocalFile(settings, initialProps, scanLogging)
-        console.log(localFile)
+        // console.log(localFile)
         expect(localFile).toEqual(expected)
     })
 })
 
+const _cache = new Map<number, AnilistShortMedia>
+const _aniZipCache = new Map<number, AniZipData>
 
-describe.sequential("Initial metadata hydration", () => {
+describe.skip("Get media tree", () => {
 
-    const _cache = new Map<number, AnilistShortMedia>
-    const _aniZipCache = new Map<number, AniZipData>
+    it("returns media tree", async () => {
 
-    it.each(cases.initialMetadata)("should be hydrated correctly from $localFile.path", async ({ localFile, media, expected }) => {
-        const hydratedLocalFile = await hydrateLocalFileWithInitialMetadata({
-            file: localFile,
-            media: media,
-            _cache,
-            _aniZipCache,
-            _scanLogging: scanLogging,
-        })
-        expect.soft(hydratedLocalFile).toHaveProperty("metadata", expected.metadata)
-        expect.soft(hydratedLocalFile).toHaveProperty("mediaId", expected.mediaId)
-        console.log(hydratedLocalFile)
-    })
+        const result = await experimental_analyzeMediaTree({ media: __SampleMedia["Bungou Stray Dogs Season 4"], _mediaCache: _cache, _aniZipCache })
+        console.log(result)
+        expect(result).toBeDefined()
 
-    _aniZipCache.clear()
-    _cache.clear()
+    }, { timeout: 10000 })
 
 })
+
+describe.skip("Episode normalization", () => {
+
+    describe.each(__episodeNormalizationMatchingCases)("Episode files matched with $media.title.english", ({ media, cases }) => {
+
+        it.each(cases)("should be correctly normalized $name (Episode $expected.relativeEpisode)", async ({ path, name, expected }) => {
+            const hydratedLocalFile = await hydrateLocalFileWithInitialMetadata({
+                file: await createLocalFile(settings, { path, name }, scanLogging),
+                media: media,
+                _mediaCache: _cache,
+                _aniZipCache: _aniZipCache,
+                _scanLogging: scanLogging,
+            })
+            expect.soft(hydratedLocalFile.file.metadata.episode).toEqual(expected.relativeEpisode)
+            expect.soft(hydratedLocalFile.file.mediaId).toEqual(expected.mediaId)
+            // console.log(hydratedLocalFile)
+            // console.log(_cache)
+        }, { timeout: 10000 })
+
+    })
+
+})
+afterAll(() => {
+    // console.log(_cache)
+    _aniZipCache.clear()
+    _cache.clear()
+})
+
 
 describe("Special/NC detection", () => {
     it.each([

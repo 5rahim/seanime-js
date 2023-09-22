@@ -6,10 +6,7 @@ import { Settings } from "@/atoms/settings"
 import path from "path"
 import fs from "fs/promises"
 import _fs, { Dirent, existsSync } from "fs"
-import {
-    createLocalFile,
-    createLocalFileWithMedia,
-} from "@/lib/local-library/local-file"
+import { createLocalFile, createLocalFileWithMedia } from "@/lib/local-library/local-file"
 import { AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import { Nullish } from "@/types/common"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
@@ -91,7 +88,7 @@ export async function scanLocalFiles(
                     const { acceptedFiles, rejectedFiles } = await inspectProspectiveLibraryEntry({
                         media: currentMedia,
                         files: filesToBeInspected,
-                        _queriedMediaCache,
+                        _mediaCache: _queriedMediaCache,
                         _scanLogging,
                     })
 

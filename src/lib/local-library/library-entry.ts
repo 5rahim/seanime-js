@@ -25,13 +25,13 @@ type ProspectiveLibraryEntry = {
 export const inspectProspectiveLibraryEntry = async (props: {
     media: AnilistShowcaseMedia,
     files: LocalFileWithMedia[],
-    _queriedMediaCache: Map<number, AnilistShortMedia>
+    _mediaCache: Map<number, AnilistShortMedia>
     _scanLogging: ScanLogging
 }): Promise<ProspectiveLibraryEntry> => {
 
     const _aniZipCache = new Map<number, AniZipData>
 
-    const { _queriedMediaCache, _scanLogging } = props
+    const { _mediaCache, _scanLogging } = props
     const currentMedia = props.media
     const files = props.files.filter(f => f.media?.id === currentMedia?.id)
 
@@ -118,15 +118,22 @@ export const inspectProspectiveLibraryEntry = async (props: {
             .map(item => item.file)
 
         for (let i = 0; i < mostAccurateFiles.length; i++) {
-            mostAccurateFiles[i] = await hydrateLocalFileWithInitialMetadata({
+            const hydratedFileData = await hydrateLocalFileWithInitialMetadata({
                 file: mostAccurateFiles[i],
                 media: currentMedia,
-                _cache: _queriedMediaCache,
+                _mediaCache: _mediaCache,
                 _aniZipCache: _aniZipCache,
                 _scanLogging,
-            }) as LocalFileWithMedia
+            })
+            if (!hydratedFileData.error) {
+                mostAccurateFiles[i] = hydratedFileData.file as LocalFileWithMedia
+            } else {
+                // If we can't hydrate the file, we'll just un-match it
+                delete mostAccurateFiles[i]
+            }
         }
 
+        mostAccurateFiles = mostAccurateFiles.filter(Boolean)
 
         const rejectedFiles = files.filter(n => !mostAccurateFiles.find(f => f.path === n.path))
 
@@ -185,6 +192,7 @@ export async function manuallyMatchFiles(
 
             try {
                 const _cache = new Map<number, AnilistShortMedia>
+                const _aniZipCache = new Map<number, AniZipData>
                 const _scanLogging = new ScanLogging()
 
                 const data = await useAniListAsyncQuery(AnimeByIdDocument, { id: mediaId }, token)
@@ -210,17 +218,32 @@ export async function manuallyMatchFiles(
                 const hydratedFiles: LocalFile[] = []
 
                 for (let i = 0; i < files.length; i++) {
-                    hydratedFiles.push(await hydrateLocalFileWithInitialMetadata({
+                    const hydratedFileData = await hydrateLocalFileWithInitialMetadata({
                         file: files[i],
                         media: data.Media,
-                        _cache,
+                        _mediaCache: _cache,
+                        _aniZipCache: _aniZipCache,
                         _scanLogging,
-                    }))
-                    console.log(hydratedFiles)
+                    })
+
+                    if (!hydratedFileData.error) {
+                        hydratedFiles.push(hydratedFileData.file)
+                    } else {
+                        // If we still can't hydrate the file, we'll just add it as a special
+                        hydratedFiles.push({
+                            ...files[i],
+                            metadata: {
+                                episode: 1,
+                                aniDBEpisodeNumber: "S1",
+                                isSpecial: true,
+                            },
+                        })
+                    }
                 }
 
                 _scanLogging.clear()
                 _cache.clear()
+                _aniZipCache.clear()
 
                 // Return media so that the client updates the [LocalFile]s
                 return { mediaId: mediaId, files: hydratedFiles }
