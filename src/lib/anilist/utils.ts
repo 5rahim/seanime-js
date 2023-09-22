@@ -1,4 +1,4 @@
-import { AnilistDetailedMedia, AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
+import { AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import { MediaRelation } from "@/gql/graphql"
 import _ from "lodash"
 import { AnilistCollectionEntry } from "@/atoms/anilist/entries.atoms"
@@ -60,43 +60,4 @@ export function filterEntriesByTitle<T extends AnilistCollectionEntry[] | Librar
         )) as T
     }
     return arr
-}
-
-/**
- * Create title variations from a media titles and synonyms
- * @param media
- */
-export function getAnilistMediaTitleList(media: AnilistShortMedia | AnilistDetailedMedia) {
-    if (!media.title) return undefined
-
-    const grouped = [
-        ...new Set(
-            Object.values(media.title)
-                .concat(media.synonyms ?? [])
-                .filter(name => name != null && name.length > 3),
-        ),
-    ]
-    const titles: string[] = []
-    const appendTitle = (t: string) => {
-        // replace & with encoded
-        const title = t.replace(/&/g, "%26").replace(/\?/g, "%3F").replace(/#/g, "%23")
-        titles.push(title)
-
-        // replace Season 2 with S2, else replace 2nd Season with S2, but keep the original title
-        const match1 = title.match(/(\d)(?:nd|rd|th) Season/i)
-        const match2 = title.match(/Season (\d)/i)
-
-        if (match2) {
-            titles.push(title.replace(/Season \d/i, `S${match2[1]}`))
-        } else if (match1) {
-            titles.push(title.replace(/(\d)(?:nd|rd|th) Season/i, `S${match1[1]}`))
-        }
-    }
-    for (const t of grouped) {
-        if (t) {
-            appendTitle(t)
-            if (t.includes("-")) appendTitle(t.replaceAll("-", ""))
-        }
-    }
-    return titles
 }
