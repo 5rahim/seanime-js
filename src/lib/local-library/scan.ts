@@ -1,3 +1,4 @@
+"use server"
 import { Settings } from "@/atoms/settings"
 import { Nullish } from "@/types/common"
 import { ScanLogging } from "@/lib/local-library/logs"

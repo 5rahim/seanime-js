@@ -27,7 +27,12 @@ export function ContinueWatching(props: { entryAtom: Atom<LibraryEntry> }) {
             // Next episode has not been watched
             // Latest sorted file has an episode
             // The episode has been downloaded
-            if (availableEp > (progress || 0) && !!lastFile?.metadata?.episode && !downloadInfo.episodeNumbers.includes((progress || 0) + 1)) {
+            if (!downloadInfo.schedulingIssues) {
+                if (availableEp > (progress || 0) && !!lastFile?.metadata?.episode && !downloadInfo.episodeNumbers.includes((progress || 0) + 1)) {
+                    return (progress || 0) + 1
+                }
+                // FIXME Hacky way to check if the next episode is downloaded when we don't have accurate scheduling information
+            } else if (lastFile?.metadata?.episode === ((progress || 0) + 1)) {
                 return (progress || 0) + 1
             }
         }

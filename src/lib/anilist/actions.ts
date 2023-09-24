@@ -34,8 +34,10 @@ export const getAnimeInfo = cache(async (params: { id: string }) => {
         axios.get<AniZipData>("https://api.ani.zip/mappings?anilist_id=" + Number(params.id)),
     ])
 
-    if (animeRes.status === "rejected") redirect("/")
-    if (!animeRes.value.Media) redirect("/")
+    if (animeRes.status === "rejected" || !animeRes.value.Media) {
+        logger("view/id").error("Could not fetch media data")
+        redirect("/")
+    }
 
     logger("view/id").info("Fetched media data for " + animeRes.value.Media.title?.english)
 

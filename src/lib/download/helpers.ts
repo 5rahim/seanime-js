@@ -8,16 +8,14 @@ import { useMemo } from "react"
 import _ from "lodash"
 import { LocalFile } from "@/lib/local-library/types"
 
-export const getMediaDownloadInfo = (
-    {
-        media, files, progress, status,
-    }: {
-        media: AnilistDetailedMedia,
-        files: LocalFile[],
-        progress: number | null | undefined,
-        status: MediaListStatus | null | undefined,
-    },
-) => {
+export const getMediaDownloadInfo = (props: {
+    media: AnilistDetailedMedia,
+    files: LocalFile[],
+    progress: number | null | undefined,
+    status: MediaListStatus | null | undefined,
+}) => {
+
+    const { media, files, progress, status } = props
 
     const lastProgress = progress ?? 0
     // e.g., 12
@@ -39,6 +37,13 @@ export const getMediaDownloadInfo = (
 
     const canBatch = (media.status === "FINISHED" || media.status === "CANCELLED") && !!media.episodes && media.episodes > 1
 
+    // FIXME This is a hacky fix for the case where the media is still airing but media.nextAiringEpisode is null due to scheduling issues
+    const schedulingIssues = media.status === "RELEASING" && !media.nextAiringEpisode && !!media.episodes
+    if (schedulingIssues) {
+        console.log(media)
+        missingArr = []
+    }
+
     return {
         toDownload: missingArr.length,
         originalEpisodeCount: media.episodes,
@@ -47,6 +52,7 @@ export const getMediaDownloadInfo = (
         rewatch: status === "COMPLETED",
         // batch = `entireBatch`, i.e., should download entire batch
         batch: canBatch && downloadedEpisodeArr.length === 0 && lastProgress === 0,  // Media finished airing and user has no episodes downloaded/watched
+        schedulingIssues,
         canBatch,
     }
 
