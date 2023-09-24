@@ -1,6 +1,3 @@
-"use server"
-
-
 export async function PromiseBatch<T, R>(
     task: (item: T) => Promise<R>,
     items: T[],
