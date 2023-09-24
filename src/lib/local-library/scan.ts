@@ -11,11 +11,7 @@ import { AnilistShortMedia } from "@/lib/anilist/fragment"
 import { inspectProspectiveLibraryEntry } from "@/lib/local-library/library-entry"
 import { retrieveHydratedLocalFiles } from "@/lib/local-library/repository"
 import { getMediaTitlesFromLocalDirectory } from "@/lib/local-library/helpers"
-import {
-    getFulfilledValues,
-    PromiseAllSettledBatch,
-    PromiseBatchAllSettledWithDelay,
-} from "@/lib/local-library/__experimental"
+import { getFulfilledValues, PromiseAllSettledBatch, PromiseAllSettledBatchWithDelay } from "@/lib/helpers/batch"
 import { advancedSearchWithMAL } from "@/lib/mal/actions"
 import axios from "axios"
 import gql from "graphql-tag"
@@ -236,7 +232,7 @@ export async function experimental_blindScanLocalFiles(
     }
 
     // Query AniList, 5 batches of 10 each 2.5s
-    const anilistBatchResults = await PromiseBatchAllSettledWithDelay(runAnilistQuery, anilistIdChunks, 5, 2500)
+    const anilistBatchResults = await PromiseAllSettledBatchWithDelay(runAnilistQuery, anilistIdChunks, 5, 2500)
     const anilistResults = (await getFulfilledValues(anilistBatchResults)).filter(Boolean)
 
     const media = Object.values(anilistResults).flatMap(n => Object.values(n)).filter(Boolean)
@@ -256,7 +252,7 @@ export async function experimental_blindScanLocalFiles(
         return [...treeMap.values()]
     }
 
-    const relationsBatchResults = await PromiseBatchAllSettledWithDelay(fetchTreeMaps, media, 1, 1500)
+    const relationsBatchResults = await PromiseAllSettledBatchWithDelay(fetchTreeMaps, media, 1, 1500)
     const relationsResults = (await getFulfilledValues(relationsBatchResults)).flat()
 
 
