@@ -16,6 +16,8 @@ import Image from "next/image"
 import { cn } from "@/components/ui/core"
 import { BiTrash } from "@react-icons/all-files/bi/BiTrash"
 import { Disclosure } from "@headlessui/react"
+import { userAtom } from "@/atoms/user"
+import { useAtomValue } from "jotai/react"
 
 interface AnilistMediaEntryModalProps {
     children?: React.ReactNode
@@ -43,12 +45,15 @@ export const AnilistMediaEntryModal: React.FC<AnilistMediaEntryModalProps> = (pr
 
     const { children, media, ...rest } = props
 
+    const user = useAtomValue(userAtom)
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(media.id)
     const state = useStableSelectAtom(collectionEntryAtom, entry => entry)
 
     const { updateEntry, deleteEntry } = useUpdateAnilistEntry()
 
     const [open, toggle] = useToggle(false)
+
+    if (!user) return null
 
     return (
         <>

@@ -2,11 +2,11 @@ import React, { startTransition } from "react"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
 import { useAtom } from "jotai"
 import { useWatchedAnilistEntry } from "@/atoms/anilist/entries.atoms"
-import _ from "lodash"
 import { Modal } from "@/components/ui/modal"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { __progressTrackingAtom } from "@/app/(main)/view/_containers/episode-section/episode-section"
+import sortBy from "lodash/sortBy"
 
 interface ProgressTrackingModalProps {
     children?: React.ReactNode
@@ -24,7 +24,7 @@ export const ProgressTrackingModal: React.FC<ProgressTrackingModalProps> = (prop
 
     const maxEp = media.nextAiringEpisode?.episode ? media.nextAiringEpisode.episode - 1 : media.episodes!
 
-    const files = _.sortBy(state.filesWatched, file => file.metadata.episode)
+    const files = sortBy(state.filesWatched, file => file.metadata.episode)
     const latestFile = files[files.length - 1]
 
     const epWatched = latestFile?.metadata?.episode || 1

@@ -1,4 +1,4 @@
-import * as _ from "lodash"
+import padStart from "lodash/padStart"
 
 export function millisecondsToDuration(ms: number): string {
     if (ms <= 0) {
@@ -12,5 +12,5 @@ export function millisecondsToDuration(ms: number): string {
     const minutes = Math.floor(duration / 60)
     duration = duration % 60
 
-    return _.padStart(hours.toString(), 2, "0") + ":" + _.padStart(minutes.toString(), 2, "0") + ":" + _.padStart(duration.toString(), 2, "0")
+    return padStart(hours.toString(), 2, "0") + ":" + padStart(minutes.toString(), 2, "0") + ":" + padStart(duration.toString(), 2, "0")
 }

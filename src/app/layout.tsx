@@ -12,6 +12,9 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
     title: "Seanime",
     description: "Manage your anime library.",
+    icons: {
+        icon: "/icons/favicon.ico",
+    },
 }
 
 export default async function RootLayout(

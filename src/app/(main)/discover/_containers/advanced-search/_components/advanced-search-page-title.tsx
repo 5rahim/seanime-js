@@ -1,5 +1,5 @@
 import { useMemo } from "react"
-import _ from "lodash"
+import startCase from "lodash/startCase"
 import { useAtomValue } from "jotai/react"
 import {
     __advancedSearch_getValue,
@@ -11,7 +11,7 @@ export function AdvancedSearchPageTitle() {
     const params = useAtomValue(__advancedSearch_paramsAtom)
 
     const title = useMemo(() => {
-        if (params.title && params.title.length > 0) return _.startCase(params.title)
+        if (params.title && params.title.length > 0) return startCase(params.title)
         if (!!__advancedSearch_getValue(params.genre)) return params.genre?.join(", ")
         if (__advancedSearch_getValue(params.sorting)?.includes("SCORE_DESC")) return "Most liked shows"
         if (__advancedSearch_getValue(params.sorting)?.includes("TRENDING_DESC")) return "Trending"

@@ -4,11 +4,11 @@ import { withImmer } from "jotai-immer"
 import { useCallback, useMemo } from "react"
 import { atom, PrimitiveAtom } from "jotai"
 import deepEquals from "fast-deep-equal"
-import _ from "lodash"
 import { focusAtom } from "jotai-optics"
 import { anilistCollectionEntryAtoms, useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist/entries.atoms"
 import { useStableSelectAtom } from "@/atoms/helpers"
 import { LocalFile } from "@/lib/local-library/types"
+import sortBy from "lodash/sortBy"
 
 /* -------------------------------------------------------------------------------------------------
  * Main atoms
@@ -61,7 +61,7 @@ const get_Display_LocalFileAtomsByMediaIdAtom = atom(null,
         // Get the local file atoms by media ID
         const fileAtoms = get(localFileAtoms).filter((fileAtom) => get(fileAtom).mediaId === mediaId)
         // Sort the local files atoms by episode number
-        const mainFileAtoms = _.sortBy(fileAtoms, fileAtom => Number(get(fileAtom).parsedInfo?.episode)).filter(fileAtom => {
+        const mainFileAtoms = sortBy(fileAtoms, fileAtom => Number(get(fileAtom).parsedInfo?.episode)).filter(fileAtom => {
             const file = get(fileAtom)
             return !file.metadata.isSpecial && !file.metadata.isNC
         }) ?? []
@@ -91,7 +91,7 @@ const get_Display_LocalFileAtomsByMediaIdAtom = atom(null,
 const get_OVA_LocalFileAtomsByMediaIdAtom = atom(null,
     (get, set, mediaId: number) => {
         const fileAtoms = get(localFileAtoms).filter((fileAtom) => get(fileAtom).mediaId === mediaId)
-        return _.sortBy(fileAtoms, fileAtom => Number(get(fileAtom).parsedInfo?.episode)).filter(fileAtom => {
+        return sortBy(fileAtoms, fileAtom => Number(get(fileAtom).parsedInfo?.episode)).filter(fileAtom => {
             const file = get(fileAtom)
             return file.metadata.isSpecial
         }) ?? []
@@ -104,7 +104,7 @@ const get_OVA_LocalFileAtomsByMediaIdAtom = atom(null,
 const get_NC_LocalFileAtomsByMediaIdAtom = atom(null,
     (get, set, mediaId: number) => {
         const fileAtoms = get(localFileAtoms).filter((fileAtom) => get(fileAtom).mediaId === mediaId)
-        return _.sortBy(fileAtoms, fileAtom => Number(get(fileAtom).parsedInfo?.episode)).filter(fileAtom => {
+        return sortBy(fileAtoms, fileAtom => Number(get(fileAtom).parsedInfo?.episode)).filter(fileAtom => {
             const file = get(fileAtom)
             return file.metadata.isNC
         }) ?? []
@@ -150,7 +150,7 @@ export const getLocalFileByPathAtom = atom(null, // Writable too
 export const getLastMainLocalFileByMediaIdAtom = atom(null,
     (get, set, mediaId: number) => {
         const fileAtoms = get(localFileAtoms).filter((fileAtom) => get(fileAtom).mediaId === mediaId && !get(fileAtom).metadata.isSpecial && !get(fileAtom).metadata.isNC)
-        const fileAtom = _.sortBy(fileAtoms, fileAtom => get(fileAtom).metadata.episode)[fileAtoms.length - 1]
+        const fileAtom = sortBy(fileAtoms, fileAtom => get(fileAtom).metadata.episode)[fileAtoms.length - 1]
         return !!fileAtom ? get(fileAtom) : undefined
     },
 )

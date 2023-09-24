@@ -1,9 +1,10 @@
 import { Row, Table } from "@tanstack/react-table"
 import React, { startTransition, useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react"
-import _ from "lodash"
 import { DataGridEditingValueUpdater } from "./datagrid-cell-input-field"
 import { AnyZodObject, ZodIssue } from "zod"
 import { useToast } from "../toast"
+import isEqual from "lodash/isEqual"
+import flatten from "lodash/flatten"
 
 /**
  * DataGrid Props
@@ -101,7 +102,7 @@ export function useDataGridEditing<T extends Record<string, any>>(props: Props<T
     // Keep track of editable cells (cells whose columns are editable)
     const editableCells = useMemo(() => {
         if (rows.length > 0) {
-            return _.flatten(rows.map(row => row.getVisibleCells().filter(cell => !!editableColumns.find(col => col.id === cell.column.id)?.id)))
+            return flatten(rows.map(row => row.getVisibleCells().filter(cell => !!editableColumns.find(col => col.id === cell.column.id)?.id)))
         }
         return []
     }, [rows])
@@ -192,7 +193,7 @@ export function useDataGridEditing<T extends Record<string, any>>(props: Props<T
 
         startTransition(() => {
             // Compare data
-            if (!_.isEqual(rowData, row.original)) {
+            if (!isEqual(rowData, row.original)) {
                 // Return new data
                 onRowEdit && onRowEdit({
                     originalData: row.original,

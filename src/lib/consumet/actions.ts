@@ -11,7 +11,7 @@ import {
 import { logger } from "@/lib/helpers/debug"
 import axios from "axios"
 import cache from "memory-cache"
-import _ from "lodash"
+import sortBy from "lodash/sortBy"
 
 const CONSUMET_API_URL = process.env.CONSUMET_API_URL
 
@@ -57,7 +57,7 @@ export async function getConsumetEpisodes<P extends ConsumetProvider>(
             if (!!data && data.episodes.length > 0) {
                 _temp_data.push({
                     provider: provider,
-                    episodes: _.sortBy(data.episodes, n => n.number),
+                    episodes: sortBy(data.episodes, n => n.number),
                 })
             }
         } else {

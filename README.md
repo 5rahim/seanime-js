@@ -134,7 +134,7 @@ npm run build
 
 - Loading toast may persist after scan is complete (area: react-hot-toast)
 - Directory selection input may not work correctly (area: components)
-- Form data in AniList entry's modal is not updated after progress updates (area: view/meta-section)
+- Streaming works intermittently
 - :shrug:
 
 ## Not planned
