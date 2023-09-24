@@ -1,4 +1,4 @@
-import * as _ from "lodash"
+import merge from "lodash/merge"
 import { MpcCommands, MpcCommandsList } from "./mpcCommands"
 import { AbstractPlayerController, IPlayerVariables } from "./commands"
 import { variableParser } from "./variableParser"
@@ -35,7 +35,7 @@ export class MpcApi extends AbstractPlayerController {
         const url = this.apiHost + "/command.html"
         try {
             return axios.get(url, {
-                params: _.merge({
+                params: merge({
                     wm_command: MpcCommandsList[commandId].value,
                 }, data),
             })

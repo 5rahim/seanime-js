@@ -25,13 +25,11 @@ import { Combobox, ComboboxProps } from "../combobox"
 import { Switch, SwitchProps } from "../switch"
 import { Checkbox, CheckboxGroup, CheckboxGroupProps, CheckboxProps } from "../checkbox"
 import { RadioGroup, RadioGroupProps } from "../radio-group"
-import { PhoneNumberInput, PhoneNumberInputProps } from "../phone-number-input"
 import { PriceInput, PriceInputProps } from "../price-input"
 import { cn, useUILocaleConfig } from "../core"
 import { currencies } from "../price-input/currencies"
 import { AddressInput, AddressInputProps } from "../address-input"
 import { ColorInput, ColorInputProps } from "../color-input"
-import { Dropzone, DropzoneProps, FileUploadHandler } from "../file-upload"
 import { TimeValue } from "react-aria"
 import { DirectoryInput, DirectoryInputProps } from "@/components/shared/directory-input"
 
@@ -499,25 +497,6 @@ const SegmentedControlField = React.memo(withControlledInput(forwardRef<HTMLInpu
 )))
 
 
-type PhoneNumberInputFieldProps = Omit<PhoneNumberInputProps, "onChange" | "value">
-/**
- * @zod presets.phone | z.string()
- * @example
- * <Field.PhoneNumber name="phone" />
- */
-const PhoneNumberInputField = React.memo(withControlledInput(forwardRef<HTMLInputElement, FieldComponent<PhoneNumberInputFieldProps>>(
-    (props, ref) => {
-        const context = useFormContext()
-        const controller = useController({ name: props.name })
-
-        return <PhoneNumberInput
-            {...props}
-            onChange={callAllHandlers(props.onChange, controller.field.onChange)} // Cannot be overridden
-            value={get(context.formState.defaultValues, props.name)} // Cannot be overridden
-        />
-    },
-)))
-
 /**
  * @zod presets.price | z.number()
  * @example
@@ -561,36 +540,6 @@ const AddressField = React.memo(withControlledInput(forwardRef<HTMLInputElement,
     },
 )))
 
-type DropzoneFieldProps = Omit<DropzoneProps, "onChange" | "uploadHandler"> & { uploadHandler: FileUploadHandler }
-
-/**
- * @zod presets.dropzone.min(1)
- * @example
- * const uploadHandler = useDropzoneHandler("single", { accept: { "application/*": ['.pdf', '.doc', '.docx'] } })
- *
- * const file = await uploadHandler.uploadSingleFile()
- *
- * <Field.Dropzone
- *    label="Resume"
- *    name="resume"
- *    handler={uploadHandler}
- *    help="1-5 pages. (.pdf, .docx, .doc). < 5 MB."
- * />
- */
-const DropzoneField = React.memo(withControlledInput(forwardRef<HTMLInputElement, FieldComponent<DropzoneFieldProps>>((props, ref) => {
-
-        const controller = useController({ name: props.name! })
-
-        return <Dropzone
-            maxSize={5242880} // Can be overridden (5MB)
-            {...props}
-            onChange={(v) => { // Overrides the default onChange prop
-                controller.field.onChange(v) // Change the underlying field so we can manage errors
-            }}
-            ref={ref}
-        />
-    },
-)))
 
 
 _Field.Text = TextInputField
@@ -603,7 +552,6 @@ _Field.CheckboxGroup = CheckboxGroupField
 _Field.RadioGroup = RadioGroupField
 _Field.RadioCards = RadioCardsField
 _Field.SegmentedControl = SegmentedControlField
-_Field.PhoneNumber = PhoneNumberInputField
 _Field.Price = PriceInputField
 _Field.Address = AddressField
 _Field.Number = NumberField
@@ -613,7 +561,6 @@ _Field.DateRangePicker = DateRangePickerField
 _Field.Combobox = ComboboxField
 _Field.Time = TimeField
 _Field.ColorInput = ColorInputField
-_Field.Dropzone = DropzoneField
 _Field.Submit = SubmitField
 
 export const Field = createPolymorphicComponent<"div", FieldProps, {
@@ -627,7 +574,6 @@ export const Field = createPolymorphicComponent<"div", FieldProps, {
     RadioGroup: typeof RadioGroupField,
     RadioCards: typeof RadioCardsField,
     SegmentedControl: typeof SegmentedControlField,
-    PhoneNumber: typeof PhoneNumberInputField,
     Price: typeof PriceInputField,
     Address: typeof AddressField,
     Number: typeof NumberField,
@@ -637,7 +583,6 @@ export const Field = createPolymorphicComponent<"div", FieldProps, {
     Time: typeof TimeField
     Combobox: typeof ComboboxField
     ColorInput: typeof ColorInputField
-    Dropzone: typeof DropzoneField,
     Submit: typeof SubmitField
 }>(_Field)
 

@@ -7,7 +7,6 @@ import _fs from "fs"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
 import { AnimeCollectionDocument, UpdateEntryDocument } from "@/gql/graphql"
 import { LocalFile, LocalFileWithMedia } from "@/lib/local-library/types"
-import _ from "lodash"
 import { AnilistShortMedia } from "@/lib/anilist/fragment"
 import { inspectProspectiveLibraryEntry } from "@/lib/local-library/library-entry"
 import { getMediaTitlesFromLocalDirectory, retrieveHydratedLocalFiles } from "@/lib/local-library/repository"
@@ -16,6 +15,10 @@ import { advancedSearchWithMAL } from "@/lib/mal/actions"
 import axios from "axios"
 import gql from "graphql-tag"
 import { experimental_fetchMediaTree } from "@/lib/anilist/actions"
+import uniqBy from "lodash/uniqBy"
+import omit from "lodash/omit"
+import groupBy from "lodash/groupBy"
+import chunk from "lodash/chunk"
 
 /**
  * Goes through non-locked and non-ignored [LocalFile]s and returns hydrated [LocalFile]s
@@ -67,16 +70,16 @@ export async function scanLocalFiles(props: {
         // Constants
         const filesWithNoMedia: LocalFileWithMedia[] = files.filter(n => !n.media) // Unsuccessfully matched
         const localFilesWithMedia = files.filter(n => !!n.media) // Successfully matched files
-        const matchedMedia = _.uniqBy(files.map(n => n.media), n => n?.id) // Media with file matches
+        const matchedMedia = uniqBy(files.map(n => n.media), n => n?.id) // Media with file matches
 
         /** Values to be returned **/
-        let checkedFiles: LocalFile[] = [...filesWithNoMedia.map(f => _.omit(f, "media"))]
+        let checkedFiles: LocalFile[] = [...filesWithNoMedia.map(f => omit(f, "media"))]
 
         // Keep track of queried media to avoid repeat
         const _queriedMediaCache = new Map<number, AnilistShortMedia>()
 
         // We group all the hydrated files we got by their media, so we can check them by group (entry)
-        const _groupedByMediaId = _.groupBy(localFilesWithMedia, n => n.media!.id)
+        const _groupedByMediaId = groupBy(localFilesWithMedia, n => n.media!.id)
         _scanLogging.add("repository/scanLocalFiles", "Inspecting prospective library entry")
         for (let i = 0; i < Object.keys(_groupedByMediaId).length; i++) {
             const mediaId = Object.keys(_groupedByMediaId)[i]
@@ -98,11 +101,11 @@ export async function scanLocalFiles(props: {
                     checkedFiles = [
                         ...checkedFiles,
                         // Set media id for accepted files
-                        ...acceptedFiles.map(f => _.omit(f, "media")).map(file => ({
+                        ...acceptedFiles.map(f => omit(f, "media")).map(file => ({
                             ...file,
                             mediaId: file.mediaId || currentMedia.id,
                         })),
-                        ...rejectedFiles.map(f => _.omit(f, "media")),
+                        ...rejectedFiles.map(f => omit(f, "media")),
                     ]
                 }
 
@@ -198,7 +201,7 @@ export async function experimental_blindScanLocalFiles(props: {
     const aniZipResults = (await getFulfilledValues(aniZipBatchResults)).filter(Boolean)
     const anilistIds = aniZipResults.filter(Boolean).map(n => n.mappings.anilist_id).filter(Boolean)
 
-    const anilistIdChunks = _.chunk(anilistIds, 10)
+    const anilistIdChunks = chunk(anilistIds, 10)
 
     async function runAnilistQuery(ids: number[]) {
         return await useAniListAsyncQuery<{ [key: string]: AnilistShortMedia } | null, any>(gql`

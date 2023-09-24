@@ -1,10 +1,11 @@
 "use server"
 import { AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
-import _ from "lodash"
 import { ordinalize } from "inflection"
 import similarity from "string-similarity"
 import { logger } from "@/lib/helpers/debug"
 import { ScanLogging } from "@/lib/local-library/logs"
+import isNumber from "lodash/isNumber"
+import sortBy from "lodash/sortBy"
 
 import {
     compareTitleVariationsToMediaTitles,
@@ -66,21 +67,21 @@ export async function findBestCorrespondingMedia(
     const mediaPreferredTitles = mediaTitles.preferred.map(value => value.toLowerCase())
     const mediaSynonymsWithSeason = mediaTitles.synonymsWithSeason.map(value => value.toLowerCase())
 
-    const episodeAsNumber = (parsed.episode && _.isNumber(parseInt(parsed.episode)))
+    const episodeAsNumber = (parsed.episode && isNumber(parseInt(parsed.episode)))
         ? parseInt(parsed.episode)
         : undefined
-    const folderSeasonAsNumber = (folderParsed?.season && _.isNumber(parseInt(folderParsed.season)))
+    const folderSeasonAsNumber = (folderParsed?.season && isNumber(parseInt(folderParsed.season)))
         ? parseInt(folderParsed.season)
         : undefined
-    const seasonAsNumber = (parsed.season && _.isNumber(parseInt(parsed.season)))
+    const seasonAsNumber = (parsed.season && isNumber(parseInt(parsed.season)))
         ? parseInt(parsed.season)
         : undefined
-    const courAsNumber = (folderParsed?.cour && _.isNumber(parseInt(folderParsed.cour)))
+    const courAsNumber = (folderParsed?.cour && isNumber(parseInt(folderParsed.cour)))
         ? parseInt(folderParsed.cour)
-        : (parsed.cour && _.isNumber(parseInt(parsed.cour))) ? parseInt(parsed.cour) : undefined
-    const partAsNumber = (folderParsed?.part && _.isNumber(parseInt(folderParsed.part)))
+        : (parsed.cour && isNumber(parseInt(parsed.cour))) ? parseInt(parsed.cour) : undefined
+    const partAsNumber = (folderParsed?.part && isNumber(parseInt(folderParsed.part)))
         ? parseInt(folderParsed.part)
-        : (parsed.part && _.isNumber(parseInt(parsed.part))) ? parseInt(parsed.part) : undefined
+        : (parsed.part && isNumber(parseInt(parsed.part))) ? parseInt(parsed.part) : undefined
 
     /* Get all variations of title */
 
@@ -177,7 +178,7 @@ export async function findBestCorrespondingMedia(
         })
         return { titleValue: tValue, bestResult }
     }) ?? []
-    similarTitleMatching = _.sortBy(similarTitleMatching, n => n.bestResult.bestMatch.rating).reverse()
+    similarTitleMatching = sortBy(similarTitleMatching, n => n.bestResult.bestMatch.rating).reverse()
 
     const bestTitle = similarTitleMatching?.[0]?.bestResult
 

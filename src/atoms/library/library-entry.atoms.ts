@@ -7,7 +7,7 @@ import { Atom, atom } from "jotai"
 import { AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import { useSelectAtom } from "@/atoms/helpers"
 import { allUserMediaAtom } from "@/atoms/anilist/media.atoms"
-import _ from "lodash"
+import orderBy from "lodash/orderBy"
 import { anilistCollectionEntriesAtom, AnilistCollectionEntry } from "@/atoms/anilist/entries.atoms"
 import { getDirectoryPath } from "@/lib/helpers/path"
 import { LocalFile } from "@/lib/local-library/types"
@@ -49,7 +49,7 @@ export const libraryEntriesAtom = atom(get => {
  * -----------------------------------------------------------------------------------------------*/
 
 const sortedLibraryEntriesAtom = atom(get => {
-    return _.orderBy(get(libraryEntriesAtom), [
+    return orderBy(get(libraryEntriesAtom), [
         n => n.collectionEntry?.status === "CURRENT",
         n => n.collectionEntry?.status === "PAUSED",
         n => n.collectionEntry?.status === "PLANNING",
@@ -59,7 +59,7 @@ const sortedLibraryEntriesAtom = atom(get => {
 export const libraryEntryAtoms = splitAtom(sortedLibraryEntriesAtom, entry => entry.id)
 
 export const currentlyWatching_libraryEntryAtoms = splitAtom(atom(get => {
-        return _.orderBy(get(libraryEntriesAtom).filter(n => n.collectionEntry?.status === "CURRENT"), [
+    return orderBy(get(libraryEntriesAtom).filter(n => n.collectionEntry?.status === "CURRENT"), [
             n => n.collectionEntry?.startedAt,
         ], ["asc"])
     },

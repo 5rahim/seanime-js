@@ -9,7 +9,6 @@ import { BiChevronRight } from "@react-icons/all-files/bi/BiChevronRight"
 import { useDebounce } from "@/hooks/use-debounce"
 import { useQuery } from "@tanstack/react-query"
 import Image from "next/image"
-import _ from "lodash"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
@@ -17,7 +16,7 @@ import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
 import { SearchAnimeShortMediaDocument } from "@/gql/graphql"
 import { useAuthed } from "@/atoms/auth"
 import { useRouter } from "next/navigation"
-
+import capitalize from "lodash/capitalize"
 
 export const __globalSearch_isOpenAtom = atom(false)
 
@@ -176,7 +175,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = (props) => {
                                                                 </div>
                                                                 <h4 className="mt-3 font-semibold text-[--text-color] line-clamp-3">{activeOption.title?.userPreferred}</h4>
                                                                 <p className="text-sm leading-6 text-[--muted]">
-                                                                    {activeOption.format}{activeOption.season ? ` - ${_.capitalize(activeOption.season)} ` : " - "}{activeOption.startDate?.year
+                                                                    {activeOption.format}{activeOption.season ? ` - ${capitalize(activeOption.season)} ` : " - "}{activeOption.startDate?.year
                                                                     ? new Intl.DateTimeFormat("en-US", { year: "numeric" })
                                                                         .format(new Date(activeOption.startDate?.year || 0, activeOption.startDate?.month || 0))
                                                                     : "-"}

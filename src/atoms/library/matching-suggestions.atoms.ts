@@ -1,9 +1,7 @@
 import { atom } from "jotai"
 import { logger } from "@/lib/helpers/debug"
-import _ from "lodash"
 import { searchWithMAL } from "@/lib/mal/actions"
 import { useAtom, useAtomValue } from "jotai/react"
-
 import { localFilesAtom } from "@/atoms/library/local-file.atoms"
 import { MALSearchResultAnime } from "@/lib/mal/types"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
@@ -13,6 +11,7 @@ import { aniListTokenAtom } from "@/atoms/auth"
 import axios from "axios"
 import { getDirectoryPath } from "@/lib/helpers/path"
 import { LocalFile } from "@/lib/local-library/types"
+import groupBy from "lodash/groupBy"
 
 export type MatchingSuggestionGroups = {
     files: LocalFile[],
@@ -43,7 +42,7 @@ const getMatchingSuggestionGroupsAtom = atom(null, async (get, set, payload: "fi
                 else
                     return ({ ...file, folderPath: file.path }) // <-- Group by file path (file by path)
             }) as (LocalFile & { folderPath: string })[]
-            const groupedByCommonParentName = _.groupBy(filesWithFolderPath, n => n.folderPath)
+            const groupedByCommonParentName = groupBy(filesWithFolderPath, n => n.folderPath)
 
             /** Final groups **/
             let groups: MatchingSuggestionGroups[] = []

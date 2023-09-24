@@ -2,7 +2,7 @@
 
 import { cn, ComponentWithAnatomy, defineStyleAnatomy } from "../core"
 import { cva, VariantProps } from "class-variance-authority"
-import React, { useRef, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 
 /* -------------------------------------------------------------------------------------------------
  * Anatomy
@@ -80,6 +80,10 @@ export const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>((props, ref)
     } = props
 
     const [displayImage, setDisplayImage] = useState(!!src && src?.length > 0)
+
+    useEffect(() => {
+        setDisplayImage(!!src && src?.length > 0)
+    }, [src])
 
     const imgRef = useRef<HTMLImageElement>(null)
 

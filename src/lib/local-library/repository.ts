@@ -16,7 +16,7 @@ import { valueContainsSeason } from "@/lib/local-library/utils"
 import { shortMediaToShowcaseMedia } from "@/lib/anilist/utils"
 import { LocalFile, LocalFileWithMedia } from "@/lib/local-library/types"
 import rakun from "@/lib/rakun"
-import _ from "lodash"
+import orderBy from "lodash/orderBy"
 
 /**
  * Recursively get the files from the local directory
@@ -239,8 +239,8 @@ export async function getMediaTitlesFromLocalDirectory(
         }
         return {
             fileNames: [...fileNames],
-            titles: _.orderBy([...titles], [n => n, n => n.length], ["asc", "asc"]),
-            items: _.orderBy([...items], [n => n.title, n => n.title.length], ["asc", "asc"]),
+            titles: orderBy([...titles], [n => n, n => n.length], ["asc", "asc"]),
+            items: orderBy([...items], [n => n.title, n => n.title.length], ["asc", "asc"]),
         }
     } catch (e) {
         logger("repository/getMediaTitlesFromLocalDirectory").error("Failed")

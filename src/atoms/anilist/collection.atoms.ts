@@ -4,13 +4,12 @@ import { userAtom } from "@/atoms/user"
 import { logger } from "@/lib/helpers/debug"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
 import { AnimeCollectionDocument, AnimeCollectionQuery } from "@/gql/graphql"
-import _ from "lodash"
 import { AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import toast from "react-hot-toast"
 import { atomWithStorage } from "jotai/utils"
 import { useAtom } from "jotai/react"
 import { useCallback } from "react"
-
+import uniqBy from "lodash/uniqBy"
 import { allUserMediaAtom } from "@/atoms/anilist/media.atoms"
 import { shortMediaToShowcaseMedia } from "@/lib/anilist/utils"
 
@@ -54,7 +53,7 @@ export const getAnilistCollectionAtom = atom(null, async (get, set, options: { m
                     ) as AnilistShowcaseMedia[]
 
                 // Set all media
-                set(allUserMediaAtom, _.uniqBy([...watchListMedia, ...relatedMedia], media => media.id))
+                set(allUserMediaAtom, uniqBy([...watchListMedia, ...relatedMedia], media => media.id))
 
             }
             if (!options.muteAlert) toast.success("AniList is up to date")

@@ -1,10 +1,11 @@
 import { AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import { MediaRelation } from "@/gql/graphql"
-import _ from "lodash"
 import { AnilistCollectionEntry } from "@/atoms/anilist/entries.atoms"
 import { LibraryEntry } from "@/atoms/library/library-entry.atoms"
 import rakun from "@/lib/rakun"
 import { valueContainsSeason } from "@/lib/local-library/utils"
+import head from "lodash/head"
+import omit from "lodash/omit"
 
 type _RelationEdge = { relationType: MediaRelation, node: AnilistShowcaseMedia | null | undefined }
 
@@ -38,7 +39,7 @@ export function findMediaSeasonFromTitles(media: AnilistShortMedia | null | unde
         }) || []),
     ].filter(Boolean).map(n => Number(n))
 
-    return _.head(seasons)
+    return head(seasons)
 }
 
 /**
@@ -46,7 +47,7 @@ export function findMediaSeasonFromTitles(media: AnilistShortMedia | null | unde
  * @param media
  */
 export function shortMediaToShowcaseMedia(media: AnilistShortMedia | null | undefined): AnilistShowcaseMedia {
-    return _.omit(media, "streamingEpisodes", "relations", "studio", "description", "source", "isAdult", "genres", "trailer", "countryOfOrigin", "studios")
+    return omit(media, "streamingEpisodes", "relations", "studio", "description", "source", "isAdult", "genres", "trailer", "countryOfOrigin", "studios")
 }
 
 export function filterEntriesByTitle<T extends AnilistCollectionEntry[] | LibraryEntry[]>(arr: T, input: string) {

@@ -2,11 +2,9 @@
 import React, { useMemo } from "react"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
 import { BiCalendarAlt } from "@react-icons/all-files/bi/BiCalendarAlt"
-import _ from "lodash"
 import { ScoreProgressBadges } from "@/app/(main)/view/_containers/meta-section/_components/score-progress-badges"
 import { NextAiringEpisode } from "@/app/(main)/view/_containers/meta-section/_components/next-airing-episode"
 import { TorrentDownloadButton } from "@/app/(main)/view/_containers/meta-section/_components/torrent-download-button"
-import { useLibraryEntryAtomByMediaId } from "@/atoms/library/library-entry.atoms"
 import { useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist/entries.atoms"
 import { AnilistMediaEntryModal } from "@/components/shared/anilist-media-entry-modal"
 import { Badge } from "@/components/ui/badge"
@@ -21,6 +19,7 @@ import { Button } from "@/components/ui/button"
 import { useStableSelectAtom } from "@/atoms/helpers"
 import { AiFillPlayCircle } from "@react-icons/all-files/ai/AiFillPlayCircle"
 import { useSettings } from "@/atoms/settings"
+import capitalize from "lodash/capitalize"
 
 interface MetaSectionProps {
     children?: React.ReactNode
@@ -34,9 +33,7 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
     const { settings } = useSettings()
 
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(detailedMedia.id)
-    const entryAtom = useLibraryEntryAtomByMediaId(detailedMedia.id)
     const progress = useStableSelectAtom(collectionEntryAtom, entry => entry?.progress)
-    const status = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.status)
 
     const nextEpisode = useMemo(() => {
         if (!!detailedMedia.nextAiringEpisode?.episode) {
@@ -44,7 +41,7 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
         } else {
             return progress ? (progress + 1 <= detailedMedia.episodes! ? progress + 1 : 1) : 1
         }
-    }, [])
+    }, [progress])
 
     const relations = (detailedMedia.relations?.edges?.map(edge => edge) || [])
         .filter(Boolean)
@@ -74,7 +71,7 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
                                     <BiCalendarAlt/> {new Intl.DateTimeFormat("en-US", {
                                     year: "numeric",
                                     month: "short",
-                                }).format(new Date(detailedMedia.startDate?.year || 0, detailedMedia.startDate?.month || 0))} - {_.capitalize(detailedMedia.season ?? "")}
+                                }).format(new Date(detailedMedia.startDate?.year || 0, detailedMedia.startDate?.month || 0))} - {capitalize(detailedMedia.season ?? "")}
                                 </p>
                             </div>
                         ) :
@@ -144,7 +141,7 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
                             badgeClassName={"rounded-md"}
                         >
                             #{String(seasonHighestRated.rank)} Highest
-                            Rated {seasonHighestRated.format !== "TV" ? `${seasonHighestRated.format}` : ""} of {_.capitalize(seasonHighestRated.season!)} {seasonHighestRated.year}
+                            Rated {seasonHighestRated.format !== "TV" ? `${seasonHighestRated.format}` : ""} of {capitalize(seasonHighestRated.season!)} {seasonHighestRated.year}
                         </Badge>}
                         {seasonMostPopular && <Badge
                             className={""} size={"lg"}
@@ -154,7 +151,7 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
                             badgeClassName={"rounded-md"}
                         >
                             #{(String(seasonMostPopular.rank))} Most
-                            Popular {seasonMostPopular.format !== "TV" ? `${seasonMostPopular.format}` : ""} of {_.capitalize(seasonMostPopular.season!)} {seasonMostPopular.year}
+                            Popular {seasonMostPopular.format !== "TV" ? `${seasonMostPopular.format}` : ""} of {capitalize(seasonMostPopular.season!)} {seasonMostPopular.year}
                         </Badge>}
                         {/*{allTimeMostPopular && <Badge*/}
                         {/*    className={""} size={"lg"}*/}
@@ -214,7 +211,7 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
                                             />
                                             <Badge
                                                 className={"absolute left-2 top-2 font-semibold rounded-md text-[.95rem]"}
-                                                intent={"white-solid"}>{edge.node?.format === "MOVIE" ? "Movie" : _.capitalize(edge.relationType || "").replace("_", " ")}</Badge>
+                                                intent={"white-solid"}>{edge.node?.format === "MOVIE" ? "Movie" : capitalize(edge.relationType || "").replace("_", " ")}</Badge>
                                             <div className={"p-2 z-[5] absolute bottom-0 w-full "}>
                                                 <p className={"font-semibold line-clamp-2 overflow-hidden"}>{edge.node?.title?.userPreferred}</p>
                                             </div>

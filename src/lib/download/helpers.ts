@@ -5,8 +5,8 @@ import { useStableSelectAtom } from "@/atoms/helpers"
 import { useLibraryEntryAtomByMediaId } from "@/atoms/library/library-entry.atoms"
 import { useLastMainLocalFileByMediaId, useLocalFilesByMediaId_UNSTABLE } from "@/atoms/library/local-file.atoms"
 import { useMemo } from "react"
-import _ from "lodash"
 import { LocalFile } from "@/lib/local-library/types"
+import sortBy from "lodash/sortBy"
 
 export const getMediaDownloadInfo = (props: {
     media: AnilistDetailedMedia,
@@ -33,7 +33,7 @@ export const getMediaDownloadInfo = (props: {
         downloadedEpisodeArr = [1]
     }
 
-    let missingArr = _.sortBy(actualEpisodeArr.filter(num => !downloadedEpisodeArr.includes(num)))
+    let missingArr = sortBy(actualEpisodeArr.filter(num => !downloadedEpisodeArr.includes(num)))
 
     const canBatch = (media.status === "FINISHED" || media.status === "CANCELLED") && !!media.episodes && media.episodes > 1
 

@@ -6,9 +6,7 @@ import { addSeconds, formatDistanceToNow } from "date-fns"
 import Image from "next/image"
 import { AppLayoutStack } from "@/components/ui/app-layout"
 
-type Props = {}
-
-export function ComingUpNext(props: Props) {
+export function ComingUpNext() {
 
     const _media = useAtomValue(allUserMediaAtom)
 

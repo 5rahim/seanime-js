@@ -20,19 +20,20 @@ export const LoadingOverlayAnatomy = defineStyleAnatomy({
 
 interface LoadingOverlayProps {
     children?: React.ReactNode
+    hideSpinner?: boolean
     show?: boolean
 }
 
 export const LoadingOverlay: React.FC<LoadingOverlayProps & React.ComponentPropsWithoutRef<"div">> = (props) => {
 
-    const { children, show = true, className, ...rest } = props
+    const { children, show = true, className, hideSpinner = false, ...rest } = props
 
     if (!show) return null
 
     return (
         <>
             <div className={cn(LoadingOverlayAnatomy.overlay(), className)} {...rest}>
-                <LoadingSpinner className="justify-auto"/>
+                {!hideSpinner && <LoadingSpinner className="justify-auto"/>}
                 {children}
             </div>
         </>

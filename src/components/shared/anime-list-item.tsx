@@ -4,7 +4,6 @@ import { cn } from "@/components/ui/core"
 import Image from "next/image"
 import { Tooltip } from "@/components/ui/tooltip"
 import { BiCalendarAlt } from "@react-icons/all-files/bi/BiCalendarAlt"
-import _ from "lodash"
 import { Badge } from "@/components/ui/badge"
 import { addSeconds, formatDistanceToNow } from "date-fns"
 import { RiSignalTowerLine } from "@react-icons/all-files/ri/RiSignalTowerLine"
@@ -21,6 +20,8 @@ import { useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist/entries.
 import { useAnilistUserMediaId_UNSTABLE } from "@/atoms/anilist/media.atoms"
 import { IoLibrarySharp } from "@react-icons/all-files/io5/IoLibrarySharp"
 import { AnilistMediaEntryModal } from "@/components/shared/anilist-media-entry-modal"
+import capitalize from "lodash/capitalize"
+import startCase from "lodash/startCase"
 
 type AnimeListItemProps = { mediaId: number, media?: AnilistShortMedia, showLibraryBadge?: boolean } & {
     containerClassName?: string
@@ -86,12 +87,12 @@ export const AnimeListItem = ((props: AnimeListItemProps) => {
                                 <BiCalendarAlt/> {new Intl.DateTimeFormat("en-US", {
                                 year: "numeric",
                                 month: "short",
-                            }).format(new Date(media.startDate?.year || 0, media.startDate?.month || 0))} - {_.capitalize(media.season ?? "")}
+                            }).format(new Date(media.startDate?.year || 0, media.startDate?.month || 0))} - {capitalize(media.season ?? "")}
                             </p>
                         </div>}
 
                         <p className={"justify-center text-sm text-[--muted] font-semibold flex w-full gap-1 items-center"}>
-                            {_.startCase(media.format || "")}
+                            {startCase(media.format || "")}
                         </p>
 
                         {!!media.nextAiringEpisode && (
@@ -111,7 +112,7 @@ export const AnimeListItem = ((props: AnimeListItemProps) => {
                         <MainActionButton media={media}/>
 
                         {(status && props.showLibraryBadge === undefined) &&
-                            <p className={"text-center"}>{status === "CURRENT" ? "Watching" : _.capitalize(status ?? "")}</p>}
+                            <p className={"text-center"}>{status === "CURRENT" ? "Watching" : capitalize(status ?? "")}</p>}
 
                     </div>
                     <div className={"flex gap-2"}>
@@ -179,7 +180,7 @@ export const AnimeListItem = ((props: AnimeListItemProps) => {
                 <div>
                     <div>
                         <p className={"text-sm text-[--muted] inline-flex gap-1 items-center"}>
-                            <BiCalendarAlt/>{_.capitalize(media.season ?? "")} {media.startDate?.year ? new Intl.DateTimeFormat("en-US", {
+                            <BiCalendarAlt/>{capitalize(media.season ?? "")} {media.startDate?.year ? new Intl.DateTimeFormat("en-US", {
                             year: "numeric",
                         }).format(new Date(media.startDate?.year || 0, media.startDate?.month || 0)) : "-"}
                         </p>
