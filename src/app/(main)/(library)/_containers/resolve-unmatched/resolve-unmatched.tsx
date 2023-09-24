@@ -17,7 +17,6 @@ import { TextInput } from "@/components/ui/text-input"
 import { Switch } from "@/components/ui/switch"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { libraryMatchingSuggestionGroupsAtom, useMatchingSuggestions } from "@/atoms/library/matching-suggestions.atoms"
-
 import { libraryEntriesAtom } from "@/atoms/library/library-entry.atoms"
 import { useSetLocalFiles } from "@/atoms/library/local-file.atoms"
 import { useSelectAtom } from "@/atoms/helpers"
@@ -25,7 +24,7 @@ import { useAtomValue } from "jotai/react"
 import { useRefreshAnilistCollection } from "@/atoms/anilist/collection.atoms"
 
 /* -------------------------------------------------------------------------------------------------
- * ClassificationRecommendationHub
+ * ResolveUnmatched
  * -----------------------------------------------------------------------------------------------*/
 
 export function ResolveUnmatched(props: { isOpen: boolean, close: () => void }) {
@@ -63,11 +62,18 @@ export function ResolveUnmatched(props: { isOpen: boolean, close: () => void }) 
         if (user?.name && token) {
             setIsLoading(true)
             // props.close()
+
             const {
                 files,
                 error,
                 mediaId,
-            } = await manuallyMatchFiles(currentGroup.files.map(n => n), "match", user?.name, token, Number(selectedAnimeId))
+            } = await manuallyMatchFiles({
+                files: currentGroup.files.map(n => n),
+                type: "match",
+                userName: user.name,
+                token,
+                mediaId: Number(selectedAnimeId),
+            })
 
             if (mediaId && files) {
                 console.log(files)

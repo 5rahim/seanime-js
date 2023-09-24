@@ -17,10 +17,14 @@ type ProspectiveLibraryEntry = {
 }
 
 /**
- * @description
- * This function inspects all the files that were grouped under a same media
+ * @description Library Entry
+ * - A library entry is a group of [LocalFile]s that are associated with a same media
+ * @description Purpose
+ * - Inspects all the scanned [LocalFileWithMedia] that were grouped under a same media
  * - Rejects files with certain arbitrary parameters
  * - Hydrates file metadata (relative episode number, special status...)
+ * @description Use
+ * - Use the returned `acceptedFiles` to hydrate [LocalFile]s `mediaId` before sending them to the client
  */
 export const inspectProspectiveLibraryEntry = async (props: {
     media: AnilistShowcaseMedia,
@@ -33,7 +37,7 @@ export const inspectProspectiveLibraryEntry = async (props: {
 
     const { _mediaCache, _scanLogging } = props
     const currentMedia = props.media
-    const files = props.files.filter(f => f.media?.id === currentMedia?.id)
+    const files = props.files.filter(f => f.media?.id === currentMedia?.id) // redundant
 
     if (files.length && files.length > 0) {
 
@@ -166,16 +170,33 @@ export const inspectProspectiveLibraryEntry = async (props: {
 }
 
 /* -------------------------------------------------------------------------------------------------
- * Rematch
+ * Manually match files
  * -----------------------------------------------------------------------------------------------*/
 
-export async function manuallyMatchFiles(
+/**
+ * @description Purpose
+ * - Allows users to match [LocalFile]s to an anime manually
+ * - If the anime is not in the user's watch list, it will be added
+ * - It will hydrate the [LocalFile]s metadata using {hydrateLocalFileWithInitialMetadata}
+ * - It will return the hydrated [LocalFile]s
+ * @description Use
+ * - Use the returned [LocalFile]s to update the client's [LocalFile]s
+ */
+export async function manuallyMatchFiles(props: {
     files: LocalFile[],
     type: "match" | "ignore",
     userName: string,
     token: string,
     mediaId?: number | undefined,
-): Promise<{ error?: string, mediaId?: number, files?: LocalFile[] }> {
+}): Promise<{ error?: string, mediaId?: number, files?: LocalFile[] }> {
+
+    const {
+        files,
+        type,
+        userName,
+        token,
+        mediaId,
+    } = props
 
     const collectionQuery = await useAniListAsyncQuery(AnimeCollectionDocument, { userName })
 

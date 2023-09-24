@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { startTransition } from "react"
 import { useSettings } from "@/atoms/settings"
 import { Button, IconButton } from "@/components/ui/button"
 import { openLocalDirectoryInExplorer } from "@/lib/helpers/directory"
@@ -49,7 +49,7 @@ export function LibraryToolbar() {
     const {
         handleRefreshEntries,
         handleRescanEntries,
-        handleCleanRepository,
+        handleCheckRepository,
         handleLockAllFiles,
         handleUnlockAllFiles,
         lockedPaths,
@@ -60,8 +60,10 @@ export function LibraryToolbar() {
             refreshModal.close()
             rescanModal.close()
         },
-        preserveIgnoredFileStatus: rescan_preserveIgnoredFileStatus.active,
-        preserveLockedFileStatus: rescan_preserveLockedFileStatus.active,
+        rescanOptions: {
+            preserveIgnoredFileStatus: rescan_preserveIgnoredFileStatus.active,
+            preserveLockedFileStatus: rescan_preserveLockedFileStatus.active,
+        },
     })
 
     const handleOpenLocalDirectory = async () => {
@@ -70,6 +72,27 @@ export function LibraryToolbar() {
         setTimeout(() => {
             toast.remove(tID)
         }, 1000)
+    }
+
+    async function onRefreshButtonClick() {
+        startTransition(() => {
+            handleRefreshEntries()
+            handleCheckRepository()
+        })
+    }
+
+    async function onLockAllFiles() {
+        startTransition(() => {
+            handleLockAllFiles()
+            bulkActionModal.close()
+        })
+    }
+
+    async function onUnlockAllFiles() {
+        startTransition(() => {
+            handleUnlockAllFiles()
+            bulkActionModal.close()
+        })
     }
 
 
@@ -147,10 +170,7 @@ export function LibraryToolbar() {
                 </div>
 
                 <Button
-                    onClick={async () => {
-                        await handleRefreshEntries()
-                        await handleCleanRepository()
-                    }}
+                    onClick={onRefreshButtonClick}
                     leftIcon={<IoReload/>}
                     isDisabled={isScanning}
                 >
@@ -191,10 +211,7 @@ export function LibraryToolbar() {
                         leftIcon={<BiLockAlt/>}
                         intent={"white-subtle"}
                         className={"w-full"}
-                        onClick={() => {
-                            handleLockAllFiles()
-                            bulkActionModal.close()
-                        }}
+                        onClick={onLockAllFiles}
                     >
                         Lock all files
                     </Button>
@@ -202,10 +219,7 @@ export function LibraryToolbar() {
                         leftIcon={<BiLockOpenAlt/>}
                         intent={"white-subtle"}
                         className={"w-full"}
-                        onClick={() => {
-                            handleUnlockAllFiles()
-                            bulkActionModal.close()
-                        }}
+                        onClick={onUnlockAllFiles}
                     >
                         Unlock all files
                     </Button>

@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from "vitest"
 
-import { getMediaTitlesFromLocalDirectory } from "@/lib/local-library/helpers"
 import { experimental_blindScanLocalFiles } from "@/lib/local-library/scan"
 import { initialSettings } from "@/atoms/settings"
+import { getMediaTitlesFromLocalDirectory } from "@/lib/local-library/repository"
 
 vi.mock("react", async () => {
     const actual = (await vi.importActual("react")) as any
@@ -32,7 +32,7 @@ describe.skip("Media titles", () => {
 describe("experimental_blindScanLocalFiles", () => {
 
     it("should scan the local library", async () => {
-        const result = await experimental_blindScanLocalFiles(settings)
+        const result = await experimental_blindScanLocalFiles({ settings })
         console.log(result)
         expect(result).toBeDefined()
     }, { timeout: 1000000 })

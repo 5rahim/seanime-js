@@ -1,5 +1,5 @@
 import toast from "react-hot-toast"
-import { cleanupFiles } from "@/lib/local-library/repository"
+import { checkLocalFiles } from "@/lib/local-library/repository"
 import { logger } from "@/lib/helpers/debug"
 import { useCallback, useState } from "react"
 import { useAuthed } from "@/atoms/auth"
@@ -11,11 +11,13 @@ import { scanLocalFiles } from "@/lib/local-library/scan"
 
 type UseManageEntriesOptions = {
     onComplete: () => void
-    preserveLockedFileStatus?: boolean
-    preserveIgnoredFileStatus?: boolean
+    rescanOptions?: {
+        preserveLockedFileStatus?: boolean
+        preserveIgnoredFileStatus?: boolean
+    }
 }
 
-export function useManageLibraryEntries(options: UseManageEntriesOptions) {
+export function useManageLibraryEntries(opts: UseManageEntriesOptions) {
 
     const { token } = useAuthed()
     const { user } = useCurrentUser()
@@ -34,9 +36,14 @@ export function useManageLibraryEntries(options: UseManageEntriesOptions) {
             const tID = toast.loading("Loading")
             setIsLoading(true)
 
-            const result = await scanLocalFiles(settings, user?.name, token, {
-                locked: lockedPaths,
-                ignored: ignoredPaths,
+            const result = await scanLocalFiles({
+                settings,
+                userName: user?.name,
+                token,
+                markedPaths: {
+                    locked: lockedPaths,
+                    ignored: ignoredPaths,
+                },
             })
 
             console.log("Finished scan")
@@ -59,7 +66,7 @@ export function useManageLibraryEntries(options: UseManageEntriesOptions) {
                 toast.error(result.error)
             }
 
-            options.onComplete()
+            opts.onComplete()
             toast.remove(tID)
             setIsLoading(false)
         } else {
@@ -73,23 +80,28 @@ export function useManageLibraryEntries(options: UseManageEntriesOptions) {
             const tID = toast.loading("Loading")
             setIsLoading(true)
 
-            const result = await scanLocalFiles(settings, user?.name, token, {
-                ignored: [],
-                locked: [],
+            const result = await scanLocalFiles({
+                settings,
+                userName: user?.name,
+                token,
+                markedPaths: {
+                    ignored: [],
+                    locked: [],
+                },
             })
             if (result && result.checkedFiles) {
                 if (result.checkedFiles.length > 0) {
 
-                    if (options.preserveLockedFileStatus || options.preserveIgnoredFileStatus) {
+                    if (opts.rescanOptions?.preserveLockedFileStatus || opts.rescanOptions?.preserveIgnoredFileStatus) {
                         setLocalFiles(draft => {
                             const lockedPathsSet = new Set(draft.filter(file => !!file.locked).map(file => file.path))
                             const ignoredPathsSet = new Set(draft.filter(file => !!file.ignored).map(file => file.path))
                             const final = []
                             for (let i = 0; i < result.checkedFiles.length; i++) {
-                                if (options.preserveLockedFileStatus && lockedPathsSet.has(result.checkedFiles[i].path)) { // Reset locked status
+                                if (opts.rescanOptions?.preserveLockedFileStatus && lockedPathsSet.has(result.checkedFiles[i].path)) { // Reset locked status
                                     result.checkedFiles[i].locked = true
                                 }
-                                if (options.preserveIgnoredFileStatus && ignoredPathsSet.has(result.checkedFiles[i].path)) { // Reset ignored status
+                                if (opts.rescanOptions?.preserveIgnoredFileStatus && ignoredPathsSet.has(result.checkedFiles[i].path)) { // Reset ignored status
                                     result.checkedFiles[i].ignored = true
                                 }
                                 final.push(result.checkedFiles[i])
@@ -104,19 +116,19 @@ export function useManageLibraryEntries(options: UseManageEntriesOptions) {
             } else if (result.error) {
                 toast.error(result.error)
             }
-            options.onComplete
+            opts.onComplete
             toast.remove(tID)
             setIsLoading(false)
         } else {
             unauthenticatedAlert()
         }
-    }, [user, token, settings, lockedPaths, ignoredPaths, options.preserveLockedFileStatus, options.preserveIgnoredFileStatus])
+    }, [user, token, settings, lockedPaths, ignoredPaths, opts.rescanOptions?.preserveLockedFileStatus, opts.rescanOptions?.preserveIgnoredFileStatus])
 
 
-    const handleCleanRepository = useCallback(async () => {
+    const handleCheckRepository = useCallback(async () => {
 
         if (user && token) {
-            const { pathsToClean } = await cleanupFiles(settings, {
+            const { pathsToClean } = await checkLocalFiles(settings, {
                 ignored: lockedPaths,
                 locked: ignoredPaths,
             })
@@ -158,7 +170,7 @@ export function useManageLibraryEntries(options: UseManageEntriesOptions) {
     return {
         handleRescanEntries,
         handleRefreshEntries,
-        handleCleanRepository,
+        handleCheckRepository,
         handleLockAllFiles,
         handleUnlockAllFiles,
         isScanning: isLoading,

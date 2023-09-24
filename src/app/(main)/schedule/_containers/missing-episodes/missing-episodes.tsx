@@ -24,9 +24,7 @@ export function MissingEpisodes() {
             const result = await Promise.allSettled(
                 missing.map(n => axios.get<AniZipData>("https://api.ani.zip/mappings?anilist_id=" + Number(n.media.id))),
             )
-            const usable = result.filter(n => n.status === "fulfilled").map(n => (n as any).value.data as AniZipData)
-            console.log(result, usable)
-            return usable
+            return result.filter(n => n.status === "fulfilled").map(n => (n as any).value.data as AniZipData)
         },
         keepPreviousData: false,
         enabled: missing.length > 0,

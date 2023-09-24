@@ -9,8 +9,7 @@ import { LocalFile, LocalFileWithMedia } from "@/lib/local-library/types"
 import _ from "lodash"
 import { AnilistShortMedia } from "@/lib/anilist/fragment"
 import { inspectProspectiveLibraryEntry } from "@/lib/local-library/library-entry"
-import { retrieveHydratedLocalFiles } from "@/lib/local-library/repository"
-import { getMediaTitlesFromLocalDirectory } from "@/lib/local-library/helpers"
+import { getMediaTitlesFromLocalDirectory, retrieveHydratedLocalFiles } from "@/lib/local-library/repository"
 import { getFulfilledValues, PromiseAllSettledBatch, PromiseAllSettledBatchWithDelay } from "@/lib/helpers/batch"
 import { advancedSearchWithMAL } from "@/lib/mal/actions"
 import axios from "axios"
@@ -20,12 +19,23 @@ import { experimental_fetchMediaTree } from "@/lib/anilist/actions"
 /**
  * Goes through non-locked and non-ignored [LocalFile]s and returns hydrated [LocalFile]s
  */
-export async function scanLocalFiles(
-    settings: Settings,
-    userName: Nullish<string>,
-    token: string,
-    { ignored, locked }: { ignored: string[], locked: string[] },
-) {
+export async function scanLocalFiles(props: {
+    settings: Settings
+    userName: Nullish<string>
+    token: string
+    markedPaths: {
+        ignored: string[]
+        locked: string[]
+    }
+}) {
+
+    const {
+        settings,
+        userName,
+        token,
+        markedPaths,
+    } = props
+
     const start = performance.now()
     const _scanLogging = new ScanLogging()
     _scanLogging.add("repository/scanLocalFiles", `Local directory: ${settings.library.localDirectory}`)
@@ -47,7 +57,7 @@ export async function scanLocalFiles(
 
     // Get the hydrated files
     _scanLogging.add("repository/scanLocalFiles", "Retrieving and hydrating local files")
-    const files = await retrieveHydratedLocalFiles(settings, userName, data, { ignored, locked }, _scanLogging)
+    const files = await retrieveHydratedLocalFiles({ settings, userName, data, markedPaths, _scanLogging })
 
     _scanLogging.add("repository/scanLocalFiles", `Retrieved ${files?.length || 0} files`)
 
@@ -146,9 +156,11 @@ export async function scanLocalFiles(
  * Blind scan
  * -----------------------------------------------------------------------------------------------*/
 
-export async function experimental_blindScanLocalFiles(
+export async function experimental_blindScanLocalFiles(props: {
     settings: Settings,
-) {
+}) {
+
+    const { settings } = props
 
     const _scanLogging = new ScanLogging()
     const _aniZipCache = new Map<number, AniZipData>()

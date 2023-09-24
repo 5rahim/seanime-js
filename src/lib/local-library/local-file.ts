@@ -22,7 +22,11 @@ import { LocalFile, LocalFileWithMedia } from "@/lib/local-library/types"
  * - parsedFolderInfo: Parsed info from each parent folder
  *      - Is undefined if we can't parse a title or a season
  */
-export const createLocalFile = async (settings: Settings, initialProps: Pick<LocalFile, "name" | "path">, _scanLogging: ScanLogging): Promise<LocalFile> => {
+export const createLocalFile = async (
+    settings: Settings,
+    initialProps: Pick<LocalFile, "name" | "path">,
+    _scanLogging: ScanLogging,
+): Promise<LocalFile> => {
 
     _scanLogging.add(initialProps.path, ">>> [local-file/createLocalFile]")
     _scanLogging.add(initialProps.path, "Parsing data from file name")
@@ -101,9 +105,12 @@ export const createLocalFile = async (settings: Settings, initialProps: Pick<Loc
  * -----------------------------------------------------------------------------------------------*/
 
 /**
- * @description
- * This method take a [LocalFile] and an array of [AnilistShortMedia] fetched from AniList.
- * We compare the filenames, anime title, folder title to get the best match.
+ * @description Purpose
+ * - Takes a [LocalFile] and an array of [AnilistShortMedia] fetched from AniList.
+ * - Compare [LocalFile] parsed info to all [AnilistShortMedia]s titles to get the best match.
+ * - Returns [LocalFileWithMedia] which is a [LocalFile] with an [AnilistShortMedia] attached to it.
+ * @description Use
+ * - Use the returned [LocalFileWithMedia] to hydrate the [LocalFile]'s metadata before sending it to the client
  */
 export const createLocalFileWithMedia = async (props: {
     file: LocalFile,
@@ -141,7 +148,6 @@ export const createLocalFileWithMedia = async (props: {
         return {
             ...file,
             media: correspondingMedia,
-            // mediaId: correspondingMedia?.id || null <- Don't need it, will be hydrated later
         }
     }
     return undefined
@@ -152,9 +158,11 @@ export const createLocalFileWithMedia = async (props: {
  * -----------------------------------------------------------------------------------------------*/
 
 /**
- * @description
- * Analyzes [LocalFile]'s parsed data and returns appropriate cloned [LocalFile] with hydrated metadata
- * @param props
+ * @description Purpose
+ * - Analyzes [LocalFile]'s parsed data, uses ratings to accept/reject the match
+ * - Normalizes the episode number if it's absolute before hydrating metadata
+ * @description Use
+ * - Send the hydrated [LocalFile] to the client if there's no `error`
  */
 export async function hydrateLocalFileWithInitialMetadata(props: {
     file: LocalFile,
