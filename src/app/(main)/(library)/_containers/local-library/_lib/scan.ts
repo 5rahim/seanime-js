@@ -1,5 +1,5 @@
 import toast from "react-hot-toast"
-import { cleanupFiles, scanLocalFiles } from "@/lib/local-library/repository"
+import { cleanupFiles } from "@/lib/local-library/repository"
 import { logger } from "@/lib/helpers/debug"
 import { useCallback, useState } from "react"
 import { useAuthed } from "@/atoms/auth"
@@ -7,6 +7,7 @@ import { useCurrentUser } from "@/atoms/user"
 import { localFilesAtom, useSetLocalFiles } from "@/atoms/library/local-file.atoms"
 import { useSettings } from "@/atoms/settings"
 import { useSelectAtom } from "@/atoms/helpers"
+import { scanLocalFiles } from "@/lib/local-library/scan"
 
 type UseManageEntriesOptions = {
     onComplete: () => void

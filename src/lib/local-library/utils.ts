@@ -25,7 +25,6 @@ export function getLocalFileParsedSeason(fileParsed: AnimeFileInfo | undefined, 
 
 /**
  * This does NOT return the normalized episode number
- * @param parsedInfo
  */
 export function getLocalFileParsedEpisode(parsedInfo: AnimeFileInfo | undefined) {
     return (!!parsedInfo?.episode && !isNaN(Number(parsedInfo?.episode))) ? Number(parsedInfo.episode) : undefined
