@@ -15,15 +15,7 @@ import { useAtomValue } from "jotai/react"
 import { Slider } from "@/components/shared/slider"
 import { ContinueWatching } from "@/app/(main)/(library)/_containers/continue-watching/continue-watching"
 
-// import { FetchMediaSchedule } from "@/app/(main)/(library)/_containers/local-library/_lib/schedule"
-
-interface LocalLibraryProps {
-    children?: React.ReactNode
-}
-
-export const LocalLibrary: React.FC<LocalLibraryProps> = (props) => {
-
-    const { children, ...rest } = props
+export function LocalLibrary() {
 
     const currentlyWatchingEntryAtoms = useAtomValue(currentlyWatching_libraryEntryAtoms)
     const restEntryAtoms = useAtomValue(rest_libraryEntryAtoms)

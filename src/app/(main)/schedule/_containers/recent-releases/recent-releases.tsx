@@ -9,9 +9,7 @@ import { useRouter } from "next/navigation"
 import { BiLinkExternal } from "@react-icons/all-files/bi/BiLinkExternal"
 import { AppLayoutStack } from "@/components/ui/app-layout"
 
-type Props = {}
-
-export function RecentReleases(props: Props) {
+export function RecentReleases() {
 
     const router = useRouter()
 

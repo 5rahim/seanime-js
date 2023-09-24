@@ -37,7 +37,7 @@ export function ContinueWatching(props: { entryAtom: Atom<LibraryEntry> }) {
             }
         }
         return undefined
-    }, [media, currentlyWatching, progress, lastFile])
+    }, [currentlyWatching, progress, media?.nextAiringEpisode?.episode, media.episodes, downloadInfo.schedulingIssues, lastFile?.metadata?.episode, downloadInfo.episodeNumbers])
 
 
     const { data, isLoading } = useQuery({
