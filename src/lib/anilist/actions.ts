@@ -13,7 +13,7 @@ import {
 } from "@/gql/graphql"
 import { logger } from "@/lib/helpers/debug"
 import { AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
-import { findMediaEdge } from "@/lib/anilist/utils"
+import { anilist_findMediaEdge } from "@/lib/anilist/utils"
 import { compareTitleVariationsToMediaTitles } from "@/lib/local-library/utils"
 import { cache } from "react"
 import { redirect } from "next/navigation"
@@ -83,8 +83,11 @@ export async function deleteEntry(variables: DeleteEntryMutationVariables, token
 }
 
 /**
- * /!\ Very slow
- * The first tree lookup can take up to 1s
+ * @description Caveats
+ * - Slow
+ * @description Purpose
+ * - Retrieves a specific media's sequels and prequels using {experimental_fetchMediaTree}
+ * - Returns some utilities
  * @param props
  */
 export async function experimental_analyzeMediaTree(props: {
@@ -104,10 +107,10 @@ export async function experimental_analyzeMediaTree(props: {
 
     const treeMap = new Map<number, AnilistShortMedia>()
     const start = performance.now()
-    logger("experimental_analyzeMediaTree").warning("Fetching media tree in for " + media.title?.english)
+    logger("experimental_fetchMediaTree").warning("Fetching media tree in for " + media.title?.english)
     await experimental_fetchMediaTree({ media, treeMap, _mediaCache: _mediaCache })
     const end = performance.now()
-    logger("experimental_analyzeMediaTree").info("Fetched media tree in " + (end - start) + "ms")
+    logger("experimental_fetchMediaTree").info("Fetched media tree in " + (end - start) + "ms")
 
     // Sort media list
     const mediaList = [...treeMap.values()].sort((a, b) => new Date(a.startDate?.year || 0, a.startDate?.month || 0).getTime() - new Date(b.startDate?.year || 0, b.startDate?.month || 0).getTime())
@@ -162,21 +165,28 @@ export async function experimental_analyzeMediaTree(props: {
 }
 
 /**
- * Populates a Map with a medium's edges for all directions
+ * @description Purpose
+ * Populates `treeMap` with a media's prequels and sequels
  * @param props
  */
 export async function experimental_fetchMediaTree(props: {
     media: AnilistShortMedia | AnilistShowcaseMedia,
     _mediaCache: Map<number, AnilistShortMedia>,
-    treeMap: Map<number, AnilistShortMedia>
+    treeMap: Map<number, AnilistShortMedia>,
+    relation?: "PREQUEL" | "SEQUEL" | "BOTH",
 }) {
 
-    const { media: _originalMedia, _mediaCache, treeMap } = props
+    const {
+        media: _originalMedia,
+        _mediaCache,
+        treeMap,
+        relation = "BOTH",
+    } = props
 
-    let media = _originalMedia
+    let media: AnilistShortMedia = _originalMedia
 
     // Make sure the media has `relations` property, if not, fetch it
-    if (!(_originalMedia as AnilistShortMedia).relations) {
+    if ((_originalMedia as AnilistShortMedia).relations === undefined) {
         if (_mediaCache.has(_originalMedia.id)) {
             media = _mediaCache.get(_originalMedia.id)!
             treeMap.set(media.id, media)
@@ -191,23 +201,27 @@ export async function experimental_fetchMediaTree(props: {
 
     async function getEdges() {
         // Find prequel
-        const prequel = findMediaEdge(media, "PREQUEL")?.node
+        const prequel = (relation === "BOTH" || relation === "PREQUEL") ? anilist_findMediaEdge(media, "PREQUEL")?.node : undefined
         // Find sequel
-        const sequel = findMediaEdge(media, "SEQUEL")?.node
+        const sequel = (relation === "BOTH" || relation === "SEQUEL") ? anilist_findMediaEdge(media, "SEQUEL")?.node : undefined
         // For each edge
         for (const edge of [prequel, sequel].filter(Boolean)) {
 
             if (_mediaCache.has(edge.id) && !treeMap.has(edge.id)) {
+
                 treeMap.set(edge.id, _mediaCache.get(edge.id)!) // Add the edge to the map if it's in the cache
                 // Get the edge's edges
-                await experimental_fetchMediaTree({ media: _mediaCache.get(edge.id)!, _mediaCache, treeMap })
+                await experimental_fetchMediaTree({ media: _mediaCache.get(edge.id)!, _mediaCache, treeMap, relation })
+
             } else if (!_mediaCache.has(edge.id) && !treeMap.has(edge.id)) { // If the edge is not in the cache
+
                 // Fetch it from AniList
                 const _ = (await useAniListAsyncQuery(AnimeShortMediaByIdDocument, { id: edge.id })).Media!
                 treeMap.set(edge.id, _) // Add it to the map
                 _mediaCache.set(edge.id, _) // Add it to the cache
                 // Get the edge's edges
-                await experimental_fetchMediaTree({ media: _, _mediaCache, treeMap })
+                await experimental_fetchMediaTree({ media: _, _mediaCache, treeMap, relation })
+
             }
 
         }

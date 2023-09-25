@@ -13,16 +13,22 @@ import { AnimeCollectionQuery } from "@/gql/graphql"
 import { logger } from "@/lib/helpers/debug"
 import { ScanLogging } from "@/lib/local-library/logs"
 import { valueContainsSeason } from "@/lib/local-library/utils"
-import { shortMediaToShowcaseMedia } from "@/lib/anilist/utils"
+import { anilist_shortMediaToShowcaseMedia } from "@/lib/anilist/utils"
 import { LocalFile, LocalFileWithMedia } from "@/lib/local-library/types"
 import rakun from "@/lib/rakun"
 import orderBy from "lodash/orderBy"
 
 /**
- * Recursively get the files from the local directory
- * This method hydrates each retrieved [LocalFile] with its associated [AnilistShowcaseMedia]
+ * @internal Used on the server
+ * @description Purpose
+ * - Get all the local files from the local directory using {retrieveLocalFiles}
+ * - Match them with their associated [AnilistShowcaseMedia] using {createLocalFileWithMedia}
+ * - Return the hydrated [LocalFileWithMedia]s
+ * @description Use
+ * - Process the returned [LocalFileWithMedia]s
+ * - In the current implementation, the returned [LocalFileWithMedia]s are then processed using {inspectProspectiveLibraryEntry}
  */
-export async function retrieveHydratedLocalFiles(props: {
+export async function retrieveLocalFilesWithMedia(props: {
     settings: Settings
     userName: Nullish<string>
     data: AnimeCollectionQuery
@@ -48,7 +54,7 @@ export async function retrieveHydratedLocalFiles(props: {
 
         // Populate [localFiles] with all files recursively
         const localFiles: LocalFile[] = []
-        await getAllFilesRecursively({
+        await _retrieveLocalFiles({
             settings,
             directoryPath: currentPath,
             files: localFiles,
@@ -59,7 +65,7 @@ export async function retrieveHydratedLocalFiles(props: {
         // If there are files, hydrate them with their associated [AnilistShowcaseMedia]
         if (localFiles.length > 0) {
             let allUserMedia = data.MediaListCollection?.lists?.map(n => n?.entries).flat().filter(Boolean).map(entry => entry.media) ?? [] satisfies AnilistShortMedia[]
-            allUserMedia = allUserMedia.map(media => shortMediaToShowcaseMedia(media)) satisfies AnilistShowcaseMedia[]
+            allUserMedia = allUserMedia.map(media => anilist_shortMediaToShowcaseMedia(media)) satisfies AnilistShowcaseMedia[]
             _scanLogging.add("repository/scanLocalFiles", ">>> [repository/retrieveHydratedLocalFiles]")
             _scanLogging.add("repository/scanLocalFiles", "Getting related media from user watch list")
 
@@ -117,12 +123,13 @@ export async function retrieveHydratedLocalFiles(props: {
 }
 
 /**
+ * @internal Used on the server
  * @description Purpose
  * - Recursively get the files as [LocalFile] from the local directory
- * @description Use
- * - This method populates `files`
+ * - Populates `files`
+ * - Ignores `markedPaths`
  */
-async function getAllFilesRecursively(props: {
+export async function _retrieveLocalFiles(props: {
     settings: Settings
     directoryPath: string
     files: LocalFile[]
@@ -146,7 +153,7 @@ async function getAllFilesRecursively(props: {
     try {
         const items: Dirent[] = await fs.readdir(directoryPath, { withFileTypes: true })
 
-        logger("repository/getAllFilesRecursively").info("Getting all files recursively")
+        logger("repository/retrieveLocalFiles").info("Getting all files recursively")
         for (const item of items) {
             const itemPath = path.join(directoryPath, item.name)
             const stats = await fs.stat(itemPath)
@@ -156,7 +163,7 @@ async function getAllFilesRecursively(props: {
                 && allowedTypes.some(type => itemPath.endsWith(`.${type}`))
                 && ![...markedPaths.ignored, ...markedPaths.locked].includes(itemPath)
             ) {
-                _scanLogging.add(itemPath, ">>> [repository/getAllFilesRecursively]")
+                _scanLogging.add(itemPath, ">>> [repository/retrieveLocalFiles]")
                 _scanLogging.add(itemPath, "File retrieved")
                 files.push(await createLocalFile(settings, {
                     name: item.name,
@@ -167,7 +174,7 @@ async function getAllFilesRecursively(props: {
                 const dirents = await fs.readdir(itemPath, { withFileTypes: true })
                 const fileNames = dirents.filter(dirent => dirent.isFile()).map(dirent => dirent.name)
                 if (!fileNames.find(name => name === ".unsea" || name === ".seaignore")) {
-                    await getAllFilesRecursively({
+                    await _retrieveLocalFiles({
                         settings,
                         directoryPath: itemPath,
                         files,
@@ -179,7 +186,7 @@ async function getAllFilesRecursively(props: {
             }
         }
     } catch (e) {
-        logger("repository/getAllFilesRecursively").error("Failed")
+        logger("repository/retrieveLocalFiles").error("Failed")
     }
 }
 

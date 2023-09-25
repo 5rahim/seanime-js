@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { memo, useCallback, useEffect, useState } from "react"
 import { Drawer } from "@/components/ui/modal"
 import { Button } from "@/components/ui/button"
 import { ImNext } from "@react-icons/all-files/im/ImNext"
@@ -8,7 +8,6 @@ import { ImPrevious } from "@react-icons/all-files/im/ImPrevious"
 import { FcOpenedFolder } from "@react-icons/all-files/fc/FcOpenedFolder"
 import { RadioGroup } from "@/components/ui/radio-group"
 import Image from "next/image"
-import { Alert } from "@/components/ui/alert"
 import { manuallyMatchFiles } from "@/lib/local-library/library-entry"
 import toast from "react-hot-toast"
 import { useCurrentUser } from "@/atoms/user"
@@ -27,7 +26,7 @@ import { useRefreshAnilistCollection } from "@/atoms/anilist/collection.atoms"
  * ResolveUnmatched
  * -----------------------------------------------------------------------------------------------*/
 
-export function ResolveUnmatched(props: { isOpen: boolean, close: () => void }) {
+export const ResolveUnmatched = memo((props: { isOpen: boolean, close: () => void }) => {
     const { user } = useCurrentUser()
     const { token } = useAuthed()
     const groups = useAtomValue(libraryMatchingSuggestionGroupsAtom)
@@ -58,16 +57,12 @@ export function ResolveUnmatched(props: { isOpen: boolean, close: () => void }) 
         setSelectedAnimeId(value ?? "0")
     }
 
-    const handleConfirm = async () => {
+    const handleConfirm = useCallback(async () => {
         if (user?.name && token) {
             setIsLoading(true)
             // props.close()
 
-            const {
-                files,
-                error,
-                mediaId,
-            } = await manuallyMatchFiles({
+            const { files, error, mediaId } = await manuallyMatchFiles({
                 files: currentGroup.files.map(n => n),
                 type: "match",
                 userName: user.name,
@@ -102,7 +97,7 @@ export function ResolveUnmatched(props: { isOpen: boolean, close: () => void }) 
             }
             setIsLoading(false)
         }
-    }
+    }, [])
 
     const handleIgnore = async () => {
         if (user?.name) {
@@ -166,27 +161,6 @@ export function ResolveUnmatched(props: { isOpen: boolean, close: () => void }) 
                     <span className={"text-xl"}><FcOpenedFolder/></span>
                     {currentGroup.folderPath}
                 </div>
-
-                {(nonContentDetected || specialsDetected || ovaDetected || episodeDetected) && <Alert
-                    intent={"warning"}
-                    title={"Warnings"}
-                    description={<>
-                        <ul className={"list-disc pl-5 mt-1"}>
-                            {nonContentDetected &&
-                                <li>ED or OP files were detected in this folder, delete these files or mark this folder
-                                    as ignored</li>}
-                            {ovaDetected &&
-                                <li>OVA files were detected in this folder, rename these files with the correct AniList
-                                    title and move them to separate and appropriately named folders.</li>}
-                            {specialsDetected &&
-                                <li>Specials detected, rename these files with the correct AniList title and move them
-                                    to separate and appropriately named folders</li>}
-                            {episodeDetected && <li>Episodes were detected:</li>}
-                            {episodeDetected && <li>{`-->`} The anime was not added to your watch list</li>}
-                            {episodeDetected && <li>{`-->`} Your structure or naming is inconsistent</li>}
-                        </ul>
-                    </>}
-                />}
 
                 <div className={"max-h-72 overflow-y-auto border border-[--border] rounded-md p-4"}>
                     {currentGroup.files.map(file => {
@@ -272,4 +246,4 @@ export function ResolveUnmatched(props: { isOpen: boolean, close: () => void }) 
         </Drawer>
     )
 
-}
+})

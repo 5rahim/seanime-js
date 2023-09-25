@@ -6,30 +6,41 @@ import rakun from "@/lib/rakun"
 import { valueContainsSeason } from "@/lib/local-library/utils"
 import head from "lodash/head"
 import omit from "lodash/omit"
+import { logger } from "@/lib/helpers/debug"
 
-type _RelationEdge = { relationType: MediaRelation, node: AnilistShowcaseMedia | null | undefined }
+type _AnilistRelationEdge = { relationType: MediaRelation, node: AnilistShowcaseMedia | null | undefined }
 
 /**
  * @description
- * Returns an [AnilistShowcaseMedia] with the specified [MediaRelation] to the given media.
- * If the specified [MediaRelation] is "SEQUEL", it will look for OVAs if it can't find on first try.
- * /!\ Will not work with [AnilistShowcaseMedia] since the `media` parameter needs to contain `relations`
+ * - Returns a [AnilistShowcaseMedia] with the specified [MediaRelation] to the given media.
+ * - If the specified [MediaRelation] is "SEQUEL", it will look for OVAs if it can't find on first try.
+ * - /!\ Will not work with [AnilistShowcaseMedia] since the `media` parameter needs to contain `relations`
  */
-export function findMediaEdge(media: AnilistShortMedia | null | undefined, relation: MediaRelation, formats = ["TV", "TV_SHORT"], skip: boolean = false): _RelationEdge | undefined {
-    let res = (media?.relations?.edges as _RelationEdge[])?.find(edge => {
+export function anilist_findMediaEdge(
+    media: AnilistShortMedia | null | undefined,
+    relation: MediaRelation,
+    formats = ["TV", "TV_SHORT"],
+    stop: boolean = false,
+): _AnilistRelationEdge | undefined {
+    if (media?.relations === undefined) {
+        logger("lib/anilist/findMediaEdge").warning("media.relations is undefined")
+        return undefined
+    }
+
+    let res = (media?.relations?.edges as _AnilistRelationEdge[])?.find(edge => {
         if (edge?.relationType === relation) {
             return formats.includes(edge?.node?.format ?? "")
         }
         return false
     })
     // this is hit-miss
-    if (!res && !skip && relation === "SEQUEL") {
-        res = findMediaEdge(media, relation, formats = ["TV", "TV_SHORT", "OVA"], true)
+    if (!res && !stop && relation === "SEQUEL") {
+        res = anilist_findMediaEdge(media, relation, formats = ["TV", "TV_SHORT", "OVA"], true)
     }
     return res
 }
 
-export function findMediaSeasonFromTitles(media: AnilistShortMedia | null | undefined) {
+export function anilist_findMediaSeasonFromTitles(media: AnilistShortMedia | null | undefined) {
     const seasons = [
         rakun.parse(media?.title?.english || "")?.season,
         rakun.parse(media?.title?.romaji || "")?.season,
@@ -46,11 +57,11 @@ export function findMediaSeasonFromTitles(media: AnilistShortMedia | null | unde
  * Normalize [AnilistShortMedia] to [AnilistShowcaseMedia]
  * @param media
  */
-export function shortMediaToShowcaseMedia(media: AnilistShortMedia | null | undefined): AnilistShowcaseMedia {
+export function anilist_shortMediaToShowcaseMedia(media: AnilistShortMedia | null | undefined): AnilistShowcaseMedia {
     return omit(media, "streamingEpisodes", "relations", "studio", "description", "source", "isAdult", "genres", "trailer", "countryOfOrigin", "studios")
 }
 
-export function filterEntriesByTitle<T extends AnilistCollectionEntry[] | LibraryEntry[]>(arr: T, input: string) {
+export function anilist_filterEntriesByTitle<T extends AnilistCollectionEntry[] | LibraryEntry[]>(arr: T, input: string) {
     if (arr.length > 0 && input.length > 0) {
         const _input = input.toLowerCase().trim().replace(/\s+/g, " ")
         return (arr as { media: AnilistShowcaseMedia | null | undefined }[]).filter(entry => (

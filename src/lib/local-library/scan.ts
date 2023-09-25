@@ -9,7 +9,7 @@ import { AnimeCollectionDocument, UpdateEntryDocument } from "@/gql/graphql"
 import { LocalFile, LocalFileWithMedia } from "@/lib/local-library/types"
 import { AnilistShortMedia } from "@/lib/anilist/fragment"
 import { inspectProspectiveLibraryEntry } from "@/lib/local-library/library-entry"
-import { getMediaTitlesFromLocalDirectory, retrieveHydratedLocalFiles } from "@/lib/local-library/repository"
+import { getMediaTitlesFromLocalDirectory, retrieveLocalFilesWithMedia } from "@/lib/local-library/repository"
 import { getFulfilledValues, PromiseAllSettledBatch, PromiseAllSettledBatchWithDelay } from "@/lib/helpers/batch"
 import { advancedSearchWithMAL } from "@/lib/mal/actions"
 import axios from "axios"
@@ -61,7 +61,7 @@ export async function scanLocalFiles(props: {
 
     // Get the hydrated files
     _scanLogging.add("repository/scanLocalFiles", "Retrieving and hydrating local files")
-    const files = await retrieveHydratedLocalFiles({ settings, userName, data, markedPaths, _scanLogging })
+    const files = await retrieveLocalFilesWithMedia({ settings, userName, data, markedPaths, _scanLogging })
 
     _scanLogging.add("repository/scanLocalFiles", `Retrieved ${files?.length || 0} files`)
 
@@ -247,15 +247,15 @@ export async function experimental_blindScanLocalFiles(props: {
         `, undefined)
     }
 
-    // Query AniList, 5 batches of 10 each 2.5s
+    // Query AniList, 5 batches of 10 every 2.5s
     const anilistBatchResults = await PromiseAllSettledBatchWithDelay(runAnilistQuery, anilistIdChunks, 5, 2500)
     const anilistResults = (await getFulfilledValues(anilistBatchResults)).filter(Boolean)
 
-    const media = Object.values(anilistResults).flatMap(n => Object.values(n)).filter(Boolean)
+    const fetchedMedia = Object.values(anilistResults).flatMap(n => Object.values(n)).filter(Boolean)
 
-    for (const medium of media) {
+    for (const media of fetchedMedia) {
         // Populate cache
-        _mediaCache.set(medium.id, medium)
+        _mediaCache.set(media.id, media)
     }
 
     async function fetchTreeMaps(media: AnilistShortMedia) {
@@ -268,7 +268,7 @@ export async function experimental_blindScanLocalFiles(props: {
         return [...treeMap.values()]
     }
 
-    const relationsBatchResults = await PromiseAllSettledBatchWithDelay(fetchTreeMaps, media, 1, 1500)
+    const relationsBatchResults = await PromiseAllSettledBatchWithDelay(fetchTreeMaps, fetchedMedia, 1, 1500)
     const relationsResults = (await getFulfilledValues(relationsBatchResults)).flat()
 
 
@@ -287,7 +287,7 @@ export async function experimental_blindScanLocalFiles(props: {
     //     }
     // })
 
-    return [...media, ...relationsResults]
+    return [...fetchedMedia, ...relationsResults]
 
 
 }

@@ -22,22 +22,25 @@ type ProspectiveLibraryEntry = {
  * @description Purpose
  * - Inspects all the scanned [LocalFileWithMedia] that were grouped under a same media
  * - Rejects files with certain arbitrary parameters
- * - Hydrates file metadata (relative episode number, special status...)
+ * - Hydrates file metadata (relative episode number, special status...) using {hydrateLocalFileWithInitialMetadata}
  * @description Use
  * - Use the returned `acceptedFiles` to hydrate [LocalFile]s `mediaId` before sending them to the client
  */
 export const inspectProspectiveLibraryEntry = async (props: {
-    media: AnilistShowcaseMedia,
-    files: LocalFileWithMedia[],
+    media: AnilistShowcaseMedia
+    files: LocalFileWithMedia[] // Grouped files under same media or all files
     _mediaCache: Map<number, AnilistShortMedia>
     _scanLogging: ScanLogging
 }): Promise<ProspectiveLibraryEntry> => {
 
     const _aniZipCache = new Map<number, AniZipData>
+    // Right now the map will only contain 1 entry
+    // In the future we could use a global offset map that comes from the client
+    // const _episodeOffsets = new Map<number, number>()
 
     const { _mediaCache, _scanLogging } = props
     const currentMedia = props.media
-    const files = props.files.filter(f => f.media?.id === currentMedia?.id) // redundant
+    const files = props.files.filter(f => f.media?.id === currentMedia?.id) // redundancy
 
     if (files.length && files.length > 0) {
 
@@ -122,6 +125,7 @@ export const inspectProspectiveLibraryEntry = async (props: {
             .map(item => item.file)
 
         for (let i = 0; i < mostAccurateFiles.length; i++) {
+
             const hydratedFileData = await hydrateLocalFileWithInitialMetadata({
                 file: mostAccurateFiles[i],
                 media: currentMedia,
@@ -133,11 +137,26 @@ export const inspectProspectiveLibraryEntry = async (props: {
                 mostAccurateFiles[i] = hydratedFileData.file as LocalFileWithMedia
             } else {
                 // If we can't hydrate the file, we'll just un-match it
-                delete mostAccurateFiles[i]
+                // @ts-ignore
+                mostAccurateFiles[i] = undefined
             }
         }
 
         mostAccurateFiles = mostAccurateFiles.filter(Boolean)
+
+        // Detect if an entry has a file whose episode number is 0, if so, we'll add an offset to all the files
+        // const hasEpisodeWithNumberZero = mostAccurateFiles.some(file => {
+        //     return !containsSpecialsOrNC(file) && file.metadata.episode !== undefined && file.metadata.episode === 0
+        // })
+        // for(let i = 0; i < mostAccurateFiles.length; i++) {
+        //     if(hasEpisodeWithNumberZero && mostAccurateFiles[i].metadata.episode !== undefined && !containsSpecialsOrNC(mostAccurateFiles[i])) {
+        //         _scanLogging.add(mostAccurateFiles[i].path, ">>> [library-entry/inspectProspectiveLibraryEntry]")
+        //         _scanLogging.add(mostAccurateFiles[i].path, "warning - Detected episode number 0, adding offset to episode number")
+        //         _scanLogging.add(mostAccurateFiles[i].path, `   -> Episode number = ${mostAccurateFiles[i].metadata.episode}`)
+        //         mostAccurateFiles[i].metadata.episode! += 1
+        //         mostAccurateFiles[i].metadata.aniDBEpisodeNumber! = `${mostAccurateFiles[i].metadata.episode}`
+        //     }
+        // }
 
         const rejectedFiles = files.filter(n => !mostAccurateFiles.find(f => f.path === n.path))
 

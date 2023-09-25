@@ -11,7 +11,7 @@ import { useAtom } from "jotai/react"
 import { useCallback } from "react"
 import uniqBy from "lodash/uniqBy"
 import { allUserMediaAtom } from "@/atoms/anilist/media.atoms"
-import { shortMediaToShowcaseMedia } from "@/lib/anilist/utils"
+import { anilist_shortMediaToShowcaseMedia } from "@/lib/anilist/utils"
 
 /* -------------------------------------------------------------------------------------------------
  * Raw collection
@@ -39,7 +39,7 @@ export const getAnilistCollectionAtom = atom(null, async (get, set, options: { m
                 // Get media from user's watchlist as [AnilistShortMedia]
                 const userMedia = collectionEntries.filter(Boolean).map(entry => entry.media)
                 // Normalize [AnilistShortMedia] to [AnilistShowcaseMedia]
-                const watchListMedia = userMedia.filter(Boolean).map(media => shortMediaToShowcaseMedia(media)) ?? []
+                const watchListMedia = userMedia.filter(Boolean).map(media => anilist_shortMediaToShowcaseMedia(media)) ?? []
                 // Get related [AnilistShowcaseMedia]
                 const relatedMedia = userMedia
                     .filter(Boolean)

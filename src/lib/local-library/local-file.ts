@@ -160,7 +160,7 @@ export const createLocalFileWithMedia = async (props: {
 /**
  * @description Purpose
  * - Analyzes [LocalFile]'s parsed data, uses ratings to accept/reject the match
- * - Normalizes the episode number if it's absolute before hydrating metadata
+ * - Normalizes the episode number if it's absolute before hydrating metadata using {experimental_analyzeMediaTree}
  * @description Use
  * - Send the hydrated [LocalFile] to the client if there's no `error`
  */
@@ -180,7 +180,7 @@ export async function hydrateLocalFileWithInitialMetadata(props: {
     _scanLogging.add(file.path, ">>> [local-file/hydrateLocalFileWithInitialMetadata]")
     _scanLogging.add(file.path, "Hydrating metadata")
 
-    if (!valueContainsSpecials(file.name) && !valueContainsNC(file.name)) {
+    if (!valueContainsNC(file.name)) {
 
         if (media.format !== "MOVIE") {
             // Get the highest episode number
@@ -188,90 +188,98 @@ export async function hydrateLocalFileWithInitialMetadata(props: {
             const episode = getLocalFileParsedEpisode(file.parsedInfo)
 
             // The parser got an absolute episode number, we will normalize it and give the file the correct media ID
-            if (!!highestEp && !!episode && episode > highestEp) {
+            if (!!highestEp && episode !== undefined && episode > highestEp) {
 
                 _scanLogging.add(file.path, "warning - Absolute episode number detected")
 
-                // Fetch the same media but with all necessary info (relations prop) to find the relative episode
-                let fetchedMedia: AnilistShortMedia | null | undefined
+                let currentMediaWithRelations: AnilistShortMedia | null | undefined
 
-                _scanLogging.add(file.path, "   -> Analyzing media relations [AnimeShortMediaByIdDocument]")
+                { // Fetch the current media but with all necessary info (relations prop) to find the relative episode
+                    _scanLogging.add(file.path, "   -> Analyzing media relations [AnimeShortMediaByIdDocument]")
 
-                if (!_mediaCache.has(media.id) || !_mediaCache.get(media.id)?.relations) {
-                    _scanLogging.add(file.path, "   -> Cache MISS - Querying media relations")
-                    fetchedMedia = (await useAniListAsyncQuery(AnimeShortMediaByIdDocument, { id: media.id })).Media
-                    if (fetchedMedia) _mediaCache.set(media.id, fetchedMedia)
-                } else {
-                    _scanLogging.add(file.path, "   -> Cache HIT - Related media retrieved")
-                    fetchedMedia = _mediaCache.get(media.id)
-                }
+                    if (!_mediaCache.has(media.id) || !_mediaCache.get(media.id)?.relations) {
+                        _scanLogging.add(file.path, "   -> Cache MISS - Querying media relations")
+                        currentMediaWithRelations = (await useAniListAsyncQuery(AnimeShortMediaByIdDocument, { id: media.id })).Media
+                        if (currentMediaWithRelations) _mediaCache.set(media.id, currentMediaWithRelations)
+                    } else {
+                        _scanLogging.add(file.path, "   -> Cache HIT - Related media retrieved")
+                        currentMediaWithRelations = _mediaCache.get(media.id)
+                    }
+                } // End
 
                 _scanLogging.add(file.path, "   -> Analyzing media tree [experimental_analyzeMediaTree]")
 
-                const { normalizeEpisode } = await experimental_analyzeMediaTree({ media: fetchedMedia!, _mediaCache: _mediaCache, _aniZipCache })
+                const { normalizeEpisode } = await experimental_analyzeMediaTree({
+                    media: currentMediaWithRelations!,
+                    _mediaCache: _mediaCache,
+                    _aniZipCache,
+                })
                 _scanLogging.add(file.path, "   -> Retrieved media relation tree")
                 const normalizedEpisode = normalizeEpisode(episode)
 
-                if (normalizedEpisode) {
+                if (normalizedEpisode) { // We were able to normalize the episode
                     _scanLogging.add(file.path, `   -> Normalization mapped episode ${episode} to ${normalizedEpisode.relativeEpisode}`)
                     _scanLogging.add(file.path, `   -> Overriding Media ID ${media.id} to ${normalizedEpisode.media.id}`)
                     file.metadata.episode = normalizedEpisode.relativeEpisode
                     file.mediaId = normalizedEpisode.media.id
-                } else {
-                    _scanLogging.add(file.path, `   -> error - Could not normalize the episode number`)
+
+                } else { // We can't normalize the episode
                     error = true
+                    _scanLogging.add(file.path, `   -> error - Could not normalize the episode number`)
                     _scanLogging.add(file.path, `   -> File will be un-matched`)
-                    // file.metadata.episode = highestEp
-                    // file.metadata.aniDBEpisodeNumber = String(highestEp)
-                    // file.metadata.episode = episode
-                    // file.metadata.aniDBEpisodeNumber = String(episode)
                 }
 
-            } else {
-                if (!!episode) {
-                    _scanLogging.add(file.path, `   -> episode = ${episode}`)
-                    _scanLogging.add(file.path, `   -> aniDBEpisodeNumber = ${episode}`)
+            } else { // No absolute episode number detected
 
-                    file.metadata.episode = episode
-                    file.metadata.aniDBEpisodeNumber = String(episode)
-                } else {
-                    _scanLogging.add(file.path, `   -> No episode parsed but media format is not "MOVIE"`)
-                    if ((!!media.episodes && media.episodes === 1)) {
-                        _scanLogging.add(file.path, `   -> Ceiling is 1, setting episode number 1`)
-                        file.metadata.episode = 1
-                        file.metadata.aniDBEpisodeNumber = "1"
+                if (episode !== undefined) { // If an episode was parsed
+
+                    if (episode === 0) { // Might be a special
+                        _scanLogging.add(file.path, `   -> Episode number is 0, setting it as a special`)
+                        file.metadata.isSpecial = true
+                        file.metadata.episode = 0
+                        file.metadata.aniDBEpisodeNumber = "S1"
                     } else {
-                        error = true
-                        _scanLogging.add(file.path, `   -> error - Could not hydrate metadata`)
-                        _scanLogging.add(file.path, `   -> File will be un-matched`)
+
+                        _scanLogging.add(file.path, `   -> episode = ${episode}`)
+                        _scanLogging.add(file.path, `   -> aniDBEpisodeNumber = ${episode}`)
+
+                        file.metadata.episode = episode
+                        file.metadata.aniDBEpisodeNumber = String(episode)
                     }
+
+
+                } else if ((!!media.episodes && media.episodes === 1)) { // If the media has only one episode and no episode was parsed
+                    _scanLogging.add(file.path, `   -> Ceiling is 1, setting episode number 1`)
+                    file.metadata.episode = 1
+                    file.metadata.aniDBEpisodeNumber = "1"
+                } else { // If no episode was parsed and the media has more than one episode
+                    error = true
+                    _scanLogging.add(file.path, `   -> error - Could not hydrate metadata`)
+                    _scanLogging.add(file.path, `   -> File will be un-matched`)
                 }
             }
-        } else {
 
-            // We already know the media isn't a movie
-            // eg: One Punch Man > One Punch Man OVA 01.mkv -> Matched with "One Punch Man" whose format is TV -> isSpecial = true
-            // Marking an episode as Special will allow better mapping with AniDB -> episodes[aniDBEpisodeNumber]
-            if (valueContainsSpecials(file.name)) {
+            // If the file was not unmatched, we will check if it's a special
+            if (!error && valueContainsSpecials(file.name)) {
                 file.metadata.isSpecial = true
                 file.metadata.aniDBEpisodeNumber = "S" + String(file.metadata.episode ?? 1)
                 _scanLogging.add(file.path, `   -> isSpecial = true`)
                 _scanLogging.add(file.path, `   -> aniDBEpisodeNumber = S${String(file.metadata.episode ?? 1)} (overwritten)`)
-            } else if (valueContainsNC(file.name)) {
-                file.metadata.isNC = true
-                _scanLogging.add(file.path, `   -> isNC = true`)
             }
-        }
 
-    } else {
-        if ((media.format === "MOVIE" && media.episodes === 1) || (!!media.episodes && media.episodes === 1)) {
+        } else if (!!media.episodes && media.episodes === 1) {
             _scanLogging.add(file.path, "Hydrating movie metadata")
             _scanLogging.add(file.path, `   -> episode = 1`)
             _scanLogging.add(file.path, `   -> aniDBEpisodeNumber = 1`)
             file.metadata.episode = 1
             file.metadata.aniDBEpisodeNumber = "1"
         }
+
+    } else {
+        file.metadata.isNC = true
+        _scanLogging.add(file.path, `   -> isNC = true`)
     }
+
 
     return { file, error }
 

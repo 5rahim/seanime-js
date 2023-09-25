@@ -33,6 +33,7 @@ might not work as intended.
   - [x] Option to match single files or single folders to a suggested media
   - [x] Option to match files using AniList ID
 - [x] Detect episodes missing from your local library
+- [ ] Blind scan (doesn't use user's AniList watch list data)
 - [ ] Delete files
 
 [//]: # (- [ ] Manual hydration)
@@ -132,6 +133,7 @@ npm run build
 
 ## Known issues
 
+- Incorrect mappings between AniList and AniDB
 - Loading toast may persist after scan is complete (area: react-hot-toast)
 - Directory selection input may not work correctly (area: components)
 - Streaming works intermittently
@@ -156,19 +158,16 @@ Features that may be implemented
 
 ## TODO
 
+- [ ] Blind scan
 - [ ] (advanced search) Filter by studios
-- [ ] (repository) Delete files (?)
-- [ ] (library) Manual hydration - similar to "resolve unmatched"
+- [ ] Delete files (?)
 - [ ] (streaming) working cache
 - [ ] Offline mode
 - [ ] Quick start screen
 - [ ] (library) Filename tag system
-- [ ] Tests
-  - [x] Parsing
-  - [x] Scan/Local files/Library Entries/Metadata
-  - [x] Torrents
-  - [ ] Torrent search
-  - [ ] Build
+- [ ] More tests
+- [ ] Security
+  - [ ] Safely store AniList token
 
 ## Resources
 

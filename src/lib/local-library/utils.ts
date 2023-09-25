@@ -4,18 +4,18 @@ import { AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import lavenshtein from "js-levenshtein"
 import { AnimeFileInfo } from "@/lib/local-library/types"
 
-export function getLocalFileParsedSeason(fileParsed: AnimeFileInfo | undefined, folderParsed: AnimeFileInfo[]) {
+export function getLocalFileParsedSeason(parsedInfo: AnimeFileInfo | undefined, folderParsedInfo: AnimeFileInfo[]) {
 
-    if (fileParsed) {
+    if (parsedInfo) {
 
-        const folderParsedSeason = Number(folderParsed.findLast(obj => !!obj.season)?.season)
+        const folderParsedSeason = Number(folderParsedInfo.findLast(obj => !!obj.season)?.season)
         const folderSeason = !isNaN(folderParsedSeason) ? Number(folderParsedSeason) : undefined
-        const fileSeason = !isNaN(Number(fileParsed?.season)) ? Number(fileParsed?.season) : undefined
+        const fileSeason = !isNaN(Number(parsedInfo?.season)) ? Number(parsedInfo?.season) : undefined
 
-        if (!!folderSeason && !!fileSeason) {
+        if (!!folderSeason && !!fileSeason) { // Prefer the file season when both exist
             return folderSeason !== fileSeason ? fileSeason : folderSeason
         }
-        return folderSeason || fileSeason
+        return folderSeason || fileSeason // Prefer the folder season when only one exists
 
     }
 
@@ -24,22 +24,39 @@ export function getLocalFileParsedSeason(fileParsed: AnimeFileInfo | undefined, 
 }
 
 /**
- * This does NOT return the normalized episode number
+ * @description
+ * This does NOT return the normalized episode number, only the parsed one
  */
 export function getLocalFileParsedEpisode(parsedInfo: AnimeFileInfo | undefined) {
     return (!!parsedInfo?.episode && !isNaN(Number(parsedInfo?.episode))) ? Number(parsedInfo.episode) : undefined
 }
 
+/**
+ * @description
+ * - This is primarily used to check if an AniList media synonym contains a season
+ * - This is a good way to filter specific synonyms
+ * @param value
+ */
 export const valueContainsSeason = (value: string | null | undefined) => (
     value?.toLowerCase()?.includes("season") ||
     value?.toLowerCase()?.match(/\d(st|nd|rd|th) [Ss].*/)
 ) && !value?.toLowerCase().includes("episode") && !value?.toLowerCase().includes("第") && !value?.toLowerCase().match(/\b(ova|special|special)\b/i)
 
+/**
+ * @description
+ * Returns true if the given `value` matches any regex from `SPECIALIZED_RX.SPECIAL` and does not match any regex from `SPECIALIZED_RX.NC`
+ * @param value
+ */
 export function valueContainsSpecials(value: string | null | undefined) {
     if (!value) return false
     return SPECIALIZED_RX.SPECIAL.some(rx => rx.test(value)) && !SPECIALIZED_RX.NC.some(rx => rx.test(value))
 }
 
+/**
+ * @description
+ * Returns true if the given `value` matches any regex from `SPECIALIZED_RX.NC`
+ * @param value
+ */
 export function valueContainsNC(value: string | null | undefined) {
     if (!value) return false
     return SPECIALIZED_RX.NC.some(rx => rx.test(value))
@@ -50,10 +67,11 @@ export function valueContainsNC(value: string | null | undefined) {
  * -----------------------------------------------------------------------------------------------*/
 
 /**
- * Compares given `variations` with the specific `media` titles and synonyms and returns the lowest distance
- * /!\ Here `variations` are supposed to be related
+ * @description Purpose
+ * - Compares given `variations` to the specific [AnilistShowcaseMedia+] titles and synonyms and returns the lowest distance
+ * - The `variations` value is supposed to be an array of **related** titles
  * @example
- * // media.title = { english: "Jujutsu Kaisen", romaji: "Jujutsu Kaisen" }
+ * // media = { title: { english: "Jujutsu Kaisen", romaji: "Jujutsu Kaisen" }, ... }
  *
  * const res = compareTitleVariationsToMediaTitles(media, ["Bungo Stray Dogs", ...])
  * //=> { media, distance: 23 }
@@ -86,7 +104,10 @@ export function compareTitleVariationsToMediaTitles(media: AnilistShowcaseMedia,
 }
 
 /**
- * Returns the value with the lowest distance compared to the given `title`
+ * @description Purpose
+ * - Uses **lavenshtein**
+ * - Returns the value with the lowest distance compared to the given `title`
+ * - Here the `values` are supposed to not be related
  * @example
  * const result = compareValuesToTitle("Mononogatari", ["Mononogatari", "Jujutsu Kaisen"])
  * //=> { value: "Mononogatari", distance: 0 }
@@ -135,6 +156,7 @@ export function toRomanNumber(num: number) {
 }
 
 /**
+ * @description For arrays of 3 or more elements
  * @example
  * eliminateLeastSimilarValue(["One Piece - Film Z", "One Piece: Film Z", "One Piece Gold"])
  * //=> ["One Piece - Film Z", "One Piece: Film Z"]
