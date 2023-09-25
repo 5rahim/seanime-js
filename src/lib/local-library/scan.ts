@@ -182,7 +182,7 @@ export async function experimental_blindScanLocalFiles(props: {
     // Get the user watch list data
     _scanLogging.add("repository/experimental_blindScanLocalFiles", "Fetching media from local directory")
 
-    const prospectiveMediaTitles = await getMediaTitlesFromLocalDirectory(settings.library.localDirectory)
+    const prospectiveMediaTitles = await getMediaTitlesFromLocalDirectory({ directoryPath: settings.library.localDirectory })
 
     if (!prospectiveMediaTitles) {
         return { error: "Couldn't find any media in the local directory." }

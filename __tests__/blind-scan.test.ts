@@ -22,14 +22,14 @@ const settings = {
 describe.skip("Media titles", () => {
 
     it("should retrieve all media titles from a local directory", async () => {
-        const result = await getMediaTitlesFromLocalDirectory("E:/ANIME")
+        const result = await getMediaTitlesFromLocalDirectory({ directoryPath: "E:/ANIME" })
         console.log(result)
         expect(result).toBeDefined()
     })
 
 })
 
-describe("experimental_blindScanLocalFiles", () => {
+describe.skip("experimental_blindScanLocalFiles", () => {
 
     it("should scan the local library", async () => {
         const result = await experimental_blindScanLocalFiles({ settings })

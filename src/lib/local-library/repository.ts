@@ -117,8 +117,10 @@ export async function retrieveHydratedLocalFiles(props: {
 }
 
 /**
- * Recursively get the files as [LocalFile] type
- * This method modifies the `files` argument
+ * @description Purpose
+ * - Recursively get the files as [LocalFile] from the local directory
+ * @description Use
+ * - This method populates `files`
  */
 async function getAllFilesRecursively(props: {
     settings: Settings
@@ -182,9 +184,8 @@ async function getAllFilesRecursively(props: {
 }
 
 /**
- * This function is run every time the user refresh entries
- * It goes through the ignored and locked paths in the background to make sure they still exist
- * If they don't, it returns the array of paths that need to be cleaned from [sea-local-files]
+ * @description Purpose
+ * - Get the paths that need to be cleaned from [sea-local-files]
  */
 export async function checkLocalFiles(settings: Settings, { ignored, locked }: {
     ignored: string[],
@@ -215,9 +216,17 @@ export async function checkLocalFiles(settings: Settings, { ignored, locked }: {
     return { pathsToClean }
 }
 
-export async function getMediaTitlesFromLocalDirectory(
+/**
+ * @description Purpose
+ * - Get all the media titles from the local directory (shallow)
+ */
+export async function getMediaTitlesFromLocalDirectory(props: {
     directoryPath: string,
-) {
+    type?: "shallow" | "deep" // TODO Get titles from subdirectories
+}) {
+
+    const { directoryPath, type = "shallow" } = props
+
     try {
         let fileNames = new Set<string>()
         let titles = new Set<string>()

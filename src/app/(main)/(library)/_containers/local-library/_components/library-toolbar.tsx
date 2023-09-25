@@ -36,6 +36,7 @@ export function LibraryToolbar() {
 
     const { getMatchingSuggestions, isLoading: recommendationLoading } = useMatchingSuggestions()
 
+    const localFileCount = useSelectAtom(localFilesAtom, files => files.length)
     const unresolvedFileCount = useSelectAtom(localFilesAtom, files => files.filter(file => !file.mediaId && !file.ignored).length)
 
     const resolveUnmatchedDrawer = useDisclosure(false)
@@ -75,10 +76,8 @@ export function LibraryToolbar() {
     }
 
     async function onRefreshButtonClick() {
-        startTransition(() => {
-            handleRefreshEntries()
-            handleCheckRepository()
-        })
+        await handleRefreshEntries()
+        await handleCheckRepository()
     }
 
     async function onLockAllFiles() {
@@ -102,7 +101,7 @@ export function LibraryToolbar() {
                 <div className={"flex w-full justify-between gap-2"}>
 
                     <div className={"inline-flex gap-2 items-center"}>
-                        {(lockedPaths.length > 0 || ignoredPaths.length > 0) ?
+                        {(localFileCount > 0) ?
                             <Button onClick={refreshModal.open} intent={"primary-subtle"}
                                     leftIcon={<RiFileSearchLine/>}>
                                 Refresh entries
