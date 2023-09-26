@@ -88,6 +88,11 @@ export function getDirectoryPath(input: string) {
     return upath.dirname(normalized)
 }
 
+export function getBasename(input: string) {
+    const normalized = upath.normalize(input)
+    return upath.basename(normalized)
+}
+
 /**
  * /!\ Doesn't work in browser
  * @param input
