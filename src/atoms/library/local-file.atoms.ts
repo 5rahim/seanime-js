@@ -56,29 +56,29 @@ const get_Display_LocalFileAtomsByMediaIdAtom = atom(null,
     (get, set, mediaId: number) => {
         // Get the AniList Collection Entry Atom by media ID
         const collectionEntryAtom = get(anilistCollectionEntryAtoms).find((collectionEntryAtom) => get(collectionEntryAtom)?.media?.id === mediaId)
-        // Get the value
+        // Get the AniList Collection Entry
         const collectionEntry = !!collectionEntryAtom ? get(collectionEntryAtom) : undefined
         // Get the local file atoms by media ID
         const fileAtoms = get(localFileAtoms).filter((fileAtom) => get(fileAtom).mediaId === mediaId)
-        // Sort the local files atoms by episode number
-        const mainFileAtoms = sortBy(fileAtoms, fileAtom => Number(get(fileAtom).parsedInfo?.episode)).filter(fileAtom => {
-            const file = get(fileAtom)
-            return !file.metadata.isSpecial && !file.metadata.isNC
-        }) ?? []
+        // Sort the local files atoms by parsed episode number
+        const sortedMainFileAtoms = sortBy(fileAtoms, fileAtom => Number(get(fileAtom).parsedInfo?.episode)).filter(fileAtom => !get(fileAtom).metadata.isSpecial && !get(fileAtom).metadata.isNC) ?? []
+
+        const validFileAtoms = sortedMainFileAtoms.filter(atom => get(atom).metadata.episode !== undefined)
 
         const maxEp = (collectionEntry?.media?.nextAiringEpisode?.episode ? collectionEntry?.media?.nextAiringEpisode?.episode - 1 : undefined) || collectionEntry?.media?.episodes
-        const canTrackProgress = mainFileAtoms.length > 0 && !!maxEp && (!!collectionEntry?.progress && collectionEntry.progress < Number(maxEp) || !collectionEntry?.progress)
-        // /\ (!progress || progress < maxEp) && progress !== maxEp
 
-        // I know all of this is confusing
-        const toWatch = canTrackProgress ? (mainFileAtoms?.filter(atom => !!get(atom).metadata.episode && get(atom).metadata.episode! > collectionEntry?.progress!) ?? []) : []
-        const watched = mainFileAtoms?.filter(atom => !!get(atom).metadata.episode && get(atom).metadata.episode! <= collectionEntry?.progress!) ?? []
+        // There are some episodes that have not been watched
+        const canTrackProgress = validFileAtoms.length > 0 && !!maxEp && (!!collectionEntry?.progress && collectionEntry.progress < Number(maxEp) || !collectionEntry?.progress)
+
+        const toWatch = canTrackProgress ? (validFileAtoms?.filter(atom => get(atom).metadata.episode! > collectionEntry?.progress!) ?? []) : []
+        const watched = validFileAtoms?.filter(atom => get(atom).metadata.episode! <= collectionEntry?.progress!) ?? []
+
         return {
-            toWatch: toWatch.length === 0 && watched.length === 0 ? mainFileAtoms || [] : toWatch,
+            toWatch: toWatch.length === 0 && watched.length === 0 ? validFileAtoms || [] : toWatch,
             // Can't track progress -> show all main files
             // Can track progress -> show episode user needs to watch OR show all main files
-            toWatchSlider: (!canTrackProgress) ? [...mainFileAtoms].reverse() : (toWatch.length > 0 ? toWatch : [...mainFileAtoms].reverse()),
-            allMain: mainFileAtoms.filter(atom => !!get(atom).metadata.episode),
+            toWatchSlider: (!canTrackProgress) ? [...validFileAtoms].reverse() : (toWatch.length > 0 ? toWatch : [...validFileAtoms].reverse()),
+            allMain: validFileAtoms,
             watched,
         }
 
@@ -168,7 +168,7 @@ export const getLocalFilesByMediaIdAtom = atom(null,
  * @example Parent
  * const localFileAtoms = useLocalFileAtomsByMediaId(props.mediaId)
  *  ...
- * localFileAtoms.map(fileAtom => <Child key={`${fileAtom}`} fileAtom={fileAtom}/>
+ * localFileAtoms.map(fileAtom => <Child key={`${fileAtom}`} fileAtom={fileAtom}/>)
  *
  * @example Children
  * const [file, setFile] = useImmerAtom(fileAtom)

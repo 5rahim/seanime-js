@@ -5,14 +5,20 @@ import { useWatchedAnilistEntry } from "@/atoms/anilist/entries.atoms"
 import { Modal } from "@/components/ui/modal"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { __progressTrackingAtom } from "@/app/(main)/view/_containers/episode-section/episode-section"
 import sortBy from "lodash/sortBy"
+import { atomWithImmer } from "jotai-immer"
+import { LocalFile } from "@/lib/local-library/types"
 
 interface ProgressTrackingModalProps {
     children?: React.ReactNode
     media: AnilistDetailedMedia
     progress?: number | null
 }
+
+export const __progressTrackingAtom = atomWithImmer<{ open: boolean, filesWatched: LocalFile[] }>({
+    open: false,
+    filesWatched: [],
+})
 
 export const ProgressTrackingModal: React.FC<ProgressTrackingModalProps> = (props) => {
 

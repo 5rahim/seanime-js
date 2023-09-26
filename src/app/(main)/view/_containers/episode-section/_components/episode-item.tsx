@@ -42,9 +42,14 @@ export const EpisodeItem = React.memo((props: {
     const anifyEpisodeCover = anifyEpisodeCovers?.find(n => n.episode === metadata.episode)?.img
     const fileTitle = useMemo(() => parsedInfo?.original?.replace(/.(mkv|mp4)/, "")?.replaceAll(/(\[)[a-zA-Z0-9 ._~-]+(\])/ig, "")?.replaceAll(/[_,-]/g, " "), [parsedInfo])
 
+    const mappingDiffers = useMemo(() => {
+        return (!metadata.isSpecial && metadata.episode !== undefined && !!metadata.aniDBEpisodeNumber && metadata.episode != Number(metadata.aniDBEpisodeNumber.replace("S", "")))
+    }, [metadata])
+
     const image = () => {
         if (!!fileName && (!metadata.isSpecial && !metadata.isNC)) {
-            return (anifyEpisodeCover || aniZipEpisode?.image)
+            // Prefer AniZip cover if mapping differs
+            return mappingDiffers ? aniZipEpisode?.image : (anifyEpisodeCover || aniZipEpisode?.image)
         } else if (!!fileName) {
             return undefined
         }
@@ -53,10 +58,10 @@ export const EpisodeItem = React.memo((props: {
 
     const displayedTitle = useMemo(() => {
         let _output = parsedInfo?.title || fileTitle || "???"
-        if (!!metadata.episode) _output = `Episode ${metadata.episode}`
+        if (metadata.episode !== undefined) _output = `Episode ${metadata.episode}`
         if (media.format === "MOVIE" && parsedInfo?.title) _output = parsedInfo.title
         return _output
-    }, [parsedInfo])
+    }, [parsedInfo, metadata])
 
     if (mediaID !== media.id) return null
 
@@ -146,7 +151,7 @@ export function MetadataModal({ title, metadata, fileAtom }: MetadataModalProps)
                         )
                     setFileMetadata({
                         ...data,
-                        aniDBEpisodeNumber,
+                        // aniDBEpisodeNumber: data.isSpecial !== metadata.isSpecial ? aniDBEpisodeNumber : metadata.aniDBEpisodeNumber,
                     })
                     setIsOpen(false)
                     startTransition(() => {
