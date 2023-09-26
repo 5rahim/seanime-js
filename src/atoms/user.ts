@@ -1,17 +1,18 @@
 import { atom } from "jotai"
 import { ViewerDocument, ViewerQuery } from "@/gql/graphql"
-import { aniListTokenAtom } from "@/atoms/auth"
+import { anilistClientTokenAtom } from "@/atoms/auth"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
 import { useAtomValue } from "jotai/react"
 import { logger } from "@/lib/helpers/debug"
+import { atomWithStorage } from "jotai/utils"
 
 export type User = Required<ViewerQuery["Viewer"]>
 
-export const userAtom = atom<User | undefined | null>(undefined)
+export const userAtom = atomWithStorage<User | undefined | null>("sea-user", undefined)
 
 export const getUserAtom = atom(null, async (get, set) => {
     try {
-        const token = get(aniListTokenAtom)
+        const token = get(anilistClientTokenAtom)
         if (token) {
             logger("atom/user").info("Fetching user")
             const res = await useAniListAsyncQuery(ViewerDocument, undefined, token)
@@ -23,7 +24,7 @@ export const getUserAtom = atom(null, async (get, set) => {
         }
     } catch (e) {
         set(userAtom, null)
-        set(aniListTokenAtom, undefined)
+        set(anilistClientTokenAtom, undefined)
     }
 })
 

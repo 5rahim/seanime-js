@@ -7,7 +7,7 @@ import { MALSearchResultAnime } from "@/lib/mal/types"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
 import gql from "graphql-tag"
 import { AnilistShortMedia } from "@/lib/anilist/fragment"
-import { aniListTokenAtom } from "@/atoms/auth"
+import { anilistClientTokenAtom } from "@/atoms/auth"
 import axios from "axios"
 import { getDirectoryPath } from "@/lib/helpers/path"
 import { LocalFile } from "@/lib/local-library/types"
@@ -29,7 +29,7 @@ const getMatchingSuggestionGroupsAtom = atom(null, async (get, set, payload: "fi
 
         logger("atom/library/getMatchingSuggestionGroup").info(files.length)
 
-        if (files.length > 0 && !!get(aniListTokenAtom)) {
+        if (files.length > 0 && !!get(anilistClientTokenAtom)) {
             set(libraryMatchingSuggestionGroupsAtom, []) // Reset suggestions
 
             logger("atom/library/getMatchingSuggestionGroup").info("Grouping local files with no media")
@@ -123,7 +123,7 @@ const getMatchingSuggestionGroupsAtom = atom(null, async (get, set, payload: "fi
                                 }
                                 `)}
                             }
-                        `, undefined, get(aniListTokenAtom))
+                        `, undefined, get(anilistClientTokenAtom))
 
                         console.log(res, Object.values(res || []))
                         const recommendations = res ? Object.values(res) : []

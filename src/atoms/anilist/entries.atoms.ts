@@ -7,7 +7,7 @@ import { anilistCollectionAtom, useRefreshAnilistCollection } from "@/atoms/anil
 import { DeleteEntryMutationVariables, MediaListStatus, UpdateEntryMutationVariables } from "@/gql/graphql"
 import { AnilistShortMedia } from "@/lib/anilist/fragment"
 import { deleteEntry, updateEntry } from "@/lib/anilist/actions"
-import { aniListTokenAtom } from "@/atoms/auth"
+import { anilistClientTokenAtom } from "@/atoms/auth"
 import { allUserMediaAtoms } from "@/atoms/anilist/media.atoms"
 import toast from "react-hot-toast"
 
@@ -82,7 +82,7 @@ export const useAnilistCollectionEntryByMediaId_UNSTABLE = (mediaId: number) => 
 
 export const updateAnilistEntryAtom = atom(null,
     async (get, set, payload: UpdateEntryMutationVariables) => {
-        const success = await updateEntry(payload, get(aniListTokenAtom))
+        const success = await updateEntry(payload, get(anilistClientTokenAtom))
 
         if (success) toast.success("Entry updated")
         else toast.error("Could not update entry")
@@ -93,7 +93,7 @@ export const updateAnilistEntryAtom = atom(null,
 export const deleteAnilistEntryAtom = atom(null,
     async (get, set, payload: DeleteEntryMutationVariables & { status: MediaListStatus }) => {
         if (payload.status === "PLANNING") {
-            const success = await deleteEntry(payload, get(aniListTokenAtom))
+            const success = await deleteEntry(payload, get(anilistClientTokenAtom))
             if (success) toast.success("Entry deleted")
             else toast.error("Could not update entry")
             return success
@@ -116,7 +116,7 @@ export const watchedAnilistEntryAtom = atom(null,
                 mediaId: media.id,
                 progress: payload.episode <= maxEp ? payload.episode : maxEp,
                 status: payload.episode === 1 && media.episodes !== 1 ? "CURRENT" : undefined,
-            }, get(aniListTokenAtom))
+            }, get(anilistClientTokenAtom))
 
             if (success) toast.success("Entry updated")
             else toast.error("Could not update entry")

@@ -7,12 +7,14 @@ import { userAtom } from "@/atoms/user"
 import { LoadingOverlay } from "@/components/ui/loading-spinner"
 import { GlobalSearch } from "@/components/application/global-search"
 import Image from "next/image"
+import { anilistClientTokenAtom } from "@/atoms/auth"
 
 export const MainLayout = ({ children }: { children: React.ReactNode }) => {
 
     const user = useAtomValue(userAtom)
+    const token = useAtomValue(anilistClientTokenAtom)
 
-    if (user === undefined) return <LoadingOverlay hideSpinner>
+    if (token === null) return <LoadingOverlay hideSpinner>
         <Image
             src={"/icons/android-chrome-192x192.png"}
             alt={"Loading..."}

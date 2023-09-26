@@ -1,5 +1,5 @@
 import { atom } from "jotai"
-import { aniListTokenAtom } from "@/atoms/auth"
+import { anilistClientTokenAtom } from "@/atoms/auth"
 import { userAtom } from "@/atoms/user"
 import { logger } from "@/lib/helpers/debug"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
@@ -24,7 +24,7 @@ export type AnilistCollection = AnimeCollectionQuery["MediaListCollection"]
 export const anilistCollectionAtom = atomWithStorage<AnilistCollection>("sea-anilist-user-list", undefined, undefined, { unstable_getOnInit: true })
 export const getAnilistCollectionAtom = atom(null, async (get, set, options: { muteAlert: boolean }) => {
     try {
-        const token = get(aniListTokenAtom)
+        const token = get(anilistClientTokenAtom)
         const user = get(userAtom)
         if (token && user?.name) {
             logger("atom/anilist-collection").info("Fetching AniList collection")

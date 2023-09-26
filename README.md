@@ -156,19 +156,6 @@ Features that may be implemented
 - Desktop app
 - Auto-download new episodes
 
-## TODO
-
-- [ ] Blind scan
-- [ ] (advanced search) Filter by studios
-- [ ] Delete files (?)
-- [ ] (streaming) working cache
-- [ ] Offline mode
-- [ ] Quick start screen
-- [ ] (library) Filename tag system
-- [ ] More tests
-- [ ] Security
-  - [ ] Safely store AniList token
-
 ## Resources
 
 Resources used to build Seanime.

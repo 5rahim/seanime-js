@@ -34,7 +34,7 @@ export const MainSidebar: React.FC<MainSidebarProps> = (props) => {
     const { children, ...rest } = props
 
     const { isAuthed } = useAuthed()
-    const { authenticate } = useAnilistLogin()
+    const { logout } = useAnilistLogin()
     const { user } = useCurrentUser()
     const pathname = usePathname()
     const refreshCollection = useRefreshAnilistCollection()
@@ -120,7 +120,7 @@ export const MainSidebar: React.FC<MainSidebarProps> = (props) => {
                         <DropdownMenu trigger={<div className={"pt-1 w-full flex justify-center"}>
                             <Avatar size={"sm"} className={"cursor-pointer"} src={user?.avatar?.medium || ""}/>
                         </div>}>
-                            <DropdownMenuItem onClick={() => authenticate(undefined)}>
+                            <DropdownMenuItem onClick={() => logout()}>
                                 Sign out
                             </DropdownMenuItem>
                         </DropdownMenu>
