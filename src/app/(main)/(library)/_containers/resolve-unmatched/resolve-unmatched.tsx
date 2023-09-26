@@ -21,6 +21,7 @@ import { useSetLocalFiles } from "@/atoms/library/local-file.atoms"
 import { useSelectAtom } from "@/atoms/helpers"
 import { useAtomValue } from "jotai/react"
 import { useRefreshAnilistCollection } from "@/atoms/anilist/collection.atoms"
+import { BetaBadge } from "@/components/application/beta-badge"
 
 /* -------------------------------------------------------------------------------------------------
  * ResolveUnmatched
@@ -47,11 +48,6 @@ export const ResolveUnmatched = memo((props: { isOpen: boolean, close: () => voi
     }, [index])
 
     const currentGroup = groups[index]
-
-    const nonContentDetected = currentGroup?.files?.some(n => n.name.match(/\s(ED|OP)\s?/))
-    const ovaDetected = currentGroup?.files?.some(n => n.name.match(/\s(OVA)\s?/))
-    const specialsDetected = currentGroup?.files?.some(n => n.name.match(/\s(\()?[Ss]pecials(\))?\s?/))
-    const episodeDetected = currentGroup?.files?.some(n => n.name.match(/\s([Ss]|[Ee])?0?\d{2,4}(?:.|$|E)/))
 
     function handleSelectAnime(value: string | null) {
         setSelectedAnimeId(value ?? "0")
@@ -119,7 +115,7 @@ export const ResolveUnmatched = memo((props: { isOpen: boolean, close: () => voi
             onClose={props.close}
             size={"xl"}
             isClosable
-            title={"Resolve unmatched files"}
+            title={<p>Resolve unmatched files <BetaBadge/></p>}
         >
             {(isFetchingSuggestion || groups.length > 0) && <Switch
                 label={"Group by folders"}

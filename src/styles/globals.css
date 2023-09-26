@@ -121,3 +121,7 @@ h5 {
 ::-webkit-scrollbar-thumb:hover {
     @apply bg-gray-600
 }
+
+code {
+    @apply bg-gray-800 rounded-md px-2 py-1 text-sm font-mono border border-[--border]
+}

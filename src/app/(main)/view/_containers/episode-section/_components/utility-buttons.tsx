@@ -11,6 +11,10 @@ import React from "react"
 import { useSetLocalFiles } from "@/atoms/library/local-file.atoms"
 import { DropdownMenu } from "@/components/ui/dropdown-menu"
 import { BiDotsVerticalRounded } from "@react-icons/all-files/bi/BiDotsVerticalRounded"
+import { ConfirmationDialog, useConfirmationDialog } from "@/components/application/confirmation-dialog"
+import {
+    __useEpisodeOffsetAction,
+} from "@/app/(main)/view/_containers/episode-section/_components/bulk-actions/episode-offset-action"
 
 export const UtilityButtons = (props: { entryAtom: Atom<LibraryEntry> }) => {
 
@@ -19,6 +23,26 @@ export const UtilityButtons = (props: { entryAtom: Atom<LibraryEntry> }) => {
     const sharedPath = useSelectAtom(props.entryAtom, entry => entry.sharedPath)
     const mediaId = useSelectAtom(props.entryAtom, entry => entry.media.id)
     const setLocalFiles = useSetLocalFiles()
+
+    const confirmUnmatch = useConfirmationDialog({
+        title: "Un-match all files",
+        description: "Are you sure you want to un-match all files?",
+        onConfirm: () => {
+            setLocalFiles(draft => {
+                for (const draftFile of draft) {
+                    if (draftFile.mediaId === mediaId) {
+                        draftFile.locked = false
+                        draftFile.ignored = false
+                        draftFile.mediaId = null
+                        draftFile.metadata = {}
+                    }
+                }
+                return
+            })
+        },
+    })
+
+    const { openEpisodeOffsetActionModal } = __useEpisodeOffsetAction()
 
     return (
         <>
@@ -44,23 +68,19 @@ export const UtilityButtons = (props: { entryAtom: Atom<LibraryEntry> }) => {
                     Start video player
                 </DropdownMenu.Item>
                 <DropdownMenu.Item
-                    onClick={() => {
-                        setLocalFiles(draft => {
-                            for (const draftFile of draft) {
-                                if (draftFile.mediaId === mediaId) {
-                                    draftFile.locked = false
-                                    draftFile.ignored = false
-                                    draftFile.mediaId = null
-                                    draftFile.metadata = {}
-                                }
-                            }
-                            return
-                        })
-                    }}
+                    onClick={confirmUnmatch.open}
                 >
                     Un-match all files
                 </DropdownMenu.Item>
+                <DropdownMenu.Item
+                    onClick={() => openEpisodeOffsetActionModal({ mediaId })}
+                >
+                    Offset episode numbers
+                </DropdownMenu.Item>
             </DropdownMenu>
+
+
+            <ConfirmationDialog {...confirmUnmatch} />
         </>
     )
 }

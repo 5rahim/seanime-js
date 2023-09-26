@@ -2,9 +2,9 @@ import { SPECIALIZED_RX } from "@/lib/series-scanner/regex"
 import similarity from "string-similarity"
 import { AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import lavenshtein from "js-levenshtein"
-import { AnimeFileInfo } from "@/lib/local-library/types"
+import { AnimeFileInfo, LocalFileMetadata } from "@/lib/local-library/types"
 
-export function getLocalFileParsedSeason(parsedInfo: AnimeFileInfo | undefined, folderParsedInfo: AnimeFileInfo[]) {
+export function localFile_getParsedSeason(parsedInfo: AnimeFileInfo | undefined, folderParsedInfo: AnimeFileInfo[]) {
 
     if (parsedInfo) {
 
@@ -27,9 +27,33 @@ export function getLocalFileParsedSeason(parsedInfo: AnimeFileInfo | undefined, 
  * @description
  * This does NOT return the normalized episode number, only the parsed one
  */
-export function getLocalFileParsedEpisode(parsedInfo: AnimeFileInfo | undefined) {
+export function localFile_getParsedEpisode(parsedInfo: AnimeFileInfo | undefined) {
     return (!!parsedInfo?.episode && !isNaN(Number(parsedInfo?.episode))) ? Number(parsedInfo.episode) : undefined
 }
+
+/* -------------------------------------------------------------------------------------------------
+ * Metadata
+ * -----------------------------------------------------------------------------------------------*/
+
+export function localFile_getEpisode<T extends { metadata: LocalFileMetadata }>({ metadata }: T) {
+    return metadata.episode !== undefined ? metadata.episode : undefined
+}
+
+export function localFile_getAniDBEpisodeInteger<T extends {
+    metadata: { aniDBEpisodeNumber?: string }
+}>({ metadata }: T) {
+    if (!metadata.aniDBEpisodeNumber) return undefined
+    // Return numbers only, remove all letters
+    return Number(metadata.aniDBEpisodeNumber.replace(/\D/g, ""))
+}
+
+export function localFile_isMain<T extends { metadata: LocalFileMetadata }>({ metadata }: T) {
+    return metadata.episode !== undefined && !metadata.isSpecial && !metadata.isNC
+}
+
+/* -------------------------------------------------------------------------------------------------
+ * Filter
+ * -----------------------------------------------------------------------------------------------*/
 
 /**
  * @description
@@ -63,7 +87,7 @@ export function valueContainsNC(value: string | null | undefined) {
 }
 
 /* -------------------------------------------------------------------------------------------------
- * Comparison
+ * Matching / Comparison
  * -----------------------------------------------------------------------------------------------*/
 
 /**
@@ -78,7 +102,7 @@ export function valueContainsNC(value: string | null | undefined) {
  * const res = compareTitleVariationsToMediaTitles(media, ["Jujutsu Kaisen", "Jujutsu Kaisen Season 1"])
  * //=> { media, distance: 0 }
  */
-export function compareTitleVariationsToMediaTitles(media: AnilistShowcaseMedia, variations: string[]) {
+export function matching_compareTitleVariationsToMediaTitles(media: AnilistShowcaseMedia, variations: string[]) {
     if (media && media.title) {
 
         const titleDistances = Object.values(media.title).filter(Boolean).flatMap(title => variations.map(unit => lavenshtein(title!.toLowerCase(), unit!.toLowerCase())))
@@ -112,7 +136,7 @@ export function compareTitleVariationsToMediaTitles(media: AnilistShowcaseMedia,
  * const result = compareValuesToTitle("Mononogatari", ["Mononogatari", "Jujutsu Kaisen"])
  * //=> { value: "Mononogatari", distance: 0 }
  */
-export function compareValuesToTitle(title: string, values: string[]): {
+export function matching_compareValuesToTitle(title: string, values: string[]): {
     value: string | undefined,
     distance: number | undefined
 } {

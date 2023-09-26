@@ -50,8 +50,9 @@ export const DrawerAnatomy = defineStyleAnatomy({
  * Drawer
  * -----------------------------------------------------------------------------------------------*/
 
-export interface DrawerProps extends React.ComponentPropsWithRef<"div">, ComponentWithAnatomy<typeof DrawerAnatomy>,
+export interface DrawerProps extends Omit<React.ComponentPropsWithRef<"div">, "title">, ComponentWithAnatomy<typeof DrawerAnatomy>,
     VariantProps<typeof DrawerAnatomy.panel> {
+    title?: React.ReactNode
     isOpen: boolean
     isClosable?: boolean
     onClose: () => void

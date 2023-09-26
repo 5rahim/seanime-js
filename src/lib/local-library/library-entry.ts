@@ -144,17 +144,17 @@ export const inspectProspectiveLibraryEntry = async (props: {
 
         mostAccurateFiles = mostAccurateFiles.filter(Boolean)
 
-        // Detect if an entry has a file whose episode number is 0, if so, we'll add an offset to all the files
+        // // Detect if an entry has a file whose episode number is 0, if so, we'll add an offset to all the files
         // const hasEpisodeWithNumberZero = mostAccurateFiles.some(file => {
         //     return !containsSpecialsOrNC(file) && file.metadata.episode !== undefined && file.metadata.episode === 0
         // })
         // for(let i = 0; i < mostAccurateFiles.length; i++) {
         //     if(hasEpisodeWithNumberZero && mostAccurateFiles[i].metadata.episode !== undefined && !containsSpecialsOrNC(mostAccurateFiles[i])) {
+        //         mostAccurateFiles[i].metadata.episode! += 1
+        //         mostAccurateFiles[i].metadata.aniDBEpisodeNumber! = `${mostAccurateFiles[i].metadata.episode}`
         //         _scanLogging.add(mostAccurateFiles[i].path, ">>> [library-entry/inspectProspectiveLibraryEntry]")
         //         _scanLogging.add(mostAccurateFiles[i].path, "warning - Detected episode number 0, adding offset to episode number")
         //         _scanLogging.add(mostAccurateFiles[i].path, `   -> Episode number = ${mostAccurateFiles[i].metadata.episode}`)
-        //         mostAccurateFiles[i].metadata.episode! += 1
-        //         mostAccurateFiles[i].metadata.aniDBEpisodeNumber! = `${mostAccurateFiles[i].metadata.episode}`
         //     }
         // }
 

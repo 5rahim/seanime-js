@@ -30,13 +30,16 @@ import { useAnifyEpisodeCovers } from "@/lib/anify/client"
 import { PlayNextFile } from "@/app/(main)/view/_containers/episode-section/_components/play-next-file"
 import { EpisodeSectionSlider } from "@/app/(main)/view/_containers/episode-section/_components/episode-section-slider"
 import { AppLayoutStack } from "@/components/ui/app-layout"
+import dynamic from "next/dynamic"
+import { Alert } from "@/components/ui/alert"
+
+const EpisodeOffsetAction = dynamic(() => import("@/app/(main)/view/_containers/episode-section/_components/bulk-actions/episode-offset-action"), { ssr: false })
 
 interface EpisodeSectionProps {
     children?: React.ReactNode
     detailedMedia: AnilistDetailedMedia
     aniZipData?: AniZipData
 }
-
 
 export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
 
@@ -130,6 +133,34 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
 
                 </div>
 
+                {(
+                    !!aniZipData?.episodeCount && !!detailedMedia.episodes
+                    && aniZipData?.episodeCount !== detailedMedia.episodes
+                    && detailedMedia.status !== "RELEASING"
+                    && detailedMedia.status !== "NOT_YET_RELEASED"
+                    && allMain.length !== detailedMedia.episodes // AniList is the single source of truth for episode numbers
+                    && aniZipData?.episodeCount < detailedMedia.episodes
+                ) && <Alert
+                    title={"Episode count mismatch"}
+                    intent={"warning-basic"}
+                    description={<div className={"space-y-1.5 mt-1"}>
+                        <p>The number of episodes on AniDB ({aniZipData?.episodeCount}) does not match the number of
+                            episodes on AniList ({detailedMedia.episodes}). In order to accurately track your progress
+                            you should download that episode and update its metadata</p>
+                        {!!aniZipData.episodes["S1"] && <>
+                            <p className={"text-[1.1rem]"}>{`->`} <strong>Seanime detected that AniList might be
+                                counting a "Special" episode as a main one.</strong></p>
+                            <p>&nbsp;e.g., Kimi ni Todoke Season 2 Episode 0 (episode number "S1" on AniDB) is counted
+                                as a main episode by AniList, offset all the files' metadata episode by 1, update
+                                "S01E00.mkv" metadata episode to 1.</p>
+                        </>}
+                        <p>
+                            <a href={"https://anidb.net/anime/" + aniZipData.mappings.anidb_id} target={"_blank"}
+                               className={"text-brand-200 underline underline-offset-1"}>Open on AniDB</a>
+                        </p>
+                    </div>}
+                />}
+
                 {(toWatchSlider.length > 0) && (
                     <>
                         <EpisodeSectionSlider
@@ -201,6 +232,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
             </AppLayoutStack>
 
             {canTrackProgress && <ProgressTrackingModal media={detailedMedia} progress={progress}/>}
+            {<EpisodeOffsetAction/>}
         </>
     )
 }

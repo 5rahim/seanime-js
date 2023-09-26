@@ -27,6 +27,8 @@ export function useDisclosure(
     return { isOpen: opened, open, close, toggle } as const
 }
 
+export type UseDisclosureReturn = ReturnType<typeof useDisclosure>
+
 
 export function useBoolean(
     initialState: boolean,

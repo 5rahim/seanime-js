@@ -18,7 +18,7 @@ import { LocalFile } from "@/lib/local-library/types"
 
 const { Provider: ScopedProvider, useAtom: useScopedAtom } = createIsolation()
 
-const _metadataModalIsOpenAtom = atom(false)
+const __metadataModalIsOpenAtom = atom(false)
 
 export const EpisodeItem = React.memo((props: {
     fileAtom: PrimitiveAtom<LocalFile>,
@@ -123,7 +123,7 @@ const metadataSchema = createTypesafeFormSchema(({ z }) => z.object({
 
 export function MetadataModal({ title, metadata, fileAtom }: MetadataModalProps) {
 
-    const [isOpen, setIsOpen] = useScopedAtom(_metadataModalIsOpenAtom)
+    const [isOpen, setIsOpen] = useScopedAtom(__metadataModalIsOpenAtom)
     const setFileMetadata = useFocusSetAtom(fileAtom, "metadata")
     const mediaId = useSelectAtom(fileAtom, file => file.mediaId)
     const rerenderFiles = __useRerenderLocalFiles()
@@ -192,7 +192,7 @@ export function MetadataModal({ title, metadata, fileAtom }: MetadataModalProps)
 }
 
 export function MetadataModalButton() {
-    const [, setIsOpen] = useScopedAtom(_metadataModalIsOpenAtom)
+    const [, setIsOpen] = useScopedAtom(__metadataModalIsOpenAtom)
     return <DropdownMenu.Item onClick={() => setIsOpen(true)}>Update metadata</DropdownMenu.Item>
 }
 

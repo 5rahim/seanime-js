@@ -63,12 +63,12 @@ export const ModalAnatomy = defineStyleAnatomy({
  * Modal
  * -----------------------------------------------------------------------------------------------*/
 
-export interface ModalProps extends React.ComponentPropsWithRef<"div">,
+export interface ModalProps extends Omit<React.ComponentPropsWithRef<"div">, "title">,
     ComponentWithAnatomy<typeof ModalAnatomy>,
     VariantProps<typeof ModalAnatomy.panel>, VariantProps<typeof ModalAnatomy.outsideContainer> {
     isOpen: boolean,
     onClose?: () => void
-    title?: string
+    title?: React.ReactNode
     isClosable?: boolean
     closeButtonIntent?: CloseButtonProps["intent"]
 }

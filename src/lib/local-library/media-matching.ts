@@ -8,8 +8,8 @@ import isNumber from "lodash/isNumber"
 import sortBy from "lodash/sortBy"
 
 import {
-    compareTitleVariationsToMediaTitles,
     eliminateLeastSimilarValue,
+    matching_compareTitleVariationsToMediaTitles,
     toRomanNumber,
     valueContainsSeason,
 } from "@/lib/local-library/utils"
@@ -206,7 +206,7 @@ export async function findBestCorrespondingMedia(
 
     // Calculate Levenshtein distances and find the lowest for all title variations
     const distances = allMedia.flatMap(media => {
-        return compareTitleVariationsToMediaTitles(media, titleVariations)
+        return matching_compareTitleVariationsToMediaTitles(media, titleVariations)
     })
     if (distances) {
         const lowest = distances.reduce((prev, curr) => prev.distance <= curr.distance ? prev : curr) // Lower distance

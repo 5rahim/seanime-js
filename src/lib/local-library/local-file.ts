@@ -5,7 +5,7 @@ import { AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import { findBestCorrespondingMedia } from "@/lib/local-library/media-matching"
 import { ScanLogging } from "@/lib/local-library/logs"
 import { getDirectoryPath, removeTopPath, splitFolderPath } from "@/lib/helpers/path"
-import { getLocalFileParsedEpisode, valueContainsNC, valueContainsSpecials } from "@/lib/local-library/utils"
+import { localFile_getParsedEpisode, valueContainsNC, valueContainsSpecials } from "@/lib/local-library/utils"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
 import { AnimeShortMediaByIdDocument } from "@/gql/graphql"
 import { experimental_analyzeMediaTree } from "@/lib/anilist/actions"
@@ -180,12 +180,12 @@ export async function hydrateLocalFileWithInitialMetadata(props: {
     _scanLogging.add(file.path, ">>> [local-file/hydrateLocalFileWithInitialMetadata]")
     _scanLogging.add(file.path, "Hydrating metadata")
 
-    if (!valueContainsNC(file.name)) {
+    if (!valueContainsNC(file.name) && !valueContainsSpecials(file.name)) {
 
         if (media.format !== "MOVIE") {
             // Get the highest episode number
             const highestEp = media?.nextAiringEpisode?.episode || media?.episodes
-            const episode = getLocalFileParsedEpisode(file.parsedInfo)
+            const episode = localFile_getParsedEpisode(file.parsedInfo)
 
             // The parser got an absolute episode number, we will normalize it and give the file the correct media ID
             if (!!highestEp && episode !== undefined && episode > highestEp) {
@@ -221,12 +221,12 @@ export async function hydrateLocalFileWithInitialMetadata(props: {
                     _scanLogging.add(file.path, `   -> Normalization mapped episode ${episode} to ${normalizedEpisode.relativeEpisode}`)
                     _scanLogging.add(file.path, `   -> Overriding Media ID ${media.id} to ${normalizedEpisode.media.id}`)
                     file.metadata.episode = normalizedEpisode.relativeEpisode
+                    file.metadata.aniDBEpisodeNumber = String(normalizedEpisode.relativeEpisode)
                     file.mediaId = normalizedEpisode.media.id
 
                 } else { // We can't normalize the episode
                     error = true
                     _scanLogging.add(file.path, `   -> error - Could not normalize the episode number`)
-                    _scanLogging.add(file.path, `   -> File will be un-matched`)
                 }
 
             } else { // No absolute episode number detected
@@ -255,16 +255,8 @@ export async function hydrateLocalFileWithInitialMetadata(props: {
                 } else { // If no episode was parsed and the media has more than one episode
                     error = true
                     _scanLogging.add(file.path, `   -> error - Could not hydrate metadata`)
-                    _scanLogging.add(file.path, `   -> File will be un-matched`)
                 }
-            }
 
-            // If the file was not unmatched, we will check if it's a special
-            if (!error && valueContainsSpecials(file.name)) {
-                file.metadata.isSpecial = true
-                file.metadata.aniDBEpisodeNumber = "S" + String(file.metadata.episode ?? 1)
-                _scanLogging.add(file.path, `   -> isSpecial = true`)
-                _scanLogging.add(file.path, `   -> aniDBEpisodeNumber = S${String(file.metadata.episode ?? 1)} (overwritten)`)
             }
 
         } else if (!!media.episodes && media.episodes === 1) {
@@ -275,9 +267,19 @@ export async function hydrateLocalFileWithInitialMetadata(props: {
             file.metadata.aniDBEpisodeNumber = "1"
         }
 
+    } else if (valueContainsSpecials(file.name)) {
+        error = false
+        file.metadata.isSpecial = true
+        file.metadata.aniDBEpisodeNumber = "S" + String(file.metadata.episode ?? 1)
+        _scanLogging.add(file.path, `   -> isSpecial = true`)
+        _scanLogging.add(file.path, `   -> aniDBEpisodeNumber = S${String(file.metadata.episode ?? 1)} (overwritten)`)
     } else {
         file.metadata.isNC = true
         _scanLogging.add(file.path, `   -> isNC = true`)
+    }
+
+    if (error) {
+        _scanLogging.add(file.path, `   -> error - File will be un-matched`)
     }
 
 

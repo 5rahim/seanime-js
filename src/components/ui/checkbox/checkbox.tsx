@@ -102,9 +102,9 @@ export const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>((prop
 
     return (
         <BasicField
+            fieldClassName={"space-y-.5"}
             {...basicFieldProps}
             error={noErrorMessage ? undefined : basicFieldProps.error} // The error message hidden when `noErrorMessage` is defined
-            fieldClassName={"space-y-.5"}
         >
             <label
                 className={cn(
