@@ -93,7 +93,7 @@ export const ResolveUnmatched = memo((props: { isOpen: boolean, close: () => voi
             }
             setIsLoading(false)
         }
-    }, [])
+    }, [token, currentGroup, selectedAnimeId])
 
     const handleIgnore = async () => {
         if (user?.name) {

@@ -6,6 +6,7 @@ import { MainLayout } from "@/components/application/main-layout"
 import { AtomPreloader } from "@/atoms/storage"
 import { Suspense } from "react"
 import { LoadingOverlay } from "@/components/ui/loading-spinner"
+import { cookies } from "next/headers"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -31,7 +32,7 @@ export default async function RootLayout(
         <script src="http://127.0.0.1:8097"></script>
         <ClientProviders>
             <Suspense fallback={<LoadingOverlay/>}>
-                <AtomPreloader/>
+                <AtomPreloader anilistToken={cookies().get("anilistToken")?.value}/>
                 <MainLayout>
                     {children}
                 </MainLayout>

@@ -1,6 +1,6 @@
 import { useAtom, useSetAtom } from "jotai/react"
 import { createTypesafeFormSchema } from "@/components/ui/typesafe-form"
-import { authenticateUser, getAniListUserToken, logoutUser } from "@/lib/auth/actions"
+import { authenticateUser, logoutUser } from "@/lib/auth/actions"
 import { useLayoutEffect } from "react"
 import { atom } from "jotai"
 
@@ -20,17 +20,17 @@ export const loginSchema = createTypesafeFormSchema(({ z }) => z.object({
 
 export const anilistClientTokenAtom = atom<string | null | undefined>(null)
 
-export function useAuthed() {
-    // const token = useAtomValue(anilistClientTokenAtom)
-    // const setToken = useSetAtom(anilistClientTokenAtom)
-    const [clientToken, setClientToken] = useAtom(anilistClientTokenAtom)
+export function useHydrateAnilistToken(token: string | null | undefined) {
+    const setClientToken = useSetAtom(anilistClientTokenAtom)
 
     useLayoutEffect(() => {
-        (async () => {
-            const token = await getAniListUserToken()
-            setClientToken(token)
-        })()
+        setClientToken(token)
     }, [])
+
+}
+
+export function useAuthed() {
+    const [clientToken, setClientToken] = useAtom(anilistClientTokenAtom)
 
     return {
         isAuthed: !!clientToken,

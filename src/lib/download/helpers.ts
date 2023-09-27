@@ -40,7 +40,6 @@ export const getMediaDownloadInfo = (props: {
     // FIXME This is a hacky fix for the case where the media is still airing but media.nextAiringEpisode is null due to scheduling issues
     const schedulingIssues = media.status === "RELEASING" && !media.nextAiringEpisode && !!media.episodes
     if (schedulingIssues) {
-        console.log(media)
         missingArr = []
     }
 
