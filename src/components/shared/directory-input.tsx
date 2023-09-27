@@ -9,7 +9,7 @@ import { BiCheck } from "@react-icons/all-files/bi/BiCheck"
 import { BiFolderPlus } from "@react-icons/all-files/bi/BiFolderPlus"
 import { BiX } from "@react-icons/all-files/bi/BiX"
 import path from "path"
-import { removeTopPath } from "@/lib/helpers/path"
+import { path_removeTopPath } from "@/lib/helpers/path"
 
 export interface DirectoryInputProps {
     children?: React.ReactNode
@@ -24,7 +24,7 @@ export const DirectoryInput: React.FC<DirectoryInputProps & Omit<TextInputProps,
 
     const { children, value, prefix, directoryShouldExist, onSelect, showFolderOptions = true, ...rest } = props
 
-    const [inputValue, setInputValue] = useState((prefix && value) ? removeTopPath(value, prefix) || "" : (value || ""))
+    const [inputValue, setInputValue] = useState((prefix && value) ? path_removeTopPath(value, prefix) || "" : (value || ""))
     const debouncedValue = useDebounce(inputValue, 1000)
     const valueRef = useRef(inputValue)
 
@@ -45,7 +45,7 @@ export const DirectoryInput: React.FC<DirectoryInputProps & Omit<TextInputProps,
 
 
     const handleSelectDir = useCallback((input: string) => {
-        let _path = prefix ? removeTopPath(input, prefix) : input
+        let _path = prefix ? path_removeTopPath(input, prefix) : input
         _path = _path.startsWith(path.sep) ? _path.substring(1) : _path
         _path = _path.replaceAll(path.sep + path.sep, path.sep)
         // actions

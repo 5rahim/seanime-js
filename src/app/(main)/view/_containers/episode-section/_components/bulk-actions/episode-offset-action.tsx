@@ -12,7 +12,7 @@ import { LocalFile } from "@/lib/local-library/types"
 import { useStableSelectAtom } from "@/atoms/helpers"
 import { allUserMediaAtom } from "@/atoms/anilist/media.atoms"
 import { Checkbox } from "@/components/ui/checkbox"
-import { getBasename } from "@/lib/helpers/path"
+import { path_getBasename } from "@/lib/helpers/path"
 import { NumberInput } from "@/components/ui/number-input"
 import { Nullish } from "@/types/common"
 import { Button } from "@/components/ui/button"
@@ -180,7 +180,7 @@ function Content() {
                         </div>
                         <div>
                             <p className={"text-[--muted] text-sm line-clamp-1"}>
-                                {getBasename(file.path)}
+                                {path_getBasename(file.path)}
                             </p>
                         </div>
                     </div>

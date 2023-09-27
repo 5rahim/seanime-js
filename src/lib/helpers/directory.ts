@@ -5,12 +5,12 @@ import { Settings } from "@/atoms/settings"
 import { runCommand } from "@/lib/helpers/child-process"
 import { directoryExists, fileOrDirectoryExists } from "@/lib/helpers/file"
 import path from "path"
-import { getDirectoryPath } from "@/lib/helpers/path"
+import { path_getDirectoryName } from "@/lib/helpers/path"
 
 export async function getSafeFoldersFromDirectory(_path: string): Promise<{ data: { name: string, path: string }[], error: string | null, parentFolder: string | null }> {
     if (_path && path.isAbsolute(_path)) {
 
-        const parentPath = getDirectoryPath(_path)
+        const parentPath = path_getDirectoryName(_path)
 
         if (!await directoryExists(_path)) {
             return { data: [], error: "Directory does not exist", parentFolder: parentPath }

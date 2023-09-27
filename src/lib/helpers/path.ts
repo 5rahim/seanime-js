@@ -11,7 +11,7 @@ export function sanitizeDirectoryName(input: string, trimMultipleSpaces: boolean
     return value || "Untitled"
 }
 
-export function splitFolderPath(inputPath: string): string[] {
+export function path_splitPath(inputPath: string): string[] {
     // Normalize the path to handle different platform-specific path separators
     const normalizedPath = upath.normalize(inputPath)
 
@@ -28,7 +28,7 @@ export function splitFolderPath(inputPath: string): string[] {
  * removeTopDirectory("E:/Anime/Jujutsu Kaisen")
  * // => Anime/Jujutsu Kaisen
  */
-export function removeTopDirectory(inputPath: string): string | null {
+export function path_removeTopDirectory(inputPath: string): string | null {
     // Normalize the path to handle different platform-specific path separators
     const normalizedPath = upath.normalize(inputPath)
 
@@ -57,7 +57,7 @@ export function removeTopDirectory(inputPath: string): string | null {
  * removeTopPath("E:/Anime/Jujutsu Kaisen/01.mkv", "E:/Anime")
  * // => Jujutsu Kaisen/01.mkv
  */
-export function removeTopPath(inputPath: string, topPath: string) {
+export function path_removeTopPath(inputPath: string, topPath: string) {
     // Normalize the paths to handle different platform-specific path separators
     const normalizedInputPath = upath.normalize(inputPath)
     const normalizedTopPath = upath.normalize(topPath)
@@ -83,12 +83,12 @@ export function removeTopPath(inputPath: string, topPath: string) {
     return inputPath
 }
 
-export function getDirectoryPath(input: string) {
+export function path_getDirectoryName(input: string) {
     const normalized = upath.normalize(input)
     return upath.dirname(normalized)
 }
 
-export function getBasename(input: string) {
+export function path_getBasename(input: string) {
     const normalized = upath.normalize(input)
     return upath.basename(normalized)
 }
@@ -97,7 +97,7 @@ export function getBasename(input: string) {
  * /!\ Doesn't work in browser
  * @param input
  */
-export function isPathAbsolute_SERVER(input: string) {
+export function path_isAbsolute_SERVER_ONLY(input: string) {
     const normalized = upath.normalize(input)
     return upath.isAbsolute(normalized)
 }

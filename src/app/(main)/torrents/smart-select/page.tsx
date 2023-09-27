@@ -16,7 +16,7 @@ import { valueContainsNC, valueContainsSpecials } from "@/lib/local-library/util
 import { LoadingOverlay } from "@/components/ui/loading-spinner"
 import { useRouter } from "next/navigation"
 import { smartSelect_normalizeEpisodes } from "@/app/(main)/torrents/smart-select/_lib/utils"
-import { getBasename } from "@/lib/helpers/path"
+import { path_getBasename } from "@/lib/helpers/path"
 
 export default function Page() {
 
@@ -100,8 +100,8 @@ export default function Page() {
                     .filter(Boolean)
                     .flatMap(content => ({ // Parse anime data from each file
                         info: content,
-                        originalName: getBasename(content.name),
-                        parsed: rakun.parse(getBasename(content.name)),
+                        originalName: path_getBasename(content.name),
+                        parsed: rakun.parse(path_getBasename(content.name)),
                     }))
 
                 // Keep files that have an episode

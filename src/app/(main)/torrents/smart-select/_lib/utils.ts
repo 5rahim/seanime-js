@@ -1,6 +1,6 @@
 import rakun from "@/lib/rakun"
 import path from "path"
-import { getDirectoryPath } from "@/lib/helpers/path"
+import { path_getDirectoryName } from "@/lib/helpers/path"
 import { TorrentFile } from "@/lib/download/qbittorrent/types"
 
 type Input = { info: TorrentFile, originalName: string, parsed: ParsedTorrentInfo }
@@ -14,7 +14,7 @@ export function smartSelect_normalizeEpisodes(array: Input[]): Output[] {
     const folderToFileMap: Record<string, Input[]> = {}
     array.forEach((item) => {
         const { info: { name } } = item
-        const folderPath = getDirectoryPath(name)
+        const folderPath = path_getDirectoryName(name)
 
         if (folderPath in folderToFileMap) {
             folderToFileMap[folderPath].push(item)
@@ -39,7 +39,7 @@ export function smartSelect_normalizeEpisodes(array: Input[]): Output[] {
             const { info: { name }, originalName } = item
             const episodeNumber = Number(item.parsed.episode)
 
-            const folderParsed = rakun.parse(getDirectoryPath(name)?.split(path.sep).pop() || "")
+            const folderParsed = rakun.parse(path_getDirectoryName(name)?.split(path.sep).pop() || "")
             const parsed = rakun.parse(originalName)
 
             // Unused - Might use this to choose the appropriate season

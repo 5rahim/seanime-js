@@ -4,7 +4,7 @@ import { Settings } from "@/atoms/settings"
 import { AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import { findBestCorrespondingMedia } from "@/lib/local-library/media-matching"
 import { ScanLogging } from "@/lib/local-library/logs"
-import { getDirectoryPath, removeTopPath, splitFolderPath } from "@/lib/helpers/path"
+import { path_getDirectoryName, path_removeTopPath, path_splitPath } from "@/lib/helpers/path"
 import { localFile_getParsedEpisode, valueContainsNC, valueContainsSpecials } from "@/lib/local-library/utils"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
 import { AnimeShortMediaByIdDocument } from "@/gql/graphql"
@@ -33,7 +33,7 @@ export const createLocalFile = async (
 
     try {
         // Remove local directory
-        const folderPath = removeTopPath(getDirectoryPath(initialProps.path), settings.library.localDirectory!)
+        const folderPath = path_removeTopPath(path_getDirectoryName(initialProps.path), settings.library.localDirectory!)
         const parsed = rakun.parse(initialProps.name)
         const parsedInfo = {
             original: parsed.filename,
@@ -48,7 +48,7 @@ export const createLocalFile = async (
         _scanLogging.add(initialProps.path, `   -> Parsed from file name ` + JSON.stringify(parsedInfo))
         _scanLogging.add(initialProps.path, "Parsing data from parent folders")
 
-        const folders = splitFolderPath(folderPath)
+        const folders = path_splitPath(folderPath)
         const parsedFolderInfo = folders?.map(folder => {
             const obj = rakun.parse(folder)
             // Keep the folder which has a parsed title or parsed season
