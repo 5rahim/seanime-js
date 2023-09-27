@@ -134,7 +134,7 @@ export function useWatchedAnilistEntry() {
             episode: number,
         }) => {
             const success = await watchedEntry(payload)
-            if (success) await refetchCollection()
+            if (success) await refetchCollection({ muteAlert: true })
         }, []),
     }
 }
@@ -147,11 +147,11 @@ export function useUpdateAnilistEntry() {
     return {
         updateEntry: useCallback(async (payload: UpdateEntryMutationVariables) => {
             const success = await updateEntry(payload)
-            if (success) await refetchCollection()
+            if (success) await refetchCollection({ muteAlert: true })
         }, []),
         deleteEntry: useCallback(async (payload: DeleteEntryMutationVariables & { status: MediaListStatus }) => {
             const success = await deleteEntry(payload)
-            if (success) await refetchCollection()
+            if (success) await refetchCollection({ muteAlert: true })
         }, []),
     }
 }

@@ -12,6 +12,7 @@ import { Atom } from "jotai"
 import { LibraryEntry } from "@/atoms/library/library-entry.atoms"
 import { formatDistanceToNow, isBefore, subYears } from "date-fns"
 import { anilist_getEpisodeCeilingFromMedia } from "@/lib/anilist/utils"
+import { anizip_getEpisode } from "@/lib/anizip/utils"
 
 export function ContinueWatching(props: { entryAtom: Atom<LibraryEntry> }) {
 
@@ -84,7 +85,7 @@ type EpisodeItemProps = {
 
 const EpisodeItem = memo(({ media, episodeNumber, aniZipData }: EpisodeItemProps) => {
 
-    const episodeData = aniZipData?.episodes?.[String(episodeNumber)]
+    const episodeData = anizip_getEpisode(aniZipData, episodeNumber)
 
     const router = useRouter()
 

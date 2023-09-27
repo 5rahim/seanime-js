@@ -1,4 +1,6 @@
-import { LocalFileMetadata } from "@/lib/local-library/types"
+import { LocalFile, LocalFileMetadata } from "@/lib/local-library/types"
+import { Nullish } from "@/types/common"
+import { AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 
 /* -------------------------------------------------------------------------------------------------
  * Metadata
@@ -50,8 +52,24 @@ export function localFile_getAniDBEpisodeInteger<T extends {
 }>(props: T | null | undefined) {
     const metadata = props?.metadata
     if (!metadata || !metadata.aniDBEpisodeNumber) return undefined
+    const parsed = Number(metadata.aniDBEpisodeNumber.replace(/\D/g, ""))
+    return !isNaN(parsed) ? parsed : undefined
+}
+
+/**
+ * @example
+ * aniDBEpisodeNumber = "S1" //=> True
+ * aniDBEpisodeNumber = "1" //=> False
+ * aniDBEpisodeNumber = "" | undefined //=> False
+ * @param props
+ */
+export function localFile_aniDBEpisodeIsSpecial<T extends {
+    metadata: { aniDBEpisodeNumber?: string }
+}>(props: T | null | undefined) {
+    const metadata = props?.metadata
+    if (!metadata || !metadata.aniDBEpisodeNumber) return false
     // Return numbers only, remove all letters
-    return Number(metadata.aniDBEpisodeNumber.replace(/\D/g, ""))
+    return metadata.aniDBEpisodeNumber.toUpperCase().startsWith("S")
 }
 
 /**
@@ -84,9 +102,10 @@ export function localFile_isMainWithValidEpisode<T extends {
  * @description
  * - Returns `true` if `episode` and `aniDBEpisodeNumber` differ
  * @example
- * medata.episode = 1; medata.aniDBEpisodeNumber = "1" //=> False
- * medata.episode = 2; medata.aniDBEpisodeNumber = "S2" //=> False
- * medata.episode = 1; medata.aniDBEpisodeNumber = "2" //=> True
+ * episode = 1; aniDBEpisodeNumber = "2" //=> True
+ * episode = 1; aniDBEpisodeNumber = "1" //=> False
+ * episode = 2; aniDBEpisodeNumber = "S2" //=> False
+ * episode = 1; aniDBEpisodeNumber = "" | undefined //=> True
  * @param props
  */
 export function localFile_episodeMappingDiffers<T extends {
@@ -94,8 +113,53 @@ export function localFile_episodeMappingDiffers<T extends {
 }>(props: T | null | undefined) {
     const metadata = props?.metadata
     const episode = localFile_getEpisode(props)
-    return !!metadata
-        && localFile_episodeExists(props)
-        && !!metadata.aniDBEpisodeNumber
-        && episode !== localFile_getAniDBEpisodeInteger(props)
+    return episode !== localFile_getAniDBEpisodeInteger(props)
+}
+
+/**
+ * @description
+ * - Returns `undefined` is file is not a main episode
+ * - When mapping differs, use the main cover
+ * @param props
+ * @param mainCover // AniZip Cover
+ * @param betterCover // Better source?
+ * @param fallbackCover
+ */
+export function localFile_getEpisodeCover<T extends {
+    metadata: LocalFileMetadata
+}>(props: T | null | undefined, mainCover: Nullish<string>, betterCover?: Nullish<string>, fallbackCover?: Nullish<string>) {
+    const metadata = props?.metadata
+
+    if (!localFile_isMainWithValidEpisode(props) || localFile_aniDBEpisodeIsSpecial(props)) return fallbackCover
+
+    return localFile_episodeMappingDiffers(props) ? mainCover : betterCover || mainCover || fallbackCover
+}
+
+/**
+ *
+ * @param filename
+ */
+export function localFile_getCleanedFileTitle(filename: Nullish<string>) {
+    return filename?.replace(/.(mkv|mp4)/, "")?.replace(/[^A-Z0-9 ]/ig, "") || ""
+}
+
+/**
+ *
+ * @param props
+ * @param media
+ */
+export function localFile_getDisplayTitle<T extends Pick<LocalFile, "metadata" | "parsedInfo">>(props: T | null | undefined, media?: AnilistShowcaseMedia | null) {
+    if (!props) return "???"
+
+    const { metadata, parsedInfo } = props
+
+    if (metadata.isSpecial)
+        return `Special ${metadata.episode ?? localFile_getAniDBEpisodeInteger(props)}`
+    else if (metadata.isNC)
+        return parsedInfo?.title || localFile_getCleanedFileTitle(parsedInfo?.original)
+
+    if (media?.format === "MOVIE")
+        return media?.title?.userPreferred || media?.title?.romaji || media?.title?.english || parsedInfo?.title || "Movie"
+
+    return `Episode ${metadata.episode}`
 }

@@ -1,7 +1,7 @@
 import React, { startTransition, useMemo } from "react"
 import { atom, PrimitiveAtom } from "jotai"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
-import { useFocusSetAtom, useSelectAtom } from "@/atoms/helpers"
+import { useFocusSetAtom, useSelectAtom, useStableSelectAtom } from "@/atoms/helpers"
 import { DropdownMenu } from "@/components/ui/dropdown-menu"
 import { IconButton } from "@/components/ui/button"
 import { BiDotsHorizontal } from "@react-icons/all-files/bi/BiDotsHorizontal"
@@ -15,8 +15,13 @@ import { createTypesafeFormSchema, Field, TypesafeForm } from "@/components/ui/t
 import toast from "react-hot-toast"
 import { __useRerenderLocalFiles } from "@/atoms/library/local-file.atoms"
 import { LocalFile } from "@/lib/local-library/types"
-import { localFile_episodeMappingDiffers } from "@/lib/local-library/utils/episode.utils"
+import {
+    localFile_getDisplayTitle,
+    localFile_getEpisodeCover,
+    localFile_isMainWithValidEpisode,
+} from "@/lib/local-library/utils/episode.utils"
 import { anizip_getEpisodeFromMetadata } from "@/lib/anizip/utils"
+import { useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist/entries.atoms"
 
 const { Provider: ScopedProvider, useAtom: useScopedAtom } = createIsolation()
 
@@ -36,34 +41,24 @@ export const EpisodeItem = React.memo((props: {
     const metadata = useSelectAtom(fileAtom, file => file.metadata)
     const parsedInfo = useSelectAtom(fileAtom, file => file.parsedInfo)
     const path = useSelectAtom(fileAtom, file => file.path)
-    const fileName = useSelectAtom(fileAtom, file => file.name)
     const setFileLocked = useFocusSetAtom(fileAtom, "locked")
     const setFileMediaId = useFocusSetAtom(fileAtom, "mediaId")
+
+    const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(media?.id)
+    const progress = useStableSelectAtom(collectionEntryAtom, entry => entry?.progress)
 
     const aniZipEpisode = anizip_getEpisodeFromMetadata(aniZipData, { metadata })
     const anifyEpisodeCover = anifyEpisodeCovers?.find(n => n.episode === metadata.episode)?.img
     const fileTitle = useMemo(() => parsedInfo?.original?.replace(/.(mkv|mp4)/, "")?.replaceAll(/(\[)[a-zA-Z0-9 ._~-]+(\])/ig, "")?.replaceAll(/[_,-]/g, " "), [parsedInfo])
 
-    const mappingDiffers = useMemo(() => {
-        return localFile_episodeMappingDiffers({ metadata })
-    }, [metadata])
+    const image = useMemo(() => localFile_getEpisodeCover({ metadata }, aniZipEpisode?.image, anifyEpisodeCover, media?.coverImage?.medium), [metadata, anifyEpisodeCover, aniZipEpisode?.image])
 
-    const image = () => {
-        if (!!fileName && (!metadata.isSpecial && !metadata.isNC)) {
-            // Prefer AniZip cover if mapping differs
-            return mappingDiffers ? aniZipEpisode?.image : (anifyEpisodeCover || aniZipEpisode?.image)
-        } else if (!!fileName) {
-            return undefined
-        }
-        return (aniZipEpisode?.image || anifyEpisodeCover)
-    }
+    const isWatched = useMemo(() => (localFile_isMainWithValidEpisode({ metadata }) && !!progress && progress >= metadata.episode!), [progress, metadata])
 
-    const displayedTitle = useMemo(() => {
-        let _output = parsedInfo?.title || fileTitle || "???"
-        if (metadata.episode !== undefined) _output = `Episode ${metadata.episode}`
-        if (media.format === "MOVIE" && parsedInfo?.title) _output = parsedInfo.title
-        return _output
-    }, [parsedInfo, metadata])
+    const displayedTitle = useMemo(() => localFile_getDisplayTitle({
+        metadata,
+        parsedInfo,
+    }, media), [parsedInfo, metadata])
 
     if (mediaID !== media.id) return null
 
@@ -71,12 +66,13 @@ export const EpisodeItem = React.memo((props: {
         <ScopedProvider>
             <EpisodeListItem
                 media={media}
-                image={image()}
+                image={image}
                 onClick={async () => onPlayFile(path)}
                 title={displayedTitle}
                 showImagePlaceholder={!metadata.isNC}
                 episodeTitle={aniZipEpisode?.title?.en}
-                fileName={parsedInfo?.original?.replace(/.(mkv|mp4)/, "")?.replaceAll(/(\[)[a-zA-Z0-9 ._~-]+(\])/ig, "")?.replaceAll(/[_,-]/g, " ")}
+                fileName={fileTitle}
+                isWatched={isWatched}
                 action={<>
                     <EpisodeItemLockButton fileAtom={fileAtom}/>
 

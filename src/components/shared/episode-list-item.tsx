@@ -41,14 +41,16 @@ export const EpisodeListItem: React.FC<EpisodeListItemProps & React.ComponentPro
     return <>
         <div
             className={cn(
-                "border border-[--border] p-4 pr-12 rounded-lg relative transition hover:bg-gray-900",
+                "border border-[--border] p-4 pr-12 rounded-lg relative transition hover:bg-gray-900 group/episode-list-item",
                 {
                     "border-brand-200 bg-gray-800 hover:bg-gray-800": isSelected,
-                    "opacity-50": isWatched && !isSelected,
+                    // "opacity-50": isWatched && !isSelected,
                 },
             )}
             {...rest}
         >
+            {/*{isCompleted && <div className={"absolute top-1 left-1 w-full h-1 bg-brand rounded-full"}/>}*/}
+
             <div
                 className={cn(
                     "flex gap-4 relative",
@@ -67,7 +69,9 @@ export const EpisodeListItem: React.FC<EpisodeListItemProps & React.ComponentPro
                         quality={60}
                         priority
                         sizes="10rem"
-                        className="object-cover object-center"
+                        className={cn("object-cover object-center transition", {
+                            "opacity-30 group-hover/episode-list-item:opacity-100": isWatched,
+                        })}
                         data-src={image}
                     />
                 </div>}
@@ -96,8 +100,10 @@ export const EpisodeListItem: React.FC<EpisodeListItemProps & React.ComponentPro
                 )}
 
                 <div className={"relative overflow-hidden"}>
-                    <h4 className={"font-medium"}>{title}</h4>
-                    {!!episodeTitle && <p className={"text-sm text-[--muted] line-clamp-2"}>{episodeTitle}</p>}
+                    <h4 className={cn("font-medium transition", { "opacity-50 group-hover/episode-list-item:opacity-100": isWatched })}>{title}</h4>
+
+                    {!!episodeTitle && <p className={cn("text-sm text-[--muted] line-clamp-2")}>{episodeTitle}</p>}
+
                     {!!fileName && <p className={"text-sm text-gray-600 truncate text-ellipsis"}>{fileName}</p>}
                     {!!description && <p className={"text-sm text-gray-500 line-clamp-2"}>{description}</p>}
                     {children && children}

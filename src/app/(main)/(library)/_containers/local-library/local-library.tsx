@@ -33,7 +33,6 @@ export function LocalLibrary() {
                         />
                     })}
                 </Slider>
-                {/*<FetchMediaSchedule entryAtoms={currentlyWatchingEntryAtoms}/>*/}
                 <Divider/>
                 <h2>Currently watching</h2>
                 <div

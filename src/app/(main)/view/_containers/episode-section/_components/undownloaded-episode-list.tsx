@@ -52,7 +52,7 @@ export const UndownloadedEpisodeList: React.FC<UndownloadedEpisodeListProps> = R
                             key={epNumber + index}
                             title={media.format !== "MOVIE" ? `Episode ${epNumber}` : media.title?.userPreferred || ""}
                             showImagePlaceholder
-                            episodeTitle={aniZipData?.episodes?.[String(epNumber)]?.title?.en}
+                            episodeTitle={episodeData?.title?.en}
                             image={anifyEpisodeCover || aniZipData?.episodes?.[String(epNumber)]?.image}
                             action={
                                 <div className={""}>

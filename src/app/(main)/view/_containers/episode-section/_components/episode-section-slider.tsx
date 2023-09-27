@@ -7,7 +7,8 @@ import { useSelectAtom } from "@/atoms/helpers"
 import { formatDistanceToNow, isBefore, subYears } from "date-fns"
 import { LargeEpisodeListItem } from "@/components/shared/large-episode-list-item"
 import { LocalFile } from "@/lib/local-library/types"
-import { valueContainsNC, valueContainsSpecials } from "@/lib/local-library/utils/filtering.utils"
+import { anizip_getEpisodeFromMetadata } from "@/lib/anizip/utils"
+import { localFile_getEpisodeCover } from "@/lib/local-library/utils/episode.utils"
 
 type Props = {
     fileAtoms: PrimitiveAtom<LocalFile>[],
@@ -38,25 +39,18 @@ function Item({ fileAtom, aniZipData, anifyEpisodeCovers, onPlayFile, media }: I
     const metadata = useSelectAtom(fileAtom, file => file.metadata)
     const path = useSelectAtom(fileAtom, file => file.path)
     const fileName = useSelectAtom(fileAtom, file => file.name)
-    const aniZipEpisode = aniZipData?.episodes[metadata.aniDBEpisodeNumber || String(metadata.episode)]
+    const aniZipEpisode = anizip_getEpisodeFromMetadata(aniZipData, { metadata })
     const anifyEpisodeCover = anifyEpisodeCovers?.find(n => n.episode === metadata.episode)?.img
 
     const date = aniZipEpisode?.airdate ? new Date(aniZipEpisode?.airdate) : undefined
 
-    const image = () => {
-        if (!!fileName && (!valueContainsSpecials(fileName) && !valueContainsNC(fileName))) {
-            return (anifyEpisodeCover || aniZipEpisode?.image || media.bannerImage || media.coverImage?.large)
-        } else if (!!fileName) {
-            return undefined
-        }
-        return (aniZipEpisode?.image || anifyEpisodeCover || media.bannerImage || media.coverImage?.large)
-    }
+    const image = useMemo(() => localFile_getEpisodeCover({ metadata }, aniZipEpisode?.image, anifyEpisodeCover, media.bannerImage || media.coverImage?.large), [metadata, anifyEpisodeCover, aniZipEpisode?.image])
 
     const mediaIsOlder = useMemo(() => date ? isBefore(date, subYears(new Date(), 2)) : undefined, [])
 
     return (
         <LargeEpisodeListItem
-            image={image()}
+            image={image}
             title={(media.format === "MOVIE" && metadata.episode === 1) ? "Complete movie" : (!!metadata.episode ? `Episode ${metadata.episode}` : media.title?.userPreferred || "")}
             topTitle={!((media.format === "MOVIE" && metadata.episode === 1)) ? aniZipEpisode?.title?.en : ``}
             meta={(date) ? (!mediaIsOlder ? `${formatDistanceToNow(date, { addSuffix: true })}` : new Intl.DateTimeFormat("en-US", {
