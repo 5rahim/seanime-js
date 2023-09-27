@@ -3,10 +3,10 @@ import { MediaRelation } from "@/gql/graphql"
 import { AnilistCollectionEntry } from "@/atoms/anilist/entries.atoms"
 import { LibraryEntry } from "@/atoms/library/library-entry.atoms"
 import rakun from "@/lib/rakun"
-import { valueContainsSeason } from "@/lib/local-library/utils"
-import head from "lodash/head"
 import omit from "lodash/omit"
 import { logger } from "@/lib/helpers/debug"
+import { Nullish } from "@/types/common"
+import { valueContainsSeason } from "@/lib/local-library/utils/filtering.utils"
 
 type _AnilistRelationEdge = { relationType: MediaRelation, node: AnilistShowcaseMedia | null | undefined }
 
@@ -50,7 +50,7 @@ export function anilist_findMediaSeasonFromTitles(media: AnilistShortMedia | nul
         }) || []),
     ].filter(Boolean).map(n => Number(n))
 
-    return head(seasons)
+    return seasons[0]
 }
 
 /**
@@ -72,4 +72,38 @@ export function anilist_filterEntriesByTitle<T extends AnilistCollectionEntry[] 
         )) as T
     }
     return arr
+}
+
+/**
+ * @description
+ * - Returns the total episode count or current ceiling if media is releasing
+ * - Returns 0 if nothing is defined
+ * @param media
+ */
+export function anilist_getEpisodeCeilingFromMedia<T extends AnilistShowcaseMedia>(media: T | null | undefined) {
+    if (!media) return 0
+    return !!media.nextAiringEpisode?.episode ? media.nextAiringEpisode?.episode - 1 : (media.episodes || 0)
+}
+
+/**
+ * @description
+ * - Returns `true` if user has not watched all episodes
+ */
+export function anilist_canTrackProgress<T extends AnilistShowcaseMedia>(media: T, progress: Nullish<number>) {
+    const maxEp = anilist_getEpisodeCeilingFromMedia(media)
+    return maxEp > 0 && (!progress || progress < maxEp)
+}
+
+/**
+ * @description
+ * - Returns the next episode number to watch based on current progress
+ * - Fallback if the user has watched everything => status === "RELEASING" ? maxEp : 1
+ * @param media
+ * @param currentProgress
+ */
+export function anilist_getNextEpisodeToWatch<T extends AnilistShowcaseMedia>(media: T, currentProgress: Nullish<number>) {
+    const _currentProgress = currentProgress ?? 0
+    const maxEp = anilist_getEpisodeCeilingFromMedia(media)
+    const fallback = media.status === "RELEASING" ? maxEp : 1
+    return ((_currentProgress + 1) <= maxEp ? _currentProgress + 1 : fallback)
 }

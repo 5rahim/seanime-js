@@ -5,10 +5,10 @@ import { ScanLogging } from "@/lib/local-library/logs"
 import cases from "./cases/local-file.cases"
 import parsingCases from "./cases/parsing.cases"
 import { AnilistShortMedia } from "@/lib/anilist/fragment"
-import { valueContainsNC, valueContainsSpecials } from "@/lib/local-library/utils"
 import { __episodeNormalizationMatchingCases } from "./cases/episode-normalization.cases"
 import { experimental_analyzeMediaTree } from "@/lib/anilist/actions"
 import { __SampleMedia } from "./samples/media.sample"
+import { valueContainsNC, valueContainsSpecials } from "@/lib/local-library/utils/filtering.utils"
 
 
 vi.mock("react", async () => {

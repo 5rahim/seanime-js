@@ -10,7 +10,8 @@ import { useStableSelectAtom } from "@/atoms/helpers"
 import { LocalFile } from "@/lib/local-library/types"
 import sortBy from "lodash/sortBy"
 import { Nullish } from "@/types/common"
-import { localFile_isMain } from "@/lib/local-library/utils"
+import { localFile_isMain } from "@/lib/local-library/utils/episode.utils"
+import { anilist_getEpisodeCeilingFromMedia } from "@/lib/anilist/utils"
 
 /* -------------------------------------------------------------------------------------------------
  * Main atoms
@@ -65,7 +66,7 @@ const get_Display_LocalFileAtomsByMediaIdAtom = atom(null,
         // Sort the local files atoms by parsed episode number
         const mainFileAtoms = sortBy(fileAtoms, fileAtom => Number(get(fileAtom).parsedInfo?.episode)).filter(fileAtom => localFile_isMain(get(fileAtom))) ?? []
 
-        const maxEp = (collectionEntry?.media?.nextAiringEpisode?.episode ? collectionEntry?.media?.nextAiringEpisode?.episode - 1 : undefined) || collectionEntry?.media?.episodes
+        const maxEp = anilist_getEpisodeCeilingFromMedia(collectionEntry?.media)
 
         // There are some episodes that have not been watched
         const canTrackProgress = mainFileAtoms.length > 0 && !!maxEp && (!!collectionEntry?.progress && collectionEntry.progress < Number(maxEp) || !collectionEntry?.progress)
@@ -144,12 +145,12 @@ export const getLocalFileByPathAtom = atom(null, // Writable too
 
 
 /**
- * Get latest [LocalFile] by `mediaId` sorted by episode number
+ * Get [LocalFile] with the highest episode number by `mediaId`
  * @return LocalFile
  */
-export const getLastMainLocalFileByMediaIdAtom = atom(null,
+export const getLastestMainLocalFileByMediaIdAtom = atom(null,
     (get, set, mediaId: number) => {
-        const fileAtoms = get(localFileAtoms).filter((fileAtom) => get(fileAtom).mediaId === mediaId && !get(fileAtom).metadata.isSpecial && !get(fileAtom).metadata.isNC)
+        const fileAtoms = get(localFileAtoms).filter((fileAtom) => get(fileAtom).mediaId === mediaId && localFile_isMain(get(fileAtom)))
         const fileAtom = sortBy(fileAtoms, fileAtom => get(fileAtom).metadata.episode)[fileAtoms.length - 1]
         return !!fileAtom ? get(fileAtom) : undefined
     },
@@ -253,8 +254,8 @@ export const useLocalFileAtomByPath = (path: string) => {
     return useMemo(() => get(path), [__]) as (PrimitiveAtom<LocalFile> | undefined)
 }
 
-export const useLastMainLocalFileByMediaId = (mediaId: number) => {
-    const getLastFile = useSetAtom(getLastMainLocalFileByMediaIdAtom)
+export const useLatestMainLocalFileByMediaId = (mediaId: number) => {
+    const getLastFile = useSetAtom(getLastestMainLocalFileByMediaIdAtom)
     const __ = __useListenToLocalFiles()
     return useMemo(() => getLastFile(mediaId), [__])
 }

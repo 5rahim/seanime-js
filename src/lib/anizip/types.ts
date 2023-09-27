@@ -20,7 +20,7 @@ type Episodes = {
     [episodeNumber: string]: Episode
 }
 
-type Mappings = {
+type Types = {
     animeplanet_id: string
     kitsu_id: number
     mal_id: number
@@ -40,5 +40,5 @@ type AniZipData = {
     episodes: Episodes
     episodeCount: number
     specialCount: number
-    mappings: Mappings
+    mappings: Types
 }

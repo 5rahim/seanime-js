@@ -7,14 +7,11 @@ import { ScanLogging } from "@/lib/local-library/logs"
 import isNumber from "lodash/isNumber"
 import sortBy from "lodash/sortBy"
 
-import {
-    eliminateLeastSimilarValue,
-    matching_compareTitleVariationsToMediaTitles,
-    toRomanNumber,
-    valueContainsSeason,
-} from "@/lib/local-library/utils"
 import { advancedSearchWithMAL } from "@/lib/mal/actions"
 import { AnimeFileInfo, LocalFile } from "@/lib/local-library/types"
+import { eliminateLeastSimilarValue, valueContainsSeason } from "@/lib/local-library/utils/filtering.utils"
+import { matching_compareTitleVariationsToMedia } from "@/lib/local-library/utils/matching.utils"
+import { toRomanNumber } from "@/lib/local-library/utils/common.utils"
 
 /**
  * This method employs 3 comparison algorithms: Dice's coefficient (string-similarity), Levenshtein's algorithm, and MAL's elastic search algorithm
@@ -206,7 +203,7 @@ export async function findBestCorrespondingMedia(
 
     // Calculate Levenshtein distances and find the lowest for all title variations
     const distances = allMedia.flatMap(media => {
-        return matching_compareTitleVariationsToMediaTitles(media, titleVariations)
+        return matching_compareTitleVariationsToMedia(media, titleVariations)
     })
     if (distances) {
         const lowest = distances.reduce((prev, curr) => prev.distance <= curr.distance ? prev : curr) // Lower distance

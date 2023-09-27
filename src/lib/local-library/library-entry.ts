@@ -5,10 +5,10 @@ import { logger } from "@/lib/helpers/debug"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
 import { AnimeByIdDocument, AnimeCollectionDocument, UpdateEntryDocument } from "@/gql/graphql"
 import fs from "fs"
-import { valueContainsNC, valueContainsSeason, valueContainsSpecials } from "@/lib/local-library/utils"
 import { ScanLogging } from "@/lib/local-library/logs"
 import { LocalFile, LocalFileWithMedia } from "@/lib/local-library/types"
 import { hydrateLocalFileWithInitialMetadata } from "@/lib/local-library/local-file"
+import { valueContainsNC, valueContainsSeason, valueContainsSpecials } from "@/lib/local-library/utils/filtering.utils"
 
 type ProspectiveLibraryEntry = {
     media: AnilistShowcaseMedia

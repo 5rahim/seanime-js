@@ -12,11 +12,11 @@ import {
 } from "@/atoms/torrent/torrent-smart-select-queue.atoms"
 import { isTorrentReady } from "@/lib/download/torrent-helpers"
 import rakun from "@/lib/rakun"
-import { valueContainsNC, valueContainsSpecials } from "@/lib/local-library/utils"
 import { LoadingOverlay } from "@/components/ui/loading-spinner"
 import { useRouter } from "next/navigation"
 import { smartSelect_normalizeEpisodes } from "@/app/(main)/torrents/smart-select/_lib/utils"
 import { path_getBasename } from "@/lib/helpers/path"
+import { valueContainsNC, valueContainsSpecials } from "@/lib/local-library/utils/filtering.utils"
 
 export default function Page() {
 

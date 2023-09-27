@@ -5,11 +5,12 @@ import { AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import { findBestCorrespondingMedia } from "@/lib/local-library/media-matching"
 import { ScanLogging } from "@/lib/local-library/logs"
 import { path_getDirectoryName, path_removeTopPath, path_splitPath } from "@/lib/helpers/path"
-import { localFile_getParsedEpisode, valueContainsNC, valueContainsSpecials } from "@/lib/local-library/utils"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
 import { AnimeShortMediaByIdDocument } from "@/gql/graphql"
 import { experimental_analyzeMediaTree } from "@/lib/anilist/actions"
 import { LocalFile, LocalFileWithMedia } from "@/lib/local-library/types"
+import { localFile_getParsedEpisode } from "@/lib/local-library/utils/parsed-info.utils"
+import { valueContainsNC, valueContainsSpecials } from "@/lib/local-library/utils/filtering.utils"
 
 /**
  * @description

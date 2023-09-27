@@ -3,10 +3,12 @@ import { MediaListStatus } from "@/gql/graphql"
 import { useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist/entries.atoms"
 import { useStableSelectAtom } from "@/atoms/helpers"
 import { useLibraryEntryAtomByMediaId } from "@/atoms/library/library-entry.atoms"
-import { useLastMainLocalFileByMediaId, useLocalFilesByMediaId_UNSTABLE } from "@/atoms/library/local-file.atoms"
+import { useLatestMainLocalFileByMediaId, useLocalFilesByMediaId_UNSTABLE } from "@/atoms/library/local-file.atoms"
 import { useMemo } from "react"
 import { LocalFile } from "@/lib/local-library/types"
 import sortBy from "lodash/sortBy"
+import { localFile_isMainWithValidEpisode } from "@/lib/local-library/utils/episode.utils"
+import { anilist_getEpisodeCeilingFromMedia } from "@/lib/anilist/utils"
 
 export const getMediaDownloadInfo = (props: {
     media: AnilistDetailedMedia,
@@ -19,17 +21,21 @@ export const getMediaDownloadInfo = (props: {
 
     const lastProgress = progress ?? 0
     // e.g., 12
-    const maxEp = !!media.nextAiringEpisode?.episode ? media.nextAiringEpisode?.episode - 1 : media.episodes!
+    const maxEp = anilist_getEpisodeCeilingFromMedia(media)
     // e.g., [1,2,3,…,12]
     const originalEpisodeArr = [...Array(maxEp).keys()].map((_, idx) => idx + 1)
     // e.g., progress = 9 => [10,11,12] | completed => [1,2,3,…,12]
     const actualEpisodeArr = status !== "COMPLETED" ? [...Array(maxEp).keys()].map((_, idx) => idx + 1).slice(lastProgress) : originalEpisodeArr
 
     // e.g., [1,2]
-    let downloadedEpisodeArr = files.filter(file => !!file.metadata.episode && !file.metadata.isNC && !file.metadata.isSpecial).map(file => file.metadata.episode).filter(Boolean)
+    let downloadedEpisodeArr = files.filter(file => localFile_isMainWithValidEpisode(file)).map(file => file.metadata.episode).filter(Boolean)
 
-    // e.g., no files with episode number, but we know that the media is a movie, and there is at least a file associated with that media
-    if ((media.format === "MOVIE" || media.episodes === 1) && downloadedEpisodeArr.length === 0 && files.filter(file => !file.metadata.episode && !file.metadata.isNC).length > 0) {
+    // No files with episode number, but we know that the media is a movie, and there is at least a file associated with that media
+    if (
+        (media.format === "MOVIE" || media.episodes === 1)
+        && downloadedEpisodeArr.length === 0
+        && files.filter(file => !file.metadata.isNC).length > 0 // there is at least a file associated with that media that is not NC
+    ) {
         downloadedEpisodeArr = [1]
     }
 
@@ -49,8 +55,8 @@ export const getMediaDownloadInfo = (props: {
         isMovie: media.format === "MOVIE",
         episodeNumbers: missingArr,
         rewatch: status === "COMPLETED",
-        // batch = `entireBatch`, i.e., should download entire batch
-        batch: canBatch && downloadedEpisodeArr.length === 0 && lastProgress === 0,  // Media finished airing and user has no episodes downloaded/watched
+        // batch = should download entire batch
+        batch: canBatch && downloadedEpisodeArr.length === 0 && lastProgress === 0, // Media finished airing and user has no episodes downloaded/watched
         schedulingIssues,
         canBatch,
     }
@@ -65,7 +71,7 @@ export function useMediaDownloadInfo(media: AnilistDetailedMedia) {
     const collectionEntryProgress = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress)
     const collectionEntryStatus = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.status)
     const entryAtom = useLibraryEntryAtomByMediaId(media.id)
-    const lastFile = useLastMainLocalFileByMediaId(media.id)
+    const latestFile = useLatestMainLocalFileByMediaId(media.id)
 
     const files = useLocalFilesByMediaId_UNSTABLE(media.id)
 
@@ -81,7 +87,7 @@ export function useMediaDownloadInfo(media: AnilistDetailedMedia) {
         collectionEntryAtom,
         collectionEntryProgress,
         collectionEntryStatus,
-        lastFile,
+        latestFile,
         downloadInfo,
     }
 }

@@ -5,8 +5,8 @@ import { logger } from "@/lib/helpers/debug"
 import { isPast } from "date-fns"
 import { Nyaa } from "@/lib/download/nyaa/api"
 
-import { valueContainsSeason } from "@/lib/local-library/utils"
 import { LocalFile } from "@/lib/local-library/types"
+import { valueContainsSeason } from "@/lib/local-library/utils/filtering.utils"
 
 
 export async function unstable_findNyaaTorrents(props: {
@@ -14,10 +14,10 @@ export async function unstable_findNyaaTorrents(props: {
     aniZipData: AniZipData,
     episode: number,
     batch: boolean,
-    lastFile: LocalFile | undefined
+    latestFile: LocalFile | undefined
     offset: number
 }) {
-    const { media, aniZipData, episode, lastFile, batch, offset } = props
+    const { media, aniZipData, episode, latestFile, batch, offset } = props
 
     const parsed = rakun.parse(media.title?.english ?? media.title?.romaji ?? "")
 
@@ -32,7 +32,7 @@ export async function unstable_findNyaaTorrents(props: {
     // console.log(aniZipData)
 
     // Get parsed season
-    let season = !IS_MOVIE ? Number(lastFile?.parsedFolderInfo?.findLast(obj => !!obj.season)?.season ?? lastFile?.parsedInfo?.season ?? "-1") : undefined
+    let season = !IS_MOVIE ? Number(latestFile?.parsedFolderInfo?.findLast(obj => !!obj.season)?.season ?? latestFile?.parsedInfo?.season ?? "-1") : undefined
     season = season === -1 ? undefined : season
     if (!!ANI_SEASON) {
         if (!!season && season !== ANI_SEASON && !SPLIT_COUR) {

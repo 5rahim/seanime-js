@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import sortBy from "lodash/sortBy"
 import { atomWithImmer } from "jotai-immer"
 import { LocalFile } from "@/lib/local-library/types"
+import { anilist_getEpisodeCeilingFromMedia } from "@/lib/anilist/utils"
 
 interface ProgressTrackingModalProps {
     children?: React.ReactNode
@@ -28,7 +29,7 @@ export const ProgressTrackingModal: React.FC<ProgressTrackingModalProps> = (prop
 
     const { watchedEntry } = useWatchedAnilistEntry()
 
-    const maxEp = media.nextAiringEpisode?.episode ? media.nextAiringEpisode.episode - 1 : media.episodes!
+    const maxEp = anilist_getEpisodeCeilingFromMedia(media)
 
     const files = sortBy(state.filesWatched, file => file.metadata.episode)
     const latestFile = files[files.length - 1]

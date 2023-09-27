@@ -96,7 +96,7 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
 
     const {
         entryAtom,
-        lastFile,
+        latestFile,
         downloadInfo,
     } = useMediaDownloadInfo(media)
     const { episode } = useAtomValue(__torrentSearch_isOpenAtom)
@@ -126,7 +126,7 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
                     media: media,
                     aniZipData: aniZipData!,
                     episode: quickSearchEpisode!,
-                    lastFile: lastFile,
+                    latestFile: latestFile,
                     batch: quickSearchIsBatch,
                     offset: episodeOffset!,
                 })

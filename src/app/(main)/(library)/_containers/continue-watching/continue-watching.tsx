@@ -1,6 +1,6 @@
 import { useSelectAtom } from "@/atoms/helpers"
 import { useMediaDownloadInfo } from "@/lib/download/helpers"
-import { useLastMainLocalFileByMediaId } from "@/atoms/library/local-file.atoms"
+import { useLatestMainLocalFileByMediaId } from "@/atoms/library/local-file.atoms"
 import React, { memo, useMemo } from "react"
 import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
@@ -11,6 +11,7 @@ import { LargeEpisodeListItem } from "@/components/shared/large-episode-list-ite
 import { Atom } from "jotai"
 import { LibraryEntry } from "@/atoms/library/library-entry.atoms"
 import { formatDistanceToNow, isBefore, subYears } from "date-fns"
+import { anilist_getEpisodeCeilingFromMedia } from "@/lib/anilist/utils"
 
 export function ContinueWatching(props: { entryAtom: Atom<LibraryEntry> }) {
 
@@ -19,25 +20,25 @@ export function ContinueWatching(props: { entryAtom: Atom<LibraryEntry> }) {
     const progress = useSelectAtom(props.entryAtom, entry => entry.collectionEntry?.progress)
 
     const { downloadInfo } = useMediaDownloadInfo(media)
-    const lastFile = useLastMainLocalFileByMediaId(media.id)
+    const latestFile = useLatestMainLocalFileByMediaId(media.id)
 
     const nextEpisode = useMemo(() => {
         if (currentlyWatching) {
-            const availableEp = media?.nextAiringEpisode?.episode ? media?.nextAiringEpisode?.episode - 1 : media.episodes!
+            const availableEp = anilist_getEpisodeCeilingFromMedia(media)
             // Next episode has not been watched
             // Latest sorted file has an episode
             // The episode has been downloaded
             if (!downloadInfo.schedulingIssues) {
-                if (availableEp > (progress || 0) && !!lastFile?.metadata?.episode && !downloadInfo.episodeNumbers.includes((progress || 0) + 1)) {
+                if (availableEp > (progress || 0) && !!latestFile?.metadata?.episode && !downloadInfo.episodeNumbers.includes((progress || 0) + 1)) {
                     return (progress || 0) + 1
                 }
                 // FIXME Hacky way to check if the next episode is downloaded when we don't have accurate scheduling information
-            } else if (lastFile?.metadata?.episode === ((progress || 0) + 1)) {
+            } else if (latestFile?.metadata?.episode === ((progress || 0) + 1)) {
                 return (progress || 0) + 1
             }
         }
         return undefined
-    }, [currentlyWatching, progress, media?.nextAiringEpisode?.episode, media.episodes, downloadInfo.schedulingIssues, lastFile?.metadata?.episode, downloadInfo.episodeNumbers])
+    }, [currentlyWatching, progress, downloadInfo.schedulingIssues, latestFile?.metadata?.episode, downloadInfo.episodeNumbers, media])
 
 
     const { data, isLoading } = useQuery({

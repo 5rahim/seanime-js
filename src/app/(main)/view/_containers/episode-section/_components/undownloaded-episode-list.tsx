@@ -11,6 +11,7 @@ import { EpisodeListItem } from "@/components/shared/episode-list-item"
 import { useSetAtom } from "jotai"
 import { __torrentSearch_isOpenAtom } from "@/app/(main)/view/_containers/torrent-search/torrent-search-modal"
 import { AnifyEpisodeCover } from "@/lib/anify/types"
+import { anizip_getEpisode } from "@/lib/anizip/utils"
 
 interface UndownloadedEpisodeListProps {
     children?: React.ReactNode
@@ -42,7 +43,8 @@ export const UndownloadedEpisodeList: React.FC<UndownloadedEpisodeListProps> = R
             </div>
             <div className={"grid grid-cols-1 md:grid-cols-2 gap-4 opacity-60"}>
                 {downloadInfo.episodeNumbers.map((epNumber, index) => {
-                    const airDate = aniZipData?.episodes?.[String(epNumber)]?.airdate
+                    const episodeData = anizip_getEpisode(aniZipData, epNumber)
+                    const airDate = episodeData?.airdate
                     const anifyEpisodeCover = anifyEpisodeCovers?.find(n => n.episode === epNumber)?.img
                     return (
                         <EpisodeListItem

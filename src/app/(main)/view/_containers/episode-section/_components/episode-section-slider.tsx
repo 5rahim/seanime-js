@@ -6,8 +6,8 @@ import React, { useMemo } from "react"
 import { useSelectAtom } from "@/atoms/helpers"
 import { formatDistanceToNow, isBefore, subYears } from "date-fns"
 import { LargeEpisodeListItem } from "@/components/shared/large-episode-list-item"
-import { valueContainsNC, valueContainsSpecials } from "@/lib/local-library/utils"
 import { LocalFile } from "@/lib/local-library/types"
+import { valueContainsNC, valueContainsSpecials } from "@/lib/local-library/utils/filtering.utils"
 
 type Props = {
     fileAtoms: PrimitiveAtom<LocalFile>[],

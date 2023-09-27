@@ -80,7 +80,7 @@ export const rest_libraryEntryAtoms = splitAtom(atom(get => {
 /**
  * @example
  * const getLastFile = useSetAtom(getLibraryEntryAtomsByMediaIdAtom)
- * const lastFile = getLastFile(21)
+ * const latestFile = getLastFile(21)
  */
 export const getLibraryEntryAtomsByMediaIdAtom = atom(null,
     (get, set, mediaId: number) => get(libraryEntryAtoms).find((fileAtom) => get(fileAtom).id === mediaId),

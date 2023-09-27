@@ -14,10 +14,10 @@ import {
 import { logger } from "@/lib/helpers/debug"
 import { AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import { anilist_findMediaEdge } from "@/lib/anilist/utils"
-import { matching_compareTitleVariationsToMediaTitles } from "@/lib/local-library/utils"
 import { cache } from "react"
 import { redirect } from "next/navigation"
 import axios from "axios"
+import { matching_compareTitleVariationsToMedia } from "@/lib/local-library/utils/matching.utils"
 
 /* -------------------------------------------------------------------------------------------------
  * General
@@ -277,7 +277,7 @@ export async function searchUniqueWithAnilist({ name, ...method }: {
 }) {
     logger("searchWithAnilist").info("Ran")
     const res = await useAniListAsyncQuery(SearchAnimeShortMediaDocument, { search: name, page: 1, ...method })
-    const media = res.Page?.media?.filter(Boolean).map(media => matching_compareTitleVariationsToMediaTitles(media, [name]))
+    const media = res.Page?.media?.filter(Boolean).map(media => matching_compareTitleVariationsToMedia(media, [name]))
     if (!media?.length) return res
     const lowest = media.reduce((prev, curr) => prev.distance <= curr.distance ? prev : curr)
     return { Page: { media: [lowest.media] } }

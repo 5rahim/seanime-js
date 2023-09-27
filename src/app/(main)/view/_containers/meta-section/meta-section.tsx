@@ -20,6 +20,7 @@ import { useStableSelectAtom } from "@/atoms/helpers"
 import { AiFillPlayCircle } from "@react-icons/all-files/ai/AiFillPlayCircle"
 import { useSettings } from "@/atoms/settings"
 import capitalize from "lodash/capitalize"
+import { anilist_getNextEpisodeToWatch } from "@/lib/anilist/utils"
 
 interface MetaSectionProps {
     children?: React.ReactNode
@@ -35,13 +36,7 @@ export const MetaSection: React.FC<MetaSectionProps> = (props) => {
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(detailedMedia.id)
     const progress = useStableSelectAtom(collectionEntryAtom, entry => entry?.progress)
 
-    const nextEpisode = useMemo(() => {
-        if (!!detailedMedia.nextAiringEpisode?.episode) {
-            return progress ? (progress + 1 <= detailedMedia.nextAiringEpisode.episode - 1 ? progress + 1 : detailedMedia.nextAiringEpisode.episode - 1) : 1
-        } else {
-            return progress ? (progress + 1 <= detailedMedia.episodes! ? progress + 1 : 1) : 1
-        }
-    }, [progress])
+    const nextEpisode = useMemo(() => anilist_getNextEpisodeToWatch(detailedMedia, progress), [progress])
 
     const relations = (detailedMedia.relations?.edges?.map(edge => edge) || [])
         .filter(Boolean)

@@ -11,12 +11,12 @@ import { AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import { Nullish } from "@/types/common"
 import { AnimeCollectionQuery } from "@/gql/graphql"
 import { logger } from "@/lib/helpers/debug"
-import { ScanLogging } from "@/lib/local-library/logs"
-import { valueContainsSeason } from "@/lib/local-library/utils"
+import { _dumpToFile, ScanLogging } from "@/lib/local-library/logs"
 import { anilist_shortMediaToShowcaseMedia } from "@/lib/anilist/utils"
 import { LocalFile, LocalFileWithMedia } from "@/lib/local-library/types"
 import rakun from "@/lib/rakun"
 import orderBy from "lodash/orderBy"
+import { valueContainsSeason } from "@/lib/local-library/utils/filtering.utils"
 
 /**
  * @internal Used on the server
@@ -31,7 +31,7 @@ import orderBy from "lodash/orderBy"
 export async function retrieveLocalFilesWithMedia(props: {
     settings: Settings
     userName: Nullish<string>
-    data: AnimeCollectionQuery
+    anilistCollection: AnimeCollectionQuery
     markedPaths: {
         ignored: string[]
         locked: string[]
@@ -42,7 +42,7 @@ export async function retrieveLocalFilesWithMedia(props: {
     const {
         settings,
         userName,
-        data,
+        anilistCollection,
         markedPaths,
         _scanLogging,
     } = props
@@ -62,9 +62,11 @@ export async function retrieveLocalFilesWithMedia(props: {
             _scanLogging,
         })
 
+        await _dumpToFile("local-files", localFiles) /* DUMP */
+
         // If there are files, hydrate them with their associated [AnilistShowcaseMedia]
         if (localFiles.length > 0) {
-            let allUserMedia = data.MediaListCollection?.lists?.map(n => n?.entries).flat().filter(Boolean).map(entry => entry.media) ?? [] satisfies AnilistShortMedia[]
+            let allUserMedia = anilistCollection.MediaListCollection?.lists?.map(n => n?.entries).flat().filter(Boolean).map(entry => entry.media) ?? [] satisfies AnilistShortMedia[]
             allUserMedia = allUserMedia.map(media => anilist_shortMediaToShowcaseMedia(media)) satisfies AnilistShowcaseMedia[]
             _scanLogging.add("repository/scanLocalFiles", ">>> [repository/retrieveHydratedLocalFiles]")
             _scanLogging.add("repository/scanLocalFiles", "Getting related media from user watch list")
@@ -87,6 +89,8 @@ export async function retrieveLocalFilesWithMedia(props: {
             const mediaRomTitles = allMedia.map(media => media.title?.romaji).filter(Boolean)
             const mediaPreferredTitles = allMedia.map(media => media.title?.userPreferred).filter(Boolean)
             const mediaSynonymsWithSeason = allMedia.flatMap(media => media.synonyms?.filter(valueContainsSeason)).filter(Boolean)
+
+            await _dumpToFile("all-media", allMedia) /* DUMP */
 
             _scanLogging.add("repository/scanLocalFiles", "Hydrating local files")
             let localFilesWithMedia: LocalFileWithMedia[] = []

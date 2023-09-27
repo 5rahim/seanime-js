@@ -32,6 +32,8 @@ import { EpisodeSectionSlider } from "@/app/(main)/view/_containers/episode-sect
 import { AppLayoutStack } from "@/components/ui/app-layout"
 import dynamic from "next/dynamic"
 import { Alert } from "@/components/ui/alert"
+import { anilist_canTrackProgress } from "@/lib/anilist/utils"
+import { localFile_isMainWithValidEpisode } from "@/lib/local-library/utils/episode.utils"
 
 const EpisodeOffsetAction = dynamic(() => import("@/app/(main)/view/_containers/episode-section/_components/bulk-actions/episode-offset-action"), { ssr: false })
 
@@ -44,7 +46,6 @@ interface EpisodeSectionProps {
 export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
 
     const { children, detailedMedia, aniZipData, ...rest } = props
-    const maxEp = detailedMedia.nextAiringEpisode?.episode ? detailedMedia.nextAiringEpisode.episode - 1 : detailedMedia.episodes!
 
     const entryAtom = useLibraryEntryAtomByMediaId(detailedMedia.id)
     const { toWatch, toWatchSlider, watched, allMain } = useDisplayLocalFileAtomsByMediaId(detailedMedia.id)
@@ -54,7 +55,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
     const mediaStatus = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.media?.status)
     const progress = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress)
 
-    const canTrackProgress = (!progress || progress < maxEp) && progress !== maxEp
+    const canTrackProgress = anilist_canTrackProgress(detailedMedia, progress)
     const nextUpFilePath = useStableSelectAtom(canTrackProgress ? toWatch[0] : toWatch[toWatch.length - 1], file => file?.path)
     const { anifyEpisodeCovers } = useAnifyEpisodeCovers(detailedMedia.id)
 
@@ -73,7 +74,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
         onTick: console.log,
         onVideoComplete: (fileName) => {
             const file = getFile(fileName)
-            if (!!file && !file.metadata.isSpecial && !file.metadata.isNC) {
+            if (file && localFile_isMainWithValidEpisode(file)) {
                 console.log("video completed")
                 setProgressTracking(draft => {
                     draft.filesWatched.push(file)

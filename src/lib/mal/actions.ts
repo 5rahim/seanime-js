@@ -1,7 +1,8 @@
 "use server"
 import { logger } from "@/lib/helpers/debug"
 import { MALSearchResultAnime } from "@/lib/mal/types"
-import { matching_compareValuesToTitle } from "@/lib/local-library/utils"
+
+import { matching_getBestMatchFromTitleComparison } from "@/lib/local-library/utils/matching.utils"
 
 export async function searchWithMAL(title: string, slice: number | null | undefined = 4) {
     logger("lib/mal/fetchMatchingSuggestions").info(`Fetching matching suggestions for ${title}`)
@@ -44,7 +45,7 @@ export async function advancedSearchWithMAL(title: string) {
             es_score: n.es_score - 0.1,
         }) : n).sort((a, b) => b.es_score - a.es_score)
 
-    const result = matching_compareValuesToTitle(_title, suggestions.map(n => n.name))
+    const result = matching_getBestMatchFromTitleComparison(_title, suggestions.map(n => n.name))
 
     const test = suggestions.find(n => (
         n.name.toLowerCase().startsWith(`${_title.split(/\s/)[0]} ${_title.split(/\s/)[1] || ``}`.toLowerCase().trim())

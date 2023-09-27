@@ -18,7 +18,7 @@ import { Nullish } from "@/types/common"
 import { Button } from "@/components/ui/button"
 import toast from "react-hot-toast"
 import { Select } from "@/components/ui/select"
-import { localFile_getAniDBEpisodeInteger } from "@/lib/local-library/utils"
+import { localFile_getAniDBEpisodeInteger } from "@/lib/local-library/utils/episode.utils"
 import { BetaBadge } from "@/components/application/beta-badge"
 
 const __episodeOffsetActionModalAtom = atomWithImmer<{ open: boolean, mediaId: number | null }>({

@@ -15,6 +15,8 @@ import { createTypesafeFormSchema, Field, TypesafeForm } from "@/components/ui/t
 import toast from "react-hot-toast"
 import { __useRerenderLocalFiles } from "@/atoms/library/local-file.atoms"
 import { LocalFile } from "@/lib/local-library/types"
+import { localFile_episodeMappingDiffers } from "@/lib/local-library/utils/episode.utils"
+import { anizip_getEpisodeFromMetadata } from "@/lib/anizip/utils"
 
 const { Provider: ScopedProvider, useAtom: useScopedAtom } = createIsolation()
 
@@ -38,12 +40,12 @@ export const EpisodeItem = React.memo((props: {
     const setFileLocked = useFocusSetAtom(fileAtom, "locked")
     const setFileMediaId = useFocusSetAtom(fileAtom, "mediaId")
 
-    const aniZipEpisode = aniZipData?.episodes[metadata.aniDBEpisodeNumber || String(metadata.episode)]
+    const aniZipEpisode = anizip_getEpisodeFromMetadata(aniZipData, { metadata })
     const anifyEpisodeCover = anifyEpisodeCovers?.find(n => n.episode === metadata.episode)?.img
     const fileTitle = useMemo(() => parsedInfo?.original?.replace(/.(mkv|mp4)/, "")?.replaceAll(/(\[)[a-zA-Z0-9 ._~-]+(\])/ig, "")?.replaceAll(/[_,-]/g, " "), [parsedInfo])
 
     const mappingDiffers = useMemo(() => {
-        return (!metadata.isSpecial && metadata.episode !== undefined && !!metadata.aniDBEpisodeNumber && metadata.episode != Number(metadata.aniDBEpisodeNumber.replace("S", "")))
+        return localFile_episodeMappingDiffers({ metadata })
     }, [metadata])
 
     const image = () => {

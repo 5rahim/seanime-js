@@ -77,3 +77,20 @@ export class ScanLogging {
     }
 
 }
+
+/* -------------------------------------------------------------------------------------------------
+ * Dump
+ * -----------------------------------------------------------------------------------------------*/
+
+export async function _dumpToFile(key: string, content: any) {
+    const snapshotDir = path.resolve("logs")
+    if (!existsSync(snapshotDir)) {
+        await fs.mkdir(snapshotDir)
+    }
+    // Generate the timestamp for the snapshot file name
+    const timestamp = new Date().toISOString().replace(/:/g, "_")
+    const snapshotFilename = `${timestamp.replaceAll(".", "_")}-DUMP-${key}.txt`
+    const snapshotPath = path.join(snapshotDir, snapshotFilename)
+
+    await fs.writeFile(snapshotPath, JSON.stringify(content, null, 2), { encoding: "utf-8" })
+}
