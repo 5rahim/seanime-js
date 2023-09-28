@@ -153,13 +153,11 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
                     description={<div className={"space-y-1.5 mt-1"}>
                         <p>The number of episodes on AniDB ({aniZipData?.episodeCount}) does not match the number of
                             episodes on AniList ({detailedMedia.episodes}). In order to accurately track your progress
-                            you should download that episode and update its metadata</p>
+                            you should download that episode</p>
                         {!!aniZipData.episodes["S1"] && <>
                             <p className={"text-[1.1rem]"}>{`->`} <strong>Seanime detected that AniList might be
                                 counting a "Special" episode as a main one.</strong></p>
-                            <p>&nbsp;e.g., Kimi ni Todoke Season 2 Episode 0 (episode number "S1" on AniDB) is counted
-                                as a main episode by AniList, offset all the files' metadata episode by 1, update
-                                "S01E00.mkv" metadata episode to 1.</p>
+                            <p>&nbsp;e.g., You might be missing Episode 0.</p>
                         </>}
                         <p>
                             <a href={"https://anidb.net/anime/" + aniZipData.mappings.anidb_id} target={"_blank"}
