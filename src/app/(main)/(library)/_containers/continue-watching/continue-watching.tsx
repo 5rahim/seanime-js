@@ -3,7 +3,6 @@ import { useMediaDownloadInfo } from "@/lib/download/helpers"
 import { useLatestMainLocalFileByMediaId } from "@/atoms/library/local-file.atoms"
 import React, { memo, useMemo } from "react"
 import { useQuery } from "@tanstack/react-query"
-import axios from "axios"
 import { Skeleton } from "@/components/ui/skeleton"
 import { AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import { useRouter } from "next/navigation"
@@ -13,6 +12,7 @@ import { LibraryEntry } from "@/atoms/library/library-entry.atoms"
 import { formatDistanceToNow, isBefore, subYears } from "date-fns"
 import { anilist_getEpisodeCeilingFromMedia } from "@/lib/anilist/utils"
 import { anizip_getEpisode } from "@/lib/anizip/utils"
+import { fetchAniZipData } from "@/lib/anizip/helpers"
 
 export function ContinueWatching(props: { entryAtom: Atom<LibraryEntry> }) {
 
@@ -45,8 +45,7 @@ export function ContinueWatching(props: { entryAtom: Atom<LibraryEntry> }) {
     const { data, isLoading } = useQuery({
         queryKey: ["continue-watching-episode", media.id, nextEpisode, progress],
         queryFn: async () => {
-            const { data } = await axios.get<AniZipData>("https://api.ani.zip/mappings?anilist_id=" + Number(media.id))
-            return data
+            return await fetchAniZipData(media.id)
         },
         keepPreviousData: false,
         enabled: !!nextEpisode,

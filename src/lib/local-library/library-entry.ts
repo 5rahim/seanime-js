@@ -30,15 +30,15 @@ export const inspectProspectiveLibraryEntry = async (props: {
     media: AnilistShowcaseMedia
     files: LocalFileWithMedia[] // Grouped files under same media or all files
     _mediaCache: Map<number, AnilistShortMedia>
+    _aniZipCache: Map<number, AniZipData>
     _scanLogging: ScanLogging
 }): Promise<ProspectiveLibraryEntry> => {
 
-    const _aniZipCache = new Map<number, AniZipData>
     // Right now the map will only contain 1 entry
     // In the future we could use a global offset map that comes from the client
     // const _episodeOffsets = new Map<number, number>()
 
-    const { _mediaCache, _scanLogging } = props
+    const { _mediaCache, _scanLogging, _aniZipCache } = props
     const currentMedia = props.media
     const files = props.files.filter(f => f.media?.id === currentMedia?.id) // redundancy
 
@@ -131,6 +131,7 @@ export const inspectProspectiveLibraryEntry = async (props: {
                 media: currentMedia,
                 _mediaCache: _mediaCache,
                 _aniZipCache: _aniZipCache,
+                forceHydrate: true,
                 _scanLogging,
             })
             if (!hydratedFileData.error) {
@@ -263,22 +264,15 @@ export async function manuallyMatchFiles(props: {
                         media: data.Media,
                         _mediaCache: _cache,
                         _aniZipCache: _aniZipCache,
+                        forceHydrate: true,
+                        hydrationFallback: {
+                            episode: 1,
+                            aniDBEpisodeNumber: "S1",
+                            isSpecial: true,
+                        }, // TODO Give option to user
                         _scanLogging,
                     })
-
-                    if (!hydratedFileData.error) {
-                        hydratedFiles.push(hydratedFileData.file)
-                    } else {
-                        // If we still can't hydrate the file, we'll just add it as a special
-                        hydratedFiles.push({
-                            ...files[i],
-                            metadata: {
-                                episode: 1,
-                                aniDBEpisodeNumber: "S1",
-                                isSpecial: true,
-                            },
-                        })
-                    }
+                    hydratedFiles.push(hydratedFileData.file)
                 }
 
                 _scanLogging.clear()
@@ -286,7 +280,7 @@ export async function manuallyMatchFiles(props: {
                 _aniZipCache.clear()
 
                 // Return media so that the client updates the [LocalFile]s
-                return { mediaId: mediaId, files: hydratedFiles }
+                return { mediaId: mediaId, files: hydratedFiles.filter(Boolean) }
 
                 // return { error: animeExistsInUsersWatchList ? "Anime exists in list" : "Anime doesn't exist in list" }
 

@@ -8,9 +8,10 @@ import { path_getDirectoryName, path_removeTopPath, path_splitPath } from "@/lib
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
 import { AnimeShortMediaByIdDocument } from "@/gql/graphql"
 import { experimental_analyzeMediaTree } from "@/lib/anilist/actions"
-import { LocalFile, LocalFileWithMedia } from "@/lib/local-library/types"
+import { LocalFile, LocalFileMetadata, LocalFileWithMedia } from "@/lib/local-library/types"
 import { localFile_getParsedEpisode } from "@/lib/local-library/utils/parsed-info.utils"
 import { valueContainsNC, valueContainsSpecials } from "@/lib/local-library/utils/filtering.utils"
+import { fetchAniZipData } from "@/lib/anizip/helpers"
 
 /**
  * @description
@@ -168,12 +169,22 @@ export const createLocalFileWithMedia = async (props: {
 export async function hydrateLocalFileWithInitialMetadata(props: {
     file: LocalFile,
     media: AnilistShowcaseMedia
+    forceHydrate?: boolean
+    hydrationFallback?: Partial<LocalFileMetadata>
     _mediaCache: Map<number, AnilistShortMedia>
     _aniZipCache: Map<number, AniZipData>
     _scanLogging: ScanLogging
 }) {
 
-    const { file: _originalFile, media, _mediaCache, _scanLogging, _aniZipCache } = props
+    const {
+        file: _originalFile,
+        media,
+        _mediaCache,
+        _scanLogging,
+        _aniZipCache,
+        forceHydrate = false,
+        hydrationFallback,
+    } = props
 
     let file = structuredClone(_originalFile)
     let error = false
@@ -235,8 +246,9 @@ export async function hydrateLocalFileWithInitialMetadata(props: {
                 if (episode !== undefined) { // If an episode was parsed
 
                     if (episode === 0) { // Might be a special
-                        _scanLogging.add(file.path, `   -> Episode number is 0, setting it as a special`)
-                        file.metadata.isSpecial = true
+                        _scanLogging.add(file.path, `   -> warning - Episode number is 0, mapping might be incorrect`)
+                        _scanLogging.add(file.path, `   -> episode = ${episode}`)
+                        _scanLogging.add(file.path, `   -> aniDBEpisodeNumber = S1`)
                         file.metadata.episode = 0
                         file.metadata.aniDBEpisodeNumber = "S1"
                     } else {
@@ -275,15 +287,52 @@ export async function hydrateLocalFileWithInitialMetadata(props: {
         _scanLogging.add(file.path, `   -> isSpecial = true`)
         _scanLogging.add(file.path, `   -> aniDBEpisodeNumber = S${String(file.metadata.episode ?? 1)} (overwritten)`)
     } else {
+        error = false
         file.metadata.isNC = true
         _scanLogging.add(file.path, `   -> isNC = true`)
     }
 
-    if (error) {
+    if (error && !forceHydrate) {
+        error = true
         _scanLogging.add(file.path, `   -> error - File will be un-matched`)
+
+    } else if (error) { // Error but we need to force hydration
+        error = false
+        if (hydrationFallback) {
+            file.metadata = hydrationFallback ?? {
+                episode: 1,
+                aniDBEpisodeNumber: "S1",
+                isSpecial: true,
+            }
+        }
+
+    }
+
+    if (!error) { // No errors, add supplementary AniDB metadata
+        // Finally, set media id
+        if (!file.mediaId) {
+            file.mediaId = media.id
+        }
+
+        const aniZipData = await fetchAniZipData(file.mediaId, _aniZipCache)
+        _scanLogging.add(file.path, "Hydrating supplementary AniDB metadata")
+        if (aniZipData) {
+            _scanLogging.add(file.path, `   -> aniDBEpisodeCount = ${aniZipData.episodeCount}`)
+            _scanLogging.add(file.path, `   -> aniDBSpecialCount = ${aniZipData.specialCount}`)
+            file.metadata.aniDBMediaInfo = {
+                episodeCount: aniZipData.episodeCount,
+                specialCount: aniZipData.specialCount,
+            }
+        } else {
+            _scanLogging.add(file.path, "-> error - Could not retrieve AniDB metadata")
+        }
+
     }
 
 
-    return { file, error }
+    return {
+        file,
+        error,
+    }
 
 }

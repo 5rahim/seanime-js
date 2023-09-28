@@ -1,5 +1,7 @@
 ## Fixes
 
+- Offset bulk action: Stops working when one episode number is 0
+
 ## Improvements
 
 - Finished Blind scan

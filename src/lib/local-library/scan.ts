@@ -12,13 +12,13 @@ import { inspectProspectiveLibraryEntry } from "@/lib/local-library/library-entr
 import { getMediaTitlesFromLocalDirectory, retrieveLocalFilesWithMedia } from "@/lib/local-library/repository"
 import { getFulfilledValues, PromiseAllSettledBatch, PromiseAllSettledBatchWithDelay } from "@/lib/helpers/batch"
 import { advancedSearchWithMAL } from "@/lib/mal/actions"
-import axios from "axios"
 import gql from "graphql-tag"
 import { experimental_fetchMediaTree } from "@/lib/anilist/actions"
 import uniqBy from "lodash/uniqBy"
 import omit from "lodash/omit"
 import groupBy from "lodash/groupBy"
 import chunk from "lodash/chunk"
+import { fetchAniZipData } from "@/lib/anizip/helpers"
 
 /**
  * Goes through non-locked and non-ignored [LocalFile]s and returns hydrated [LocalFile]s
@@ -59,6 +59,7 @@ export async function scanLocalFiles(props: {
     const anilistCollection = await useAniListAsyncQuery(AnimeCollectionDocument, { userName })
     const watchListMediaIds = new Set(anilistCollection.MediaListCollection?.lists?.filter(n => n?.entries).flatMap(n => n?.entries?.map(n => n?.media)).map(n => n?.id).filter(Boolean))
 
+
     // Get the hydrated files
     _scanLogging.add("repository/scanLocalFiles", "Retrieving and hydrating local files")
     const localFilesWithMediaOrNull = await retrieveLocalFilesWithMedia({
@@ -73,97 +74,114 @@ export async function scanLocalFiles(props: {
 
     _scanLogging.add("repository/scanLocalFiles", `Retrieved ${localFilesWithMediaOrNull?.length || 0} files`)
 
-    if (localFilesWithMediaOrNull && localFilesWithMediaOrNull.length > 0) {
-
-        // Constants
-        const filesWithNoMedia: LocalFileWithMedia[] = localFilesWithMediaOrNull.filter(n => !n.media) // Unsuccessfully matched
-        const localFilesWithMedia = localFilesWithMediaOrNull.filter(n => !!n.media) // Successfully matched files
-        const matchedMedia = uniqBy(localFilesWithMediaOrNull.map(n => n.media), n => n?.id) // Media with file matches
-
-        /** Values to be returned **/
-        let checkedFiles: LocalFile[] = [...filesWithNoMedia.map(f => omit(f, "media"))]
-
-        // Keep track of queried media to avoid repeat
-        const _queriedMediaCache = new Map<number, AnilistShortMedia>()
-
-        // We group all the hydrated files we got by their media, so we can check them by group (entry)
-        const _groupedByMediaId = groupBy(localFilesWithMedia, n => n.media!.id)
-        _scanLogging.add("repository/scanLocalFiles", "Inspecting prospective library entry")
-        for (let i = 0; i < Object.keys(_groupedByMediaId).length; i++) {
-            const mediaId = Object.keys(_groupedByMediaId)[i]
-            const mediaIdAsNumber = Number(mediaId)
-
-            if (!isNaN(mediaIdAsNumber)) {
-                const currentMedia = matchedMedia.find(media => media?.id === mediaIdAsNumber)
-                const filesToBeInspected = localFilesWithMedia.filter(f => f.media?.id === mediaIdAsNumber)
-
-                // TODO Check if filesToBeInspected has duplicated episode numbers, this would indicate mis-match and missing season
-
-                if (currentMedia) {
-                    // Inspect the files grouped under same media
-                    const { acceptedFiles, rejectedFiles } = await inspectProspectiveLibraryEntry({
-                        media: currentMedia,
-                        files: filesToBeInspected,
-                        _mediaCache: _queriedMediaCache,
-                        _scanLogging,
-                    })
-
-                    checkedFiles = [
-                        ...checkedFiles,
-                        // Set media id for accepted files
-                        ...acceptedFiles.map(f => omit(f, "media")).map(file => ({
-                            ...file,
-                            mediaId: file.mediaId || currentMedia.id,
-                        })),
-                        ...rejectedFiles.map(f => omit(f, "media")),
-                    ]
-                }
-
-            }
-        }
-
-        _queriedMediaCache.clear()
-
-        const unknownButAddedMediaIds = new Set() // Keep track to avoid repeat
-        // Go through checked files -> If we find a mediaId that isn't in the user watch list, add that media to PLANNING list
-        for (let i = 0; i < checkedFiles.length; i++) { // TODO Batch this
-            const file = checkedFiles[i]
-            if (file.mediaId && !unknownButAddedMediaIds.has(file.mediaId) && !watchListMediaIds.has(file.mediaId)) {
-                try {
-                    const mutation = await useAniListAsyncQuery(UpdateEntryDocument, {
-                        mediaId: file.mediaId, // Int
-                        status: "PLANNING", // MediaListStatus
-                    }, token)
-                    _scanLogging.add(file.path, "Added media to PLANNING list")
-                } catch (e) {
-                    _scanLogging.add(file.path, "error - Could not add media to PLANNING list")
-                }
-                unknownButAddedMediaIds.add(file.mediaId)
-            }
-        }
-
-        const end = performance.now()
-
-        _scanLogging.add("repository/scanLocalFiles", "Finished")
-        _scanLogging.add("repository/scanLocalFiles", `The scan was completed in ${((end - start) / 1000).toFixed(2)} seconds`)
-        logger("repository/scanLocalFiles").success("Library scanned successfully", checkedFiles.length)
-
+    if (!(localFilesWithMediaOrNull && localFilesWithMediaOrNull.length > 0)) {
+        logger("repository/scanLocalFiles").success("Library scanned successfully 0")
         await _scanLogging.writeSnapshot()
         _scanLogging.clear()
 
-        return {
-            /**
-             * Non-locked and non-ignored scanned files with up-to-date meta (mediaIds)
-             */
-            checkedFiles,
+        return { scannedFiles: [] }
+    }
+
+    const _aniZipCache = new Map<number, AniZipData>
+
+    /**/
+    async function getAniZipData(mediaId: number) {
+        return fetchAniZipData(mediaId, _aniZipCache)
+    }
+
+    /**/
+
+    // Constants
+    const filesWithNoMedia: LocalFileWithMedia[] = localFilesWithMediaOrNull.filter(n => !n.media) // Unsuccessfully matched
+    const localFilesWithMedia = localFilesWithMediaOrNull.filter(n => !!n.media) // Successfully matched files
+    const matchedMedia = uniqBy(localFilesWithMediaOrNull.map(n => n.media), n => n?.id) // Media with file matches
+
+    /** Values to be returned **/
+    let scannedFiles: LocalFile[] = [...filesWithNoMedia.map(f => omit(f, "media"))]
+
+    // Keep track of queried media to avoid repeat
+    const _queriedMediaCache = new Map<number, AnilistShortMedia>()
+
+    // We group all the hydrated files we got by their media, so we can check them by group (entry)
+    const _groupedByMediaId = groupBy(localFilesWithMedia, n => n.media!.id)
+
+    _scanLogging.add("repository/scanLocalFiles", "Retrieve AniZip data")
+    await PromiseAllSettledBatchWithDelay(getAniZipData, Object.keys(_groupedByMediaId).map(n => Number(n)), 20, 600)
+
+    _scanLogging.add("repository/scanLocalFiles", "Inspecting prospective library entry")
+    for (let i = 0; i < Object.keys(_groupedByMediaId).length; i++) {
+        const mediaId = Object.keys(_groupedByMediaId)[i]
+        const mediaIdAsNumber = Number(mediaId)
+
+        if (!isNaN(mediaIdAsNumber)) {
+            const currentMedia = matchedMedia.find(media => media?.id === mediaIdAsNumber)
+            const filesToBeInspected = localFilesWithMedia.filter(f => f.media?.id === mediaIdAsNumber)
+
+            // TODO Check if filesToBeInspected has duplicated episode numbers, this would indicate mis-match and missing season
+
+            if (currentMedia) {
+                // Inspect the files grouped under same media
+                const { acceptedFiles, rejectedFiles } = await inspectProspectiveLibraryEntry({
+                    media: currentMedia,
+                    files: filesToBeInspected,
+                    _mediaCache: _queriedMediaCache,
+                    _aniZipCache: _aniZipCache,
+                    _scanLogging,
+                })
+
+                scannedFiles = [
+                    ...scannedFiles,
+                    // Set media id for accepted files
+                    ...acceptedFiles.map(f => omit(f, "media")).map(file => ({
+                        ...file,
+                        mediaId: file.mediaId || currentMedia.id,
+                    })),
+                    ...rejectedFiles.map(f => omit(f, "media")),
+                ]
+            }
+
         }
     }
 
-    logger("repository/scanLocalFiles").success("Library scanned successfully 0")
+    _queriedMediaCache.clear()
+    _aniZipCache.clear()
+
+    const unknownButAddedMediaIds = new Set() // Keep track to avoid repeat
+    // Go through checked files -> If we find a mediaId that isn't in the user watch list, add that media to PLANNING list
+    for (let i = 0; i < scannedFiles.length; i++) { // TODO Batch this
+        const file = scannedFiles[i]
+        if (file.mediaId && !unknownButAddedMediaIds.has(file.mediaId) && !watchListMediaIds.has(file.mediaId)) {
+            try {
+                const mutation = await useAniListAsyncQuery(UpdateEntryDocument, {
+                    mediaId: file.mediaId, // Int
+                    status: "PLANNING", // MediaListStatus
+                }, token)
+                _scanLogging.add(file.path, "Added media to PLANNING list")
+            } catch (e) {
+                _scanLogging.add(file.path, "error - Could not add media to PLANNING list")
+            }
+            unknownButAddedMediaIds.add(file.mediaId)
+        }
+    }
+
+    const end = performance.now()
+
+    _scanLogging.add("repository/scanLocalFiles", "Finished")
+    _scanLogging.add("repository/scanLocalFiles", `The scan was completed in ${((end - start) / 1000).toFixed(2)} seconds`)
+    logger("repository/scanLocalFiles").success("Library scanned successfully", scannedFiles.length)
+
     await _scanLogging.writeSnapshot()
     _scanLogging.clear()
 
-    return { checkedFiles: [] }
+    await _dumpToFile("scanned-files", scannedFiles)
+
+    return {
+        /**
+         * Non-locked and non-ignored scanned files with up-to-date meta (mediaIds)
+         */
+        scannedFiles,
+    }
+
 }
 
 /* -------------------------------------------------------------------------------------------------
@@ -202,9 +220,7 @@ export async function experimental_blindScanLocalFiles(props: {
     const malResults = (await getFulfilledValues(malBatchResults)).filter(Boolean)
 
     async function aniZipSearch(malId: number) {
-        const { data } = await axios.get<AniZipData>(`https://api.ani.zip/mappings?mal_id=${malId}`)
-        if (data.mappings.anilist_id) _aniZipCache.set(data.mappings.anilist_id, data) // Populate cache
-        return data
+        return await fetchAniZipData(malId, _aniZipCache, "mal")
     }
 
     const aniZipBatchResults = await PromiseAllSettledBatch(aniZipSearch, malResults.map(n => n.id), 50)

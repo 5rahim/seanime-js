@@ -18,7 +18,7 @@ import { LocalFile } from "@/lib/local-library/types"
 import {
     localFile_getDisplayTitle,
     localFile_getEpisodeCover,
-    localFile_isMainWithValidEpisode,
+    localFile_isMain,
 } from "@/lib/local-library/utils/episode.utils"
 import { anizip_getEpisodeFromMetadata } from "@/lib/anizip/utils"
 import { useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist/entries.atoms"
@@ -53,7 +53,7 @@ export const EpisodeItem = React.memo((props: {
 
     const image = useMemo(() => localFile_getEpisodeCover({ metadata }, aniZipEpisode?.image, anifyEpisodeCover, media?.coverImage?.medium), [metadata, anifyEpisodeCover, aniZipEpisode?.image])
 
-    const isWatched = useMemo(() => (localFile_isMainWithValidEpisode({ metadata }) && !!progress && progress >= metadata.episode!), [progress, metadata])
+    const isWatched = useMemo(() => (localFile_isMain({ metadata }) && !!progress && progress >= metadata.episode!), [progress, metadata])
 
     const displayedTitle = useMemo(() => localFile_getDisplayTitle({
         metadata,

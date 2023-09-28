@@ -1,6 +1,6 @@
 "use client"
 
-import React, { startTransition } from "react"
+import React from "react"
 import { useSettings } from "@/atoms/settings"
 import { Button, IconButton } from "@/components/ui/button"
 import { openLocalDirectoryInExplorer } from "@/lib/helpers/directory"
@@ -81,17 +81,13 @@ export function LibraryToolbar() {
     }
 
     async function onLockAllFiles() {
-        startTransition(() => {
-            handleLockAllFiles()
-            bulkActionModal.close()
-        })
+        await handleLockAllFiles()
+        bulkActionModal.close()
     }
 
     async function onUnlockAllFiles() {
-        startTransition(() => {
-            handleUnlockAllFiles()
-            bulkActionModal.close()
-        })
+        await handleUnlockAllFiles()
+        bulkActionModal.close()
     }
 
 

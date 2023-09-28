@@ -71,8 +71,13 @@ const get_Display_LocalFileAtomsByMediaIdAtom = atom(null,
         // There are some episodes that have not been watched
         const canTrackProgress = mainFileAtoms.length > 0 && !!maxEp && (!!collectionEntry?.progress && collectionEntry.progress < Number(maxEp) || !collectionEntry?.progress)
 
-        const toWatch = canTrackProgress ? (mainFileAtoms?.filter(atom => get(atom).metadata.episode! > collectionEntry?.progress!) ?? []) : []
+        const toWatch = canTrackProgress ? (mainFileAtoms?.filter(atom => get(atom).metadata.episode! > collectionEntry?.progress! || get(atom).metadata.episode === 0 && (collectionEntry?.progress || 0) === 0) ?? []) : []
         const watched = mainFileAtoms?.filter(atom => get(atom).metadata.episode! <= collectionEntry?.progress!) ?? []
+
+        const mediaIncludesSpecial =
+            mainFileAtoms.findIndex(fileAtom => get(fileAtom).metadata.episode === 0) !== -1
+            && mainFileAtoms.every(fileAtom => get(fileAtom).metadata.episode !== maxEp)
+            && mainFileAtoms.every(fileAtom => !get(fileAtom).metadata.aniDBMediaInfo || get(fileAtom).metadata.aniDBMediaInfo!.episodeCount < maxEp)
 
         return {
             toWatch: toWatch.length === 0 && watched.length === 0 ? mainFileAtoms || [] : toWatch,
@@ -81,6 +86,7 @@ const get_Display_LocalFileAtomsByMediaIdAtom = atom(null,
             toWatchSlider: (!canTrackProgress) ? [...mainFileAtoms].reverse() : (toWatch.length > 0 ? toWatch : [...mainFileAtoms].reverse()),
             allMain: mainFileAtoms,
             watched,
+            mediaIncludesSpecial,
         }
 
     },
@@ -148,7 +154,7 @@ export const getLocalFileByPathAtom = atom(null, // Writable too
  * Get [LocalFile] with the highest episode number by `mediaId`
  * @return LocalFile
  */
-export const getLastestMainLocalFileByMediaIdAtom = atom(null,
+export const getLatestMainLocalFileByMediaIdAtom = atom(null,
     (get, set, mediaId: number) => {
         const fileAtoms = get(localFileAtoms).filter((fileAtom) => get(fileAtom).mediaId === mediaId && localFile_isMain(get(fileAtom)))
         const fileAtom = sortBy(fileAtoms, fileAtom => get(fileAtom).metadata.episode)[fileAtoms.length - 1]
@@ -193,6 +199,7 @@ export const useDisplayLocalFileAtomsByMediaId = (mediaId: number) => {
         toWatchSlider: Array<PrimitiveAtom<LocalFile>>
         watched: Array<PrimitiveAtom<LocalFile>>
         allMain: Array<PrimitiveAtom<LocalFile>>
+        mediaIncludesSpecial: boolean
     }
 }
 
@@ -255,7 +262,7 @@ export const useLocalFileAtomByPath = (path: string) => {
 }
 
 export const useLatestMainLocalFileByMediaId = (mediaId: number) => {
-    const getLastFile = useSetAtom(getLastestMainLocalFileByMediaIdAtom)
+    const getLastFile = useSetAtom(getLatestMainLocalFileByMediaIdAtom)
     const __ = __useListenToLocalFiles()
     return useMemo(() => getLastFile(mediaId), [__])
 }

@@ -31,10 +31,10 @@ export function localFile_getEpisode<T extends { metadata: LocalFileMetadata }>(
  * - Returns the episode number if it's greater than 0
  * @param props
  */
-export function localFile_getValidEpisode<T extends { metadata: LocalFileMetadata }>(props: T | null | undefined) {
-    const metadata = props?.metadata
-    return localFile_isValidEpisode(props) ? metadata!.episode : undefined
-}
+// export function localFile_getValidEpisode<T extends { metadata: LocalFileMetadata }>(props: T | null | undefined) {
+//     const metadata = props?.metadata
+//     return localFile_isValidEpisode(props) ? metadata!.episode : undefined
+// }
 
 
 /**
@@ -42,10 +42,10 @@ export function localFile_getValidEpisode<T extends { metadata: LocalFileMetadat
  * - Returns `true` if episode number is trackable (defined and greater than 0)
  * @param props
  */
-export function localFile_isValidEpisode<T extends { metadata: LocalFileMetadata }>(props: T | null | undefined) {
-    const episode = localFile_getEpisode(props)
-    return !!episode && episode > 0
-}
+// export function localFile_isValidEpisode<T extends { metadata: LocalFileMetadata }>(props: T | null | undefined) {
+//     const episode = localFile_getEpisode(props)
+//     return !!episode && episode > 0
+// }
 
 export function localFile_getAniDBEpisodeInteger<T extends {
     metadata: { aniDBEpisodeNumber?: string }
@@ -91,12 +91,12 @@ export function localFile_isMain<T extends { metadata: LocalFileMetadata }>(prop
  * This excludes files with 0 as an episode number
  * @param props
  */
-export function localFile_isMainWithValidEpisode<T extends {
-    metadata: LocalFileMetadata
-}>(props: T | null | undefined) {
-    const metadata = props?.metadata
-    return !!metadata && localFile_isValidEpisode(props) && !metadata.isSpecial && !metadata.isNC
-}
+// export function localFile_isMainWithValidEpisode<T extends {
+//     metadata: LocalFileMetadata
+// }>(props: T | null | undefined) {
+//     const metadata = props?.metadata
+//     return !!metadata && localFile_isValidEpisode(props) && !metadata.isSpecial && !metadata.isNC
+// }
 
 /**
  * @description
@@ -128,9 +128,7 @@ export function localFile_episodeMappingDiffers<T extends {
 export function localFile_getEpisodeCover<T extends {
     metadata: LocalFileMetadata
 }>(props: T | null | undefined, mainCover: Nullish<string>, betterCover?: Nullish<string>, fallbackCover?: Nullish<string>) {
-    const metadata = props?.metadata
-
-    if (!localFile_isMainWithValidEpisode(props) || localFile_aniDBEpisodeIsSpecial(props)) return fallbackCover
+    if (!localFile_isMain(props) || localFile_aniDBEpisodeIsSpecial(props)) return fallbackCover
 
     return localFile_episodeMappingDiffers(props) ? mainCover : betterCover || mainCover || fallbackCover
 }
@@ -162,4 +160,10 @@ export function localFile_getDisplayTitle<T extends Pick<LocalFile, "metadata" |
         return media?.title?.userPreferred || media?.title?.romaji || media?.title?.english || parsedInfo?.title || "Movie"
 
     return `Episode ${metadata.episode}`
+}
+
+
+export function localFile_mediaIncludesSpecial<T extends Pick<LocalFile, "metadata">>(props: T | null | undefined, media?: AnilistShowcaseMedia | null) {
+    if (!props || !media?.episodes || !props.metadata.aniDBMediaInfo?.episodeCount) return false
+    return Number(props.metadata.aniDBMediaInfo.episodeCount - media.episodes) === -1
 }

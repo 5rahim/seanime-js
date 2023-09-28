@@ -7,7 +7,7 @@ import { useLatestMainLocalFileByMediaId, useLocalFilesByMediaId_UNSTABLE } from
 import { useMemo } from "react"
 import { LocalFile } from "@/lib/local-library/types"
 import sortBy from "lodash/sortBy"
-import { localFile_isMainWithValidEpisode } from "@/lib/local-library/utils/episode.utils"
+import { localFile_isMain, localFile_mediaIncludesSpecial } from "@/lib/local-library/utils/episode.utils"
 import { anilist_getEpisodeCeilingFromMedia } from "@/lib/anilist/utils"
 
 export const getMediaDownloadInfo = (props: {
@@ -22,13 +22,23 @@ export const getMediaDownloadInfo = (props: {
     const lastProgress = progress ?? 0
     // e.g., 12
     const maxEp = anilist_getEpisodeCeilingFromMedia(media)
+
+    // Sometimes AniList includes Episode 0, AniDB does not
+    const specialIsIncluded = files.some(file => localFile_mediaIncludesSpecial(file, media))
+
     // e.g., [1,2,3,…,12]
-    const originalEpisodeArr = [...Array(maxEp).keys()].map((_, idx) => idx + 1)
+    let originalEpisodeArr = [...Array(maxEp).keys()].map((_, idx) => idx + 1)
+
+    // None of the files have an episode number than is equal to the AniList ceiling
+    if (specialIsIncluded && files.findIndex(file => file.metadata.episode === maxEp) === -1) {
+        originalEpisodeArr = [0, ...originalEpisodeArr.slice(0, -1)]
+    }
+
     // e.g., progress = 9 => [10,11,12] | completed => [1,2,3,…,12]
-    const actualEpisodeArr = status !== "COMPLETED" ? [...Array(maxEp).keys()].map((_, idx) => idx + 1).slice(lastProgress) : originalEpisodeArr
+    const actualEpisodeArr = status !== "COMPLETED" ? [...originalEpisodeArr.slice(lastProgress)] : originalEpisodeArr
 
     // e.g., [1,2]
-    let downloadedEpisodeArr = files.filter(file => localFile_isMainWithValidEpisode(file)).map(file => file.metadata.episode).filter(Boolean)
+    let downloadedEpisodeArr = files.filter(file => localFile_isMain(file)).map(file => file.metadata.episode)
 
     // No files with episode number, but we know that the media is a movie, and there is at least a file associated with that media
     if (
@@ -48,6 +58,8 @@ export const getMediaDownloadInfo = (props: {
     if (schedulingIssues) {
         missingArr = []
     }
+
+    console.log(originalEpisodeArr, missingArr)
 
     return {
         toDownload: missingArr.length,
@@ -80,7 +92,7 @@ export function useMediaDownloadInfo(media: AnilistDetailedMedia) {
         files: files,
         progress: collectionEntryProgress,
         status: collectionEntryStatus,
-    }), [files])
+    }), [files.length])
 
     return {
         entryAtom,

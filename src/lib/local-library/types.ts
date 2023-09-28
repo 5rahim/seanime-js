@@ -26,6 +26,12 @@ export type LocalFileMetadata = {
     aniDBEpisodeNumber?: string
     // OPs, EDs, Bonus content...
     isNC?: boolean
+    aniDBMediaInfo?: LocalFileAniDBInfo
+}
+
+export type LocalFileAniDBInfo = {
+    episodeCount: number,
+    specialCount: number,
 }
 
 export type LocalFile = {

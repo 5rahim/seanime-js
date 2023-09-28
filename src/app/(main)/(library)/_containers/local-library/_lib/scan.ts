@@ -48,8 +48,8 @@ export function useManageLibraryEntries(opts: UseManageEntriesOptions) {
 
             console.log("Finished scan")
 
-            if (result && result.checkedFiles && !result.error) {
-                const incomingFiles = result.checkedFiles
+            if (result && result.scannedFiles && !result.error) {
+                const incomingFiles = result.scannedFiles
 
                 /**
                  * Refresh the local files by adding scanned files and keeping locked/ignored files intact
@@ -89,27 +89,27 @@ export function useManageLibraryEntries(opts: UseManageEntriesOptions) {
                     locked: [],
                 },
             })
-            if (result && result.checkedFiles) {
-                if (result.checkedFiles.length > 0) {
+            if (result && result.scannedFiles) {
+                if (result.scannedFiles.length > 0) {
 
                     if (opts.rescanOptions?.preserveLockedFileStatus || opts.rescanOptions?.preserveIgnoredFileStatus) {
                         setLocalFiles(draft => {
                             const lockedPathsSet = new Set(draft.filter(file => !!file.locked).map(file => file.path))
                             const ignoredPathsSet = new Set(draft.filter(file => !!file.ignored).map(file => file.path))
                             const final = []
-                            for (let i = 0; i < result.checkedFiles.length; i++) {
-                                if (opts.rescanOptions?.preserveLockedFileStatus && lockedPathsSet.has(result.checkedFiles[i].path)) { // Reset locked status
-                                    result.checkedFiles[i].locked = true
+                            for (let i = 0; i < result.scannedFiles.length; i++) {
+                                if (opts.rescanOptions?.preserveLockedFileStatus && lockedPathsSet.has(result.scannedFiles[i].path)) { // Reset locked status
+                                    result.scannedFiles[i].locked = true
                                 }
-                                if (opts.rescanOptions?.preserveIgnoredFileStatus && ignoredPathsSet.has(result.checkedFiles[i].path)) { // Reset ignored status
-                                    result.checkedFiles[i].ignored = true
+                                if (opts.rescanOptions?.preserveIgnoredFileStatus && ignoredPathsSet.has(result.scannedFiles[i].path)) { // Reset ignored status
+                                    result.scannedFiles[i].ignored = true
                                 }
-                                final.push(result.checkedFiles[i])
+                                final.push(result.scannedFiles[i])
                             }
                             return final
                         })
                     } else {
-                        setLocalFiles(result.checkedFiles)
+                        setLocalFiles(result.scannedFiles)
                     }
                 }
                 toast.success("Your local library is up to date")

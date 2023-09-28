@@ -18,6 +18,7 @@ import { cache } from "react"
 import { redirect } from "next/navigation"
 import axios from "axios"
 import { matching_compareTitleVariationsToMedia } from "@/lib/local-library/utils/matching.utils"
+import { fetchAniZipData } from "@/lib/anizip/helpers"
 
 /* -------------------------------------------------------------------------------------------------
  * General
@@ -127,13 +128,7 @@ export async function experimental_analyzeMediaTree(props: {
 
     for (const medium of mediaList) {
 
-        let aniZipData: AniZipData | undefined
-        if (_aniZipCache.has(medium.id)) {
-            aniZipData = _aniZipCache.get(medium.id)
-        } else {
-            aniZipData = (await axios.get<AniZipData>("https://api.ani.zip/mappings?anilist_id=" + medium.id)).data
-            _aniZipCache.set(medium.id, aniZipData)
-        }
+        const aniZipData = await fetchAniZipData(medium.id, _aniZipCache)
 
         const maxEpisode = anilist_getEpisodeCeilingFromMedia(medium)
         listWithInfo.push({

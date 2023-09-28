@@ -35,10 +35,8 @@ type ItemProps = Omit<Props, "fileAtoms"> & { fileAtom: PrimitiveAtom<LocalFile>
 
 function Item({ fileAtom, aniZipData, anifyEpisodeCovers, onPlayFile, media }: ItemProps) {
 
-    const mediaID = useSelectAtom(fileAtom, file => file.mediaId) // Listen to changes in order to unmount when we unmatch
     const metadata = useSelectAtom(fileAtom, file => file.metadata)
     const path = useSelectAtom(fileAtom, file => file.path)
-    const fileName = useSelectAtom(fileAtom, file => file.name)
     const aniZipEpisode = anizip_getEpisodeFromMetadata(aniZipData, { metadata })
     const anifyEpisodeCover = anifyEpisodeCovers?.find(n => n.episode === metadata.episode)?.img
 

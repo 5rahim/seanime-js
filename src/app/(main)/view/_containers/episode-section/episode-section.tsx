@@ -33,7 +33,7 @@ import { AppLayoutStack } from "@/components/ui/app-layout"
 import dynamic from "next/dynamic"
 import { Alert } from "@/components/ui/alert"
 import { anilist_canTrackProgress } from "@/lib/anilist/utils"
-import { localFile_isMainWithValidEpisode } from "@/lib/local-library/utils/episode.utils"
+import { localFile_isMain } from "@/lib/local-library/utils/episode.utils"
 
 const EpisodeOffsetAction = dynamic(() => import("@/app/(main)/view/_containers/episode-section/_components/bulk-actions/episode-offset-action"), { ssr: false })
 
@@ -48,7 +48,13 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
     const { children, detailedMedia, aniZipData, ...rest } = props
 
     const entryAtom = useLibraryEntryAtomByMediaId(detailedMedia.id)
-    const { toWatch, toWatchSlider, watched, allMain } = useDisplayLocalFileAtomsByMediaId(detailedMedia.id)
+    const {
+        toWatch,
+        toWatchSlider,
+        watched,
+        allMain,
+        mediaIncludesSpecial,
+    } = useDisplayLocalFileAtomsByMediaId(detailedMedia.id)
     const ovaFileAtoms = useSpecialsLocalFileAtomsByMediaId(detailedMedia.id)
     const ncFileAtoms = useNCLocalFileAtomsByMediaId(detailedMedia.id)
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(detailedMedia.id)
@@ -74,7 +80,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
         onTick: console.log,
         onVideoComplete: (fileName) => {
             const file = getFile(fileName)
-            if (file && localFile_isMainWithValidEpisode(file)) {
+            if (file && localFile_isMain(file)) {
                 console.log("video completed")
                 setProgressTracking(draft => {
                     draft.filesWatched.push(file)
@@ -232,7 +238,8 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
                 </div>
             </AppLayoutStack>
 
-            {canTrackProgress && <ProgressTrackingModal media={detailedMedia} progress={progress}/>}
+            {canTrackProgress && <ProgressTrackingModal media={detailedMedia} progress={progress}
+                                                        mediaIncludesSpecial={mediaIncludesSpecial}/>}
             {<EpisodeOffsetAction/>}
         </>
     )

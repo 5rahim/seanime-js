@@ -1,5 +1,5 @@
 "use client"
-import React from "react"
+import React, { useMemo } from "react"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
 import { Divider } from "@/components/ui/divider"
 import { BiCalendarAlt } from "@react-icons/all-files/bi/BiCalendarAlt"
@@ -30,7 +30,16 @@ export const UndownloadedEpisodeList: React.FC<UndownloadedEpisodeListProps> = R
         downloadInfo,
     } = useMediaDownloadInfo(media)
 
+    const episodeNumberArr = useMemo(() => {
+        if (!aniZipData) return []
+        if (!!media.episodes && aniZipData.episodeCount < media.episodes) {
+            return [0, ...downloadInfo.episodeNumbers.slice(0, -1)]
+        }
+        return downloadInfo.episodeNumbers
+    }, [downloadInfo.episodeNumbers, aniZipData])
+
     if (!aniZipData || Object.keys(aniZipData?.episodes).length === 0 || (downloadInfo.toDownload === 0)) return null
+
 
     return (
         <>
@@ -42,18 +51,18 @@ export const UndownloadedEpisodeList: React.FC<UndownloadedEpisodeListProps> = R
                 </p>
             </div>
             <div className={"grid grid-cols-1 md:grid-cols-2 gap-4 opacity-60"}>
-                {downloadInfo.episodeNumbers.map((epNumber, index) => {
-                    const episodeData = anizip_getEpisode(aniZipData, epNumber)
+                {episodeNumberArr.map((epNumber, index) => {
+                    const episodeData = anizip_getEpisode(aniZipData, epNumber === 0 ? "S1" : epNumber)
                     const airDate = episodeData?.airdate
                     const anifyEpisodeCover = anifyEpisodeCovers?.find(n => n.episode === epNumber)?.img
                     return (
                         <EpisodeListItem
                             media={media}
-                            key={epNumber + index}
+                            key={epNumber + "-" + index}
                             title={media.format !== "MOVIE" ? `Episode ${epNumber}` : media.title?.userPreferred || ""}
                             showImagePlaceholder
                             episodeTitle={episodeData?.title?.en}
-                            image={anifyEpisodeCover || aniZipData?.episodes?.[String(epNumber)]?.image}
+                            image={anifyEpisodeCover || episodeData?.image}
                             action={
                                 <div className={""}>
                                     <a

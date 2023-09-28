@@ -1,4 +1,4 @@
-import React, { startTransition } from "react"
+import React, { startTransition, useMemo } from "react"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
 import { useAtom } from "jotai"
 import { useWatchedAnilistEntry } from "@/atoms/anilist/entries.atoms"
@@ -13,6 +13,7 @@ import { anilist_getEpisodeCeilingFromMedia } from "@/lib/anilist/utils"
 interface ProgressTrackingModalProps {
     children?: React.ReactNode
     media: AnilistDetailedMedia
+    mediaIncludesSpecial: boolean
     progress?: number | null
 }
 
@@ -23,7 +24,7 @@ export const __progressTrackingAtom = atomWithImmer<{ open: boolean, filesWatche
 
 export const ProgressTrackingModal: React.FC<ProgressTrackingModalProps> = (props) => {
 
-    const { children, media, progress, ...rest } = props
+    const { children, media, progress, mediaIncludesSpecial, ...rest } = props
 
     const [state, setState] = useAtom(__progressTrackingAtom)
 
@@ -31,10 +32,10 @@ export const ProgressTrackingModal: React.FC<ProgressTrackingModalProps> = (prop
 
     const maxEp = anilist_getEpisodeCeilingFromMedia(media)
 
-    const files = sortBy(state.filesWatched, file => file.metadata.episode)
-    const latestFile = files[files.length - 1]
+    const files = useMemo(() => sortBy(state.filesWatched, file => file.metadata.episode), [state.filesWatched])
+    const latestFile = useMemo(() => files[files.length - 1], [files])
 
-    const epWatched = latestFile?.metadata?.episode || 1
+    const epWatched = useMemo(() => mediaIncludesSpecial ? ((latestFile?.metadata?.episode ?? 1) + 1) : latestFile?.metadata?.episode ?? 1, [latestFile, mediaIncludesSpecial])
 
     return <>
         <Modal
