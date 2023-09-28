@@ -11,7 +11,6 @@ import { experimental_analyzeMediaTree } from "@/lib/anilist/actions"
 import { LocalFile, LocalFileMetadata, LocalFileWithMedia } from "@/lib/local-library/types"
 import { localFile_getParsedEpisode } from "@/lib/local-library/utils/parsed-info.utils"
 import { valueContainsNC, valueContainsSpecials } from "@/lib/local-library/utils/filtering.utils"
-import { fetchAniZipData } from "@/lib/anizip/helpers"
 
 /**
  * @description
@@ -314,18 +313,18 @@ export async function hydrateLocalFileWithInitialMetadata(props: {
             file.mediaId = media.id
         }
 
-        const aniZipData = await fetchAniZipData(file.mediaId, _aniZipCache)
-        _scanLogging.add(file.path, "Hydrating supplementary AniDB metadata")
-        if (aniZipData) {
-            _scanLogging.add(file.path, `   -> aniDBEpisodeCount = ${aniZipData.episodeCount}`)
-            _scanLogging.add(file.path, `   -> aniDBSpecialCount = ${aniZipData.specialCount}`)
-            file.metadata.aniDBMediaInfo = {
-                episodeCount: aniZipData.episodeCount,
-                specialCount: aniZipData.specialCount,
-            }
-        } else {
-            _scanLogging.add(file.path, "-> error - Could not retrieve AniDB metadata")
-        }
+        // const aniZipData = await fetchAniZipData(file.mediaId, _aniZipCache)
+        // _scanLogging.add(file.path, "Hydrating supplementary AniDB metadata")
+        // if (aniZipData) {
+        //     _scanLogging.add(file.path, `   -> aniDBEpisodeCount = ${aniZipData.episodeCount}`)
+        //     _scanLogging.add(file.path, `   -> aniDBSpecialCount = ${aniZipData.specialCount}`)
+        //     file.metadata.aniDBMediaInfo = {
+        //         episodeCount: aniZipData.episodeCount,
+        //         specialCount: aniZipData.specialCount,
+        //     }
+        // } else {
+        //     _scanLogging.add(file.path, "-> error - Could not retrieve AniDB metadata")
+        // }
 
     }
 

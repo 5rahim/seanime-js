@@ -8,7 +8,7 @@ import { formatDistanceToNow, isBefore, subYears } from "date-fns"
 import { LargeEpisodeListItem } from "@/components/shared/large-episode-list-item"
 import { LocalFile } from "@/lib/local-library/types"
 import { anizip_getEpisodeFromMetadata } from "@/lib/anizip/utils"
-import { localFile_getEpisodeCover } from "@/lib/local-library/utils/episode.utils"
+import { localFile_episodeExists, localFile_getEpisodeCover } from "@/lib/local-library/utils/episode.utils"
 
 type Props = {
     fileAtoms: PrimitiveAtom<LocalFile>[],
@@ -49,7 +49,7 @@ function Item({ fileAtom, aniZipData, anifyEpisodeCovers, onPlayFile, media }: I
     return (
         <LargeEpisodeListItem
             image={image}
-            title={(media.format === "MOVIE" && metadata.episode === 1) ? "Complete movie" : (!!metadata.episode ? `Episode ${metadata.episode}` : media.title?.userPreferred || "")}
+            title={(media.format === "MOVIE" && metadata.episode === 1) ? "Complete movie" : (localFile_episodeExists({ metadata }) ? `Episode ${metadata.episode}` : media.title?.userPreferred || "")}
             topTitle={!((media.format === "MOVIE" && metadata.episode === 1)) ? aniZipEpisode?.title?.en : ``}
             meta={(date) ? (!mediaIsOlder ? `${formatDistanceToNow(date, { addSuffix: true })}` : new Intl.DateTimeFormat("en-US", {
                 day: "2-digit",

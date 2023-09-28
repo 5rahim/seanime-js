@@ -77,7 +77,6 @@ const get_Display_LocalFileAtomsByMediaIdAtom = atom(null,
         const mediaIncludesSpecial =
             mainFileAtoms.findIndex(fileAtom => get(fileAtom).metadata.episode === 0) !== -1
             && mainFileAtoms.every(fileAtom => get(fileAtom).metadata.episode !== maxEp)
-            && mainFileAtoms.every(fileAtom => !get(fileAtom).metadata.aniDBMediaInfo || get(fileAtom).metadata.aniDBMediaInfo!.episodeCount < maxEp)
 
         return {
             toWatch: toWatch.length === 0 && watched.length === 0 ? mainFileAtoms || [] : toWatch,

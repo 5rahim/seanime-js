@@ -105,8 +105,8 @@ export async function scanLocalFiles(props: {
     // We group all the hydrated files we got by their media, so we can check them by group (entry)
     const _groupedByMediaId = groupBy(localFilesWithMedia, n => n.media!.id)
 
-    _scanLogging.add("repository/scanLocalFiles", "Retrieve AniZip data")
-    await PromiseAllSettledBatchWithDelay(getAniZipData, Object.keys(_groupedByMediaId).map(n => Number(n)), 20, 600)
+    // _scanLogging.add("repository/scanLocalFiles", "Fetching AniZip data")
+    // await PromiseAllSettledBatchWithDelay(getAniZipData, Object.keys(_groupedByMediaId).map(n => Number(n)), 20, 600)
 
     _scanLogging.add("repository/scanLocalFiles", "Inspecting prospective library entry")
     for (let i = 0; i < Object.keys(_groupedByMediaId).length; i++) {

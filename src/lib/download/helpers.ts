@@ -7,7 +7,7 @@ import { useLatestMainLocalFileByMediaId, useLocalFilesByMediaId_UNSTABLE } from
 import { useMemo } from "react"
 import { LocalFile } from "@/lib/local-library/types"
 import sortBy from "lodash/sortBy"
-import { localFile_isMain, localFile_mediaIncludesSpecial } from "@/lib/local-library/utils/episode.utils"
+import { localFile_isMain } from "@/lib/local-library/utils/episode.utils"
 import { anilist_getEpisodeCeilingFromMedia } from "@/lib/anilist/utils"
 
 export const getMediaDownloadInfo = (props: {
@@ -24,7 +24,7 @@ export const getMediaDownloadInfo = (props: {
     const maxEp = anilist_getEpisodeCeilingFromMedia(media)
 
     // Sometimes AniList includes Episode 0, AniDB does not
-    const specialIsIncluded = files.some(file => localFile_mediaIncludesSpecial(file, media))
+    const specialIsIncluded = files.filter(file => localFile_isMain(file)).some(file => file.metadata.episode === 0)
 
     // e.g., [1,2,3,…,12]
     let originalEpisodeArr = [...Array(maxEp).keys()].map((_, idx) => idx + 1)

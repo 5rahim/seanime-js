@@ -161,9 +161,3 @@ export function localFile_getDisplayTitle<T extends Pick<LocalFile, "metadata" |
 
     return `Episode ${metadata.episode}`
 }
-
-
-export function localFile_mediaIncludesSpecial<T extends Pick<LocalFile, "metadata">>(props: T | null | undefined, media?: AnilistShowcaseMedia | null) {
-    if (!props || !media?.episodes || !props.metadata.aniDBMediaInfo?.episodeCount) return false
-    return Number(props.metadata.aniDBMediaInfo.episodeCount - media.episodes) === -1
-}
