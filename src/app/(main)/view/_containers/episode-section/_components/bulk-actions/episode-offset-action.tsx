@@ -101,9 +101,9 @@ function Content() {
     }, [files, media])
 
     function calculateOffset(currentEpisode: Nullish<number>) {
-        if (!currentEpisode) return 0
+        if (currentEpisode === undefined || currentEpisode === null) return 0
         // Make sure it is not less than 0
-        return Math.max(1, currentEpisode + offset)
+        return Math.max(0, currentEpisode + offset)
     }
 
     // Re-render the offset input when a selection changes
@@ -114,11 +114,11 @@ function Content() {
             value={offset}
             onChange={value => {
                 const episodesArr = files.filter(n => n.selected).map(({ file }) => Math.max(0, getEpisode(file)! + value))
+                console.log(episodesArr)
                 // Make sure than we can't go any further below if one episode calculated offset is 0
                 if (value <= 0) {
-                    const minOffset = Math.min(...episodesArr)
-                    if (minOffset === 0) return
-                    else setOffset(value)
+                    const minOffset = episodesArr.filter(n => n === 0).length
+                    if (minOffset > 1) return
                 }
                 // Make sure than we can't go any further above if one episode calculated offset is greater than the total number of episodes
                 const maxOffset = Math.max(...episodesArr)
@@ -172,7 +172,7 @@ function Content() {
                                 fieldClassName={"w-[fit-content]"}
                             />
                             {selected && <p
-                                className={"text-[--muted] line-clamp-1 ml-2 flex-none"}
+                                className={"text-[--muted] line-clamp-1 ml-2 flex-none -mt-1"}
                             >
                                 {`->`} <span
                                 className={"font-medium text-brand-300"}>{calculateOffset(getEpisode(file))}</span>

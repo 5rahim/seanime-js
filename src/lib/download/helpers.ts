@@ -59,8 +59,6 @@ export const getMediaDownloadInfo = (props: {
         missingArr = []
     }
 
-    console.log(originalEpisodeArr, missingArr)
-
     return {
         toDownload: missingArr.length,
         originalEpisodeCount: media.episodes,

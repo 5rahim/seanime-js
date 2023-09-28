@@ -5,6 +5,7 @@ import { allUserMediaAtom } from "@/atoms/anilist/media.atoms"
 import { addSeconds, formatDistanceToNow } from "date-fns"
 import Image from "next/image"
 import { AppLayoutStack } from "@/components/ui/app-layout"
+import Link from "next/link"
 
 export function ComingUpNext() {
 
@@ -40,7 +41,12 @@ export function ComingUpNext() {
                                 />
                             </div>
                             <div className={"relative z-[3] w-full p-4 space-y-1"}>
-                                <p className={"w-[80%] line-clamp-1 text-[--muted] font-semibold"}>{item.title?.userPreferred}</p>
+                                <Link
+                                    href={`/view/${item.id}`}
+                                    className={"w-[80%] line-clamp-1 text-[--muted] font-semibold cursor-pointer"}
+                                >
+                                    {item.title?.userPreferred}
+                                </Link>
                                 <div className={"w-full justify-between flex items-center"}>
                                     <p className={"text-xl font-semibold"}>Episode {item.nextAiringEpisode?.episode}</p>
                                     {item.nextAiringEpisode?.timeUntilAiring &&
