@@ -17,6 +17,7 @@ might not work as intended.
 
 - [x] Scan local library and automatically match local files with corresponding
   anime. [How it works](https://github.com/5rahim/seanime/blob/main/docs/guide.md#how-it-works).
+  - [x] Scan with or without AniList watch list data
   - [x] Support for various naming/folder
     structures. [Learn more](https://github.com/5rahim/seanime/blob/main/docs/guide.md#tldr).
   - [x] Support for absolute episode
@@ -33,7 +34,6 @@ might not work as intended.
   - [x] Option to match single files or single folders to a suggested media
   - [x] Option to match files using AniList ID
 - [x] Detect episodes missing from your local library
-- [ ] Blind scan (doesn't use user's AniList watch list data)
 - [ ] Delete files
 
 [//]: # (- [ ] Manual hydration)
@@ -81,15 +81,6 @@ Powered by qBittorrent and Nyaa
 
 - [ ] Offline mode
 
-## Caveats
-
-For the time being, users must ensure their AniList watchlist includes all media present in their local library before
-initiating the scanning process.
-This is because Seanime relies on the user's AniList data to accurately match episode files and organize them
-effectively.
-Failure to do so may result in incorrect matches, especially when dealing with different seasons
-of the same series.
-
 ## Set up
 
 [How to set up Seanime.](https://github.com/5rahim/seanime/blob/main/docs/set-up.md)
@@ -133,10 +124,8 @@ npm run build
 
 ## Known issues
 
-- Incorrect mappings between AniList and AniDB
-- Loading toast may persist after scan is complete (area: react-hot-toast)
-- Directory selection input may not work correctly (area: components)
-- Streaming works intermittently
+- Loading toast may persist after scan is complete
+- Streaming only works intermittently
 - :shrug:
 
 ## Not planned
@@ -152,9 +141,7 @@ Features that may be implemented
 
 - Plugins
 - Manga support
-- Dubbed streaming
 - Desktop app
-- Auto-download new episodes
 
 ## Resources
 

@@ -9,16 +9,10 @@ import { AnimeCollectionDocument, UpdateEntryDocument } from "@/gql/graphql"
 import { LocalFile, LocalFileWithMedia } from "@/lib/local-library/types"
 import { AnilistShortMedia } from "@/lib/anilist/fragment"
 import { inspectProspectiveLibraryEntry } from "@/lib/local-library/library-entry"
-import { getMediaTitlesFromLocalDirectory, retrieveLocalFilesWithMedia } from "@/lib/local-library/repository"
+import { retrieveLocalFilesWithMedia } from "@/lib/local-library/repository"
 import uniqBy from "lodash/uniqBy"
 import omit from "lodash/omit"
 import groupBy from "lodash/groupBy"
-import { fetchAniZipData } from "@/lib/anizip/helpers"
-import { getFulfilledValues, PromiseAllSettledBatch, PromiseAllSettledBatchWithDelay } from "@/lib/helpers/batch"
-import { advancedSearchWithMAL } from "@/lib/mal/actions"
-import chunk from "lodash/chunk"
-import gql from "graphql-tag"
-import { experimental_fetchMediaTree } from "@/lib/anilist/actions"
 import Bottleneck from "bottleneck"
 import { ANILIST_BOTTLENECK_OPTIONS } from "@/lib/anilist/config"
 
@@ -186,139 +180,5 @@ export async function scanLocalFiles(props: {
          */
         scannedFiles,
     }
-
-}
-
-/* -------------------------------------------------------------------------------------------------
- * Blind scan
- * -----------------------------------------------------------------------------------------------*/
-
-export async function experimental_blindScanLocalFiles(props: {
-    settings: Settings,
-}) {
-
-    const { settings } = props
-
-    const _scanLogging = new ScanLogging()
-    const _aniZipCache = new Map<number, AniZipData>()
-    const _mediaCache = new Map<number, AnilistShortMedia>
-
-    // Check if the library exists
-    if (!settings.library.localDirectory || !_fs.existsSync(settings.library.localDirectory)) {
-        logger("repository/experimental_blindScanLocalFiles").error("Directory does not exist")
-        _scanLogging.add("repository/experimental_blindScanLocalFiles", "Directory does not exist")
-        await _scanLogging.writeSnapshot()
-        _scanLogging.clear()
-        return { error: "Couldn't find the local directory." }
-    }
-
-    // Get the user watch list data
-    _scanLogging.add("repository/experimental_blindScanLocalFiles", "Fetching media from local directory")
-
-    const prospectiveMediaTitles = await getMediaTitlesFromLocalDirectory({ directoryPath: settings.library.localDirectory })
-
-    if (!prospectiveMediaTitles) {
-        return { error: "Couldn't find any media in the local directory." }
-    }
-
-    const malBatchResults = await PromiseAllSettledBatch(advancedSearchWithMAL, prospectiveMediaTitles.items.map(item => item.title), 50)
-    const malResults = (await getFulfilledValues(malBatchResults)).filter(Boolean)
-
-    async function aniZipSearch(malId: number) {
-        return await fetchAniZipData(malId, _aniZipCache, "mal")
-    }
-
-    const aniZipBatchResults = await PromiseAllSettledBatch(aniZipSearch, malResults.map(n => n.id), 50)
-    const aniZipResults = (await getFulfilledValues(aniZipBatchResults)).filter(Boolean)
-    const anilistIds = aniZipResults.filter(Boolean).map(n => n.mappings.anilist_id).filter(Boolean)
-
-    const anilistIdChunks = chunk(anilistIds, 10)
-
-    async function runAnilistQuery(ids: number[]) {
-        return await useAniListAsyncQuery<{ [key: string]: AnilistShortMedia } | null, any>(gql`
-            query AnimeByMalId {
-                ${ids.map(id => `
-            t${id}: Media(id: ${id}, type: ANIME) {
-                id
-                idMal
-                status(version: 2)
-                season
-                type
-                format
-                title {
-                    userPreferred
-                    romaji
-                    english
-                    native
-                }
-                synonyms
-                relations {
-                    edges {
-                        relationType(version: 2)
-                        node {
-                            id
-                            idMal
-                            status(version: 2)
-                            season
-                            type
-                            format
-                            title {
-                                userPreferred
-                                romaji
-                                english
-                                native
-                            }
-                            synonyms
-                        }
-                    }
-                }
-            }
-            `)}
-            }
-        `, undefined)
-    }
-
-    // Query AniList, 5 batches of 10 every 2.5s
-    const anilistBatchResults = await PromiseAllSettledBatchWithDelay(runAnilistQuery, anilistIdChunks, 5, 2500)
-    const anilistResults = (await getFulfilledValues(anilistBatchResults)).filter(Boolean)
-
-    const fetchedMedia = Object.values(anilistResults).flatMap(n => Object.values(n)).filter(Boolean)
-
-    for (const media of fetchedMedia) {
-        // Populate cache
-        _mediaCache.set(media.id, media)
-    }
-
-    async function fetchTreeMaps(media: AnilistShortMedia) {
-        const treeMap = new Map<number, AnilistShortMedia>()
-        const start = performance.now()
-        logger("scan/experimental_analyzeMediaTree").warning("Fetching media tree in for " + media.title?.english)
-        await experimental_fetchMediaTree({ media, treeMap, _mediaCache: _mediaCache })
-        const end = performance.now()
-        logger("scan/experimental_analyzeMediaTree").info("Fetched media tree in " + (end - start) + "ms")
-        return [...treeMap.values()]
-    }
-
-    const relationsBatchResults = await PromiseAllSettledBatchWithDelay(fetchTreeMaps, fetchedMedia, 1, 1500)
-    const relationsResults = (await getFulfilledValues(relationsBatchResults)).flat()
-
-
-    // // Check which titles have a season parse, if they do, fetch the entire tree
-    // const itemsWithSeason = prospectiveMediaTitles.items.filter(item => !!item.parsed.season && Number.isInteger(item.parsed.season) && Number(item.parsed.season) > 1)
-    // const mediaWeNeedToFetchTreeOf = itemsWithSeason.map(item => {
-    //     const comparisons = media.map(medium => {
-    //         return {
-    //             medium,
-    //             comparison: compareTitleVariationsToMediaTitles(medium, [item.title])
-    //         }
-    //     })
-    //     return {
-    //         item,
-    //         media: comparisons.reduce((prev, curr) => prev.comparison.distance < curr.comparison.distance ? prev : curr).medium
-    //     }
-    // })
-
-    return [...fetchedMedia, ...relationsResults]
-
 
 }

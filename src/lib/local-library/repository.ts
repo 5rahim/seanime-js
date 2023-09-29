@@ -265,10 +265,10 @@ export async function checkLocalFiles(settings: Settings, { ignored, locked }: {
  */
 export async function getMediaTitlesFromLocalDirectory(props: {
     directoryPath: string,
-    type?: "shallow" | "deep" // TODO Get titles from subdirectories
+    mode?: "shallow" | "smart" // TODO "smart" mode will exclude locked files or folders whose files are locked
 }) {
 
-    const { directoryPath, type = "shallow" } = props
+    const { directoryPath } = props
 
     try {
         let fileNames = new Set<string>()

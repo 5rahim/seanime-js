@@ -1,32 +1,71 @@
 # Guide
 
-## AniList
-
-For the time being, users must ensure their AniList watchlist includes all media present in their local library before
-initiating the scanning process.
-This is because Seanime relies on the user's AniList data to accurately match episode files and organize them
-effectively.
-Failure to do so may result in incorrect matches, especially when dealing different seasons
-of the same series.
-
 ### What about MAL?
 
 Seanime does not currently support media matching using MAL data. I recommend you create an AniList account and use a
 tool like
 MAL-Sync to automatically sync data effortlessly.
 
+## Scanning your library
+
+### Normal scan
+
+A normal scan uses your AniList watch list data to match files to media. It does not use the **enhanced scan** feature.
+
+#### Pros
+
+- Great if you have a lot of anime in your local library and want to match them accurately to your already hydrated
+  AniList collection.
+- Faster than an **enhanced** scan.
+
+#### Cons
+
+- It will not accurately match files with media that are not in your AniList watch list.
+- It will try to match with sequels or prequels that are not on your watch list but may not find earlier or
+  later seasons. Let's say your have the 1st, 2nd and 3rd season of a show in your library but only have the 1st season
+  added in
+  your watch list, Seanime might incorrectly match 3rd season files with the 2nd season. If it is the case, you can:
+  - Manually un-match the files and use the `Resolve unmatched` feature
+  - Manually add the anime to your AniList watch list and refresh entries.
+  - Use enhanced scanning/refreshing.
+
+### Enhanced scan
+
+Enhanced scanning is a complementary feature to normal scanning. It is also available for refreshing.
+It does not need to rely on your AniList watch list data to match files as it blindly analyzes your library and tries to
+fetch all possible media from AniList before the matching process.
+
+#### Pros
+
+- Great if your AniList watch list is considerably out of sync with your local library.
+- Great if you have multiple seasons and not every single one is added to your AniList watch list.
+
+#### Caveats
+
+- Enabling this feature will slow down the scanning/refreshing process considerably.
+- It might not accurately match movies or specials.
+- It will not detect media whose titles are not at the root of your library folder.
+- **It will hydrate your AniList watch list.**
+
+```text
+Avoid this
+
+├── %LIBRARY_FOLDER%
+├── Fall 2023                   <-- Avoid these types of folders
+    ├── Jujutsu Kaisen S2       <-- Place the anime (folders or files) at the root of the library folder
+    │   └── ...
+```
+
+- You should only enable it in scenarios where:
+  - You've added new files from media not present in your AniList watch list.
+  - Your AniList watch list is considerably out of sync/empty.
+
 ## Mis-matched files
 
 When some episode files are unmatched it generally means that:
 
-- You did not have that anime in your AniList watch list.
-  - Seanime uses your AniList data to match episode files.
-  - Seanime will try to match with sequels or prequels that are not on your watch list but may not find earlier or
-    later seasons. Let's say your have the 1st, 2nd and 3rd Season in your library but only have the 1st season added in
-    your watch list, Seanime might incorrectly match 3rd season files with the 2nd season. If it is the case, you can
-    manually unmatched the files and use the `Resolve unmatched` features OR manually add the anime to your AniList
-    watch list
-    and refresh entries.
+- You did not have that anime in your AniList watch list / Did not use enhanced scanning.
+- Enhanced scanning did not detect the anime.
 - The structure is inconsistent.
 - Confused parts/cours with seasons.
   - Some torrent names will inappropriately classify cours/parts as seasons. When it is the case, you should rename
