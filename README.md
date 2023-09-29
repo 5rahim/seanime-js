@@ -16,8 +16,9 @@ might not work as intended.
 ### Local library
 
 - [x] Scan local library and automatically match local files with corresponding
-  anime. [How it works](https://github.com/5rahim/seanime/blob/main/docs/guide.md#how-it-works).
-  - [x] Scan with or without AniList watch list data
+  anime.
+  - [x] Scan with or without AniList watch list
+    data. [Learn more](https://github.com/5rahim/seanime/blob/main/docs/guide.md#scanning-your-library).
   - [x] Support for various naming/folder
     structures. [Learn more](https://github.com/5rahim/seanime/blob/main/docs/guide.md#tldr).
   - [x] Support for absolute episode
@@ -35,6 +36,8 @@ might not work as intended.
   - [x] Option to match files using AniList ID
 - [x] Detect episodes missing from your local library
 - [ ] Delete files
+
+[How scanning works under the hood.](https://github.com/5rahim/seanime/blob/main/docs/guide.md#how-it-works)
 
 [//]: # (- [ ] Manual hydration)
 
