@@ -249,7 +249,7 @@ export function LibraryToolbar() {
                     <div className={"space-y-2"}>
                         <Checkbox
                             label={"Preserve locked status"}
-                            checked={ignoredPaths.length === 0 ? false : scan_preserveLockedFileStatus.active}
+                            checked={lockedPaths.length === 0 ? false : scan_preserveLockedFileStatus.active}
                             onChange={scan_preserveLockedFileStatus.toggle}
                             isDisabled={lockedPaths.length === 0}
                             size={"lg"}
