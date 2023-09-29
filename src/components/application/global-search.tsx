@@ -45,7 +45,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = (props) => {
                 perPage: 10,
                 status: ["FINISHED", "CANCELLED", "NOT_YET_RELEASED", "RELEASING"],
                 sort: "SEARCH_MATCH",
-            }, token)
+            }, token || "")
             return res.Page?.media?.filter(Boolean) ?? []
         },
         { enabled: query.length > 0, keepPreviousData: false, refetchOnWindowFocus: false, retry: 0 },

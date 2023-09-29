@@ -123,7 +123,7 @@ const getMatchingSuggestionGroupsAtom = atom(null, async (get, set, payload: "fi
                                 }
                                 `)}
                             }
-                        `, undefined, get(anilistClientTokenAtom))
+                        `, undefined, get(anilistClientTokenAtom)!)
 
                         console.log(res, Object.values(res || []))
                         const recommendations = res ? Object.values(res) : []
