@@ -46,8 +46,8 @@ describe.skip("Get media tree", () => {
     it("returns media tree", async () => {
 
         const result = await experimental_analyzeMediaTree({ media: __SampleMedia["Bungou Stray Dogs Season 4"], _mediaCache: _cache, _aniZipCache })
-        console.log(result)
-        expect(result).toBeDefined()
+        console.log(result.listWithInfo.map(n => n.media.title?.english))
+        expect(result.listWithInfo.length).toBeGreaterThan(4)
 
     }, { timeout: 10000 })
 
@@ -69,7 +69,7 @@ describe.skip("Episode normalization", () => {
             expect.soft(hydratedLocalFile.file.mediaId).toEqual(expected.mediaId)
             // console.log(hydratedLocalFile)
             // console.log(_cache)
-        }, { timeout: 10000 })
+        }, { timeout: 1000000 })
 
     })
 

@@ -1,5 +1,5 @@
 import { AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
-import { MediaRelation } from "@/gql/graphql"
+import { MediaFormat, MediaRelation } from "@/gql/graphql"
 import { AnilistCollectionEntry } from "@/atoms/anilist/entries.atoms"
 import { LibraryEntry } from "@/atoms/library/library-entry.atoms"
 import rakun from "@/lib/rakun"
@@ -16,12 +16,22 @@ type _AnilistRelationEdge = { relationType: MediaRelation, node: AnilistShowcase
  * - If the specified [MediaRelation] is "SEQUEL", it will look for OVAs if it can't find on first try.
  * - /!\ Will not work with [AnilistShowcaseMedia] since the `media` parameter needs to contain `relations`
  */
-export function anilist_findMediaEdge(
+export function anilist_findMediaEdge(props: {
     media: AnilistShortMedia | null | undefined,
     relation: MediaRelation,
-    formats = ["TV", "TV_SHORT"],
-    stop: boolean = false,
-): _AnilistRelationEdge | undefined {
+    formats?: MediaFormat[],
+    force?: boolean,
+    forceFormats?: MediaFormat[],
+}): _AnilistRelationEdge | undefined {
+
+    const {
+        media,
+        relation,
+        formats = ["TV", "TV_SHORT"],
+        force = true,
+        forceFormats = ["TV", "TV_SHORT", "OVA"],
+    } = props
+
     if (media?.relations === undefined) {
         logger("lib/anilist/findMediaEdge").warning("media.relations is undefined")
         return undefined
@@ -34,8 +44,8 @@ export function anilist_findMediaEdge(
         return false
     })
     // this is hit-miss
-    if (!res && !stop && relation === "SEQUEL") {
-        res = anilist_findMediaEdge(media, relation, formats = ["TV", "TV_SHORT", "OVA"], true)
+    if (!res && force && relation === "SEQUEL") {
+        res = anilist_findMediaEdge({ media, relation, formats: forceFormats, force: false })
     }
     return res
 }

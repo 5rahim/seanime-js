@@ -1,8 +1,10 @@
 import { describe, expect, it, vi } from "vitest"
 
-import { experimental_blindScanLocalFiles } from "@/lib/local-library/scan"
 import { initialSettings } from "@/atoms/settings"
 import { getMediaTitlesFromLocalDirectory } from "@/lib/local-library/repository"
+import { experimental_blindScanLibraryMedia } from "@/lib/local-library/blind-scan"
+import { ScanLogging } from "@/lib/local-library/logs"
+import { AnilistShortMedia } from "@/lib/anilist/fragment"
 
 vi.mock("react", async () => {
     const actual = (await vi.importActual("react")) as any
@@ -29,10 +31,20 @@ describe.skip("Media titles", () => {
 
 })
 
-describe.skip("experimental_blindScanLocalFiles", () => {
+describe.skip("experimental_blindScanLibraryMedia", () => {
 
     it("should scan the local library", async () => {
-        const result = await experimental_blindScanLocalFiles({ settings })
+
+        const _scanLogging = new ScanLogging()
+        const _aniZipCache = new Map<number, AniZipData>()
+        const _mediaCache = new Map<number, AnilistShortMedia>
+
+        const result = await experimental_blindScanLibraryMedia({ settings, _scanLogging, _aniZipCache, _mediaCache })
+
+        _scanLogging.clear()
+        _aniZipCache.clear()
+        _mediaCache.clear()
+
         console.log(result)
         expect(result).toBeDefined()
     }, { timeout: 1000000 })

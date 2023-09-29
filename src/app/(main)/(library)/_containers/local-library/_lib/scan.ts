@@ -11,9 +11,10 @@ import { scanLocalFiles } from "@/lib/local-library/scan"
 
 type UseManageEntriesOptions = {
     onComplete: () => void
-    rescanOptions?: {
+    scanOptions?: {
         preserveLockedFileStatus?: boolean
         preserveIgnoredFileStatus?: boolean
+        enhancedScanning?: boolean
     }
 }
 
@@ -44,6 +45,7 @@ export function useManageLibraryEntries(opts: UseManageEntriesOptions) {
                     locked: lockedPaths,
                     ignored: ignoredPaths,
                 },
+                enhanced: opts.scanOptions?.enhancedScanning ? "partial" : "none",
             })
 
             console.log("Finished scan")
@@ -72,7 +74,7 @@ export function useManageLibraryEntries(opts: UseManageEntriesOptions) {
         } else {
             unauthenticatedAlert()
         }
-    }, [user, token, settings, lockedPaths, ignoredPaths])
+    }, [user, token, settings, lockedPaths, ignoredPaths, opts.scanOptions?.enhancedScanning])
 
 
     const handleRescanEntries = useCallback(async () => {
@@ -88,20 +90,21 @@ export function useManageLibraryEntries(opts: UseManageEntriesOptions) {
                     ignored: [],
                     locked: [],
                 },
+                enhanced: opts.scanOptions?.enhancedScanning ? "full" : "none",
             })
             if (result && result.scannedFiles) {
                 if (result.scannedFiles.length > 0) {
 
-                    if (opts.rescanOptions?.preserveLockedFileStatus || opts.rescanOptions?.preserveIgnoredFileStatus) {
+                    if (opts.scanOptions?.preserveLockedFileStatus || opts.scanOptions?.preserveIgnoredFileStatus) {
                         setLocalFiles(draft => {
                             const lockedPathsSet = new Set(draft.filter(file => !!file.locked).map(file => file.path))
                             const ignoredPathsSet = new Set(draft.filter(file => !!file.ignored).map(file => file.path))
                             const final = []
                             for (let i = 0; i < result.scannedFiles.length; i++) {
-                                if (opts.rescanOptions?.preserveLockedFileStatus && lockedPathsSet.has(result.scannedFiles[i].path)) { // Reset locked status
+                                if (opts.scanOptions?.preserveLockedFileStatus && lockedPathsSet.has(result.scannedFiles[i].path)) { // Reset locked status
                                     result.scannedFiles[i].locked = true
                                 }
-                                if (opts.rescanOptions?.preserveIgnoredFileStatus && ignoredPathsSet.has(result.scannedFiles[i].path)) { // Reset ignored status
+                                if (opts.scanOptions?.preserveIgnoredFileStatus && ignoredPathsSet.has(result.scannedFiles[i].path)) { // Reset ignored status
                                     result.scannedFiles[i].ignored = true
                                 }
                                 final.push(result.scannedFiles[i])
@@ -122,7 +125,7 @@ export function useManageLibraryEntries(opts: UseManageEntriesOptions) {
         } else {
             unauthenticatedAlert()
         }
-    }, [user, token, settings, lockedPaths, ignoredPaths, opts.rescanOptions?.preserveLockedFileStatus, opts.rescanOptions?.preserveIgnoredFileStatus])
+    }, [user, token, settings, lockedPaths, ignoredPaths, opts.scanOptions?.preserveLockedFileStatus, opts.scanOptions?.preserveIgnoredFileStatus, opts.scanOptions?.enhancedScanning])
 
 
     const handleCheckRepository = useCallback(async () => {

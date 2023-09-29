@@ -266,7 +266,7 @@ export const __episodeNormalizationMatchingCases = [
                 name: "[SubsPlease] Jujutsu Kaisen - 01 (1080p) [40737A9B].mkv",
                 expected: {
                     relativeEpisode: 1,
-                    mediaId: null,
+                    mediaId: __SampleMedia["Jujutsu Kaisen Season 1"].id,
                 },
             },
             {

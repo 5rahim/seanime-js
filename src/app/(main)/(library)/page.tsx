@@ -12,6 +12,7 @@ import { IgnoredFilesDrawer } from "@/app/(main)/(library)/_containers/ignored-f
 import { useAuthed } from "@/atoms/auth"
 import { ANILIST_OAUTH_URL } from "@/lib/anilist/config"
 import { BiCog } from "@react-icons/all-files/bi/BiCog"
+import { FirstScanScreen } from "@/app/(main)/(library)/_containers/local-library/first-scan-screen"
 
 export default function Home() {
 
@@ -66,6 +67,7 @@ export default function Home() {
         <div>
             <LibraryToolbar/>
             <LocalLibrary/>
+            <FirstScanScreen/>
             <IgnoredFilesDrawer/>
         </div>
     )

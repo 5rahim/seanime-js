@@ -3,7 +3,6 @@ import React, { memo } from "react"
 import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
 import { AnilistShowcaseMedia } from "@/lib/anilist/fragment"
-import { formatDistanceToNow } from "date-fns"
 import { Skeleton } from "@/components/ui/skeleton"
 import { IoLibrary } from "@react-icons/all-files/io5/IoLibrary"
 import { LargeEpisodeListItem } from "@/components/shared/large-episode-list-item"
@@ -73,7 +72,6 @@ const EpisodeItem = memo(({ media, episodeNumber, aniZipData }: EpisodeItemProps
 
     const router = useRouter()
 
-    const date = episodeData?.airdate ? new Date(episodeData?.airdate) : undefined
 
     return (
         <>
@@ -81,7 +79,7 @@ const EpisodeItem = memo(({ media, episodeNumber, aniZipData }: EpisodeItemProps
                 image={episodeData?.image || media.bannerImage}
                 title={`Episode ${episodeNumber}`}
                 topTitle={media.title?.userPreferred}
-                meta={(date) ? `Aired ${formatDistanceToNow(date, { addSuffix: true })}` : undefined}
+                meta={episodeData?.airdate ?? undefined}
                 actionIcon={<AiOutlineDownload/>}
                 onClick={() => {
                     router.push(`/view/${media.id}?download=${episodeNumber}`)

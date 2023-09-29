@@ -17,6 +17,9 @@ import { LocalFile, LocalFileWithMedia } from "@/lib/local-library/types"
 import rakun from "@/lib/rakun"
 import orderBy from "lodash/orderBy"
 import { valueContainsSeason } from "@/lib/local-library/utils/filtering.utils"
+import { experimental_blindScanLibraryMedia } from "@/lib/local-library/blind-scan"
+import Bottleneck from "bottleneck"
+import uniqBy from "lodash/uniqBy"
 
 /**
  * @internal Used on the server
@@ -37,7 +40,10 @@ export async function retrieveLocalFilesWithMedia(props: {
         locked: string[]
     }
     _scanLogging: ScanLogging
-}) {
+    _aniZipCache: Map<number, AniZipData>
+    _mediaCache: Map<number, AnilistShortMedia>
+    enhanced?: "full" | "partial" | "none"
+}, limiter?: Bottleneck) {
 
     const {
         settings,
@@ -45,12 +51,14 @@ export async function retrieveLocalFilesWithMedia(props: {
         anilistCollection,
         markedPaths,
         _scanLogging,
+        _mediaCache,
+        _aniZipCache,
+        enhanced = "none",
     } = props
 
     const currentPath = settings.library.localDirectory
 
     if (currentPath && userName) {
-
 
         // Populate [localFiles] with all files recursively
         const localFiles: LocalFile[] = []
@@ -66,22 +74,46 @@ export async function retrieveLocalFilesWithMedia(props: {
 
         // If there are files, hydrate them with their associated [AnilistShowcaseMedia]
         if (localFiles.length > 0) {
+            _scanLogging.add("repository/scanLocalFiles", ">>> [repository/retrieveHydratedLocalFiles]")
+
+            // let allUserMedia: AnilistShortMedia[] = []
             let allUserMedia = anilistCollection.MediaListCollection?.lists?.map(n => n?.entries).flat().filter(Boolean).map(entry => entry.media) ?? [] satisfies AnilistShortMedia[]
             allUserMedia = allUserMedia.map(media => anilist_shortMediaToShowcaseMedia(media)) satisfies AnilistShowcaseMedia[]
-            _scanLogging.add("repository/scanLocalFiles", ">>> [repository/retrieveHydratedLocalFiles]")
-            _scanLogging.add("repository/scanLocalFiles", "Getting related media from user watch list")
+
+            /* EXPERIMENTAL */
+            let scannedMedia: AnilistShowcaseMedia[] = []
+            if (enhanced === "full" || enhanced === "partial") {
+                _scanLogging.add("repository/scanLocalFiles", "Blind scanning local library")
+                const blindScanRes = await experimental_blindScanLibraryMedia({
+                    settings,
+                    _scanLogging,
+                    _aniZipCache,
+                    _mediaCache,
+                }, limiter)
+                if (!(blindScanRes as any).error) {
+                    scannedMedia = (blindScanRes as AnilistShortMedia[]).map(media => anilist_shortMediaToShowcaseMedia(media)) as AnilistShowcaseMedia[]
+                }
+
+                allUserMedia = uniqBy([...allUserMedia, ...scannedMedia].filter(Boolean), n => n.id)
+            } /* EXPERIMENTAL */
+
+            _scanLogging.add("repository/scanLocalFiles", "Getting related media")
 
             // Get sequels, prequels... from each media as [AnilistShowcaseMedia]
             const relatedMedia = allUserMedia.filter(Boolean)
-                .flatMap(media => media.relations?.edges?.filter(edge => (edge?.relationType === "PREQUEL"
+                .flatMap(media => {
+                    return enhanced === "none" ? media.relations?.edges?.filter(edge => (edge?.relationType === "PREQUEL"
                         || edge?.relationType === "SEQUEL"
                         || edge?.relationType === "SPIN_OFF"
                         || edge?.relationType === "SIDE_STORY"
                         || edge?.relationType === "ALTERNATIVE"
                         || edge?.relationType === "PARENT"),
+                    ) : media.relations?.edges?.filter(edge => (edge?.relationType === "SPIN_OFF"
+                        || edge?.relationType === "SIDE_STORY"
+                        || edge?.relationType === "ALTERNATIVE"
+                        || edge?.relationType === "PARENT"),
                     )
-                        .flatMap(edge => edge?.node).filter(Boolean),
-                ) as AnilistShowcaseMedia[]
+                }).flatMap(edge => edge?.node).filter(Boolean) as AnilistShowcaseMedia[]
 
 
             const allMedia = [...allUserMedia, ...relatedMedia].filter(Boolean).filter(media => media?.status === "RELEASING" || media?.status === "FINISHED")
@@ -90,7 +122,7 @@ export async function retrieveLocalFilesWithMedia(props: {
             const mediaPreferredTitles = allMedia.map(media => media.title?.userPreferred).filter(Boolean)
             const mediaSynonymsWithSeason = allMedia.flatMap(media => media.synonyms?.filter(valueContainsSeason)).filter(Boolean)
 
-            await _dumpToFile("all-media", allMedia) /* DUMP */
+            await _dumpToFile("all-media", allMedia.map(media => media.title?.english).filter(Boolean)) /* DUMP */
 
             _scanLogging.add("repository/scanLocalFiles", "Hydrating local files")
             let localFilesWithMedia: LocalFileWithMedia[] = []

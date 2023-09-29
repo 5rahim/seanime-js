@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useCallback } from "react"
 import { useSettings } from "@/atoms/settings"
 import { Button, IconButton } from "@/components/ui/button"
 import { openLocalDirectoryInExplorer } from "@/lib/helpers/directory"
@@ -12,13 +12,11 @@ import { ResolveUnmatched } from "@/app/(main)/(library)/_containers/resolve-unm
 import { Modal } from "@/components/ui/modal"
 import { IoReload } from "@react-icons/all-files/io5/IoReload"
 import { RiFolderDownloadFill } from "@react-icons/all-files/ri/RiFolderDownloadFill"
-import { RiFileSearchLine } from "@react-icons/all-files/ri/RiFileSearchLine"
 import { useMatchingSuggestions } from "@/atoms/library/matching-suggestions.atoms"
 import { localFilesAtom } from "@/atoms/library/local-file.atoms"
 import { useSelectAtom } from "@/atoms/helpers"
 import { DropdownMenu } from "@/components/ui/dropdown-menu"
 import { BiDotsVerticalRounded } from "@react-icons/all-files/bi/BiDotsVerticalRounded"
-import { FiSearch } from "@react-icons/all-files/fi/FiSearch"
 import { GoDiffIgnored } from "@react-icons/all-files/go/GoDiffIgnored"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useManageLibraryEntries } from "@/app/(main)/(library)/_containers/local-library/_lib/scan"
@@ -28,6 +26,11 @@ import { BiCollection } from "@react-icons/all-files/bi/BiCollection"
 import { AppLayoutStack } from "@/components/ui/app-layout"
 import { BiLockAlt } from "@react-icons/all-files/bi/BiLockAlt"
 import { BiLockOpenAlt } from "@react-icons/all-files/bi/BiLockOpenAlt"
+import { HiSparkles } from "@react-icons/all-files/hi/HiSparkles"
+import { Divider } from "@/components/ui/divider"
+import { BetaBadge } from "@/components/application/beta-badge"
+import { FiSearch } from "@react-icons/all-files/fi/FiSearch"
+import { HiOutlineSparkles } from "@react-icons/all-files/hi/HiOutlineSparkles"
 
 export function LibraryToolbar() {
 
@@ -41,11 +44,12 @@ export function LibraryToolbar() {
 
     const resolveUnmatchedDrawer = useDisclosure(false)
     const refreshModal = useDisclosure(false)
-    const rescanModal = useDisclosure(false)
+    const scanModal = useDisclosure(false)
     const bulkActionModal = useDisclosure(false)
 
-    const rescan_preserveLockedFileStatus = useBoolean(true)
-    const rescan_preserveIgnoredFileStatus = useBoolean(true)
+    const scan_enhancedScanning = useBoolean(false)
+    const scan_preserveLockedFileStatus = useBoolean(true)
+    const scan_preserveIgnoredFileStatus = useBoolean(true)
 
     const {
         handleRefreshEntries,
@@ -59,11 +63,12 @@ export function LibraryToolbar() {
     } = useManageLibraryEntries({
         onComplete: () => {
             refreshModal.close()
-            rescanModal.close()
+            scanModal.close()
         },
-        rescanOptions: {
-            preserveIgnoredFileStatus: rescan_preserveIgnoredFileStatus.active,
-            preserveLockedFileStatus: rescan_preserveLockedFileStatus.active,
+        scanOptions: {
+            preserveIgnoredFileStatus: scan_preserveIgnoredFileStatus.active,
+            preserveLockedFileStatus: scan_preserveLockedFileStatus.active,
+            enhancedScanning: scan_enhancedScanning.active,
         },
     })
 
@@ -90,6 +95,23 @@ export function LibraryToolbar() {
         bulkActionModal.close()
     }
 
+    const EnhancedScanUl = useCallback(() => (
+        <ul className={"list-disc pl-14"}>
+            <li><strong>Your media files and folders should all be located at the root</strong>
+                <ul className={"list-disc pl-8 text-[--muted]"}>
+                    <li>You should not class your files under folders such as "Movies", etc...</li>
+                </ul>
+            </li>
+            <li>Your Anilist watch list data is <strong>not needed</strong>
+                <ul className={"list-disc pl-8 text-[--muted]"}>
+                    <li>Best if some media are not present in your AniList watch list</li>
+                </ul>
+            </li>
+            <li>This feature might be less accurate if your watch list is empty</li>
+            <li>It <strong>will</strong> slow down scanning</li>
+        </ul>
+    ), [])
+
 
     return (
         <>
@@ -97,13 +119,18 @@ export function LibraryToolbar() {
                 <div className={"flex w-full justify-between gap-2"}>
 
                     <div className={"inline-flex gap-2 items-center"}>
-                        {(localFileCount > 0) ?
+                        {(localFileCount > 0) ? <>
                             <Button onClick={refreshModal.open} intent={"primary-subtle"}
-                                    leftIcon={<RiFileSearchLine/>}>
+                                    leftIcon={<FiSearch/>}
+                            >
                                 Refresh entries
-                            </Button> : <Button onClick={handleRescanEntries} intent={"primary"} leftIcon={<FiSearch/>}>
-                                Scan library
-                            </Button>}
+                            </Button>
+                        </> : <>
+                            <Button onClick={scanModal.open} intent={"primary-outline"} leftIcon={<HiSparkles/>}>
+                                Scan your library
+                            </Button>
+                        </>}
+
 
                         {unresolvedFileCount > 0 && <Button
                             onClick={async () => {
@@ -125,9 +152,9 @@ export function LibraryToolbar() {
                                 <BiFolder/>
                                 <span>Open folder</span>
                             </DropdownMenu.Item>
-                            <DropdownMenu.Item onClick={rescanModal.open}>
+                            <DropdownMenu.Item onClick={scanModal.open}>
                                 <RiFolderDownloadFill/>
-                                <span>Re-scan library</span>
+                                <span>Scan library</span>
                             </DropdownMenu.Item>
                             <DropdownMenu.Item onClick={() => setOpenIgnoredFilesDrawer(true)}>
                                 <GoDiffIgnored/>
@@ -153,48 +180,97 @@ export function LibraryToolbar() {
                 isOpen={refreshModal.isOpen}
                 onClose={refreshModal.close}
                 isClosable
-                title={"Refresh entries"}
+                title={<h3>Refresh entries</h3>}
+                titleClassName={"text-center"}
                 bodyClassName={"space-y-4"}
+                size={"xl"}
             >
 
-                <p>Are you sure you want to refresh entries?</p>
+                <div className={"space-y-4 mt-6"}>
+                    <div>
+                        <Checkbox
+                            label={<span className={"flex items-center"}>Enable enhanced refreshing <BetaBadge/>
+                                <HiOutlineSparkles className={"ml-2 text-amber-500"}/></span>}
+                            checked={scan_enhancedScanning.active}
+                            onChange={scan_enhancedScanning.toggle}
+                            controlClassName={"data-[state=checked]:bg-amber-700 dark:data-[state=checked]:bg-amber-700"}
+                            size={"lg"}
+                        />
 
-                <div>
-                    {/*<Checkbox label={"Skip locked files"} checked={refresh_skipLockedFiles.active} onChange={refresh_skipLockedFiles.toggle} />*/}
+                        {scan_enhancedScanning.active && <EnhancedScanUl/>}
+                        <ul className={"list-disc pl-14 text-[--muted]"}>
+                            <li>(?) If some new files belong to media not present your AniList watch list</li>
+                        </ul>
+                    </div>
+
+                    <Divider/>
+
                     <Checkbox label={"Clean up non-existent files"} checked={true} isDisabled/>
+                    {/*<Checkbox label={"Did you add new media?"} checked={false}/>*/}
                 </div>
 
                 <Button
                     onClick={onRefreshButtonClick}
                     leftIcon={<IoReload/>}
                     isDisabled={isScanning}
+                    className={"w-full"}
                 >
                     Refresh
                 </Button>
 
             </Modal>
 
-            <Modal isOpen={rescanModal.isOpen} onClose={rescanModal.close} isClosable title={"Scan library"}
-                   bodyClassName={"space-y-4"}>
-                <div>
-                    <Checkbox
-                        label={"Preserve locked status"}
-                        checked={rescan_preserveLockedFileStatus.active}
-                        onChange={rescan_preserveLockedFileStatus.toggle}
-                    />
-                    <Checkbox
-                        label={"Preserve ignored status"}
-                        checked={rescan_preserveIgnoredFileStatus.active}
-                        onChange={rescan_preserveIgnoredFileStatus.toggle}
-                    />
+            <Modal
+                isOpen={scanModal.isOpen}
+                onClose={scanModal.close}
+                isClosable
+                title={<h3>Scan library</h3>}
+                titleClassName={"text-center"}
+                bodyClassName={"space-y-4"}
+                size={"xl"}
+            >
+                <div className={"space-y-4 mt-6"}>
+
+                    <div>
+                        <Checkbox
+                            label={<span className={"flex items-center"}>Enable enhanced scanning <BetaBadge/>
+                                <HiOutlineSparkles className={"ml-2 text-amber-500"}/></span>}
+                            checked={scan_enhancedScanning.active}
+                            onChange={scan_enhancedScanning.toggle}
+                            controlClassName={"data-[state=checked]:bg-amber-700 dark:data-[state=checked]:bg-amber-700"}
+                            size={"lg"}
+                        />
+
+                        {scan_enhancedScanning.active && <EnhancedScanUl/>}
+                    </div>
+
+                    <Divider/>
+
+                    <div className={"space-y-2"}>
+                        <Checkbox
+                            label={"Preserve locked status"}
+                            checked={ignoredPaths.length === 0 ? false : scan_preserveLockedFileStatus.active}
+                            onChange={scan_preserveLockedFileStatus.toggle}
+                            isDisabled={lockedPaths.length === 0}
+                            size={"lg"}
+                        />
+                        <Checkbox
+                            label={"Preserve ignored status"}
+                            checked={ignoredPaths.length === 0 ? false : scan_preserveIgnoredFileStatus.active}
+                            onChange={scan_preserveIgnoredFileStatus.toggle}
+                            isDisabled={ignoredPaths.length === 0}
+                            size={"lg"}
+                        />
+                    </div>
                 </div>
                 <Button
                     onClick={handleRescanEntries}
                     intent={"primary"}
-                    leftIcon={<IoReload/>}
+                    leftIcon={<FiSearch/>}
                     isDisabled={isScanning}
+                    className={"w-full"}
                 >
-                    Re-scan
+                    Scan
                 </Button>
             </Modal>
 

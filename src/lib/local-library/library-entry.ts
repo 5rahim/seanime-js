@@ -9,6 +9,7 @@ import { ScanLogging } from "@/lib/local-library/logs"
 import { LocalFile, LocalFileWithMedia } from "@/lib/local-library/types"
 import { hydrateLocalFileWithInitialMetadata } from "@/lib/local-library/local-file"
 import { valueContainsNC, valueContainsSeason, valueContainsSpecials } from "@/lib/local-library/utils/filtering.utils"
+import Bottleneck from "bottleneck"
 
 type ProspectiveLibraryEntry = {
     media: AnilistShowcaseMedia
@@ -32,7 +33,7 @@ export const inspectProspectiveLibraryEntry = async (props: {
     _mediaCache: Map<number, AnilistShortMedia>
     _aniZipCache: Map<number, AniZipData>
     _scanLogging: ScanLogging
-}): Promise<ProspectiveLibraryEntry> => {
+}, limiter?: Bottleneck): Promise<ProspectiveLibraryEntry> => {
 
     // Right now the map will only contain 1 entry
     // In the future we could use a global offset map that comes from the client
@@ -133,7 +134,7 @@ export const inspectProspectiveLibraryEntry = async (props: {
                 _aniZipCache: _aniZipCache,
                 forceHydrate: true,
                 _scanLogging,
-            })
+            }, limiter)
             if (!hydratedFileData.error) {
                 mostAccurateFiles[i] = hydratedFileData.file as LocalFileWithMedia
             } else {
@@ -144,20 +145,6 @@ export const inspectProspectiveLibraryEntry = async (props: {
         }
 
         mostAccurateFiles = mostAccurateFiles.filter(Boolean)
-
-        // // Detect if an entry has a file whose episode number is 0, if so, we'll add an offset to all the files
-        // const hasEpisodeWithNumberZero = mostAccurateFiles.some(file => {
-        //     return !containsSpecialsOrNC(file) && file.metadata.episode !== undefined && file.metadata.episode === 0
-        // })
-        // for(let i = 0; i < mostAccurateFiles.length; i++) {
-        //     if(hasEpisodeWithNumberZero && mostAccurateFiles[i].metadata.episode !== undefined && !containsSpecialsOrNC(mostAccurateFiles[i])) {
-        //         mostAccurateFiles[i].metadata.episode! += 1
-        //         mostAccurateFiles[i].metadata.aniDBEpisodeNumber! = `${mostAccurateFiles[i].metadata.episode}`
-        //         _scanLogging.add(mostAccurateFiles[i].path, ">>> [library-entry/inspectProspectiveLibraryEntry]")
-        //         _scanLogging.add(mostAccurateFiles[i].path, "warning - Detected episode number 0, adding offset to episode number")
-        //         _scanLogging.add(mostAccurateFiles[i].path, `   -> Episode number = ${mostAccurateFiles[i].metadata.episode}`)
-        //     }
-        // }
 
         const rejectedFiles = files.filter(n => !mostAccurateFiles.find(f => f.path === n.path))
 

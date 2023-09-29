@@ -11,6 +11,7 @@ import { experimental_analyzeMediaTree } from "@/lib/anilist/actions"
 import { LocalFile, LocalFileMetadata, LocalFileWithMedia } from "@/lib/local-library/types"
 import { localFile_getParsedEpisode } from "@/lib/local-library/utils/parsed-info.utils"
 import { valueContainsNC, valueContainsSpecials } from "@/lib/local-library/utils/filtering.utils"
+import Bottleneck from "bottleneck"
 
 /**
  * @description
@@ -173,7 +174,7 @@ export async function hydrateLocalFileWithInitialMetadata(props: {
     _mediaCache: Map<number, AnilistShortMedia>
     _aniZipCache: Map<number, AniZipData>
     _scanLogging: ScanLogging
-}) {
+}, limiter?: Bottleneck) {
 
     const {
         file: _originalFile,
@@ -195,11 +196,11 @@ export async function hydrateLocalFileWithInitialMetadata(props: {
 
         if (media.format !== "MOVIE") {
             // Get the highest episode number
-            const highestEp = media?.nextAiringEpisode?.episode || media?.episodes
+            const highestEp = media?.nextAiringEpisode?.episode ?? media?.episodes
             const episode = localFile_getParsedEpisode(file.parsedInfo)
 
             // The parser got an absolute episode number, we will normalize it and give the file the correct media ID
-            if (!!highestEp && episode !== undefined && episode > highestEp) {
+            if (highestEp !== undefined && highestEp !== null && episode !== undefined && episode > highestEp) {
 
                 _scanLogging.add(file.path, "warning - Absolute episode number detected")
 
@@ -210,7 +211,11 @@ export async function hydrateLocalFileWithInitialMetadata(props: {
 
                     if (!_mediaCache.has(media.id) || !_mediaCache.get(media.id)?.relations) {
                         _scanLogging.add(file.path, "   -> Cache MISS - Querying media relations")
-                        currentMediaWithRelations = (await useAniListAsyncQuery(AnimeShortMediaByIdDocument, { id: media.id })).Media
+                        if (limiter) {
+                            currentMediaWithRelations = (await limiter.schedule(() => useAniListAsyncQuery(AnimeShortMediaByIdDocument, { id: media.id }))).Media
+                        } else {
+                            currentMediaWithRelations = (await useAniListAsyncQuery(AnimeShortMediaByIdDocument, { id: media.id })).Media
+                        }
                         if (currentMediaWithRelations) _mediaCache.set(media.id, currentMediaWithRelations)
                     } else {
                         _scanLogging.add(file.path, "   -> Cache HIT - Related media retrieved")
@@ -224,7 +229,7 @@ export async function hydrateLocalFileWithInitialMetadata(props: {
                     media: currentMediaWithRelations!,
                     _mediaCache: _mediaCache,
                     _aniZipCache,
-                })
+                }, limiter)
                 _scanLogging.add(file.path, "   -> Retrieved media relation tree")
                 const normalizedEpisode = normalizeEpisode(episode)
 

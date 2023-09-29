@@ -19,6 +19,7 @@ import { redirect } from "next/navigation"
 import axios from "axios"
 import { matching_compareTitleVariationsToMedia } from "@/lib/local-library/utils/matching.utils"
 import { fetchAniZipData } from "@/lib/anizip/helpers"
+import Bottleneck from "bottleneck"
 
 /* -------------------------------------------------------------------------------------------------
  * General
@@ -90,12 +91,13 @@ export async function deleteEntry(variables: DeleteEntryMutationVariables, token
  * - Retrieves a specific media's sequels and prequels using {experimental_fetchMediaTree}
  * - Returns some utilities
  * @param props
+ * @param limiter
  */
 export async function experimental_analyzeMediaTree(props: {
     media: AnilistShortMedia | AnilistShowcaseMedia | number,
     _mediaCache: Map<number, AnilistShortMedia>,
     _aniZipCache: Map<number, AniZipData>,
-}) {
+}, limiter?: Bottleneck) {
 
     const { media: _media, _mediaCache, _aniZipCache } = props
 
@@ -109,7 +111,7 @@ export async function experimental_analyzeMediaTree(props: {
     const treeMap = new Map<number, AnilistShortMedia>()
     const start = performance.now()
     logger("experimental_fetchMediaTree").warning("Fetching media tree in for " + media.title?.english)
-    await experimental_fetchMediaTree({ media, treeMap, _mediaCache: _mediaCache })
+    await experimental_fetchMediaTree({ media, treeMap, _mediaCache: _mediaCache }, limiter)
     const end = performance.now()
     logger("experimental_fetchMediaTree").info("Fetched media tree in " + (end - start) + "ms")
 
@@ -122,7 +124,12 @@ export async function experimental_analyzeMediaTree(props: {
     const totalEpisodeCount = mediaList.reduce((prev, curr) => prev + (curr.episodes || 0), 0)
 
 
-    let listWithInfo: { media: AnilistShortMedia, aniZipData: AniZipData | undefined, minAbsoluteEpisode: number, maxAbsoluteEpisode: number }[] = []
+    let listWithInfo: {
+        media: AnilistShortMedia,
+        aniZipData: AniZipData | undefined,
+        minAbsoluteEpisode: number,
+        maxAbsoluteEpisode: number
+    }[] = []
     // const aniZipRes = await Promise.allSettled(mediaList.map(media => axios.get<AniZipData>("https://api.ani.zip/mappings?anilist_id=" + media.id)))
 
 
@@ -163,19 +170,22 @@ export async function experimental_analyzeMediaTree(props: {
  * @description Purpose
  * Populates `treeMap` with a media's prequels and sequels
  * @param props
+ * @param limiter
  */
 export async function experimental_fetchMediaTree(props: {
     media: AnilistShortMedia | AnilistShowcaseMedia,
     _mediaCache: Map<number, AnilistShortMedia>,
     treeMap: Map<number, AnilistShortMedia>,
     relation?: "PREQUEL" | "SEQUEL" | "BOTH",
-}) {
+    excludeStatus?: MediaStatus[],
+}, limiter?: Bottleneck) {
 
     const {
         media: _originalMedia,
         _mediaCache,
         treeMap,
         relation = "BOTH",
+        excludeStatus = [],
     } = props
 
     let media: AnilistShortMedia = _originalMedia
@@ -186,7 +196,11 @@ export async function experimental_fetchMediaTree(props: {
             media = _mediaCache.get(_originalMedia.id)!
             treeMap.set(media.id, media)
         } else {
-            media = (await useAniListAsyncQuery(AnimeShortMediaByIdDocument, { id: _originalMedia.id })).Media!
+            if (limiter) {
+                media = (await limiter.schedule(() => useAniListAsyncQuery(AnimeShortMediaByIdDocument, { id: _originalMedia.id }))).Media!
+            } else {
+                media = (await useAniListAsyncQuery(AnimeShortMediaByIdDocument, { id: _originalMedia.id })).Media!
+            }
             _mediaCache.set(media.id, media)
             treeMap.set(media.id, media)
         }
@@ -196,26 +210,48 @@ export async function experimental_fetchMediaTree(props: {
 
     async function getEdges() {
         // Find prequel
-        const prequel = (relation === "BOTH" || relation === "PREQUEL") ? anilist_findMediaEdge(media, "PREQUEL")?.node : undefined
+        const prequel = (relation === "BOTH" || relation === "PREQUEL") ? anilist_findMediaEdge({
+            media,
+            relation: "PREQUEL",
+        })?.node : undefined
         // Find sequel
-        const sequel = (relation === "BOTH" || relation === "SEQUEL") ? anilist_findMediaEdge(media, "SEQUEL")?.node : undefined
+        const sequel = (relation === "BOTH" || relation === "SEQUEL") ? anilist_findMediaEdge({
+            media,
+            relation: "SEQUEL",
+            force: true,
+            forceFormats: ["TV", "TV_SHORT", "OVA", "MOVIE"],
+        })?.node : undefined
         // For each edge
         for (const edge of [prequel, sequel].filter(Boolean)) {
+
+            // if (edge.status && excludeStatus.includes(edge.status)) return
 
             if (_mediaCache.has(edge.id) && !treeMap.has(edge.id)) {
 
                 treeMap.set(edge.id, _mediaCache.get(edge.id)!) // Add the edge to the map if it's in the cache
                 // Get the edge's edges
-                await experimental_fetchMediaTree({ media: _mediaCache.get(edge.id)!, _mediaCache, treeMap, relation })
+                await experimental_fetchMediaTree({
+                    media: _mediaCache.get(edge.id)!,
+                    _mediaCache,
+                    treeMap,
+                    relation,
+                    excludeStatus,
+                }, limiter)
 
             } else if (!_mediaCache.has(edge.id) && !treeMap.has(edge.id)) { // If the edge is not in the cache
 
                 // Fetch it from AniList
-                const _ = (await useAniListAsyncQuery(AnimeShortMediaByIdDocument, { id: edge.id })).Media!
+                // const _ = (await useAniListAsyncQuery(AnimeShortMediaByIdDocument, { id: edge.id })).Media!
+                let _: AnilistShortMedia
+                if (limiter) {
+                    _ = (await limiter.schedule(() => useAniListAsyncQuery(AnimeShortMediaByIdDocument, { id: edge.id }))).Media!
+                } else {
+                    _ = (await useAniListAsyncQuery(AnimeShortMediaByIdDocument, { id: edge.id })).Media!
+                }
                 treeMap.set(edge.id, _) // Add it to the map
                 _mediaCache.set(edge.id, _) // Add it to the cache
                 // Get the edge's edges
-                await experimental_fetchMediaTree({ media: _, _mediaCache, treeMap, relation })
+                await experimental_fetchMediaTree({ media: _, _mediaCache, treeMap, relation, excludeStatus }, limiter)
 
             }
 
