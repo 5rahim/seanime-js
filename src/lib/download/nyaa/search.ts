@@ -7,6 +7,7 @@ import { Nyaa } from "@/lib/download/nyaa/api"
 
 import { LocalFile } from "@/lib/local-library/types"
 import { valueContainsSeason } from "@/lib/local-library/utils/filtering.utils"
+import { anilist_findMediaEdge } from "@/lib/anilist/utils"
 
 
 export async function unstable_findNyaaTorrents(props: {
@@ -48,17 +49,7 @@ export async function unstable_findNyaaTorrents(props: {
 
     // let cour =
 
-    const prequel = !IS_MOVIE ?
-        // S>1 -> Find prequel
-        ((!!season && season > 1) || SPLIT_COUR || (!!ANI_SEASON && ANI_SEASON > 1)) ? media.relations?.edges?.find(edge => edge?.relationType === "PREQUEL")?.node
-            // OVA or ONA -> Find parent
-            : (media.format === "OVA" || media.format === "ONA") ? media.relations?.edges?.find(edge => edge?.relationType === "PARENT")?.node
-                : undefined
-        : undefined
-
-    const sequel = !IS_MOVIE ?
-        media.relations?.edges?.find(edge => edge?.relationType === "SEQUEL")?.node
-        : undefined
+    const sequel = !IS_MOVIE ? anilist_findMediaEdge({ media, relation: "SEQUEL" })?.node : undefined
 
     if (!!sequel && sequel.startDate?.year && sequel.startDate?.month && !season) {
         const sequelStartDate = new Date(sequel.startDate?.year || 0, sequel.startDate?.month || 0)

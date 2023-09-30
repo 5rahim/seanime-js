@@ -132,7 +132,7 @@ export const Modal = React.forwardRef<HTMLDivElement, ModalProps>((props, ref) =
                                     {...rest}
                                 >
                                     {title && <Dialog.Title
-                                        as="h3"
+                                        as={"div"}
                                         className={cn(ModalAnatomy.title(), titleClassName)}
                                     >
                                         {title}

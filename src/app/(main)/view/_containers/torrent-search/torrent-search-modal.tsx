@@ -108,7 +108,7 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
     const [quickSearchEpisode, setQuickSearchEpisode] = useState<number | undefined>(episode || downloadInfo.episodeNumbers[0])
     const debouncedEpisode = useDebounce(quickSearchEpisode, 500)
 
-    const [episodeOffset, setEpisodeOffset] = useState<number | undefined>(aniZipData?.episodes?.["1"]?.absoluteEpisodeNumber ? aniZipData?.episodes?.["1"]?.absoluteEpisodeNumber - 1 : undefined)
+    const episodeOffset = useMemo(() => aniZipData?.episodes?.["1"]?.absoluteEpisodeNumber ? aniZipData?.episodes?.["1"]?.absoluteEpisodeNumber - 1 : undefined, [aniZipData?.episodes?.["1"]?.absoluteEpisodeNumber])
 
     const torrentListModal = useDisclosure(false)
 
@@ -128,7 +128,7 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
                     episode: quickSearchEpisode!,
                     latestFile: latestFile,
                     batch: quickSearchIsBatch,
-                    offset: episodeOffset!,
+                    offset: episodeOffset || 0,
                 })
             } else {
                 res = await unstable_handleSearchTorrents(globalFilter)
@@ -148,7 +148,7 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
             keepPreviousData: false,
             refetchOnWindowFocus: false,
             retry: 5,
-            enabled: episodeOffset !== undefined && !!aniZipData && quickSearchEpisode !== undefined,
+            enabled: !!aniZipData && quickSearchEpisode !== undefined,
         })
 
 
@@ -235,9 +235,7 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
         },
     ]), [torrents, selectedTorrents])
 
-
     if (!downloadInfo || !media) return <></>
-
 
     return (
         <>

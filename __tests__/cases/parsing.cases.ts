@@ -7,6 +7,7 @@ export default {
     ],
     singleEpisode: {
         simpleMediaTitles: [
+            { filename: "[Judas] Blue Lock - 00 [HASH].mkv", expected: { episode: "0" } },
             { filename: "[Judas] Blue Lock - S01E05.mkv", expected: { episode: "5" } },
             { filename: "[Judas] Blue Lock - S01_E05.mkv", expected: { episode: "5" } },
             { filename: "[Judas] Blue Lock - S01_05.mkv", expected: { episode: "5" } },
