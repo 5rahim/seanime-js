@@ -15,7 +15,7 @@ import uniqBy from "lodash/uniqBy"
 import { fetchMediaTree } from "@/lib/anilist/actions"
 import { ANILIST_BOTTLENECK_OPTIONS } from "@/lib/anilist/config"
 
-export async function blindScanLibraryMedia(props: {
+export async function scanLibraryMedia(props: {
     settings: Settings,
     _scanLogging: ScanLogging
     _aniZipCache: Map<number, AniZipData>
@@ -35,15 +35,15 @@ export async function blindScanLibraryMedia(props: {
 
     // Check if the library exists
     if (!settings.library.localDirectory || !_fs.existsSync(settings.library.localDirectory)) {
-        logger("local-library/blindScanLocalFiles").error("Directory does not exist")
-        _scanLogging.add("local-library/blindScanLocalFiles", "Directory does not exist")
+        logger("local-library/scanLibraryMedia").error("Directory does not exist")
+        _scanLogging.add("local-library/scanLibraryMedia", "Directory does not exist")
         await _scanLogging.writeSnapshot()
         _scanLogging.clear()
         return { error: "Couldn't find the local directory." }
     }
 
     // Get the user watch list data
-    _scanLogging.add("local-library/blindScanLocalFiles", "Fetching media from local directory")
+    _scanLogging.add("local-library/scanLibraryMedia", "Fetching media from local directory")
 
     const prospectiveMediaTitles = await getMediaTitlesFromLocalDirectory({ directoryPath: settings.library.localDirectory })
 
@@ -120,10 +120,10 @@ export async function blindScanLibraryMedia(props: {
     /* Fetching media with relations */
 
     const s2s = performance.now()
-    logger("local-library/blindScanLocalFiles").warning("Fetching media with relations")
+    logger("local-library/scanLibraryMedia").warning("Fetching media with relations")
     const result = await Promise.allSettled(anilistIdChunks.map(chunk => runAnilistQuery(chunk)))
     const s2e = performance.now()
-    logger("local-library/blindScanLocalFiles").info("Finished fetching media with relations in ", (s2e - s2s), "ms")
+    logger("local-library/scanLibraryMedia").info("Finished fetching media with relations in ", (s2e - s2s), "ms")
 
     const anilistResults = (await getFulfilledValues(result)).filter(Boolean)
 
@@ -143,7 +143,7 @@ export async function blindScanLibraryMedia(props: {
 
     async function fetchTreeMaps(media: AnilistShortMedia) {
         const start = performance.now()
-        logger("local-library/blindScanLocalFiles").warning("Fetching media tree in for " + media.title?.english)
+        logger("local-library/scanLibraryMedia").warning("Fetching media tree in for " + media.title?.english)
         await fetchMediaTree({
             media,
             treeMap,
@@ -151,17 +151,17 @@ export async function blindScanLibraryMedia(props: {
             excludeStatus: ["NOT_YET_RELEASED"],
         }, anilistLimiter)
         const end = performance.now()
-        logger("local-library/blindScanLocalFiles").info("Fetched media tree in for " + media?.title?.english + " in " + (end - start) + "ms")
+        logger("local-library/scanLibraryMedia").info("Fetched media tree in for " + media?.title?.english + " in " + (end - start) + "ms")
         return true
     }
 
     const s3s = performance.now()
-    logger("local-library/blindScanLocalFiles").warning("Fetching all media trees")
+    logger("local-library/scanLibraryMedia").warning("Fetching all media trees")
 
     await Promise.allSettled(fetchedMedia.map(media => fetchTreeMaps(media)))
 
     const s3e = performance.now()
-    logger("local-library/blindScanLocalFiles").info("Fetched all media trees in " + (s3e - s3s) + "ms")
+    logger("local-library/scanLibraryMedia").info("Fetched all media trees in " + (s3e - s3s) + "ms")
     const relationsResults = [...treeMap.values()]
 
     treeMap.clear()

@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest"
 
 import { initialSettings } from "@/atoms/settings"
 import { getMediaTitlesFromLocalDirectory } from "@/lib/local-library/repository"
-import { blindScanLibraryMedia } from "@/lib/local-library/blind-scan"
+import { scanLibraryMedia } from "@/lib/local-library/blind-scan"
 import { ScanLogging } from "@/lib/local-library/logs"
 import { AnilistShortMedia } from "@/lib/anilist/fragment"
 
@@ -39,7 +39,7 @@ describe.skip("Blind scan", () => {
         const _aniZipCache = new Map<number, AniZipData>()
         const _mediaCache = new Map<number, AnilistShortMedia>
 
-        const result = await blindScanLibraryMedia({ settings, _scanLogging, _aniZipCache, _mediaCache })
+        const result = await scanLibraryMedia({ settings, _scanLogging, _aniZipCache, _mediaCache })
 
         _scanLogging.clear()
         _aniZipCache.clear()
