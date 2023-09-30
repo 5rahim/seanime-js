@@ -6,7 +6,7 @@ import cases from "./cases/local-file.cases"
 import parsingCases from "./cases/parsing.cases"
 import { AnilistShortMedia } from "@/lib/anilist/fragment"
 import { __episodeNormalizationMatchingCases } from "./cases/episode-normalization.cases"
-import { experimental_analyzeMediaTree, experimental_fetchMediaTree } from "@/lib/anilist/actions"
+import { analyzeMediaTree, fetchMediaTree } from "@/lib/anilist/actions"
 import { __SampleMedia } from "./samples/media.sample"
 import { valueContainsNC, valueContainsSpecials } from "@/lib/local-library/utils/filtering.utils"
 import { fetchAnilistShortMedia } from "@/lib/anilist/helpers"
@@ -46,7 +46,7 @@ describe.skip("Get media tree", () => {
         const _cache = new Map<number, AnilistShortMedia>
         const _aniZipCache = new Map<number, AniZipData>
 
-        const result = await experimental_analyzeMediaTree({ media: __SampleMedia["Bungou Stray Dogs Season 4"], _mediaCache: _cache, _aniZipCache })
+        const result = await analyzeMediaTree({ media: __SampleMedia["Bungou Stray Dogs Season 4"], _mediaCache: _cache, _aniZipCache })
         console.log(result.listWithInfo.map(n => n.media.title?.english))
         expect(result.listWithInfo.length).toBeGreaterThan(4)
 
@@ -62,7 +62,7 @@ describe.skip("Get media tree", () => {
         const media = (await fetchAnilistShortMedia(16498, _cache))!
         const treeMap = new Map<number, AnilistShortMedia>()
 
-        const result = await experimental_fetchMediaTree({
+        const result = await fetchMediaTree({
             media: media,
             treeMap,
             _mediaCache: _cache,

@@ -89,12 +89,12 @@ export async function deleteEntry(variables: DeleteEntryMutationVariables, token
  * @description Caveats
  * - Slow
  * @description Purpose
- * - Retrieves a specific media's sequels and prequels using {experimental_fetchMediaTree}
+ * - Retrieves a specific media's sequels and prequels using {fetchMediaTree}
  * - Returns some utilities
  * @param props
  * @param limiter
  */
-export async function experimental_analyzeMediaTree(props: {
+export async function analyzeMediaTree(props: {
     media: AnilistShortMedia | AnilistShowcaseMedia | number,
     _mediaCache: Map<number, AnilistShortMedia>,
     _aniZipCache: Map<number, AniZipData>,
@@ -111,14 +111,14 @@ export async function experimental_analyzeMediaTree(props: {
 
     const treeMap = new Map<number, AnilistShortMedia>()
     const start = performance.now()
-    logger("experimental_fetchMediaTree").warning("Fetching media tree in for " + media.title?.english)
-    await experimental_fetchMediaTree({
+    logger("anilist/analyzeMediaTree").warning("Fetching media tree in for " + media.title?.english)
+    await fetchMediaTree({
         media,
         treeMap,
         _mediaCache: _mediaCache,
     }, limiter)
     const end = performance.now()
-    logger("experimental_fetchMediaTree").info("Fetched media tree in " + (end - start) + "ms")
+    logger("anilist/analyzeMediaTree").info("Fetched media tree in " + (end - start) + "ms")
 
     // Sort media list
     const mediaList = [...treeMap.values()].sort((a, b) => new Date(a.startDate?.year || 0, a.startDate?.month || 0).getTime() - new Date(b.startDate?.year || 0, b.startDate?.month || 0).getTime())
@@ -155,7 +155,7 @@ export async function experimental_analyzeMediaTree(props: {
         const correspondingMedia = listWithInfo.find(media => media.minAbsoluteEpisode <= absoluteEpisodeNumber && media.maxAbsoluteEpisode >= absoluteEpisodeNumber)
         if (correspondingMedia) {
 
-            logger("experimental_analyzeMediaTree/normalizeEpisode").info(`(${correspondingMedia.media.title?.english}) Normalized episode ${absoluteEpisodeNumber} to ${absoluteEpisodeNumber - (correspondingMedia.minAbsoluteEpisode - 1)}`)
+            logger("analyzeMediaTree/normalizeEpisode").info(`(${correspondingMedia.media.title?.english}) Normalized episode ${absoluteEpisodeNumber} to ${absoluteEpisodeNumber - (correspondingMedia.minAbsoluteEpisode - 1)}`)
             return {
                 media: correspondingMedia.media,
                 relativeEpisode: absoluteEpisodeNumber - (correspondingMedia.minAbsoluteEpisode - 1),
@@ -177,7 +177,7 @@ export async function experimental_analyzeMediaTree(props: {
  * @param props
  * @param limiter
  */
-export async function experimental_fetchMediaTree(props: {
+export async function fetchMediaTree(props: {
     media: AnilistShortMedia | AnilistShowcaseMedia,
     _mediaCache: Map<number, AnilistShortMedia>,
     treeMap: Map<number, AnilistShortMedia>,
@@ -235,7 +235,7 @@ export async function experimental_fetchMediaTree(props: {
 
                 treeMap.set(edge.id, _mediaCache.get(edge.id)!) // Add the edge to the map if it's in the cache
                 // Get the edge's edges
-                await experimental_fetchMediaTree({
+                await fetchMediaTree({
                     media: _mediaCache.get(edge.id)!,
                     _mediaCache,
                     treeMap,
@@ -256,7 +256,7 @@ export async function experimental_fetchMediaTree(props: {
                 treeMap.set(edge.id, _) // Add it to the map
                 _mediaCache.set(edge.id, _) // Add it to the cache
                 // Get the edge's edges
-                await experimental_fetchMediaTree({ media: _, _mediaCache, treeMap, relation, excludeStatus }, limiter)
+                await fetchMediaTree({ media: _, _mediaCache, treeMap, relation, excludeStatus }, limiter)
 
             }
 

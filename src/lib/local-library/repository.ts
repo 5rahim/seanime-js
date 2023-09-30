@@ -17,7 +17,7 @@ import { LocalFile, LocalFileWithMedia } from "@/lib/local-library/types"
 import rakun from "@/lib/rakun"
 import orderBy from "lodash/orderBy"
 import { valueContainsSeason } from "@/lib/local-library/utils/filtering.utils"
-import { experimental_blindScanLibraryMedia } from "@/lib/local-library/blind-scan"
+import { blindScanLibraryMedia } from "@/lib/local-library/blind-scan"
 import Bottleneck from "bottleneck"
 import uniqBy from "lodash/uniqBy"
 
@@ -84,7 +84,7 @@ export async function retrieveLocalFilesWithMedia(props: {
             let scannedMedia: AnilistShowcaseMedia[] = []
             if (enhanced === "full" || enhanced === "partial") {
                 _scanLogging.add("repository/scanLocalFiles", "Blind scanning local library")
-                const blindScanRes = await experimental_blindScanLibraryMedia({
+                const blindScanRes = await blindScanLibraryMedia({
                     settings,
                     _scanLogging,
                     _aniZipCache,

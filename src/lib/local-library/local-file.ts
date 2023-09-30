@@ -7,7 +7,7 @@ import { ScanLogging } from "@/lib/local-library/logs"
 import { path_getDirectoryName, path_removeTopPath, path_splitPath } from "@/lib/helpers/path"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
 import { AnimeShortMediaByIdDocument } from "@/gql/graphql"
-import { experimental_analyzeMediaTree } from "@/lib/anilist/actions"
+import { analyzeMediaTree } from "@/lib/anilist/actions"
 import { LocalFile, LocalFileMetadata, LocalFileWithMedia } from "@/lib/local-library/types"
 import { localFile_getParsedEpisode } from "@/lib/local-library/utils/parsed-info.utils"
 import { valueContainsNC, valueContainsSpecials } from "@/lib/local-library/utils/filtering.utils"
@@ -160,7 +160,7 @@ export const createLocalFileWithMedia = async (props: {
 /**
  * @description Purpose
  * - Analyzes [LocalFile]'s parsed data, uses ratings to accept/reject the match
- * - Normalizes the episode number if it's absolute before hydrating metadata using {experimental_analyzeMediaTree}
+ * - Normalizes the episode number if it's absolute before hydrating metadata using {analyzeMediaTree}
  * @description Use
  * - Send the hydrated [LocalFile] to the client if there's no `error`
  */
@@ -221,9 +221,9 @@ export async function hydrateLocalFileWithInitialMetadata(props: {
                     }
                 } // End
 
-                _scanLogging.add(file.path, "   -> Analyzing media tree [experimental_analyzeMediaTree]")
+                _scanLogging.add(file.path, "   -> Analyzing media tree")
 
-                const { normalizeEpisode } = await experimental_analyzeMediaTree({
+                const { normalizeEpisode } = await analyzeMediaTree({
                     media: currentMediaWithRelations!,
                     _mediaCache: _mediaCache,
                     _aniZipCache: _aniZipCache,

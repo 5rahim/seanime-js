@@ -10,7 +10,7 @@ import { valueContainsSeason } from "@/lib/local-library/utils/filtering.utils"
 import { anilist_findMediaEdge } from "@/lib/anilist/utils"
 
 
-export async function unstable_findNyaaTorrents(props: {
+export async function findNyaaTorrents(props: {
     media: AnilistDetailedMedia,
     aniZipData: AniZipData,
     episode: number,
@@ -168,7 +168,7 @@ function zeropad(v: string | number = 1, l = 2) {
 }
 
 
-export async function unstable_handleSearchTorrents(search: string) {
+export async function searchNyaaTorrents(search: string) {
     const searchResult = await Nyaa.search({
         title: search,
         category: "1_2",

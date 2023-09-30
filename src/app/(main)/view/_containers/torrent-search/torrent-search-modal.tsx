@@ -1,7 +1,7 @@
 "use client"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
 import React, { startTransition, useMemo, useState } from "react"
-import { unstable_findNyaaTorrents, unstable_handleSearchTorrents } from "@/lib/download/nyaa/search"
+import { findNyaaTorrents, searchNyaaTorrents } from "@/lib/download/nyaa/search"
 import { SearchTorrent } from "@/lib/download/nyaa/api/types"
 import { createDataGridColumns, DataGrid } from "@/components/ui/datagrid"
 import { Badge } from "@/components/ui/badge"
@@ -122,7 +122,7 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
         async () => {
             let res: SearchTorrent[] | undefined = undefined
             if (globalFilter.length === 0) {
-                res = await unstable_findNyaaTorrents({
+                res = await findNyaaTorrents({
                     media: media,
                     aniZipData: aniZipData!,
                     episode: quickSearchEpisode!,
@@ -131,7 +131,7 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
                     offset: episodeOffset || 0,
                 })
             } else {
-                res = await unstable_handleSearchTorrents(globalFilter)
+                res = await searchNyaaTorrents(globalFilter)
             }
             return (res?.map(torrent => {
                 return {
