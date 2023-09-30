@@ -158,7 +158,7 @@ export const TorrentSearchTorrentList: React.FC<TorrentListProps> = (props) => {
                                 onClick={() => window.open("https://nyaa.si" + torrent.links.page.replace("#comments", ""), "_blank")}
                             >
                                 <span className={"text-lg"}>
-                                    {isFile(torrent.parsed) ? <FcFilmReel/> :
+                                    {(isFile(torrent.parsed) || media.format === "MOVIE") ? <FcFilmReel/> :
                                         <FcFolder className={"text-2xl"}/>} {/*<BsCollectionPlayFill/>*/}
                                 </span>
                                 <p className={"truncate text-ellipsis"}>{torrent.name}</p>
@@ -183,13 +183,13 @@ export const TorrentSearchTorrentList: React.FC<TorrentListProps> = (props) => {
                     intent={"white-outline"}
                     onClick={() => handleAddTorrents(true)}
                     isDisabled={isLoading}
-                >Download unwatched/missing only</Button>}
+                >Download unwatched episodes</Button>}
                 {selectedTorrents.length > 0 && <Button
                     leftIcon={<BiDownload/>}
                     intent={"white"}
                     onClick={() => handleAddTorrents()}
                     isDisabled={isLoading}
-                >Download</Button>}
+                >{canDownloadUnwatched ? "Download all" : "Download"}</Button>}
             </div>
         </AppLayoutStack>
     </>

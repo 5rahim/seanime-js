@@ -3,6 +3,7 @@
 ## Improvements
 
 - New UI for torrent search list
+- Use IndexedDB
 - Write tests for smart select
 - Add "missing episodes" badge to AnimeItem
 - (advanced search) Filter by studios

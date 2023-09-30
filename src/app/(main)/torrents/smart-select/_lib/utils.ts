@@ -3,7 +3,7 @@ import path from "path"
 import { path_getDirectoryName } from "@/lib/helpers/path"
 import { TorrentFile } from "@/lib/download/qbittorrent/types"
 
-type Input = { info: TorrentFile, originalName: string, parsed: ParsedTorrentInfo }
+type Input = { file: TorrentFile, originalName: string, parsed: ParsedTorrentInfo }
 type Output = Input & {
     trueEpisode?: number
     season?: number
@@ -18,7 +18,7 @@ export function smartSelect_normalizeEpisodes(array: Input[]): Output[] {
     // Create a mapping of unique parent folders to files
     const folderToFileMap: Record<string, Input[]> = {}
     array.forEach((item) => {
-        const { info: { name } } = item
+        const { file: { name } } = item
         const folderPath = path_getDirectoryName(name)
 
         if (folderPath in folderToFileMap) {
@@ -41,7 +41,7 @@ export function smartSelect_normalizeEpisodes(array: Input[]): Output[] {
         folderEpisodes.sort((a, b) => a - b)
 
         files.forEach((item) => {
-            const { info: { name }, originalName } = item
+            const { file: { name }, originalName } = item
             const episodeNumber = Number(item.parsed.episode)
 
             const folderParsed = rakun.parse(path_getDirectoryName(name)?.split(path.sep).pop() || "")

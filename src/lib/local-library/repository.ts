@@ -83,7 +83,7 @@ export async function retrieveLocalFilesWithMedia(props: {
             /* EXPERIMENTAL */
             let scannedMedia: AnilistShowcaseMedia[] = []
             if (enhanced === "full" || enhanced === "partial") {
-                _scanLogging.add("repository/scanLocalFiles", "Blind scanning local library")
+                _scanLogging.add("repository/scanLocalFiles", "Scanning and fetching local library media")
                 const blindScanRes = await scanLibraryMedia({
                     settings,
                     _scanLogging,

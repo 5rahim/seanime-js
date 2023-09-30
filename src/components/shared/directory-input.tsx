@@ -71,7 +71,7 @@ export const DirectoryInput: React.FC<DirectoryInputProps & Omit<TextInputProps,
 
 
     return (
-        <>
+        <div className={"space-y-1"}>
             <TextInput
                 leftIcon={<FcOpenedFolder className={"text-2xl"}/>}
                 leftAddon={prefix ? prefix : undefined}
@@ -89,7 +89,7 @@ export const DirectoryInput: React.FC<DirectoryInputProps & Omit<TextInputProps,
                                 setInputValue(valueRef.current)
                             }, 500)
                         }
-                        if (directoryShouldExist) { // FIXME Experimental
+                        if (directoryShouldExist) {
                             setTimeout(() => {
                                 checkDirectory()
                             }, 200)
@@ -98,18 +98,20 @@ export const DirectoryInput: React.FC<DirectoryInputProps & Omit<TextInputProps,
                 }}
             />
             {!!(folders.value?.data.length && folders.value?.data.length > 0 && showFolderOptions) &&
-                <div className={"w-full flex flex-none flex-nowrap overflow-x-auto pb-2 gap-2"}>
+                <div
+                    className={"w-full flex flex-none flex-nowrap overflow-x-auto gap-2 items-center bg-gray-800 rounded-md p-1 px-4"}>
+                    <div>Sub-folders:</div>
                     {folders.value?.data.map(folder => (
                         <div
                             key={folder.name}
-                            className={"py-1 px-3 rounded-md border border-[--border] flex-none cursor-pointer bg-gray-900 hover:bg-gray-800"}
+                            className={"py-1 text-sm px-3 rounded-md border border-[--border] flex-none cursor-pointer bg-gray-900 hover:bg-gray-800"}
                             onClick={() => handleSelectDir(folder.path)}
                         >
                             {folder.name}
                         </div>
                     ))}
                 </div>}
-        </>
+        </div>
     )
 
 })

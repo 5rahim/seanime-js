@@ -19,7 +19,6 @@ export const FirstScanScreen: React.FC<FirstScanScreenProps> = (props) => {
         <div className={"text-center space-y-8 p-4 pt-0"}>
             <div className={"space-y-2"}>
                 <h2>Scan your library</h2>
-                <p>You have two options.</p>
             </div>
         </div>
     )

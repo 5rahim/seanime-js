@@ -1,13 +1,13 @@
 "use client"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
-import React, { startTransition, useMemo, useState } from "react"
+import React, { startTransition, useEffect, useMemo, useState } from "react"
 import { findNyaaTorrents, searchNyaaTorrents } from "@/lib/download/nyaa/search"
 import { SearchTorrent } from "@/lib/download/nyaa/api/types"
 import { createDataGridColumns, DataGrid } from "@/components/ui/datagrid"
 import { Badge } from "@/components/ui/badge"
 import { formatDistanceToNow } from "date-fns"
 import { atom } from "jotai"
-import { useAtom, useAtomValue } from "jotai/react"
+import { useAtom, useAtomValue, useSetAtom } from "jotai/react"
 import { Divider } from "@/components/ui/divider"
 import { Switch } from "@/components/ui/switch"
 import { NumberInput } from "@/components/ui/number-input"
@@ -30,6 +30,10 @@ import { Tooltip } from "@/components/ui/tooltip"
 import { extractHashFromMagnetLink } from "@/lib/download/torrent-helpers"
 import { usePathname, useRouter } from "next/navigation"
 import { useSettings } from "@/atoms/settings"
+import Image from "next/image"
+import { Slider } from "@/components/shared/slider"
+import { similarity } from "@/lib/string-similarity"
+import { FcLineChart } from "@react-icons/all-files/fc/FcLineChart"
 
 interface Props {
     media: AnilistDetailedMedia,
@@ -105,7 +109,7 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
 
     const [selectedTorrents, setSelectedTorrents] = useAtom(__torrentSearch_selectedTorrentsAtom)
     const [quickSearchIsBatch, setQuickSearchIsBatch] = useState<boolean>(downloadInfo.batch || downloadInfo.canBatch)
-    const [quickSearchEpisode, setQuickSearchEpisode] = useState<number | undefined>(episode || downloadInfo.episodeNumbers[0])
+    const [quickSearchEpisode, setQuickSearchEpisode] = useState<number | undefined>(episode || downloadInfo.episodeNumbers[0] || 1)
     const debouncedEpisode = useDebounce(quickSearchEpisode, 500)
 
     const episodeOffset = useMemo(() => aniZipData?.episodes?.["1"]?.absoluteEpisodeNumber ? aniZipData?.episodes?.["1"]?.absoluteEpisodeNumber - 1 : undefined, [aniZipData?.episodes?.["1"]?.absoluteEpisodeNumber])
@@ -116,6 +120,7 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
         setSelectedTorrents([])
     })
 
+    const queryIsEnabled = !!aniZipData && !(quickSearchEpisode === undefined && globalFilter.length === 0)
 
     const { data: torrents, isLoading, isFetching } = useQuery<SearchTorrentData[]>(
         ["fetching-torrents", media.id, debouncedEpisode, globalFilter, quickSearchIsBatch, episodeOffset],
@@ -141,14 +146,16 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
                 }
             }) || []).filter(torrent => {
                 // If this isn't a batch search, remove torrents that don't have episodes parsed
-                if (!quickSearchIsBatch && !torrent.parsed.episode) return false
+                if (!quickSearchIsBatch && !torrent.parsed.episode && !(media.episodes === 1 || media.format === "MOVIE")) return false
+                if (quickSearchIsBatch && !!torrent.parsed.episode) return false
                 return true
             }) as SearchTorrentData[]
         }, {
             keepPreviousData: false,
             refetchOnWindowFocus: false,
-            retry: 5,
-            enabled: !!aniZipData && quickSearchEpisode !== undefined,
+            retry: 2,
+            retryDelay: 1000,
+            enabled: queryIsEnabled,
         })
 
 
@@ -235,6 +242,10 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
         },
     ]), [torrents, selectedTorrents])
 
+    useEffect(() => {
+        console.log(torrents)
+    }, [torrents])
+
     if (!downloadInfo || !media) return <></>
 
     return (
@@ -242,10 +253,11 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
             <div className={"space-y-4 relative"}>
 
                 {selectedTorrents.length > 0 && <div className={"absolute top-0 right-0 z-10"}>
-                    <Button onClick={torrentListModal.open}>View selected torrents ({selectedTorrents.length})</Button>
+                    <Button onClick={torrentListModal.open} className={"animate-pulse"}>Continue
+                        ({selectedTorrents.length})</Button>
                 </div>}
 
-                {(media.format !== "MOVIE" && media.episodes !== 1) && <>
+                {(media.format !== "MOVIE" && media.episodes !== 1 && downloadInfo.toDownload > 0) && <>
                     <div>
                         Episodes to
                         download: {downloadInfo.episodeNumbers.slice(0, 12).join(", ")}{downloadInfo.episodeNumbers.length > 12 ? ", ..." : "."}
@@ -256,32 +268,42 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
                     </div>}
                 </>}
 
-                <div className={"space-y-2"}>
-                    <h4>Quick search parameters</h4>
-                    <div className={"inline-flex gap-4 items-center"}>
-                        <Switch
-                            label={"Look for batches"}
-                            checked={quickSearchIsBatch}
-                            onChange={setQuickSearchIsBatch}
-                            labelClassName={"text-md"}
-                        />
-                        <NumberInput
-                            label={"Episode number"}
-                            value={quickSearchEpisode}
-                            onChange={(value) => {
-                                startTransition(() => {
-                                    setQuickSearchEpisode(value)
-                                })
-                            }}
-                            discrete
-                            size="sm"
-                            fieldClassName={"flex items-center justify-center gap-3 space-y-0"}
-                            fieldLabelClassName={"flex-none self-center font-normal !text-md sm:text-md lg:text-md"}/>
+                {(media.format !== "MOVIE" && (!!media.episodes ? media.episodes > 0 : true)) && <>
+                    <div className={"space-y-2"}>
+                        <h4>Quick search parameters</h4>
+                        <div className={"inline-flex gap-4 items-center"}>
+                            <Switch
+                                label={"Look for batches"}
+                                checked={quickSearchIsBatch}
+                                onChange={setQuickSearchIsBatch}
+                                labelClassName={"text-md"}
+                            />
+                            <NumberInput
+                                label={"Episode number"}
+                                value={quickSearchEpisode}
+                                onChange={(value) => {
+                                    startTransition(() => {
+                                        setQuickSearchEpisode(value)
+                                    })
+                                }}
+                                discrete
+                                size="sm"
+                                fieldClassName={cn(
+                                    "flex items-center justify-center gap-3 space-y-0",
+                                    { "opacity-50 cursor-not-allowed pointer-events-none": quickSearchIsBatch },
+                                )}
+                                fieldLabelClassName={"flex-none self-center font-normal !text-md sm:text-md lg:text-md"}/>
+                        </div>
                     </div>
-                </div>
+                    <Divider/>
+                </>}
 
-                <Divider/>
-                {/*<EpisodeList aniZipData={props.aniZipData} media={props.media}/>*/}
+
+                <EpisodeListPreview
+                    aniZipData={aniZipData}
+                    media={media}
+                    episodeOffset={episodeOffset || 0}
+                />
 
                 <DataGrid<SearchTorrentData>
                     columns={columns}
@@ -325,55 +347,129 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
 
 }
 
-// interface EpisodeListProps {
-//     children?: React.ReactNode
-//     aniZipData?: AniZipData
-//     media: AnilistDetailedMedia
-// }
-//
-// export const EpisodeList: React.FC<EpisodeListProps> = (props) => {
-//
-//     const { children, media, ...rest } = props
-//
-//     const selectedTorrents = useAtomValue(sortedSelectedTorrentsAtom)
-//
-//     if (selectedTorrents.length === 0 || !selectedTorrents.every(n => !!n.parsed.episode)) return null
-//
-//     return <>
-//         <h3>Preview:</h3>
-//         <div className={"grid grid-cols-1 sm:grid-cols-2 gap-4"}>
-//             {selectedTorrents.map(torrent => {
-//                 const episodeData = props.aniZipData?.episodes[torrent.parsed.episode || "0"]
-//                 return (
-//                     <div key={torrent.name}
-//                          className={"border border-[--border] p-4 pr-12 rounded-lg relative transition hover:bg-gray-900"}>
-//                         <div
-//                             className={"flex gap-4 relative cursor-pointer"}
-//                         >
-//                             {episodeData?.image && <div
-//                                 className="h-24 w-24 flex-none rounded-md object-cover object-center relative overflow-hidden">
-//                                 <Image
-//                                     src={episodeData?.image}
-//                                     alt={""}
-//                                     fill
-//                                     quality={60}
-//                                     priority
-//                                     sizes="10rem"
-//                                     className="object-cover object-center"
-//                                 />
-//                             </div>}
-//
-//                             <div className={"space-y-1"}>
-//                                 <h4 className={"font-medium"}>Episode {torrent.parsed.episode}</h4>
-//                                 {!!episodeData && <p className={"text-sm text-[--muted]"}>{episodeData?.title?.en}</p>}
-//                                 {torrent.parsed.resolution && <Badge>{torrent.parsed.resolution}</Badge>}
-//                             </div>
-//                         </div>
-//                     </div>
-//                 )
-//             })}
-//         </div>
-//         <Divider/>
-//     </>
-//
-// }
+type EpisodeListPreviewProps = {
+    aniZipData?: AniZipData
+    media: AnilistDetailedMedia
+    episodeOffset: number
+}
+
+const __torrentSearch_getPreviewTorrentsAtom = atom(
+    get => get(__torrentSearch_selectedTorrentsAtom),
+    (get, set, payload: { titles: string[], episodeOffset: number }) => {
+        const selectedTorrents = get(__torrentSearch_selectedTorrentsAtom).filter(n => !!n.parsed.episode)
+        const torrentsWithRating = selectedTorrents.map(torrent => {
+            const bestMatch = similarity.findBestMatch(torrent.parsed.name, payload.titles)
+            return {
+                torrent,
+                rating: bestMatch.bestMatch.rating,
+            }
+        })
+        const highestRating = Math.max(...torrentsWithRating.map(item => item.rating))
+        return torrentsWithRating
+            .filter(item => item.rating >= 0.3)
+            .filter(item =>
+                (item.rating.toFixed(3) === highestRating.toFixed(3)) || Math.abs(+item.rating.toFixed(3) - +highestRating.toFixed(3)) < 0.2, // deviation is lower than 0.1
+            ).map(item => {
+                const episodeWithOffset = Number(item.torrent.parsed.episode) - payload.episodeOffset
+                const isAbsolute = episodeWithOffset > 0
+                const episode = isAbsolute ? episodeWithOffset : Number(item.torrent.parsed.episode)
+                return {
+                    ...item.torrent,
+                    episode: episode,
+                }
+            }).sort((a, b) => a.episode - b.episode)
+    },
+)
+
+export function EpisodeListPreview(props: EpisodeListPreviewProps) {
+
+    const { media, episodeOffset, ...rest } = props
+
+    const setSelectedTorrents = useSetAtom(__torrentSearch_selectedTorrentsAtom)
+    const [_, getSelectedTorrents] = useAtom(__torrentSearch_getPreviewTorrentsAtom)
+
+    const selectedTorrents = useMemo(() => {
+        return getSelectedTorrents({
+            titles: [media.title?.romaji || "", media.title?.english || "", media.title?.native].filter(Boolean),
+            episodeOffset: episodeOffset,
+        })
+    }, [_, episodeOffset])
+
+    const previewDiff = _.length - selectedTorrents.length
+
+    if (selectedTorrents.length === 0 || !_.every(n => !!n.parsed.episode)) return null
+
+    return <>
+        <div>
+            <h3>Preview:</h3>
+            {previewDiff > 0 &&
+                <p className={"text-sm text-[--muted] italic"}>{previewDiff} torrent(s) not previewed.</p>}
+            <p className={"text-sm text-[--muted] italic"}>Note: The preview is not accurate and does not represent the
+                final scan.</p>
+        </div>
+        <Slider>
+            {selectedTorrents.map(torrent => {
+                const episodeData = props.aniZipData?.episodes[String(torrent.episode) || "0"]
+                return (
+                    <div
+                        key={torrent.name}
+                        className={"border border-[--border] p-4 rounded-lg relative transition hover:bg-gray-900 w-[400px] flex-none"}
+                    >
+                        <div className={"absolute top-2 right-2"}>
+                            {/*<IconButton*/}
+                            {/*    icon={<BiX/>}*/}
+                            {/*    className={"absolute right-2 top-2 rounded-full"}*/}
+                            {/*    size={"xs"}*/}
+                            {/*    intent={"gray-outline"}*/}
+                            {/*    onClick={() => {*/}
+                            {/*        setSelectedTorrents(prev => prev.filter(tr => tr.hash !== torrent.hash))*/}
+                            {/*    }}*/}
+                            {/*/>*/}
+                        </div>
+                        <div
+                            className={"flex gap-4 relative"}
+                        >
+                            {episodeData?.image && <div
+                                className="h-24 w-24 flex-none rounded-md object-cover object-center relative overflow-hidden">
+                                <Image
+                                    src={episodeData?.image}
+                                    alt={""}
+                                    fill
+                                    quality={60}
+                                    priority
+                                    sizes="10rem"
+                                    className="object-cover object-center"
+                                />
+                            </div>}
+
+
+                            <div className={"space-y-1"}>
+                                <h4 className={"font-medium"}>Episode {torrent.episode}</h4>
+                                {!!episodeData &&
+                                    <p className={"text-sm text-[--muted] line-clamp-1"}>{episodeData?.title?.en}</p>}
+                                <p className={"text-sm line-clamp-1"}>{torrent.name}</p>
+                                <div className={"items-center flex gap-1"}>
+                                    {torrent.parsed.resolution &&
+                                        <Badge intent={torrent.parsed?.resolution?.includes("1080")
+                                            ? "warning"
+                                            : (torrent.parsed?.resolution?.includes("2160") || torrent.parsed?.resolution?.toLowerCase().includes("4k"))
+                                                ? "success"
+                                                : "gray"}
+                                        >
+                                            {torrent.parsed?.resolution}
+                                        </Badge>}
+                                    {torrent.stats.seeders > 20 ? <Badge intent={"success"} leftIcon={
+                                            <FcLineChart/>}>{torrent.stats.seeders}</Badge> :
+                                        <Badge intent={"gray"}
+                                               leftIcon={<FcLineChart/>}>{torrent.stats.seeders}</Badge>}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )
+            })}
+        </Slider>
+        <Divider/>
+    </>
+
+}

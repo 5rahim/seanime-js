@@ -80,28 +80,23 @@ export default function Page() {
 
             // Pause these torrents
             for (const torrent of torrents) {
-                await torrentManager.current.pauseTorrent(torrent.raw.hash)
                 // Stop downloading of all files
-                // NOT GOOD -> CAUSES TORRENT TO BE CONSIDERED COMPLETELY DOWNLOADED
-                // await torrentManager.current.setFilePriority(torrent.raw.hash, {
-                //     // @ts-ignore
-                //     ids: contents.filter(item => item.hash === torrent.raw.hash).flatMap(item => item.content).map(content => String(content.index)),
-                //     priority: 0,
-                // })
+                await torrentManager.current.pauseTorrent(torrent.raw.hash)
             }
 
             // Organize the torrents files
-            const organizedTorrents = torrents.map(torrent => {
-                const queueInfo = torrentQueue.find(item => item.torrent.hash === torrent.raw.hash)
+            return torrents.map(torrent => {
+                // Get queue item
+                const queueItem = torrentQueue.find(item => item.torrent.hash === torrent.raw.hash)
 
-                const torrentContent = contents // -> { ...torrentFile, originalName, parsed }
+                const torrentContent = contents // -> { file, originalName, parsed }
                     .filter(n => n.hash === torrent.raw.hash) // Get the torrent's files
                     .flatMap(n => n.content)
                     .filter(Boolean)
-                    .flatMap(content => ({ // Parse anime data from each file
-                        info: content,
-                        originalName: path_getBasename(content.name),
-                        parsed: rakun.parse(path_getBasename(content.name)),
+                    .flatMap(file => ({ // Parse anime data from each file
+                        file: file,
+                        originalName: path_getBasename(file.name),
+                        parsed: rakun.parse(path_getBasename(file.name)),
                     }))
 
                 // Keep files that have an episode
@@ -109,34 +104,29 @@ export default function Page() {
                 const episodeContent = smartSelect_normalizeEpisodes(torrentContent.filter(content => !!content.parsed.episode))
                 const rest = torrentContent.filter(content => !content.parsed.episode) // Files that don't have an episode
 
+                const acceptedFileIndices = episodeContent
+                    // Keep files that are not specials or NC and include an episode number
+                    .filter(content => (
+                        !!content.trueEpisode &&
+                        queueItem?.downloadInfo.episodeNumbers.includes(Number(content.trueEpisode))
+                        && !valueContainsNC(content.originalName)
+                        && !valueContainsSpecials(content.originalName)
+                    ))
+                    .filter(Boolean)
+                    .map(content => String(content.file.index))
+                    .filter(Boolean)
+
+                const rejectedFileIndices = [
+                    ...episodeContent.filter(content => !acceptedFileIndices.includes(String(content.file.index))).map(content => String(content.file.index)),
+                    ...rest.map(content => String(content.file.index)),
+                ]
+
                 return {
                     torrent,
-                    acceptedFileIndices: episodeContent
-                        .filter(content => queueInfo?.downloadInfo.episodeNumbers.includes(Number(content.parsed.episode!)) && !valueContainsNC(content.originalName) && !valueContainsSpecials(content.originalName))
-                        .filter(Boolean)
-                        //@ts-ignore
-                        .map(content => String(content.info.index))
-                        .filter(Boolean) as string[]
-                    ,
-                    rejectedFileIndices: [
-                        // Episode files that are not NC/Specials
-                        ...episodeContent
-                            .filter(content => (
-                                !queueInfo?.downloadInfo.episodeNumbers.includes(Number(content.trueEpisode!))
-                                || valueContainsNC(content.originalName)
-                                || valueContainsSpecials(content.originalName)
-                            ))
-                            // @ts-ignore
-                            .map(content => String(content.info.index))
-                            .filter(Boolean) as string[],
-                        // Also ignore the rest
-                        //@ts-ignore
-                        ...rest.map(content => String(content.info.index)),
-                    ],
+                    acceptedFileIndices,
+                    rejectedFileIndices,
                 }
             })
-
-            return organizedTorrents
         },
         refetchInterval: 1000,
         enabled: fetchTorrent && torrentsInQueue?.some(n => n.totalSize > 0) && torrentQueue?.filter(item => item?.status === "ready").length > 0,
@@ -161,7 +151,7 @@ export default function Page() {
             console.log("torrentsWithContent", torrentsWithContent)
             if (torrentsWithContent) {
                 if (torrentsWithContent.some(item => item.rejectedFileIndices.length > 0)) {
-                    // Rest file priority of select files
+                    // Deselect rejected files
                     await Promise.allSettled(torrentsWithContent.map(organizedTorrent => (
                         torrentManager.current.setFilePriority(organizedTorrent.torrent.raw.hash, {
                             ids: organizedTorrent.rejectedFileIndices,

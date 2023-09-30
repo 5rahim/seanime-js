@@ -6,6 +6,7 @@ import { runCommand } from "@/lib/helpers/child-process"
 import { directoryExists, fileOrDirectoryExists } from "@/lib/helpers/file"
 import path from "path"
 import { path_getDirectoryName } from "@/lib/helpers/path"
+import { logger } from "@/lib/helpers/debug"
 
 export async function getSafeFoldersFromDirectory(_path: string): Promise<{ data: { name: string, path: string }[], error: string | null, parentFolder: string | null }> {
     if (_path && path.isAbsolute(_path)) {
@@ -76,6 +77,7 @@ export async function openDirectoryInExplorer(path: string) {
     }
 
     if (path && await fileOrDirectoryExists(path)) {
+        logger("helpers/directory").info("Opening directory in explorer", path)
         await runCommand(`${explorer} "${path}"`)
     }
 }

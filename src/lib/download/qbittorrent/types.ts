@@ -558,6 +558,7 @@ export interface WebSeed {
 }
 
 export interface TorrentFile {
+    index: number
     /**
      * File name (including relative path)
      */

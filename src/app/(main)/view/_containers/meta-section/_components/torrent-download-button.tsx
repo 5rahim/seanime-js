@@ -22,7 +22,7 @@ export function TorrentDownloadButton(
 
     const { downloadInfo } = useMediaDownloadInfo(detailedMedia)
 
-    if (downloadInfo.toDownload === 0 && !downloadInfo.schedulingIssues) return null
+    // if (downloadInfo.toDownload === 0 && !downloadInfo.schedulingIssues) return null
 
     function openTorrentSearch() {
         setTorrentSearchIsOpen({ isOpen: true, episode: undefined })
@@ -42,11 +42,9 @@ export function TorrentDownloadButton(
                 iconClassName={"text-2xl"}
                 onClick={openTorrentSearch}
             >
-                {!downloadInfo.schedulingIssues ? <>
-                {detailedMedia.format !== "MOVIE" ?
-                    `Download ${downloadInfo.batch ? "batch /" : "next"} ${downloadInfo.toDownload > 1 ? `${downloadInfo.toDownload} episodes` : "episode"}` :
-                    `Download movie`
-                }
+                {(!downloadInfo.schedulingIssues && downloadInfo.toDownload > 0) ? <>
+                    {(detailedMedia.format !== "MOVIE") && `Download ${downloadInfo.batch ? "batch /" : "next"} ${downloadInfo.toDownload > 1 ? `${downloadInfo.toDownload} episodes` : "episode"}`}
+                    {(detailedMedia.format === "MOVIE") && `Download movie`}
                 </> : <>
                     Search for torrents
                 </>}

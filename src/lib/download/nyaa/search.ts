@@ -72,15 +72,17 @@ export async function findNyaaTorrents(props: {
     // ---------------------------------------------------
     /* Format title */
 
+    let englishSplit = media.title?.english?.split(":").filter(Boolean).map(n => n.trim()) || []
+    englishSplit = englishSplit[1]?.length > 10 ? englishSplit : [englishSplit[0]]
+    let romajiSplit = media.title?.romaji?.split(":").filter(Boolean).map(n => n.trim()) || []
+    romajiSplit = romajiSplit[1]?.length > 10 ? romajiSplit : [romajiSplit[0]]
+
     // eg: [jujutsu kaisen, ...]
     let prospectiveTitleArr = [
         media.title?.english,
-        media.title?.english?.split(":")[0],
-        media.title?.english?.split(":")[1],
-        media.title?.userPreferred,
-        media.title?.userPreferred?.split(":")[0],
-        media.title?.userPreferred?.split(":")[1],
+        ...englishSplit,
         media.title?.romaji,
+        ...romajiSplit,
         ...(media.synonyms?.filter(valueContainsSeason) || []),
     ]
     prospectiveTitleArr = [
@@ -157,7 +159,8 @@ export async function findNyaaTorrents(props: {
             return searchResult2.torrents
         }
     } catch (e) {
-        console.warn("Could not fetch torrents")
+        logger("lib/nyaa/search").error("Could not fetch torrents for", _search_string)
+        logger("lib/nyaa/search").error(e)
         return []
     }
 

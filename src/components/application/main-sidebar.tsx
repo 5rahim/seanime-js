@@ -1,5 +1,5 @@
 "use client"
-import React from "react"
+import React, { useMemo } from "react"
 import { VerticalNav } from "@/components/ui/vertical-nav"
 import { AppSidebar } from "@/components/ui/app-layout"
 import { Avatar } from "@/components/ui/avatar"
@@ -44,6 +44,15 @@ export const MainSidebar: React.FC<MainSidebarProps> = (props) => {
 
     const loginModal = useDisclosure(false)
 
+    const watchListItem = useMemo(() => !!user ? [
+        {
+            icon: BiCollection,
+            name: "Watch lists",
+            href: "/anilist",
+            isCurrent: pathname === "/anilist",
+        },
+    ] : [], [user])
+
     return (
         <>
             <AppSidebar className={"p-4 h-full flex flex-col justify-between"} sidebarClassName="h-full">
@@ -69,12 +78,7 @@ export const MainSidebar: React.FC<MainSidebarProps> = (props) => {
                                 addon: missingEpisodes > 0 ? <Badge className={"absolute right-0 top-0"} size={"sm"}
                                                                     intent={"alert-solid"}>{missingEpisodes}</Badge> : undefined,
                             },
-                            {
-                                icon: BiCollection,
-                                name: "Watch lists",
-                                href: "/anilist",
-                                isCurrent: pathname === "/anilist",
-                            },
+                            ...watchListItem,
                             {
                                 icon: FiSearch,
                                 name: "Search",
