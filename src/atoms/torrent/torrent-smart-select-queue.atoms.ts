@@ -3,6 +3,7 @@ import { withImmer } from "jotai-immer"
 import { useSetAtom } from "jotai/react"
 import { SearchTorrentData } from "@/lib/download/types"
 import { MediaDownloadInfo } from "@/lib/download/helpers"
+import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
 
 /* -------------------------------------------------------------------------------------------------
  * Store torrent batches that are paused, so they can be processed and un-paused
@@ -13,6 +14,8 @@ type TorrentQueueItemState = "awaiting_meta" | "ready"
 export type TorrentQueueItem = {
     torrent: SearchTorrentData,
     downloadInfo: MediaDownloadInfo,
+    media: AnilistDetailedMedia,
+    episodeOffset: number,
     status: TorrentQueueItemState
 }
 
@@ -25,11 +28,10 @@ export function useTorrentSmartSelectQueue() {
 
     return {
         emptyQueue: () => setter(draft => []),
-        addTorrentToQueue: (torrent: SearchTorrentData, downloadInfo: MediaDownloadInfo) => {
+        addTorrentToQueue: (props: Omit<TorrentQueueItem, "status">) => {
             setter(draft => {
                 draft.push({
-                    torrent,
-                    downloadInfo,
+                    ...props,
                     status: "awaiting_meta",
                 })
                 return

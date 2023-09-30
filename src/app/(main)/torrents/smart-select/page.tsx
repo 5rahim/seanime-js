@@ -14,9 +14,9 @@ import { isTorrentReady } from "@/lib/download/torrent-helpers"
 import rakun from "@/lib/rakun"
 import { LoadingOverlay } from "@/components/ui/loading-spinner"
 import { useRouter } from "next/navigation"
-import { smartSelect_normalizeEpisodes } from "@/app/(main)/torrents/smart-select/_lib/utils"
 import { path_getBasename } from "@/lib/helpers/path"
 import { valueContainsNC, valueContainsSpecials } from "@/lib/local-library/utils/filtering.utils"
+import { anilist_getEpisodeCeilingFromMedia } from "@/lib/anilist/utils"
 
 export default function Page() {
 
@@ -88,23 +88,42 @@ export default function Page() {
             return torrents.map(torrent => {
                 // Get queue item
                 const queueItem = torrentQueue.find(item => item.torrent.hash === torrent.raw.hash)
+                const episodeOffset = queueItem?.episodeOffset || 0
+                const media = queueItem?.media!
 
                 const torrentContent = contents // -> { file, originalName, parsed }
                     .filter(n => n.hash === torrent.raw.hash) // Get the torrent's files
                     .flatMap(n => n.content)
                     .filter(Boolean)
-                    .flatMap(file => ({ // Parse anime data from each file
-                        file: file,
-                        originalName: path_getBasename(file.name),
-                        parsed: rakun.parse(path_getBasename(file.name)),
-                    }))
+                    .flatMap(file => {
+                        const parsed = rakun.parse(path_getBasename(file.name))
+                        return { // Parse anime data from each file
+                            file: file,
+                            originalName: path_getBasename(file.name),
+                            parsed,
+                        }
+                    })
 
-                // Keep files that have an episode
-                // Normalize episode numbers if needed, and return `trueEpisode`
-                const episodeContent = smartSelect_normalizeEpisodes(torrentContent.filter(content => !!content.parsed.episode))
+                // Files that have an episode
+                const filesWithEpisodes = torrentContent.filter(content => !!content.parsed.episode && !isNaN(Number(content.parsed.episode)))
+                // .filter(/* TODO Filter out episode under folder with another season */)
+
+                // Apply episode offset when:
+                const shouldApplyEpisodeOffset =
+                    // Absolute episode detected
+                    filesWithEpisodes.some(content => (Number(content.parsed.episode) > anilist_getEpisodeCeilingFromMedia(media)))
+                    // Not every episode number with offset is negative
+                    && filesWithEpisodes.some(content => (Number(content.parsed.episode) - episodeOffset) > 0)
+
+                const contentEpisodes = filesWithEpisodes.map(content => {
+                    return {
+                        ...content,
+                        trueEpisode: shouldApplyEpisodeOffset ? Number(content.parsed.episode) - episodeOffset : Number(content.parsed.episode), // Relative episode
+                    }
+                })
                 const rest = torrentContent.filter(content => !content.parsed.episode) // Files that don't have an episode
 
-                const acceptedFileIndices = episodeContent
+                const acceptedFileIndices = contentEpisodes
                     // Keep files that are not specials or NC and include an episode number
                     .filter(content => (
                         !!content.trueEpisode &&
@@ -117,7 +136,7 @@ export default function Page() {
                     .filter(Boolean)
 
                 const rejectedFileIndices = [
-                    ...episodeContent.filter(content => !acceptedFileIndices.includes(String(content.file.index))).map(content => String(content.file.index)),
+                    ...contentEpisodes.filter(content => !acceptedFileIndices.includes(String(content.file.index))).map(content => String(content.file.index)),
                     ...rest.map(content => String(content.file.index)),
                 ]
 

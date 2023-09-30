@@ -10,6 +10,7 @@ type Output = Input & {
 }
 
 /**
+ * @deprecated
  * @description Purpose
  * - Get torrent files, normalize episode numbers
  * @param array

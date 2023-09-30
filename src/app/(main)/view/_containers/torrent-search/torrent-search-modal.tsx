@@ -340,6 +340,7 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
                     onClose={torrentListModal.close}
                     media={media}
                     downloadInfo={downloadInfo}
+                    episodeOffset={episodeOffset || 0}
                 />
             </Modal>
         </>

@@ -37,11 +37,12 @@ interface TorrentListProps {
     media: AnilistDetailedMedia,
     onClose: () => void
     downloadInfo: MediaDownloadInfo
+    episodeOffset: number
 }
 
 export const TorrentSearchTorrentList: React.FC<TorrentListProps> = (props) => {
 
-    const { children, entryAtom, media, downloadInfo, ...rest } = props
+    const { children, entryAtom, media, downloadInfo, episodeOffset, ...rest } = props
 
     const router = useRouter()
     const { settings } = useSettings()
@@ -120,7 +121,12 @@ export const TorrentSearchTorrentList: React.FC<TorrentListProps> = (props) => {
                 // Add torrents to queue
                 selectedTorrents.map(torrent => {
                     if (shouldAddToQueue(torrent)) {
-                        addTorrentToQueue(torrent, downloadInfo)
+                        addTorrentToQueue({
+                            torrent,
+                            downloadInfo,
+                            episodeOffset,
+                            media,
+                        })
                     }
                 })
 
@@ -136,7 +142,7 @@ export const TorrentSearchTorrentList: React.FC<TorrentListProps> = (props) => {
                 }
             }
         }
-    }, [selectedDir, selectedTorrents])
+    }, [selectedDir, selectedTorrents, episodeOffset])
 
     return <>
         <AppLayoutStack>

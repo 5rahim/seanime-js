@@ -7,7 +7,7 @@ import { Nyaa } from "@/lib/download/nyaa/api"
 
 import { LocalFile } from "@/lib/local-library/types"
 import { valueContainsSeason } from "@/lib/local-library/utils/filtering.utils"
-import { anilist_findMediaEdge } from "@/lib/anilist/utils"
+import { anilist_findMediaEdge, anilist_findMediaSeasonFromTitles } from "@/lib/anilist/utils"
 
 
 export async function findNyaaTorrents(props: {
@@ -33,7 +33,10 @@ export async function findNyaaTorrents(props: {
     // console.log(aniZipData)
 
     // Get parsed season
-    let season = !IS_MOVIE ? Number(latestFile?.parsedFolderInfo?.findLast(obj => !!obj.season)?.season ?? latestFile?.parsedInfo?.season ?? "-1") : undefined
+    const __seasonFromFile = Number(latestFile?.parsedFolderInfo?.findLast(obj => !!obj.season)?.season ?? latestFile?.parsedInfo?.season ?? "-1")
+    const __seasonFromTitles = anilist_findMediaSeasonFromTitles(media)
+
+    let season = !IS_MOVIE ? (__seasonFromFile && __seasonFromFile > -1 ? __seasonFromFile : (__seasonFromTitles || __seasonFromFile)) : undefined
     season = season === -1 ? undefined : season
     if (!!ANI_SEASON) {
         if (!!season && season !== ANI_SEASON && !SPLIT_COUR) {
@@ -44,10 +47,6 @@ export async function findNyaaTorrents(props: {
     if (!season) {
         season = !!parsed.season ? Number(parsed.season) : undefined
     }
-
-    // const _seasons =
-
-    // let cour =
 
     const sequel = !IS_MOVIE ? anilist_findMediaEdge({ media, relation: "SEQUEL" })?.node : undefined
 
