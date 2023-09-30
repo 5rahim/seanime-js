@@ -1,6 +1,6 @@
 "use server"
 import { AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
-import similarity from "string-similarity"
+import { similarity } from "@/lib/string-similarity"
 import { logger } from "@/lib/helpers/debug"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
 import { AnimeByIdDocument, AnimeCollectionDocument, UpdateEntryDocument } from "@/gql/graphql"
@@ -138,7 +138,7 @@ export const inspectProspectiveLibraryEntry = async (props: {
             if (!hydratedFileData.error) {
                 mostAccurateFiles[i] = hydratedFileData.file as LocalFileWithMedia
             } else {
-                // If we can't hydrate the file, we'll just un-match it
+                // If we can't hydrate the file, we'll just unmatch it
                 // @ts-ignore
                 mostAccurateFiles[i] = undefined
             }
@@ -149,7 +149,7 @@ export const inspectProspectiveLibraryEntry = async (props: {
         const rejectedFiles = files.filter(n => !mostAccurateFiles.find(f => f.path === n.path))
 
         rejectedFiles.map(f => {
-            _scanLogging.add(f.path, `warning - File was un-matched because its parameters were below the thresholds`)
+            _scanLogging.add(f.path, `warning - File was unmatched because its parameters were below the thresholds`)
             _scanLogging.add(f.path, `   -> Title rating = ${lFilesWithRating.find(n => n.file.path === f.path)?.rating} | Threshold = ${highestRating}`)
             _scanLogging.add(f.path, `   -> Folder name rating = ${lFilesWithRating.find(n => n.file.path === f.path)?.ratingByFolderName} | Threshold = ${highestRatingByFolderName}`)
         })

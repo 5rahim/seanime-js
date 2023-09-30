@@ -29,7 +29,7 @@ export function anilist_findMediaEdge(props: {
         relation,
         formats = ["TV", "TV_SHORT"],
         force = true,
-        forceFormats = ["TV", "TV_SHORT", "OVA"],
+        forceFormats = ["TV", "TV_SHORT", "OVA", "ONA", "SPECIAL"],
     } = props
 
     if (media?.relations === undefined) {

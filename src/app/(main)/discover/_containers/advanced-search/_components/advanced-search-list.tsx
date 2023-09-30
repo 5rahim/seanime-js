@@ -12,7 +12,7 @@ export function AdvancedSearchList() {
     return <>
         {!isLoading && <div
             className={"px-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 min-[2000px]:grid-cols-8 gap-4"}>
-            {data?.pages.flatMap(n => n.Page?.media).filter(Boolean).map(media => (
+            {data?.pages.flatMap(n => n.Page?.media).filter(Boolean).filter(media => !!media.startDate?.year).map(media => (
                 <AnimeListItem
                     key={`${media.id}`}
                     mediaId={media.id}

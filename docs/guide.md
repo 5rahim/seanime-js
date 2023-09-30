@@ -25,7 +25,7 @@ A normal scan uses your AniList watch list data to match files to media. It does
   later seasons. Let's say your have the 1st, 2nd and 3rd season of a show in your library but only have the 1st season
   added in
   your watch list, Seanime might incorrectly match 3rd season files with the 2nd season. If it is the case, you can:
-  - Manually un-match the files and use the `Resolve unmatched` feature
+  - Manually unmatch the files and use the `Resolve unmatched` feature
   - Manually add the anime to your AniList watch list and refresh entries.
   - Use enhanced scanning/refreshing.
 
@@ -42,16 +42,16 @@ fetch all possible media from AniList before the matching process.
 
 #### Caveats
 
+- **It will hydrate your AniList watch list.**
 - Enabling this feature will slow down the scanning/refreshing process considerably.
 - It might not accurately match movies or specials.
 - It will not detect media whose titles are not at the root of your library folder.
-- **It will hydrate your AniList watch list.**
 
 ```text
 Avoid this
 
 ├── %LIBRARY_FOLDER%
-├── Fall 2023                   <-- Avoid these types of folders
+├── Fall 2023                   <-- Avoid these types of grouping folders
     ├── Jujutsu Kaisen S2       <-- Place the anime (folders or files) at the root of the library folder
     │   └── ...
 ```
@@ -79,7 +79,7 @@ When some episode files are unmatched it generally means that:
 
 You may discover that some episodes or seasons are not matched correctly, if this is the case:
 
-- You should **lock** the correct files, **un-match** incorrect ones, **rename** them and retry by **refreshing entries
+- You should **lock** the correct files, **unmatch** incorrect ones, **rename** them and retry by **refreshing entries
   **.
 - Rename parent folders so that their name accurately matches the titles on AniList.
 
@@ -138,14 +138,14 @@ Fix: Use AniList titles
 <img src="images/img_4.png" alt="preview" width="600"/>
 
 Locking is a feature made to speed up refreshing entries.
-It just tells Seanime that these files were correctly matched and to skip them when **refreshing** entries next time.
+It just tells Seanime that these files were correctly matched and to skip them when **refreshing** entries.
 
 ## Ignoring files
 
 You can add a `.unsea` file to a folder if you want Seanime to skip its content.
 
-Caveats: If you have locked some files in the folder, **re-scan** the library after adding the `.unsea` file.
-This is because the files might still show up on Seanime when you only **refresh**.
+Caveats: If you already have scanned and locked some files in the folder you want to ignore, **re-scan** the library
+after adding the `.unsea` file.
 
 ## Refresh vs Scan
 
@@ -154,7 +154,9 @@ This is because the files might still show up on Seanime when you only **refresh
 ### Refreshing entries
 
 Seanime will skip **locked** and **ignored** files, this will speed up the process.
-You can also refresh after you manually delete some files (even if they were locked or ignored).
+You can also refresh after you manually delete some files.
+
+Do it when you just added new files to your library.
 
 ### Scanning library
 
@@ -490,3 +492,16 @@ Specials/NC
 - `~ \ {Anime Title} \ Specials \ {Special's title}.mkv` -> Good
 - `~ \ {Anime Title} \ Specials \ {Anime Title} S00E(1-9).mkv` -> Good
 - `~ \ {Anime Title} \ Others \ {Anime Title} (OP|ED)(1-9).mkv` -> Good
+
+### Example Benchmark
+
+```text
+OS: Windows 11
+Node: 18.18.0
+
+Scan:
+- 32 anime
+- 378 files (268 GB)
+- Normal scan (with AniList watch list data): 15.67 seconds (mean)
+- Enhanced scan (without AniList watch list data): 23.43 seconds (mean)
+```

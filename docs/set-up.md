@@ -72,6 +72,10 @@ npm run start
 
 - [Update your settings.](https://github.com/5rahim/seanime/blob/main/docs/settings.md)
 
+## Updates
+
+`TODO`
+
 ## Logs
 
 The scan logs will be located under `<path to seanime>/.next/standalone/logs`

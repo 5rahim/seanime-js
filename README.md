@@ -39,8 +39,6 @@ might not work as intended.
 
 [How scanning works under the hood.](https://github.com/5rahim/seanime/blob/main/docs/guide.md#how-it-works)
 
-[//]: # (- [ ] Manual hydration)
-
 ### Download
 
 Powered by qBittorrent and Nyaa

@@ -136,8 +136,6 @@ export const createLocalFileWithMedia = async (props: {
                 file,
                 allMedia,
                 mediaTitles,
-                parsed: file.parsedInfo,
-                parsedFolderInfo: file.parsedFolderInfo,
                 _matchingCache,
                 _scanLogging,
             })
@@ -228,7 +226,7 @@ export async function hydrateLocalFileWithInitialMetadata(props: {
                 const { normalizeEpisode } = await experimental_analyzeMediaTree({
                     media: currentMediaWithRelations!,
                     _mediaCache: _mediaCache,
-                    _aniZipCache,
+                    _aniZipCache: _aniZipCache,
                 }, limiter)
                 _scanLogging.add(file.path, "   -> Retrieved media relation tree")
                 const normalizedEpisode = normalizeEpisode(episode)
@@ -298,7 +296,7 @@ export async function hydrateLocalFileWithInitialMetadata(props: {
 
     if (error && !forceHydrate) {
         error = true
-        _scanLogging.add(file.path, `   -> error - File will be un-matched`)
+        _scanLogging.add(file.path, `   -> error - File will be unmatched`)
 
     } else if (error) { // Error but we need to force hydration
         error = false

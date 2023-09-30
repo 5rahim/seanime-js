@@ -3,7 +3,7 @@ import { useAtom, useAtomValue } from "jotai/react"
 import { useMemo } from "react"
 import { AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import { atomWithStorage, splitAtom } from "jotai/utils"
-import { compareTwoStrings } from "string-similarity"
+import { compareTwoStrings } from "@/lib/string-similarity"
 
 export const allUserMediaAtom = atomWithStorage<AnilistShowcaseMedia[]>("sea-anilist-media", [], undefined, { unstable_getOnInit: true })
 export const allUserMediaAtoms = splitAtom(allUserMediaAtom, media => media.id)

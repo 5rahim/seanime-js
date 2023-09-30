@@ -1,4 +1,4 @@
-import { afterAll, describe, expect, it, vi } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 import { createLocalFile, hydrateLocalFileWithInitialMetadata } from "@/lib/local-library/local-file"
 import { initialSettings } from "@/atoms/settings"
 import { ScanLogging } from "@/lib/local-library/logs"
@@ -6,9 +6,10 @@ import cases from "./cases/local-file.cases"
 import parsingCases from "./cases/parsing.cases"
 import { AnilistShortMedia } from "@/lib/anilist/fragment"
 import { __episodeNormalizationMatchingCases } from "./cases/episode-normalization.cases"
-import { experimental_analyzeMediaTree } from "@/lib/anilist/actions"
+import { experimental_analyzeMediaTree, experimental_fetchMediaTree } from "@/lib/anilist/actions"
 import { __SampleMedia } from "./samples/media.sample"
 import { valueContainsNC, valueContainsSpecials } from "@/lib/local-library/utils/filtering.utils"
+import { fetchAnilistShortMedia } from "@/lib/anilist/helpers"
 
 
 vi.mock("react", async () => {
@@ -38,16 +39,40 @@ describe("Local file", () => {
     })
 })
 
-const _cache = new Map<number, AnilistShortMedia>
-const _aniZipCache = new Map<number, AniZipData>
 
 describe.skip("Get media tree", () => {
 
-    it("returns media tree", async () => {
+    it.skip("returns media tree for Bungo Stray Dogs", async () => {
+        const _cache = new Map<number, AnilistShortMedia>
+        const _aniZipCache = new Map<number, AniZipData>
 
         const result = await experimental_analyzeMediaTree({ media: __SampleMedia["Bungou Stray Dogs Season 4"], _mediaCache: _cache, _aniZipCache })
         console.log(result.listWithInfo.map(n => n.media.title?.english))
         expect(result.listWithInfo.length).toBeGreaterThan(4)
+
+        _cache.clear()
+        _aniZipCache.clear()
+
+    }, { timeout: 10000 })
+
+    it("returns media tree for Attack on Titan", async () => {
+        const _cache = new Map<number, AnilistShortMedia>
+        const _aniZipCache = new Map<number, AniZipData>
+
+        const media = (await fetchAnilistShortMedia(16498, _cache))!
+        const treeMap = new Map<number, AnilistShortMedia>()
+
+        const result = await experimental_fetchMediaTree({
+            media: media,
+            treeMap,
+            _mediaCache: _cache,
+        })
+        const tree = [...treeMap.values()]
+        console.log(tree.findLast(n => n)?.relations?.edges?.find(n => n?.relationType === "SEQUEL"))
+        expect(tree.length).toBeGreaterThan(6)
+
+        _cache.clear()
+        _aniZipCache.clear()
 
     }, { timeout: 10000 })
 
@@ -58,6 +83,9 @@ describe.skip("Episode normalization", () => {
     describe.each(__episodeNormalizationMatchingCases)("Episode files matched with $media.title.english", ({ media, cases }) => {
 
         it.each(cases)("should be correctly normalized $name (Episode $expected.relativeEpisode)", async ({ path, name, expected }) => {
+            const _cache = new Map<number, AnilistShortMedia>
+            const _aniZipCache = new Map<number, AniZipData>
+
             const hydratedLocalFile = await hydrateLocalFileWithInitialMetadata({
                 file: await createLocalFile(settings, { path, name }, scanLogging),
                 media: media,
@@ -67,6 +95,9 @@ describe.skip("Episode normalization", () => {
             })
             expect.soft(hydratedLocalFile.file.metadata.episode).toEqual(expected.relativeEpisode)
             expect.soft(hydratedLocalFile.file.mediaId).toEqual(expected.mediaId)
+
+            _cache.clear()
+            _aniZipCache.clear()
             // console.log(hydratedLocalFile)
             // console.log(_cache)
         }, { timeout: 1000000 })
@@ -74,12 +105,6 @@ describe.skip("Episode normalization", () => {
     })
 
 })
-afterAll(() => {
-    // console.log(_cache)
-    _aniZipCache.clear()
-    _cache.clear()
-})
-
 
 describe("Special/NC detection", () => {
     it.each([

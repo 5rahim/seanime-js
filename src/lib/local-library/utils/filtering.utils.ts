@@ -1,5 +1,5 @@
 import { SPECIALIZED_RX } from "@/lib/series-scanner/regex"
-import similarity from "string-similarity"
+import { similarity } from "@/lib/string-similarity"
 
 /**
  * @description

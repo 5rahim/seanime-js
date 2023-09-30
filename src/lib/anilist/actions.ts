@@ -20,6 +20,7 @@ import axios from "axios"
 import { matching_compareTitleVariationsToMedia } from "@/lib/local-library/utils/matching.utils"
 import { fetchAniZipData } from "@/lib/anizip/helpers"
 import Bottleneck from "bottleneck"
+import { fetchAnilistShortMedia } from "@/lib/anilist/helpers"
 
 /* -------------------------------------------------------------------------------------------------
  * General
@@ -104,14 +105,18 @@ export async function experimental_analyzeMediaTree(props: {
     let media: AnilistShortMedia | AnilistShowcaseMedia
 
     if (typeof _media === "number")
-        media = (await useAniListAsyncQuery(AnimeShortMediaByIdDocument, { id: _media })).Media!
+        media = (await fetchAnilistShortMedia(_media, _mediaCache))!
     else
         media = _media
 
     const treeMap = new Map<number, AnilistShortMedia>()
     const start = performance.now()
     logger("experimental_fetchMediaTree").warning("Fetching media tree in for " + media.title?.english)
-    await experimental_fetchMediaTree({ media, treeMap, _mediaCache: _mediaCache }, limiter)
+    await experimental_fetchMediaTree({
+        media,
+        treeMap,
+        _mediaCache: _mediaCache,
+    }, limiter)
     const end = performance.now()
     logger("experimental_fetchMediaTree").info("Fetched media tree in " + (end - start) + "ms")
 
@@ -219,12 +224,12 @@ export async function experimental_fetchMediaTree(props: {
             media,
             relation: "SEQUEL",
             force: true,
-            forceFormats: ["TV", "TV_SHORT", "OVA", "MOVIE"],
+            forceFormats: ["TV", "TV_SHORT", "OVA", "MOVIE", "ONA", "SPECIAL"],
         })?.node : undefined
         // For each edge
         for (const edge of [prequel, sequel].filter(Boolean)) {
 
-            // if (edge.status && excludeStatus.includes(edge.status)) return
+            if (edge.status && excludeStatus.includes(edge.status)) return
 
             if (_mediaCache.has(edge.id) && !treeMap.has(edge.id)) {
 

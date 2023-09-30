@@ -97,17 +97,13 @@ export function LibraryToolbar() {
 
     const EnhancedScanUl = useCallback(() => (
         <ul className={"list-disc pl-14"}>
-            <li><strong>Your media files and folders should all be located at the root</strong>
+            <li><strong>Your anime files and folders should all be located at the root</strong>
                 <ul className={"list-disc pl-8 text-[--muted]"}>
-                    <li>You should not class your files under folders such as "Movies", etc...</li>
+                    <li>Avoid grouping folders such as "Movies, …" at the root</li>
                 </ul>
             </li>
-            <li>Your Anilist watch list data is <strong>not needed</strong>
-                <ul className={"list-disc pl-8 text-[--muted]"}>
-                    <li>Best if some media are not present in your AniList watch list</li>
-                </ul>
-            </li>
-            <li>This feature might be less accurate if your watch list is empty</li>
+            <li>Your Anilist watch list data is <strong>not needed</strong></li>
+            <li>This feature might be less accurate for detecting movies and specials</li>
             <li>It <strong>will</strong> slow down scanning</li>
         </ul>
     ), [])
@@ -199,7 +195,7 @@ export function LibraryToolbar() {
 
                         {scan_enhancedScanning.active && <EnhancedScanUl/>}
                         <ul className={"list-disc pl-14 text-[--muted]"}>
-                            <li>(?) If some new files belong to media not present your AniList watch list</li>
+                            <li>(?) Better detection for media not present your AniList watch list</li>
                         </ul>
                     </div>
 

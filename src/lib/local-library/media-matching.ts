@@ -1,12 +1,11 @@
 "use server"
 import { AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import { ordinalize } from "inflection"
-import similarity from "string-similarity"
+import { similarity } from "@/lib/string-similarity"
 import { logger } from "@/lib/helpers/debug"
 import { ScanLogging } from "@/lib/local-library/logs"
 import isNumber from "lodash/isNumber"
 import sortBy from "lodash/sortBy"
-
 import { advancedSearchWithMAL } from "@/lib/mal/actions"
 import { AnimeFileInfo, LocalFile } from "@/lib/local-library/types"
 import { eliminateLeastSimilarValue, valueContainsSeason } from "@/lib/local-library/utils/filtering.utils"
@@ -21,8 +20,6 @@ export async function findBestCorrespondingMedia(
         file,
         allMedia,
         mediaTitles,
-        parsed,
-        parsedFolderInfo,
         _matchingCache,
         _scanLogging,
     }: {
@@ -34,8 +31,6 @@ export async function findBestCorrespondingMedia(
             preferred: string[],
             synonymsWithSeason: string[]
         },
-        parsed: AnimeFileInfo,
-        parsedFolderInfo: AnimeFileInfo[],
         _matchingCache: Map<string, AnilistShowcaseMedia | undefined>,
         _scanLogging: ScanLogging
     },
@@ -47,6 +42,9 @@ export async function findBestCorrespondingMedia(
 
     _scanLogging.add(file.path, ">>> [media-matching/findBestCorrespondingMedia]")
     _scanLogging.add(file.path, "Creating title variations")
+
+    const parsedFolderInfo = file.parsedFolderInfo
+    const parsed = file.parsedInfo!
 
     let folderParsed: AnimeFileInfo | undefined
     let rootFolderParsed: AnimeFileInfo | undefined
@@ -314,7 +312,7 @@ export async function findBestCorrespondingMedia(
     _matchingCache.set(JSON.stringify(titleVariations), bestMedia)
 
     if (+rating < 0.5) {
-        logger("media-matching").error("   -> Un-matching, rating is below the threshold (0.5)")
+        logger("media-matching").error("   -> Unmatching, rating is below the threshold (0.5)")
         _scanLogging.add(file.path, "warning - Rating is below the threshold (0.5)")
         _scanLogging.add(file.path, `   -> Rating = ${rating}`)
         _scanLogging.add(file.path, "   -> File was not matched")

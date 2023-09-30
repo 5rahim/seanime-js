@@ -25,8 +25,8 @@ export const UtilityButtons = (props: { entryAtom: Atom<LibraryEntry> }) => {
     const setLocalFiles = useSetLocalFiles()
 
     const confirmUnmatch = useConfirmationDialog({
-        title: "Un-match all files",
-        description: "Are you sure you want to un-match all files?",
+        title: "Unmatch all files",
+        description: "Are you sure you want to unmatch all files?",
         onConfirm: () => {
             setLocalFiles(draft => {
                 for (const draftFile of draft) {
@@ -70,7 +70,7 @@ export const UtilityButtons = (props: { entryAtom: Atom<LibraryEntry> }) => {
                 <DropdownMenu.Item
                     onClick={confirmUnmatch.open}
                 >
-                    Un-match all files
+                    Unmatch all files
                 </DropdownMenu.Item>
                 <DropdownMenu.Item
                     onClick={() => openEpisodeOffsetActionModal({ mediaId })}

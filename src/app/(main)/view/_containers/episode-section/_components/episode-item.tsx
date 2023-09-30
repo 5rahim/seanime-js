@@ -90,7 +90,7 @@ export const EpisodeItem = React.memo((props: {
                                     setFileLocked(false)
                                 })
                             }}
-                        >Un-match</DropdownMenu.Item>
+                        >Unmatch</DropdownMenu.Item>
                         <MetadataModalButton/>
                     </DropdownMenu>
                 </>}

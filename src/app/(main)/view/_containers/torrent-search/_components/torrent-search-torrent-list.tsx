@@ -183,7 +183,7 @@ export const TorrentSearchTorrentList: React.FC<TorrentListProps> = (props) => {
                     intent={"white-outline"}
                     onClick={() => handleAddTorrents(true)}
                     isDisabled={isLoading}
-                >Download non-watched/missing only</Button>}
+                >Download unwatched/missing only</Button>}
                 {selectedTorrents.length > 0 && <Button
                     leftIcon={<BiDownload/>}
                     intent={"white"}

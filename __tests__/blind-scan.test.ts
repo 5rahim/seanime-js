@@ -31,7 +31,7 @@ describe.skip("Media titles", () => {
 
 })
 
-describe.skip("experimental_blindScanLibraryMedia", () => {
+describe.skip("Blind scan", () => {
 
     it("should scan the local library", async () => {
 
