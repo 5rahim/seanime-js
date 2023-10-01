@@ -54,7 +54,7 @@ export const UndownloadedEpisodeList: React.FC<UndownloadedEpisodeListProps> = R
                 {episodeNumberArr.map((epNumber, index) => {
                     const episodeData = anizip_getEpisode(aniZipData, epNumber === 0 ? "S1" : epNumber)
                     const airDate = episodeData?.airdate
-                    const anifyEpisodeCover = anifyEpisodeCovers?.find(n => n.episode === epNumber)?.img
+                    const anifyEpisodeCover = anifyEpisodeCovers?.find(n => n.number === epNumber)?.img
                     return (
                         <EpisodeListItem
                             media={media}

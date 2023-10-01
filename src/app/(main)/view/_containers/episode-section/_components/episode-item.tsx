@@ -48,7 +48,7 @@ export const EpisodeItem = React.memo((props: {
     const progress = useStableSelectAtom(collectionEntryAtom, entry => entry?.progress)
 
     const aniZipEpisode = anizip_getEpisodeFromMetadata(aniZipData, { metadata })
-    const anifyEpisodeCover = anifyEpisodeCovers?.find(n => n.episode === metadata.episode)?.img
+    const anifyEpisodeCover = anifyEpisodeCovers?.find(n => n.number === metadata.episode)?.img
     const fileTitle = useMemo(() => parsedInfo?.original?.replace(/.(mkv|mp4)/, "")?.replaceAll(/(\[)[a-zA-Z0-9 ._~-]+(\])/ig, "")?.replaceAll(/[_,-]/g, " "), [parsedInfo])
 
     const image = useMemo(() => localFile_getEpisodeCover({ metadata }, aniZipEpisode?.image, anifyEpisodeCover, media?.coverImage?.medium), [metadata, anifyEpisodeCover, aniZipEpisode?.image])

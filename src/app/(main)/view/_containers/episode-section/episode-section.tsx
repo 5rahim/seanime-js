@@ -66,6 +66,10 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
     const { anifyEpisodeCovers } = useAnifyEpisodeCovers(detailedMedia.id)
 
 
+    useEffect(() => {
+        console.log(anifyEpisodeCovers)
+    }, [anifyEpisodeCovers])
+
     const setProgressTracking = useSetAtom(__progressTrackingAtom)
 
     useEffect(() => {

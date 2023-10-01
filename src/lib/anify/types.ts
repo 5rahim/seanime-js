@@ -14,6 +14,6 @@ export type AnifyAnimeEpisodeData = {
 }[]
 
 export type AnifyEpisodeCover = {
-    episode: number,
+    number: number,
     img: string | null
 }

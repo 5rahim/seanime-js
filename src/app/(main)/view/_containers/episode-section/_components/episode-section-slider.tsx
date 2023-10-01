@@ -38,7 +38,7 @@ function Item({ fileAtom, aniZipData, anifyEpisodeCovers, onPlayFile, media }: I
     const metadata = useSelectAtom(fileAtom, file => file.metadata)
     const path = useSelectAtom(fileAtom, file => file.path)
     const aniZipEpisode = anizip_getEpisodeFromMetadata(aniZipData, { metadata })
-    const anifyEpisodeCover = anifyEpisodeCovers?.find(n => n.episode === metadata.episode)?.img
+    const anifyEpisodeCover = anifyEpisodeCovers?.find(n => n.number === metadata.episode)?.img
 
     const date = aniZipEpisode?.airdate ? new Date(aniZipEpisode?.airdate) : undefined
 
