@@ -8,6 +8,7 @@ import { localFilesAtom, useSetLocalFiles } from "@/atoms/library/local-file.ato
 import { useSettings } from "@/atoms/settings"
 import { useSelectAtom } from "@/atoms/helpers"
 import { scanLocalFiles } from "@/lib/local-library/scan"
+import { useRefreshAnilistCollection } from "@/atoms/anilist/collection.atoms"
 
 type UseManageEntriesOptions = {
     onComplete: () => void
@@ -26,6 +27,7 @@ export function useManageLibraryEntries(opts: UseManageEntriesOptions) {
 
     const lockedPaths = useSelectAtom(localFilesAtom, files => files.filter(file => file.locked).map(file => file.path))
     const ignoredPaths = useSelectAtom(localFilesAtom, files => files.filter(file => file.ignored).map(file => file.path))
+    const refreshCollection = useRefreshAnilistCollection()
 
     const [isLoading, setIsLoading] = useState(false)
 
@@ -62,6 +64,11 @@ export function useManageLibraryEntries(opts: UseManageEntriesOptions) {
                     const keptFilesPaths = new Set<string>(keptFiles.map(file => file.path))
                     return [...keptFiles, ...incomingFiles.filter(file => !keptFilesPaths.has(file.path))]
                 })
+
+                // Refresh collection
+                setTimeout(() => {
+                    refreshCollection({ muteAlert: true })
+                }, 1000)
 
                 toast.success("Your local library is up to date")
             } else if (result && result.error) {
@@ -114,6 +121,11 @@ export function useManageLibraryEntries(opts: UseManageEntriesOptions) {
                     } else {
                         setLocalFiles(result.scannedFiles)
                     }
+
+                    // Refresh collection
+                    setTimeout(() => {
+                        refreshCollection({ muteAlert: true })
+                    }, 1000)
                 }
                 toast.success("Your local library is up to date")
             } else if (result.error) {

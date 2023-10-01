@@ -1,4 +1,5 @@
 import axios from "axios"
+import { logger } from "@/lib/helpers/debug"
 
 /**
  * - Fetched AniZip data for a specific media
@@ -12,6 +13,7 @@ export async function fetchAniZipData(mediaId: number, _cache?: Map<number, AniZ
         return _cache.get(mediaId)
     }
 
+    logger("lib/anizip/fetchAniZipData").info("Fetching AniZip data for", mediaId)
     const { data } = await axios.get<AniZipData>(`https://api.ani.zip/mappings?${from}_id=` + mediaId)
 
     if (data) {

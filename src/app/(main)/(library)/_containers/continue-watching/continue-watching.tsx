@@ -43,7 +43,7 @@ export function ContinueWatching(props: { entryAtom: Atom<LibraryEntry> }) {
 
 
     const { data, isLoading } = useQuery({
-        queryKey: ["continue-watching-episode", media.id, nextEpisode, progress],
+        queryKey: ["continue-watching-anizip", media.id, nextEpisode, progress, currentlyWatching],
         queryFn: async () => {
             return await fetchAniZipData(media.id)
         },
@@ -51,8 +51,6 @@ export function ContinueWatching(props: { entryAtom: Atom<LibraryEntry> }) {
         enabled: !!nextEpisode,
         cacheTime: 1000 * 60 * 60,
     })
-
-    /* aaa/aaa *******/
 
     if (!nextEpisode) return null
 

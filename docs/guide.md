@@ -31,9 +31,10 @@ A normal scan uses your AniList watch list data to match files to media. It does
 
 ### Enhanced scan
 
-Enhanced scanning is a complementary feature to normal scanning. It is also available for refreshing.
-It does not need to rely on your AniList watch list data to match files as it blindly analyzes your library and tries to
-fetch all possible media from AniList before the matching process.
+Enhanced scanning is a complementary feature to normal scanning (It is also available for refreshing).
+It does not need to rely on your AniList watch list data to match files, as it blindly analyzes your library and tries
+to
+fetch all possible media from AniList before the starting the matching process.
 
 #### Pros
 
@@ -43,7 +44,10 @@ fetch all possible media from AniList before the matching process.
 #### Caveats
 
 - **It will hydrate your AniList watch list.**
-- Enabling this feature will slow down the scanning/refreshing process considerably.
+    - By default, missing media will be added to your `Planning` list.
+- Enabling this feature will slow down the scanning/refreshing process.
+    - You might hit AniList's rate limit if you have a lot of anime in your library which will slow down scanning
+      considerably.
 - It might not accurately match movies or specials.
 - It will not detect media whose titles are not at the root of your library folder.
 
@@ -56,9 +60,10 @@ Avoid this
     │   └── ...
 ```
 
-- You should only enable it in scenarios where:
+- You should enable it in scenarios where:
   - You've added new files from media not present in your AniList watch list.
   - Your AniList watch list is considerably out of sync/empty.
+  - Normal scan did not match files to the correct season.
 
 ## Mis-matched files
 

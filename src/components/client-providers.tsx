@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect } from "react"
+import React from "react"
 import { UIProvider } from "@/components/ui/core"
 import { createStore } from "jotai"
 import { ThemeProvider } from "next-themes"
@@ -13,23 +13,18 @@ interface ClientProvidersProps {
     children?: React.ReactNode
 }
 
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            refetchOnWindowFocus: false,
+            keepPreviousData: false,
+            retry: 0,
+        },
+    },
+})
+
 export const ClientProviders: React.FC<ClientProvidersProps> = ({ children, ...rest }) => {
     const [store] = React.useState(createStore())
-
-    const [queryClient] = React.useState(() => new QueryClient({
-        defaultOptions: {
-            queries: {
-                refetchOnWindowFocus: false,
-                keepPreviousData: false,
-                retry: 0,
-            },
-        },
-    }))
-
-    // When the app launches
-    useEffect(() => {
-        // startMpc()
-    }, [])
 
     return (
         <ThemeProvider attribute={"class"} defaultTheme={"dark"}>
