@@ -162,11 +162,13 @@ Resources used to build Seanime.
 - [VLC API](https://github.com/alexandrucancescu/node-vlc-client) - Original VLC API code
 - [GraphQL Codegen](https://the-guild.dev/graphql/codegen) - GraphQL code generation
 - [M3U8Proxy](https://github.com/chaycee/M3U8Proxy) - Video streaming proxy
+- [Anify](https://github.com/Eltik/Anify/tree/main) - Covers for episodes
 
 ## Credit
 
-- [Anikki](https://github.com/Kylart/Anikki/) - Inspired some GraphQL fragments
-- [Moopa](https://github.com/Ani-Moopa/Moopa) - Artplayer integration code
+- [Anikki](https://github.com/Kylart/Anikki/) - Inspired GraphQL fragments
+- [Moopa](https://github.com/Ani-Moopa/Moopa) - Artplayer integration
+- [Miru](https://github.com/ThaUnknown/miru) - Inspired some utility functions
 
 ## Screenshots
 

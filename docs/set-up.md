@@ -33,10 +33,7 @@ git clone https://github.com/5rahim/seanime.git
 
 ### 3. Update `.env`
 
-Both Consumet and Anify are optional.
-
 - You can omit Consumet if you do not plan to use the streaming feature.
-- You can omit the Anify API key if you do not need better episode covers.
 
 1. Rename `.env.example` to `.env`
 2. Update variables
@@ -44,8 +41,6 @@ Both Consumet and Anify are optional.
 ```dotenv
 # Deploy your Consumet API https://github.com/consumet/api.consumet.org#vercel
 CONSUMET_API_URL="https://consumet-api-example.vercel.app"
-# Get an API Key https://docs.anify.tv/start#api-keys
-ANIFY_API_KEY=""
 ```
 
 ### 4. Build
