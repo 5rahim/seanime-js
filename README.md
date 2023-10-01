@@ -98,8 +98,6 @@ Powered by qBittorrent and Nyaa
 # Consumet is needed for streaming
 # Deploy your Consumet API https://github.com/consumet/api.consumet.org#vercel
 CONSUMET_API_URL="https://consumet-api-example.vercel.app"
-# Anify is currently used to get better episode covers
-ANIFY_API_KEY=""
 ```
 
 2. Install packages
