@@ -42,11 +42,17 @@ git clone https://github.com/5rahim/seanime.git
 CONSUMET_API_URL="https://consumet-api-example.vercel.app"
 ```
 
-### 4. Build
+### 4. Install dependencies
 
 ```shell
 cd <path to seanime>
 ```
+
+```shell
+npm install
+```
+
+### 5. Build
 
 ```shell
 npm run init
@@ -54,7 +60,7 @@ npm run init
 
 This command will automatically build a production version of the app.
 
-### 5. Run
+### 6. Run
 
 ```shell
 npm run start
