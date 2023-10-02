@@ -1,6 +1,7 @@
 {
   "name": "seanime",
   "version": "0.3.0",
+  "author": "5rahim",
   "scripts": {
     "dev": "next dev --port=43200",
     "init": "tsx scripts/init.ts",
