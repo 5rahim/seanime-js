@@ -67,10 +67,6 @@ function Content(props: Props) {
         refetch()
     }, [])
 
-    useEffect(() => {
-        console.log(data)
-    }, [data])
-
     if (isLoading) return <LoadingSpinner/>
     return (
         <AppLayoutStack className={""}>

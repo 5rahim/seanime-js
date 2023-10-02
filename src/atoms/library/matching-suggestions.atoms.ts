@@ -125,9 +125,7 @@ const getMatchingSuggestionGroupsAtom = atom(null, async (get, set, payload: "fi
                             }
                         `, undefined, get(anilistClientTokenAtom)!)
 
-                        console.log(res, Object.values(res || []))
                         const recommendations = res ? Object.values(res) : []
-
 
                         if (animeList1.length > 0 || animeList2.length > 0) {
                             groups = [...groups, {

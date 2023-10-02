@@ -10,9 +10,7 @@ vi.mock("react", async () => {
 })
 
 async function longAPICall() {
-    // Random ms between 100 and 800
     const ms = Math.floor(Math.random() * (450 - 50 + 1) + 100)
-    // Wait 2s
     await new Promise(resolve => setTimeout(resolve, ms))
     console.log("longAPICall")
     return "longAPICall"

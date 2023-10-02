@@ -5,7 +5,6 @@ storage.
 
 ## Prerequisites
 
-- Have an AniList account with hydrated watch lists
 - Have VLC or MPC-HC installed
 - Have qBittorrent installed (for torrent download)
 

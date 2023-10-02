@@ -34,7 +34,7 @@ export const TopNavbar: React.FC<TopNavbarProps> = (props) => {
                 href: "/anilist",
                 icon: null,
                 isCurrent: pathname.startsWith("/anilist"),
-                name: "Watch lists",
+                name: "My lists",
             },
         ] : []
 

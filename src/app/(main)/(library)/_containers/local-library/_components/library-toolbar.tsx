@@ -102,7 +102,7 @@ export function LibraryToolbar() {
                     <li>Avoid grouping folders such as "Movies, …" at the root</li>
                 </ul>
             </li>
-            <li>Your Anilist watch list data is <strong>not needed</strong></li>
+            <li>Your Anilist anime list data is <strong>not needed</strong></li>
             <li>This feature might be less accurate for detecting movies and specials</li>
             <li>It <strong>will</strong> slow down scanning</li>
         </ul>
@@ -195,7 +195,7 @@ export function LibraryToolbar() {
 
                         {scan_enhancedScanning.active && <EnhancedScanUl/>}
                         <ul className={"list-disc pl-14 text-[--muted]"}>
-                            <li>(?) Better detection for media not present your AniList watch list</li>
+                            <li>(?) Better detection for media not present your AniList anime list</li>
                         </ul>
                     </div>
 

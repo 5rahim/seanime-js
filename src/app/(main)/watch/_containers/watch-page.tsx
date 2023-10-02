@@ -237,7 +237,7 @@ export function WatchPage(props: WatchPageProps) {
                                         position: status.position,
                                         duration: status.duration,
                                     })
-                                    console.log(status)
+                                    // console.log(status)
 
                                 }}
                                 onCleanPlaybackPosition={() => {

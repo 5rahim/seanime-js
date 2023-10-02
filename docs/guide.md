@@ -1,16 +1,16 @@
 # Guide
 
-### What about MAL?
+### What about MAL instead of AniList?
 
-Seanime does not currently support media matching using MAL data. I recommend you create an AniList account and use a
-tool like
-MAL-Sync to automatically sync data effortlessly.
+Seanime will not support MAL for the foreseeable future because of the limitations of its API.
+If you do not have an AniList account, I recommend you create one and use a
+tool like *MAL-Sync* to automatically sync data.
 
 ## Scanning your library
 
 ### Normal scan
 
-A normal scan uses your AniList watch list data to match files to media. It does not use the **enhanced scan** feature.
+A normal scan uses your AniList anime list data to match files to media. It does not use the **enhanced scan** feature.
 
 #### Pros
 
@@ -20,30 +20,31 @@ A normal scan uses your AniList watch list data to match files to media. It does
 
 #### Cons
 
-- It will not accurately match files with media that are not in your AniList watch list.
-- It will try to match with sequels or prequels that are not on your watch list but may not find earlier or
+- It will not accurately match files with media that are not in your AniList anime list.
+- It will try to match with sequels or prequels that are not on your anime list but may not find earlier or
   later seasons. Let's say your have the 1st, 2nd and 3rd season of a show in your library but only have the 1st season
   added in
-  your watch list, Seanime might incorrectly match 3rd season files with the 2nd season. If it is the case, you can:
+  your anime list, Seanime might incorrectly match 3rd season files with the 2nd season. If it is the case, you can:
   - Manually unmatch the files and use the `Resolve unmatched` feature
-  - Manually add the anime to your AniList watch list and refresh entries.
+  - Manually add the anime to your AniList anime list and refresh entries.
   - Use enhanced scanning/refreshing.
 
 ### Enhanced scan
 
 Enhanced scanning is a complementary feature to normal scanning (It is also available for refreshing).
-It does not need to rely on your AniList watch list data to match files, as it blindly analyzes your library and tries
+It does not need to rely on your AniList anime list data to match files, as it blindly analyzes your library and tries
 to
 fetch all possible media from AniList before the starting the matching process.
 
 #### Pros
 
-- Great if your AniList watch list is considerably out of sync with your local library.
-- Great if you have multiple seasons and not every single one is added to your AniList watch list.
+- Great if your AniList anime list is considerably out of sync with your local library.
+- Great if you have multiple seasons and not every single one is added to your AniList anime list.
+- Better for matching movies that are not in your anime list.
 
 #### Caveats
 
-- **It will hydrate your AniList watch list.**
+- **It will hydrate your AniList anime list.**
     - By default, missing media will be added to your `Planning` list.
 - Enabling this feature will slow down the scanning/refreshing process.
     - You might hit AniList's rate limit if you have a lot of anime in your library which will slow down scanning
@@ -61,31 +62,29 @@ Avoid this
 ```
 
 - You should enable it in scenarios where:
-  - You've added new files from media not present in your AniList watch list.
-  - Your AniList watch list is considerably out of sync/empty.
+  - You've added new files from media not present in your AniList anime list.
+  - Your AniList anime list is considerably out of sync/empty.
   - Normal scan did not match files to the correct season.
 
 ## Mis-matched files
 
-When some episode files are unmatched it generally means that:
+When some episode files are mis-matched it generally means that:
 
-- You did not have that anime in your AniList watch list / Did not use enhanced scanning.
+- The torrent name is not parsable (Typically due to unconventional naming).
+- You did not have that anime in your AniList anime list / Did not use enhanced scanning.
 - Enhanced scanning did not detect the anime.
 - The structure is inconsistent.
 - Confused parts/cours with seasons.
   - Some torrent names will inappropriately classify cours/parts as seasons. When it is the case, you should rename
     parent folders so that they match AniList names.
-- Movies may be matched incorrectly if they are not in separate folders
+- Movies may be matched incorrectly if they are not in separate folders.
 - Specials/OVAs might be matched incorrectly.
 
 ### Solutions
 
 #### Renaming
 
-You may discover that some episodes or seasons are not matched correctly, if this is the case:
-
-- You should **lock** the correct files, **unmatch** incorrect ones, **rename** them and retry by **refreshing entries
-  **.
+- You should **lock** the files that were matched correctly and rename the ones that were not.
 - Rename parent folders so that their name accurately matches the titles on AniList.
 
 ### Example of fixes
@@ -100,7 +99,7 @@ You may discover that some episodes or seasons are not matched correctly, if thi
         └── Movie
             └── Jujustu Kaisen 0.mkv            <- This MIGHT NOT be matched correctly
             
-Fix: Ensure that the movie is in your AniList watchlist, move or rename the file.
+Fix: Ensure that the movie is in your AniList anime list, move or rename the file.
 
 ├── %LIBRARY_FOLDER%
     └── Jujutsu Kaisen
@@ -132,24 +131,29 @@ Fix: Use AniList titles
 <br/>
 <img src="images/img_7.png" alt="preview" width="600"/>
 
-- This feature allows you to match files to specific anime that you choose either from the suggestions or the AniList ID
-  input.
-- The files will be automatically locked so that subsequent refreshes will not unmatch them again.
-- You should use it as the **LAST** resort because the next time your scan (not refresh) your library, they will be
-  unmatched.
+This feature allows you to match files or folders to specific anime that you choose either from the suggestions or the
+AniList ID
+input.
+
+You should use it as the **last** resort because you should strive to solve the underlying issue of why the files were
+mis-matched in the first place.
+
+**Note**: You can also use this feature to match files to anime that are not in your AniList anime list. Seanime will
+add them to your `Planning` list.
 
 ## Locking files
 
 <img src="images/img_4.png" alt="preview" width="600"/>
 
 Locking is a feature made to speed up refreshing entries.
-It just tells Seanime that these files were correctly matched and to skip them when **refreshing** entries.
+It just tells Seanime that these files were correctly matched so that it does not have to re-scan them next time you
+refresh entries.
 
 ## Ignoring files
 
 You can add a `.unsea` file to a folder if you want Seanime to skip its content.
 
-Caveats: If you already have scanned and locked some files in the folder you want to ignore, **re-scan** the library
+**Caveats**: If you already have scanned and locked some files in the folder you want to ignore, **re-scan** the library
 after adding the `.unsea` file.
 
 ## Refresh vs Scan
@@ -195,15 +199,25 @@ Optimally, you should only scan once, or each time you change your library folde
 
 ## How it works
 
-- Seanime will try to match **files** to an anime using parsed info from the file name and its parent folders.
-- Parsed data include: the title, the season and the episode number.
-- The matching algorithm will create **candidate** titles from:
-    - The file name (Can incorrectly use episode title if the format is unconventional)
-    - The folder name
-    - Folder name + file name, if they do no match
-    - The parsed season
+Scanning employs 3 comparison algorithms: Dice's coefficient (string-similarity), Levenshtein's algorithm (
+js-levenshtein), and MAL's elastic search. These are the steps for **every single** file:
 
-### Finding anime by title variations
+**Note**: Here, "media list" refers to the user's anime list, or in the case of *enhanced scanning*, the list of media
+automatically fetched from AniList.
+
+- Fetch the media list
+- Parse the anime title from folder name and file name
+- Parse a season from folder name or file name
+- Find multiple candidate titles with the seasons for comparison (explained in previous sections)
+- Compare candidate titles to all media titles (english, romaji, synonyms)
+  - Using Dice's coefficient, get most similar title from media list
+  - Using Levenshtein's algorithm, get most similar title from media list
+  - Using MAL's elastic search, get first suggestion from MAL
+- From these 3 titles, eliminate the least similar one using Dice's coefficient
+- From these 2 best matches, find the most similar to the parsed title using Dice's coefficient
+- Return the media that has that title
+
+### Matching using title variations
 
 ```text
 ├── %LIBRARY_FOLDER%
@@ -227,7 +241,7 @@ Optimally, you should only scan once, or each time you change your library folde
 ├── %LIBRARY_FOLDER%
     └── Jujustu Kaisen S1-2                     <- (1) Captures title (ignores range) \/
         └── Season 1                            <- (2) Captures season \/
-            └── Jujustu Kaisen S01E01.mkv       <- (3) Captures title (ignores season)
+            └── Jujustu Kaisen S01E01.mkv       <- (3) Captures another title (ignores season)
 
 ---> Will try [Jujustu Kaisen, Jujustu Kaisen Season 1, ...]
 ```
@@ -248,24 +262,23 @@ Optimally, you should only scan once, or each time you change your library folde
 ├── %LIBRARY_FOLDER%                              
     └── Fruits Basket S1-3                      <- Captures title (ignores range)
         └── Fruits Basket S2                    <- Overrides previous title, captures season \/
-            └── Spring comes - S02E01.mkv       <- (v1) Captures "Spring comes"
+            └── Spring comes - S02E01.mkv       <- Captures another title: "Spring comes"
+                                                   Note: This is an unconventional format used as an example
 
 ---> Will try [Fruits Basket Season 2, ..., Spring comes Season 2, ..., Fruits Basket Spring comes Season 2, ...]
----> However, since the folder's title is prioritized the episode title might not negatively impact the matching process
+---> Since the folder's title is prioritized the episode title might not negatively impact the matching process
 ---> Make sure the episode title comes AFTER (e.g., "S02E01 - Spring comes.mkv")
 ```
 
-### More about seasons
+#### More on seasons
 
-Seanime will first try to locate the season from the file name, then look for it in the parent folder.
+Seanime will first try to locate the season from the file name, then look for it in the parent folder names. (Bottom-up)
 
 ```text
 ├── %LIBRARY_FOLDER%
     └── Anime title                             
-        └── Anime title Season 1                <- Season ignored
-            ├── Anime title S01E05.mkv          <- Season 1 found
-            ├── Anime title 01x05.mkv           <- Season 1 found
-            ├── Anime title S1_5.mkv            <- Season 1 found
+        └── Anime title Season 1                <- (2) Season ignored
+            ├── Anime title S01E05.mkv          <- (1) Season 1 found
             └── ...
 ```
 
@@ -277,11 +290,9 @@ Seanime will first try to locate the season from the file name, then look for it
             └── ...
 ```
 
-### Episode number
+#### More on episode numbers
 
-Seanime will search the file title for the episode number.
-
-### Example (Episode 5)
+Seanime will try to locate the episode number from the file name.
 
 ```text
 ├── %LIBRARY_FOLDER%
@@ -310,7 +321,7 @@ Seanime will search the file title for the episode number.
 │   │   └── ...
 ```
 
-### Absolute episode number
+#### Absolute episode numbers
 
 Absolute episode numbers will be normalized to relative episode number and will not impact the matching process.
 
@@ -321,7 +332,7 @@ Absolute episode numbers will be normalized to relative episode number and will 
 │   │   ├── Jujutsu Kaisen 29.mkv           <- Matched to Jujutsu Kaisen Season 2, Episode 5
 ```
 
-### Finding movie
+#### More on movies
 
 ```text
 ├── %LIBRARY_FOLDER%
@@ -370,28 +381,24 @@ OR
             └── Evangelion: 2.0 You Can (Not) Advance.mkv
 ```
 
-### Algorithms
+#### Why not use AniList's search API?
 
-Scanning employs 3 comparison algorithms: Dice's coefficient (string-similarity), Levenshtein's algorithm (
-js-levenshtein), and MAL's elastic search. These are the steps for **every single** file:
+- It is not accurate enough as opposed to MAL's elastic search.
 
-- Parse candidate titles that will be used for comparison from file name and folder names
-- Parse a season from folder name or file name
-- Find multiple variations of the title with the seasons for comparison (explained in previous section)
-- Compare title variations to all media titles (userPreferred, english, and romaji, synonyms) from user's AniList +
-  related
-  prequels and sequels that are not in the watch list.
-  - Using Dice's coefficient, get most similar title from user's watch list
-  - Using Levenshtein's algorithm, get most similar title from user's watch list
-  - Using MAL's elastic search, get most similar title from MAL
-- From these 3 titles, eliminate the least similar one using Dice's coefficient
-- From these 2 best matches, find the most similar to the parsed title using Dice's coefficient
-- Return the media from user's watch list
+#### How enhanced scanning works
 
-### Cache
+All enhanced scanning does is fetch all possible media from AniList and feed them to the matching algorithm.
 
-Seanime uses an internal cache system to speed up the media matching process.
-It uses **title variations** as keys.
+How? It will go through the names of the folders and files at the root of your library folder and try to find a matching
+media for each as opposed
+to relying solely on your AniList anime list. Not only that but it will also fetch the entire media tree (sequels and
+prequels) for each media it finds.
+
+#### Optimization
+
+Since Seanime's matching algorithm is expensive, it employs an internal caching system to speed up the file matching
+process.
+It uses **candidate titles** as keys.
 
 This is perfect if your episode files have consistent names.
 
@@ -406,10 +413,10 @@ This is perfect if your episode files have consistent names.
 ```
 
 ```
-[media-matching]:  (Cache MISS) Jujustu Kaisen 01           <- ~1s - key: "[Jujustu Kaisen Season 2, Jujustu Kaisen 2nd Season]"
-[media-matching]:  (Cache HIT) Jujustu Kaisen 02            <- < 1ms - key: "[Jujustu Kaisen Season 2, Jujustu Kaisen 2nd Season]"
-[media-matching]:  (Cache HIT) Jujustu Kaisen 03            <- < 1ms - key: "[Jujustu Kaisen Season 2, Jujustu Kaisen 2nd Season]"
-[media-matching]:  (Cache HIT) Jujustu Kaisen 04            <- < 1ms - key: "[Jujustu Kaisen Season 2, Jujustu Kaisen 2nd Season]"
+[media-matching]:  (Cache MISS) Jujustu Kaisen 01           <- ~300ms - key: "[Jujustu Kaisen Season 2, Jujustu Kaisen 2nd Season]"
+[media-matching]:  (Cache HIT) Jujustu Kaisen 02            <- < 1ms  - key: "[Jujustu Kaisen Season 2, Jujustu Kaisen 2nd Season]"
+[media-matching]:  (Cache HIT) Jujustu Kaisen 03            <- < 1ms  - key: "[Jujustu Kaisen Season 2, Jujustu Kaisen 2nd Season]"
+[media-matching]:  (Cache HIT) Jujustu Kaisen 04            <- < 1ms  - key: "[Jujustu Kaisen Season 2, Jujustu Kaisen 2nd Season]"
 ```
 
 However, if your episode files do not have consistent names, the matching process will slow down considerably.
@@ -420,13 +427,13 @@ However, if your episode files do not have consistent names, the matching proces
         └── Black Lagoon                
             ├── The Black Lagoon 01.mkv          
             ├── Mangrove Heaven 02.mkv           
-            ├── Ring-Ding Ship Chase 03.mkv            
+            ├── Ring-Ding Ship Chase 03.mkv        
 ```
 
 ```
-[media-matching]:  (Cache MISS) The Black Lagoon 01         <- ~1s -  key: "[Black Lagoon, The Black Lagoon]"
-[media-matching]:  (Cache MISS) Mangrove Heaven 02          <- ~1s - key: "[Black Lagoon, Mangrove Heaven]"
-[media-matching]:  (Cache MISS) Ring-Ding Ship Chase 03     <- ~1s - key: "[Black Lagoon, Ring-Ding Ship Chase]"
+[media-matching]:  (Cache MISS) The Black Lagoon 01         <- ~300ms - key: "[Black Lagoon, The Black Lagoon]"
+[media-matching]:  (Cache MISS) Mangrove Heaven 02          <- ~300ms - key: "[Black Lagoon, Mangrove Heaven]"
+[media-matching]:  (Cache MISS) Ring-Ding Ship Chase 03     <- ~300ms - key: "[Black Lagoon, Ring-Ding Ship Chase]"
 ```
 
 ## TL;DR
@@ -434,7 +441,7 @@ However, if your episode files do not have consistent names, the matching proces
 - You **might** not need to rename torrent files, the parser will extract the necessary information and ignore the rest
   - `[Group] Anime [Dual-Audio][BDRip 1920x1080 HEVC FLAC]` = `Anime`
   - `[Group] Anime S01E01 [8CE6090E].mkv` = `Anime S01E01`
-  - See **Unmatched/Incorrectly matched files** to see when you need to rename files.
+  - See **Mis-matched files** section to see when you need to rename files.
 - `SX` and `Season X` can be used interchangeably
 - `SXEX` and `S0XE0X` can be used interchangeably
 
@@ -507,6 +514,6 @@ Node: 18.18.0
 Scan:
 - 32 anime
 - 378 files (268 GB)
-- Normal scan (with AniList watch list data): 15.67 seconds (mean)
-- Enhanced scan (without AniList watch list data): 23.43 seconds (mean)
+- Normal scan (with AniList anime list data): 15.67 seconds (mean)
+- Enhanced scan (without AniList anime list data): 23.43 seconds (mean)
 ```

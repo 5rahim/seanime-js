@@ -42,7 +42,7 @@ export async function scanLibraryMedia(props: {
         return { error: "Couldn't find the local directory." }
     }
 
-    // Get the user watch list data
+    // Get the user anime list data
     _scanLogging.add("local-library/scanLibraryMedia", "Fetching media from local directory")
 
     const prospectiveMediaTitles = await getMediaTitlesFromLocalDirectory({ directoryPath: settings.library.localDirectory })

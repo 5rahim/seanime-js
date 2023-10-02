@@ -1,3 +1,4 @@
+# Credit: https://github.com/metafates/mangal
 import pathlib as pl
 
 IN = "CHANGELOG.md"

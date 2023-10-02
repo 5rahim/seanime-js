@@ -17,7 +17,6 @@ export default function Page() {
             <TypesafeForm
                 schema={settingsSchema.shape.anilist}
                 onSubmit={data => {
-                    console.log(data)
                     updateSettings("anilist", {
                         ...data,
                     })

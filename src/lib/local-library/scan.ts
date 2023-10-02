@@ -54,7 +54,7 @@ export async function scanLocalFiles(props: {
         return { error: "Couldn't find the local directory." }
     }
 
-    // Get the user watch list data
+    // Get the user anime list data
     _scanLogging.add("repository/scanLocalFiles", "Fetching user media list")
     const anilistCollection = await useAniListAsyncQuery(AnimeCollectionDocument, { userName })
     const watchListMediaIds = new Set(anilistCollection.MediaListCollection?.lists?.filter(n => n?.entries).flatMap(n => n?.entries?.map(n => n?.media)).map(n => n?.id).filter(Boolean))
@@ -146,7 +146,7 @@ export async function scanLocalFiles(props: {
     _aniZipCache.clear()
 
     const unknownButAddedMediaIds = new Set() // Keep track to avoid repeat
-    // Go through checked files -> If we find a mediaId that isn't in the user watch list, add that media to PLANNING list
+    // Go through checked files -> If we find a mediaId that isn't in the user anime list, add that media to PLANNING list
     for (let i = 0; i < scannedFiles.length; i++) {
         const file = scannedFiles[i]
         if (file.mediaId && !unknownButAddedMediaIds.has(file.mediaId) && !watchListMediaIds.has(file.mediaId)) {

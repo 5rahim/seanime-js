@@ -29,7 +29,6 @@ export function useVideoPlayer(props?: {
     useInterval(async () => {
         const status = await videoPlayerRepository.current.getPlaybackStatus()
         if (!!status) {
-            console.log(status)
             props?.onTick && props.onTick(status)
 
             if (

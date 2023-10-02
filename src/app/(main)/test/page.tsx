@@ -1,170 +1,119 @@
 "use client"
 
-import React, { useState } from "react"
-import { useLogger } from "react-use"
+import {
+    useLocalFileAtomByPath,
+    useLocalFileAtomsByMediaId,
+    useLocalFilesByMediaId_UNSTABLE,
+    useSetLocalFiles,
+} from "@/atoms/library/local-file.atoms"
 import { PrimitiveAtom } from "jotai"
-import { useAtom } from "jotai/react"
-import { useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist/entries.atoms"
-import { useStableSelectAtom } from "@/atoms/helpers"
+import { useEffect } from "react"
+import { useFocusSetAtom, useSelectAtom, useStableSelectAtom } from "@/atoms/helpers"
 import { LocalFile } from "@/lib/local-library/types"
 
 export default function Page() {
 
-    // const fileAtoms = useLocalFileAtomsByMediaId(21)
-    const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(21)
-    const title = useStableSelectAtom(collectionEntryAtom, entry => entry?.media?.title?.english)
-    const whole = useStableSelectAtom(collectionEntryAtom, entry => entry)
-    // const timestamp = useStableSelectAtom(collectionEntryAtom, entry => entry?.timestamp)
+    return (
+        <div className={"flex gap-8"}>
+            <ElementOne mediaId={1}/>
+            <ElementOne mediaId={889}/>
+        </div>
+    )
+}
 
-    useLogger("page")
+const ElementOne = (props: { mediaId: number }) => {
+
+    const localFileAtoms = useLocalFileAtomsByMediaId(props.mediaId)
 
     return (
         <div>
-            {title}
+            <ToggleAll mediaId={props.mediaId}/>
+            {localFileAtoms.map(fileAtom => (
+                <ElementTwo key={`${fileAtom}`} fileAtom={fileAtom}/>
+            ))}
         </div>
     )
-
 }
 
-function ElementOne(props: { fileAtom: PrimitiveAtom<LocalFile> }) {
-    const [file] = useAtom(props.fileAtom)
-    const [count, setCount] = useState(0)
+const ElementTwo = (props: { fileAtom: PrimitiveAtom<LocalFile> }) => {
 
-    useLogger(`${props.fileAtom}`, props)
+    const { fileAtom } = props
+    const path = useSelectAtom(fileAtom, file => file.path)
+    const name = useSelectAtom(fileAtom, file => file.name)
+
+    useEffect(() => {
+        console.log(`${fileAtom}`, "file element re-rendered")
+    })
 
     return (
-        <p>{file.name} ({count})</p>
+        <div>
+            <div>
+                <LockStatus path={path}/>
+                <IgnoredStatus path={path}/> {name}
+                <ActionSection fileAtom={fileAtom}/>
+            </div>
+        </div>
     )
 }
 
-// export default function Page() {
-//
-//     const { settings } = useSettings()
-//
-//     const { token } = useAuthed()
-//     // Bungo 1: 21311
-//     // Bungo 5: 163263
-//     // JJK: 113415
-//     // JJK S2: 145064
-//     // Mushoku 108465
-//     // Mushoku Cour 2 127720
-//     const { data } = useAniListClientQuery(AnimeShortMediaByIdDocument, { id: 21311 })
-//
-//     // const state = useAsync(async () => {
-//     //     const traversedIds = new Set<number>()
-//     //     if(data?.Media) {
-//     //         const parseObj = {
-//     //             anime_season: undefined,
-//     //             episode_number: 29,
-//     //         }
-//     //         const prequel = !parseObj.anime_season ? (
-//     //             findMediaEdge(data.Media, "PREQUEL")?.node
-//     //             || ((data.Media.format === "OVA" || data.Media.format === "ONA")
-//     //                 ? findMediaEdge(data.Media, "PARENT")?.node
-//     //                 : undefined)
-//     //         ) : undefined
-//     //         return prequel
-//     //     }
-//     //     return undefined
-//     // }, [data])
-//
-//     // Test [searchWithAnilist]
-//     // const state = useAsync(async () => {
-//     //     return rakun.parse("Demon Slayer S04E08 1080p WEB x264 E-AC-3 -Tsundere-Raws (Kimetsu no Yaiba: Katanakaji no Sato-hen)")
-//     //     return await resolveTitle("Demon Slayer - (Kimetsu no Yaiba - Katanakaji no Sato Hen)")
-//     //
-//     //     return await searchWithAnilist({ name: "mononogatari", method: "SearchName",
-//     //         perPage: 10,
-//     //         status: ["RELEASING", "FINISHED", "CANCELLED"],
-//     //         sort: "SEARCH_MATCH" })
-//     // }, [settings])
-//
-//     // Test [searchWithAnilist]
-//     // const state = useAsync(async () => {
-//     //     // const res = await getAllFileNames(settings.library.localDirectory!)
-//     //     // console.log(res)
-//     //     // return res
-//     //     // return await searchWithAnilist({ name: "evangelion", method: "SearchName",
-//     //     //     perPage: 10,
-//     //     //     status: ["RELEASING", "FINISHED", "CANCELLED"],
-//     //     //     sort: "SEARCH_MATCH" })
-//     //     const _t = rakun.parse("[SubsPlease] one piece movie - film z (1080p) [Batch]").name
-//     //     let _title = _t
-//     //
-//     //     return await advancedSearchWithMAL(_title)
-//     // }, [settings])
-//
-//     // const [state, setState] = useState<any>()
-//     //
-//     // useUpdateEffect(() => {
-//     //     (async () => {
-//     //         try {
-//     //             if (data?.Media && token) {
-//     //                 const queryMap = new Map<number, AnilistShortMedia>
-//     //                 const res = await fetchRelatedMedia(data.Media, queryMap, token)
-//     //                 queryMap.clear()
-//     //                 console.log(res)
-//     //                 setState(res)
-//     //             }
-//     //         } catch (e) {
-//     //             console.log(e)
-//     //         }
-//     //     })()
-//     // }, [data, token])
-//
-//     const state = useAsync(async () => {
-//         return null
-//     })
-//
-//
-//     return (
-//         <div className={"px-4"}>
-//             {/*<div className={"h-[45rem]"}>*/}
-//             {/*    {!!state.value && <VideoStreamer*/}
-//             {/*        id={"cowboy-bebop-episode-1"}*/}
-//             {/*        data={state.value}*/}
-//             {/*        session={null}*/}
-//             {/*        aniId={"cowboy-bebop-episode-1"}*/}
-//             {/*        skip={undefined}*/}
-//
-//             {/*    />}*/}
-//             {/*</div>*/}
-//             <pre>{JSON.stringify(state.value, null, 2)}</pre>
-//
-//         </div>
-//     )
-//     // useEffect(() => {
-//     //     (async () => {
-//     //         const parseObj = {
-//     //             anime_season: undefined,
-//     //             episode_number: 29,
-//     //         }
-//     //         if (data?.Media) {
-//     //             const highestEp = data.Media.nextAiringEpisode?.episode || data.Media.episodes
-//     //
-//     //             const episode = parseObj.episode_number
-//     //
-//     //             // The parser got an absolute episode number, we will normalize it and give the file the correct ID
-//     //             if (highestEp && episode && episode > highestEp) {
-//     //                 const prequel = !parseObj.anime_season ? (
-//     //                     findMediaEdge(data.Media, "PREQUEL")?.node
-//     //                     || ((data.Media.format === "OVA" || data.Media.format === "ONA")
-//     //                         ? findMediaEdge(data.Media, "PARENT")?.node
-//     //                         : undefined)
-//     //                 ) : undefined
-//     //
-//     //                 // value bigger than episode count
-//     //                 const result = await resolveSeason({
-//     //                     media: prequel || data.Media,
-//     //                     episode: parseObj.episode_number,
-//     //                     increment: !parseObj.anime_season ? null : true, // Increment if season there is a season
-//     //                     // force: true
-//     //                 })
-//     //                 console.log(result)
-//     //             } else {
-//     //                 console.log(parseObj.episode_number)
-//     //             }
-//     //         }
-//     //     })()
-//     // }, [data])
-// }
+const ActionSection = ({ fileAtom }: { fileAtom: PrimitiveAtom<LocalFile> }) => {
+    // const [, setFile] = useImmerAtom(fileAtom)
+    const setFileLocked = useFocusSetAtom(fileAtom, "locked")
+    const setFileIgnored = useFocusSetAtom(fileAtom, "ignored")
+    return (
+        <>
+            <button onClick={() => setFileLocked(prev => !prev)}>toggle lock
+            </button>
+            <button onClick={() => setFileIgnored(prev => !prev)}>toggle ignored
+            </button>
+        </>
+    )
+}
+
+const LockStatus = ({ path }: { path: string }) => {
+    const fileAtom = useLocalFileAtomByPath(path)
+    const locked = useStableSelectAtom(fileAtom, file => file.locked) || false
+    useEffect(() => {
+        console.log("locked status re-rendered")
+    })
+    return (
+        <>
+            [{`${locked}`}]
+        </>
+    )
+}
+
+const IgnoredStatus = ({ path }: { path: string }) => {
+    const fileAtom = useLocalFileAtomByPath(path)
+    const ignored = useStableSelectAtom(fileAtom, file => file.ignored) || false
+
+    useEffect(() => {
+        console.log("ignored status re-rendered")
+    })
+    return (
+        <>
+            [{`${ignored}`}]
+        </>
+    )
+}
+
+const ToggleAll = (props: { mediaId: number }) => {
+
+    const files = useLocalFilesByMediaId_UNSTABLE(props.mediaId)
+    const allFilesLocked = files.every(file => file.locked)
+    const setLocalFiles = useSetLocalFiles()
+
+    return (
+        <button onClick={() => setLocalFiles(draft => {
+            for (const draftFile of draft) {
+                if (draftFile.mediaId === props.mediaId) {
+                    draftFile.locked = !allFilesLocked
+                }
+            }
+            return
+        })
+        }>
+            {allFilesLocked ? "Unlock all" : "Lock all"}
+        </button>
+    )
+}

@@ -139,7 +139,6 @@ export function MetadataModal({ title, metadata, fileAtom }: MetadataModalProps)
             <TypesafeForm
                 schema={metadataSchema}
                 onSubmit={({ mediaId, ...data }) => {
-                    // console.log(mediaId, data)
                     const aniDBEpisodeNumber = !data.isSpecial
                         ? data.aniDBEpisodeNumber?.replace("S", "")
                         : (

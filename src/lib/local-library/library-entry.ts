@@ -183,7 +183,7 @@ export const inspectProspectiveLibraryEntry = async (props: {
 /**
  * @description Purpose
  * - Allows users to match [LocalFile]s to an anime manually
- * - If the anime is not in the user's watch list, it will be added
+ * - If the anime is not in the user's anime list, it will be added
  * - It will hydrate the [LocalFile]s metadata using {hydrateLocalFileWithInitialMetadata}
  * - It will return the hydrated [LocalFile]s
  * @description Use
@@ -238,8 +238,8 @@ export async function manuallyMatchFiles(props: {
                             status: "PLANNING", //MediaListStatus
                         }, token)
                     } catch (e) {
-                        logger("library-entry/manuallyMatchFiles").error("Error while adding anime to watch list")
-                        return { error: "Could not add the anime to your watch list" }
+                        logger("library-entry/manuallyMatchFiles").error("Error while adding anime to anime list")
+                        return { error: "Could not add the anime to your anime list" }
                     }
                 }
 

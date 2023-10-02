@@ -50,8 +50,6 @@ export function useManageLibraryEntries(opts: UseManageEntriesOptions) {
                 enhanced: opts.scanOptions?.enhancedScanning ? "partial" : "none",
             })
 
-            console.log("Finished scan")
-
             if (result && result.scannedFiles && !result.error) {
                 const incomingFiles = result.scannedFiles
 

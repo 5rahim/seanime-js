@@ -18,7 +18,7 @@ export function ComingUpNext() {
     return (
         <AppLayoutStack>
             <h2>Coming up next</h2>
-            <p className={"text-[--muted]"}>Based on your watch list</p>
+            <p className={"text-[--muted]"}>Based on your anime list</p>
             <Slider>
                 {media.map(item => {
                     return (

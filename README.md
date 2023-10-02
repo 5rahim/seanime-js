@@ -17,15 +17,15 @@ might not work as intended.
 
 - [x] Scan local library and automatically match local files with corresponding
   anime.
-  - [x] Scan with or without AniList watch list
+  - [x] Scan with or without AniList anime list
     data. [Learn more](https://github.com/5rahim/seanime/blob/main/docs/guide.md#scanning-your-library).
   - [x] Support for various naming/folder
     structures. [Learn more](https://github.com/5rahim/seanime/blob/main/docs/guide.md#tldr).
   - [x] Support for absolute episode
-    numbers. [Learn more](https://github.com/5rahim/seanime/blob/main/docs/guide.md#absolute-episode-number).
-  - [x] Support for movies. [Learn more](https://github.com/5rahim/seanime/blob/main/docs/guide.md#finding-movie).
-  - [x] Lock files to speed up subsequent
-    scans. [Learn more](https://github.com/5rahim/seanime/blob/main/docs/guide.md#locking-files).
+    numbers.
+  - [x] Support for movies.
+  - [x] *Refresh entries*
+    feature. [Learn more](https://github.com/5rahim/seanime/blob/main/docs/guide.md#locking-files).
   - [x] Ignore files or folders
   - [x] Resolve unmatched files
   - [x] Update file metadata
@@ -61,7 +61,7 @@ Powered by qBittorrent and Nyaa
 ### AniList
 
 - [x] Browse and manage AniList entries
-  - [x] Browse your watch lists
+  - [x] Browse your anime lists
   - [x] Add, edit AniList entries (status, score, progress…)
   - [x] Delete AniList entries (from Planning list only)
 - [x] See trending, popular shows, recent releases
@@ -131,16 +131,15 @@ npm run build
 
 - Watch together feature / social features
 - Torrent streaming (use [Miru](https://github.com/ThaUnknown/miru/))
-- Progress tracking without AniList
+- MAL support
 - Mobile app
 
 ## Future plans
 
-Features that may be implemented
-
-- Plugins
 - Manga support
 - Desktop app
+- Theming
+- Plugins
 
 ## Resources
 

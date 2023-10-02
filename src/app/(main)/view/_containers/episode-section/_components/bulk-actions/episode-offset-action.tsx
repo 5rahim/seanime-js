@@ -114,7 +114,6 @@ function Content() {
             value={offset}
             onChange={value => {
                 const episodesArr = files.filter(n => n.selected).map(({ file }) => Math.max(0, getEpisode(file)! + value))
-                console.log(episodesArr)
                 // Make sure than we can't go any further below if one episode calculated offset is 0
                 if (value <= 0) {
                     const minOffset = episodesArr.filter(n => n === 0).length

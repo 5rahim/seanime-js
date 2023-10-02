@@ -39,7 +39,7 @@ export const getAnilistCollectionAtom = atom(null, async (get, set, options: { m
 
                 // Set all user media
                 const collectionEntries = res.MediaListCollection?.lists?.map(n => n?.entries).flat() ?? []
-                // Get media from user's watchlist as [AnilistShortMedia]
+                // Get media from user's anime list as [AnilistShortMedia]
                 const userMedia = collectionEntries.filter(Boolean).map(entry => entry.media)
                 // Normalize [AnilistShortMedia] to [AnilistShowcaseMedia]
                 const watchListMedia = userMedia.filter(Boolean).map(media => anilist_shortMediaToShowcaseMedia(media)) ?? []

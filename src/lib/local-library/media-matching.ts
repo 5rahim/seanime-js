@@ -227,7 +227,7 @@ export async function findBestCorrespondingMedia(
                 correspondingMediaFromMAL = correspondingInUserList
                 _scanLogging.add(file.path, "   -> Result = " + JSON.stringify(correspondingMediaFromMAL.title))
             } else if (anime) {
-                _scanLogging.add(file.path, "   -> warning - Could not find the MAL media in user watch list")
+                _scanLogging.add(file.path, "   -> warning - Could not find the MAL media in user anime list")
                 _scanLogging.add(file.path, "   -> Result = " + JSON.stringify(anime))
             } else {
                 _scanLogging.add(file.path, "   -> error - Could not find a media")

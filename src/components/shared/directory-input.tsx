@@ -32,17 +32,11 @@ export const DirectoryInput: React.FC<DirectoryInputProps & Omit<TextInputProps,
         const val = prefix ? (path.join(prefix, debouncedValue)) : debouncedValue
         if (val.length > 0) {
             const res = await getSafeFoldersFromDirectory(val)
-            console.log(res)
             return res
         } else {
             return { data: [], error: null }
         }
     }, [debouncedValue])
-
-    useEffect(() => {
-        console.log(value, prefix, path.sep)
-    }, [value, prefix, path.sep])
-
 
     const handleSelectDir = useCallback((input: string) => {
         let _path = prefix ? path_removeTopPath(input, prefix) : input

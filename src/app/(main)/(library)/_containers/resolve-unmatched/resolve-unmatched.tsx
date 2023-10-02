@@ -67,7 +67,6 @@ export const ResolveUnmatched = memo((props: { isOpen: boolean, close: () => voi
             })
 
             if (mediaId && files) {
-                console.log(files)
                 // Update stored local files
                 setLocalFiles(draft => {
                     for (const hydratedFile of files) {

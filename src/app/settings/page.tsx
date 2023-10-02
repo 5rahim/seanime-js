@@ -17,7 +17,6 @@ export default function Page() {
             <TypesafeForm
                 schema={settingsSchema.shape.library}
                 onSubmit={data => {
-                    console.log(data)
                     updateSettings("library", {
                         ...data,
                     })

@@ -14,7 +14,6 @@ export function useAnilistAdvancedSearch() {
     return useInfiniteQuery({
         queryKey: ["projects", params],
         queryFn: async ({ pageParam = 1 }) => {
-            // console.log("pageParam", pageParam)
             const variables = {
                 page: pageParam,
                 perPage: 48,
@@ -27,7 +26,6 @@ export function useAnilistAdvancedSearch() {
                 sort: (params.title?.length && params.title.length > 0) ? ["SEARCH_MATCH", ...(__advancedSearch_getValue(params.sorting) || ["SCORE_DESC"])] : (__advancedSearch_getValue(params.sorting) || ["SCORE_DESC"]),
                 status: params.sorting?.includes("START_DATE_DESC") ? (__advancedSearch_getValue(params.status)?.filter((n: string) => n !== "NOT_YET_RELEASED") || ["FINISHED", "RELEASING"]) : __advancedSearch_getValue(params.status),
             }
-            console.log(variables)
             return useAniListAsyncQuery(ListAnimeDocument, variables)
         },
         getNextPageParam: (lastPage, pages) => {
