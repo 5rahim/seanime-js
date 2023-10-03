@@ -1,6 +1,6 @@
 {
   "name": "seanime",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "author": "5rahim",
   "scripts": {
     "dev": "next dev --port=43200",

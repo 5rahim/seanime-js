@@ -1,4 +1,4 @@
-# Set up
+# Use Seanime
 
 Seanime consists of a back-end Node.js server and a front-end Next.js web app. Data is stored in your browser's local
 storage.
@@ -68,14 +68,14 @@ npm run start
 
 - Go to `http://127.0.0.1:43200`
 
-### 6. Configuration
+### 7. Settings
 
 - [Update your settings.](https://github.com/5rahim/seanime/blob/main/docs/settings.md)
 
 ## Updates
 
-`TODO`
+- Repeat the steps above, starting from step 2.
 
 ## Logs
 
-The scan logs will be located under `<path to seanime>/.next/standalone/logs`
+Scan logs are located under `<path to seanime>/.next/standalone/logs`

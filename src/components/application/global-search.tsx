@@ -79,9 +79,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = (props) => {
                         >
                             <Dialog.Panel
                                 className="mx-auto max-w-3xl transform overflow-hidden space-y-4 transition-all">
-                                <Combobox
-                                    // onChange={(person) => (window.location = person.profileUrl)}
-                                >
+                                <Combobox>
                                     {({ activeOption }: any) => (
                                         <>
                                             <div

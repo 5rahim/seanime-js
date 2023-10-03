@@ -8,12 +8,16 @@
 
 <img src="docs/images/main_5.png" alt="preview" width="100%"/>
 
-🚨 This project is a hobby, it's not meant to fix every problem or include every requested feature. Some features
-might not work as intended.
+🚨 This project is a hobby, it's not meant to fix every shortcoming or include every requested feature. Some features
+might not work as intended. Feel free to fork the project, contribute or ask questions.
 
-## Features
+# Setup
 
-### Local library
+[How to use Seanime.](https://github.com/5rahim/seanime/blob/main/docs/set-up.md)
+
+# Features
+
+## Local library
 
 - [x] Scan local library and automatically match local files with corresponding
   anime.
@@ -39,7 +43,7 @@ might not work as intended.
 
 [How scanning works under the hood.](https://github.com/5rahim/seanime/blob/main/docs/guide.md#how-it-works)
 
-### Download
+## Download
 
 Powered by qBittorrent and Nyaa
 
@@ -51,54 +55,42 @@ Powered by qBittorrent and Nyaa
 - [x] Option to automatically select needed files in
   batches. [Learn more](https://github.com/5rahim/seanime/blob/main/docs/torrents.md#batches).
 
-### Progress tracking
+## Progress tracking
 
 - [x] Open files with favorite player (VLC or MPC-HC)
-- [x] Automatically track progress with VLC or MPC-HC
+- [x] Automatically track progress while watching with VLC or MPC-HC
 - [x] Sync progress with AniList
 - [ ] Sync progress with MAL
 
-### AniList
+## AniList
 
-- [x] Browse and manage AniList entries
+- [x] Browse and manage your AniList anime list
   - [x] Browse your anime lists
   - [x] Add, edit AniList entries (status, score, progress…)
-  - [x] Delete AniList entries (from Planning list only)
+  - [x] Delete AniList entries (Planning list only)
 - [x] See trending, popular shows, recent releases
 - [x] Search and filter
   - [x] Advanced search (multiple filters)
 
-### Streaming
+## Streaming
 
 - [x] Stream episodes from web sources
   - [x] Support for GogoAnime
   - [x] Support for Zoro (AniWatch)
-  - [ ] Support for Crunchyroll
 - [x] Progress tracking
   - [x] Sync progress with AniList
   - [ ] Sync progress with MAL
 
-### Other
-
-- [ ] Offline mode
-
-## Set up
-
-[How to set up Seanime.](https://github.com/5rahim/seanime/blob/main/docs/set-up.md)
 
 ## Disclaimer
 
 [Read the disclaimer.](https://github.com/5rahim/seanime/blob/main/DISCLAIMER.md)
 
-## Development
+# Development
+
+## Local development
 
 1. Update `.env` file
-
-```dotenv
-# Consumet is needed for streaming
-# Deploy your Consumet API https://github.com/consumet/api.consumet.org#vercel
-CONSUMET_API_URL="https://consumet-api-example.vercel.app"
-```
 
 2. Install packages
 
@@ -161,38 +153,38 @@ Resources used to build Seanime.
 - [M3U8Proxy](https://github.com/chaycee/M3U8Proxy) - Video streaming proxy
 - [Anify](https://github.com/Eltik/Anify/tree/main) - Covers for episodes
 
-## Credit
+## Acknowledgements
 
 - [Anikki](https://github.com/Kylart/Anikki/) - Inspired GraphQL fragments
 - [Moopa](https://github.com/Ani-Moopa/Moopa) - Artplayer integration
 - [Miru](https://github.com/ThaUnknown/miru) - Inspired some utility functions
 
-## Screenshots
+# Screenshots
 
-### Library
+## Library
 
 <img src="docs/images/img_17.png" alt="preview" width="100%"/>
 
-### View
+## View
 
 <img src="docs/images/img_12.png" alt="preview" width="100%"/>
 
-### Discover
+## Discover
 
 <img src="docs/images/img_11.png" alt="preview" width="100%"/>
 
-### Schedule
+## Schedule
 
 <img src="docs/images/img_13.png" alt="preview" width="100%"/>
 
-### Torrent search & download
+## Torrent search & download
 
 <img src="docs/images/img_14.png" alt="preview" width="100%"/>
 
-### Progress tracking
+## Progress tracking
 
 <img src="docs/images/img_16.png" alt="preview" width="100%"/>
 
-### Streaming
+## Streaming
 
 <img src="docs/images/img_18.png" alt="preview" width="100%"/>
