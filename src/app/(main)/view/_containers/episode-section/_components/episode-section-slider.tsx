@@ -1,7 +1,7 @@
 import { Slider } from "@/components/shared/slider"
 import { PrimitiveAtom } from "jotai"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
-import { AnifyEpisodeCover } from "@/lib/anify/types"
+import { AnifyAnimeEpisodeData } from "@/lib/anify/types"
 import React, { useMemo } from "react"
 import { useSelectAtom } from "@/atoms/helpers"
 import { formatDistanceToNow, isBefore, subYears } from "date-fns"
@@ -15,7 +15,7 @@ type Props = {
     aniZipData?: AniZipData,
     onPlayFile: (path: string) => void
     media: AnilistDetailedMedia
-    anifyEpisodeCovers?: AnifyEpisodeCover[]
+    anifyEpisodeData?: AnifyAnimeEpisodeData[]
 }
 
 export function EpisodeSectionSlider({ fileAtoms, ...rest }: Props) {
@@ -33,12 +33,12 @@ export function EpisodeSectionSlider({ fileAtoms, ...rest }: Props) {
 
 type ItemProps = Omit<Props, "fileAtoms"> & { fileAtom: PrimitiveAtom<LocalFile> }
 
-function Item({ fileAtom, aniZipData, anifyEpisodeCovers, onPlayFile, media }: ItemProps) {
+function Item({ fileAtom, aniZipData, anifyEpisodeData, onPlayFile, media }: ItemProps) {
 
     const metadata = useSelectAtom(fileAtom, file => file.metadata)
     const path = useSelectAtom(fileAtom, file => file.path)
     const aniZipEpisode = anizip_getEpisodeFromMetadata(aniZipData, { metadata })
-    const anifyEpisodeCover = anifyEpisodeCovers?.find(n => n.number === metadata.episode)?.img
+    const anifyEpisodeCover = anifyEpisodeData?.find(n => n.number === metadata.episode)?.img
 
     const date = aniZipEpisode?.airdate ? new Date(aniZipEpisode?.airdate) : undefined
 

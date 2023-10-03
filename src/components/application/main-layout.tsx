@@ -1,13 +1,15 @@
 "use client"
 import { AppLayout, AppSidebarProvider } from "@/components/ui/app-layout"
 import React from "react"
-import { MainSidebar } from "@/components/application/main-sidebar"
 import { useAtomValue } from "jotai/react"
 import { LoadingOverlay } from "@/components/ui/loading-spinner"
-import { GlobalSearch } from "@/components/application/global-search"
 import Image from "next/image"
 import { anilistClientTokenAtom } from "@/atoms/auth"
 import { useRefreshAnilistCollectionPeriodically } from "@/atoms/anilist/collection.atoms"
+import dynamic from "next/dynamic"
+import { MainSidebar } from "@/components/application/main-sidebar"
+
+const GlobalSearch = dynamic(() => import("@/components/application/global-search").then((mod) => mod.GlobalSearch))
 
 export const MainLayout = ({ children }: { children: React.ReactNode }) => {
 

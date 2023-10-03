@@ -1,4 +1,9 @@
-export type AnifyAnimeEpisode = {
+export type AnifyAnimeContentMetadata = {
+    providerId: string
+    episodes: Episode[]
+}[]
+
+export type AnifyAnimeEpisodeData = {
     id: string
     number: number
     title: string
@@ -6,14 +11,4 @@ export type AnifyAnimeEpisode = {
     img: string | null
     hasDub: boolean
     updatedAt: number
-}
-
-export type AnifyAnimeEpisodeData = {
-    providerId: string
-    episodes: Episode[]
-}[]
-
-export type AnifyEpisodeCover = {
-    number: number,
-    img: string | null
 }

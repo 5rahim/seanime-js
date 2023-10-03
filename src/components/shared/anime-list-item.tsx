@@ -22,6 +22,7 @@ import { IoLibrarySharp } from "@react-icons/all-files/io5/IoLibrarySharp"
 import { AnilistMediaEntryModal } from "@/components/shared/anilist-media-entry-modal"
 import capitalize from "lodash/capitalize"
 import startCase from "lodash/startCase"
+import { imageShimmer } from "@/components/shared/image-helpers"
 
 type AnimeListItemProps = { mediaId: number, media?: AnilistShortMedia, showLibraryBadge?: boolean } & {
     containerClassName?: string
@@ -67,6 +68,7 @@ export const AnimeListItem = ((props: AnimeListItemProps) => {
                                 src={media.bannerImage || media.coverImage?.large || ""}
                                 alt={""}
                                 fill
+                                placeholder={imageShimmer(700, 475)}
                                 quality={100}
                                 sizes="20rem"
                                 className="object-cover object-center transition"
@@ -168,7 +170,9 @@ export const AnimeListItem = ((props: AnimeListItemProps) => {
                     src={media.coverImage?.extraLarge || ""}
                     alt={""}
                     fill
+                    placeholder={imageShimmer(700, 475)}
                     quality={100}
+                    priority
                     sizes="20rem"
                     className="object-cover object-center group-hover/anime-list-item:scale-125 transition"
                 />

@@ -8,7 +8,7 @@ import { BiDotsHorizontal } from "@react-icons/all-files/bi/BiDotsHorizontal"
 import { VscVerified } from "@react-icons/all-files/vsc/VscVerified"
 import { BiLockOpenAlt } from "@react-icons/all-files/bi/BiLockOpenAlt"
 import { EpisodeListItem } from "@/components/shared/episode-list-item"
-import { AnifyEpisodeCover } from "@/lib/anify/types"
+import { AnifyAnimeEpisodeData } from "@/lib/anify/types"
 import { Modal } from "@/components/ui/modal"
 import { createIsolation } from "jotai-scope"
 import { createTypesafeFormSchema, Field, TypesafeForm } from "@/components/ui/typesafe-form"
@@ -32,10 +32,10 @@ export const EpisodeItem = React.memo((props: {
     aniZipData?: AniZipData,
     onPlayFile: (path: string) => void
     media: AnilistDetailedMedia
-    anifyEpisodeCovers?: AnifyEpisodeCover[]
+    anifyEpisodeData?: AnifyAnimeEpisodeData[]
 }) => {
 
-    const { fileAtom, aniZipData, onPlayFile, media, anifyEpisodeCovers } = props
+    const { fileAtom, aniZipData, onPlayFile, media, anifyEpisodeData } = props
 
     const mediaID = useSelectAtom(fileAtom, file => file.mediaId) // Listen to changes in order to unmount when we unmatch
     const metadata = useSelectAtom(fileAtom, file => file.metadata)
@@ -48,7 +48,7 @@ export const EpisodeItem = React.memo((props: {
     const progress = useStableSelectAtom(collectionEntryAtom, entry => entry?.progress)
 
     const aniZipEpisode = anizip_getEpisodeFromMetadata(aniZipData, { metadata })
-    const anifyEpisodeCover = anifyEpisodeCovers?.find(n => n.number === metadata.episode)?.img
+    const anifyEpisodeCover = anifyEpisodeData?.find(n => n.number === metadata.episode)?.img
     const fileTitle = useMemo(() => parsedInfo?.original?.replace(/.(mkv|mp4)/, "")?.replaceAll(/(\[)[a-zA-Z0-9 ._~-]+(\])/ig, "")?.replaceAll(/[_,-]/g, " "), [parsedInfo])
 
     const image = useMemo(() => localFile_getEpisodeCover({ metadata }, aniZipEpisode?.image, anifyEpisodeCover, media?.coverImage?.medium), [metadata, anifyEpisodeCover, aniZipEpisode?.image])

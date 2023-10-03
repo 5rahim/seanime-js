@@ -10,19 +10,25 @@ import { useMediaDownloadInfo } from "@/lib/download/helpers"
 import { EpisodeListItem } from "@/components/shared/episode-list-item"
 import { useSetAtom } from "jotai"
 import { __torrentSearch_isOpenAtom } from "@/app/(main)/view/_containers/torrent-search/torrent-search-modal"
-import { AnifyEpisodeCover } from "@/lib/anify/types"
+import { AnifyAnimeEpisodeData } from "@/lib/anify/types"
 import { anizip_getEpisode } from "@/lib/anizip/utils"
+import { anify_getEpisodeCover } from "@/lib/anify/utils"
 
 interface UndownloadedEpisodeListProps {
     children?: React.ReactNode
     media: AnilistDetailedMedia
     aniZipData?: AniZipData
-    anifyEpisodeCovers?: AnifyEpisodeCover[]
+    anifyEpisodeData?: AnifyAnimeEpisodeData[]
 }
 
+/**
+ * @description
+ * - Display a list of episodes that are not downloaded yet
+ * - It will not display episodes that were watched
+ */
 export const UndownloadedEpisodeList: React.FC<UndownloadedEpisodeListProps> = React.memo((props) => {
 
-    const { children, media, aniZipData, anifyEpisodeCovers, ...rest } = props
+    const { children, media, aniZipData, anifyEpisodeData, ...rest } = props
 
     const setTorrentSearchIsOpen = useSetAtom(__torrentSearch_isOpenAtom)
 
@@ -36,7 +42,7 @@ export const UndownloadedEpisodeList: React.FC<UndownloadedEpisodeListProps> = R
             return [0, ...downloadInfo.episodeNumbers.slice(0, -1)]
         }
         return downloadInfo.episodeNumbers
-    }, [downloadInfo.episodeNumbers, aniZipData])
+    }, [downloadInfo.episodeNumbers, aniZipData, media.episodes])
 
     if (!aniZipData || Object.keys(aniZipData?.episodes).length === 0 || (downloadInfo.toDownload === 0)) return null
 
@@ -54,7 +60,7 @@ export const UndownloadedEpisodeList: React.FC<UndownloadedEpisodeListProps> = R
                 {episodeNumberArr.map((epNumber, index) => {
                     const episodeData = anizip_getEpisode(aniZipData, epNumber === 0 ? "S1" : epNumber)
                     const airDate = episodeData?.airdate
-                    const anifyEpisodeCover = anifyEpisodeCovers?.find(n => n.number === epNumber)?.img
+                    const anifyEpisodeCover = anify_getEpisodeCover(anifyEpisodeData, epNumber)
                     return (
                         <EpisodeListItem
                             media={media}

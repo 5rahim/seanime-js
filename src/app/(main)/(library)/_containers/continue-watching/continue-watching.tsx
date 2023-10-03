@@ -1,6 +1,6 @@
 import { useSelectAtom } from "@/atoms/helpers"
 import { useMediaDownloadInfo } from "@/lib/download/helpers"
-import { useLatestMainLocalFileByMediaId } from "@/atoms/library/local-file.atoms"
+import { useLatestMainLocalFileByMediaId_UNSTABLE } from "@/atoms/library/local-file.atoms"
 import React, { memo, useMemo } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -21,7 +21,7 @@ export function ContinueWatching(props: { entryAtom: Atom<LibraryEntry> }) {
     const progress = useSelectAtom(props.entryAtom, entry => entry.collectionEntry?.progress)
 
     const { downloadInfo } = useMediaDownloadInfo(media)
-    const latestFile = useLatestMainLocalFileByMediaId(media.id)
+    const latestFile = useLatestMainLocalFileByMediaId_UNSTABLE(media.id)
 
     const nextEpisode = useMemo(() => {
         if (currentlyWatching) {

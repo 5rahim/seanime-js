@@ -2,6 +2,7 @@ import React from "react"
 import { cn } from "@/components/ui/core"
 import Image from "next/image"
 import { AiFillPlayCircle } from "@react-icons/all-files/ai/AiFillPlayCircle"
+import { imageShimmer } from "@/components/shared/image-helpers"
 
 interface EpisodeListItemProps {
     title: string,
@@ -35,6 +36,7 @@ export const LargeEpisodeListItem: React.FC<EpisodeListItemProps & React.Compone
                     alt={""}
                     fill
                     quality={100}
+                    placeholder={imageShimmer(700, 475)}
                     sizes="20rem"
                     className="object-cover object-center transition group-hover/missed-episode-item:scale-110"
                 /> : <div

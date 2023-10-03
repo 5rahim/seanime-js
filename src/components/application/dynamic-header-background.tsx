@@ -1,13 +1,11 @@
+"use client"
 import Image from "next/image"
 import React from "react"
 import { usePathname } from "next/navigation"
 
-type Props = {}
-
-export function DynamicHeaderBackground(props: Props) {
+export function DynamicHeaderBackground() {
 
     const pathname = usePathname()
-
 
     return (
         <>

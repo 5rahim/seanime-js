@@ -1,18 +1,22 @@
 "use client"
 
-import React from "react"
+import React, { Suspense } from "react"
 import { useSettings } from "@/atoms/settings"
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { AppLayoutStack } from "@/components/ui/app-layout"
 import { LocalLibrary } from "@/app/(main)/(library)/_containers/local-library/local-library"
-import { LibraryToolbar } from "@/app/(main)/(library)/_containers/local-library/_components/library-toolbar"
-import { IgnoredFilesDrawer } from "@/app/(main)/(library)/_containers/ignored-files/ignored-files-drawer"
+// import { LibraryToolbar } from "@/app/(main)/(library)/_containers/local-library/_components/library-toolbar"
 import { useAuthed } from "@/atoms/auth"
 import { ANILIST_OAUTH_URL } from "@/lib/anilist/config"
 import { BiCog } from "@react-icons/all-files/bi/BiCog"
 import { FirstScanScreen } from "@/app/(main)/(library)/_containers/local-library/first-scan-screen"
+import dynamic from "next/dynamic"
+import { Skeleton } from "@/components/ui/skeleton"
+
+const LibraryToolbar = dynamic(() => import("@/app/(main)/(library)/_containers/local-library/_components/library-toolbar").then((mod) => mod.LibraryToolbar))
+const IgnoredFilesDrawer = dynamic(() => import("@/app/(main)/(library)/_containers/ignored-files/ignored-files-drawer").then((mod) => mod.IgnoredFilesDrawer), { ssr: false })
 
 export default function Home() {
 
@@ -65,7 +69,9 @@ export default function Home() {
 
     return (
         <div>
-            <LibraryToolbar/>
+            <Suspense fallback={<Skeleton className={"w-full h-10"}/>}>
+                <LibraryToolbar/>
+            </Suspense>
             <LocalLibrary/>
             <FirstScanScreen/>
             <IgnoredFilesDrawer/>

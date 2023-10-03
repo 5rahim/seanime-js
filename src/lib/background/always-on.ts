@@ -1,3 +1,0 @@
-/**
- * Repeating tasks
- */

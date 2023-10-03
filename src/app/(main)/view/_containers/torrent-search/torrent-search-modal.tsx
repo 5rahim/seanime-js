@@ -34,6 +34,7 @@ import Image from "next/image"
 import { Slider } from "@/components/shared/slider"
 import { similarity } from "@/lib/string-similarity"
 import { FcLineChart } from "@react-icons/all-files/fc/FcLineChart"
+import { useLibraryEntryAtomByMediaId } from "@/atoms/library/library-entry.atoms"
 
 interface Props {
     media: AnilistDetailedMedia,
@@ -97,9 +98,9 @@ export function TorrentSearchModal(props: Props) {
 
 export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, aniZipData?: AniZipData }) => {
 
+    const entryAtom = useLibraryEntryAtomByMediaId(media.id)
 
     const {
-        entryAtom,
         latestFile,
         downloadInfo,
     } = useMediaDownloadInfo(media)

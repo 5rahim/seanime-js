@@ -1,8 +1,7 @@
 "use client"
 import React from "react"
 import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { AppLayoutStack } from "@/components/ui/app-layout"
+import { Button } from "@/components/ui/button/button"
 import { useRouter } from "next/navigation"
 import { cn } from "@/components/ui/core"
 
@@ -23,7 +22,7 @@ export const LuffyError: React.FC<LuffyErrorProps> = (props) => {
 
     return (
         <>
-            <AppLayoutStack className={cn("w-full flex flex-col items-center mt-10", className)}>
+            <div className={cn("w-full flex flex-col items-center mt-10 space-y-4", className)}>
                 {<div
                     className="h-[10rem] w-[10rem] mx-auto flex-none rounded-md object-cover object-center relative overflow-hidden">
                     <Image
@@ -48,7 +47,7 @@ export const LuffyError: React.FC<LuffyErrorProps> = (props) => {
                         )}
                     </div>
                 </div>
-            </AppLayoutStack>
+            </div>
         </>
     )
 

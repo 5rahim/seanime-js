@@ -14,45 +14,51 @@ import { localFile_isMain } from "@/lib/local-library/utils/episode.utils"
 import { anilist_getEpisodeCeilingFromMedia } from "@/lib/anilist/utils"
 
 /* -------------------------------------------------------------------------------------------------
- * Main atoms
+ * [LocalFile] atoms
  * -----------------------------------------------------------------------------------------------*/
 
 /**
- * We store the scanned [LocalFile]s from the local directory
- * - We will use the [LocalFile]s stored to organize the library entries
+ * @description Purpose
+ * - Store the scanned [LocalFile]s from the local directory
+ * - Used to derive other atoms like `libraryEntryAtoms`
  */
 export const localFilesAtom = atomWithStorage<LocalFile[]>("sea-local-files", [], undefined, { unstable_getOnInit: true })
 
-// Split [LocalFile]s into multiple atoms by `path`
+/**
+ * Split [LocalFile]s into multiple atoms by `path`
+ */
 export const localFileAtoms = splitAtom(localFilesAtom, localFile => localFile.path)
 
-// Derived atom for updates using Immer
+/**
+ * Derived atom for updates using Immer
+ */
 const localFilesAtomWithImmer = withImmer(localFilesAtom)
 
+/**
+ * @internal
+ */
 const __localFiles_globalUpdateAtom = atom(0)
 
 
 /* -------------------------------------------------------------------------------------------------
- * Read
+ * Read [LocalFile]s
  * -----------------------------------------------------------------------------------------------*/
 
 /**
+ * @description
  * Get [LocalFile] atoms by `mediaId`
- * @example Previous version
- * // export const getLocalFileAtomsByMediaIdAtom = atom(null,
- * //     (get, set, mediaId: number) => get(localFileAtoms).filter((itemAtom) => get(atom((get) => get(itemAtom).mediaId === mediaId)))
- * // )
- * @return PrimitiveAtom<LocalFile>[]
  */
 export const getLocalFileAtomsByMediaIdAtom = atom(null,
     (get, set, mediaId: number) => get(localFileAtoms).filter((fileAtom) => get(fileAtom).mediaId === mediaId),
 )
+// Previous version
+// export const getLocalFileAtomsByMediaIdAtom = atom(null,
+//     (get, set, mediaId: number) => get(localFileAtoms).filter((fileAtom) => get(atom((get) => get(fileAtom).mediaId === mediaId)))
+// )
 
 /**
- * @return {
- *     toWatch: PrimitiveAtom<LocalFile>[],
- *     watched: PrimitiveAtom<LocalFile>[]
- * }
+ * @description
+ * Get **main** [LocalFile] atoms by `mediaId` for `view` page
  */
 const get_Display_LocalFileAtomsByMediaIdAtom = atom(null,
     // Get the local files from a specific media, split the `watched` and `to watch` files by listening to a specific `anilistCollectionEntryAtom`
@@ -91,10 +97,8 @@ const get_Display_LocalFileAtomsByMediaIdAtom = atom(null,
     },
 )
 
-/**
- * @return PrimitiveAtom<LocalFile>[]
- */
-const get_OVA_LocalFileAtomsByMediaIdAtom = atom(null,
+
+const get_Special_LocalFileAtomsByMediaIdAtom = atom(null,
     (get, set, mediaId: number) => {
         const fileAtoms = get(localFileAtoms).filter((fileAtom) => get(fileAtom).mediaId === mediaId)
         return sortBy(fileAtoms, fileAtom => Number(get(fileAtom).parsedInfo?.episode)).filter(fileAtom => {
@@ -104,9 +108,6 @@ const get_OVA_LocalFileAtomsByMediaIdAtom = atom(null,
     },
 )
 
-/**
- * @return <PrimitiveAtom<LocalFile>[]
- */
 const get_NC_LocalFileAtomsByMediaIdAtom = atom(null,
     (get, set, mediaId: number) => {
         const fileAtoms = get(localFileAtoms).filter((fileAtom) => get(fileAtom).mediaId === mediaId)
@@ -118,20 +119,18 @@ const get_NC_LocalFileAtomsByMediaIdAtom = atom(null,
 )
 
 /**
- * @return PrimitiveAtom<LocalFile>[]
+ * Get ignored [LocalFile] atoms
  */
 export const ignoredLocalFileAtomsAtom = atom((get) => get(localFileAtoms).filter((itemAtom) => get(itemAtom).ignored === true))
 
-/**
- * @return PrimitiveAtom<LocalFile>
- */
+
 export const getLocalFileAtomByPathAtom = atom(null,
     (get, set, path: string) => get(localFileAtoms).find((itemAtom) => get(itemAtom).path === path),
 )
 
 
 /**
- * @return LocalFile
+ * Get [LocalFile] by `name`
  * @example
  * const getFile = useSetAtom(getLocalFileByNameAtom)
  */
@@ -140,7 +139,7 @@ export const getLocalFileByNameAtom = atom(null, // Writable too
 )
 
 /**
- * @return LocalFile
+ * Get [LocalFile] by `path`
  * @example
  * const getFile = useSetAtom(getLocalFileByPathAtom)
  */
@@ -170,13 +169,16 @@ export const getLocalFilesByMediaIdAtom = atom(null,
 
 
 /**
- * Useful for mapping. When you want the children to modify a specific [LocalFile]
+ * @description Purpose
+ * - Use for mapping
+ * - Children will be able to modify a specific [LocalFile]
  * @example Parent
  * const localFileAtoms = useLocalFileAtomsByMediaId(props.mediaId)
  *  ...
  * localFileAtoms.map(fileAtom => <Child key={`${fileAtom}`} fileAtom={fileAtom}/>)
  *
  * @example Children
+ * const { fileAtom } = props
  * const [file, setFile] = useImmerAtom(fileAtom)
  */
 export const useLocalFileAtomsByMediaId = (mediaId: number) => {
@@ -193,13 +195,7 @@ export const useDisplayLocalFileAtomsByMediaId = (mediaId: number) => {
     const __ = __useListenToLocalFiles()
 
     const [, get] = useAtom(get_Display_LocalFileAtomsByMediaIdAtom)
-    return useMemo(() => get(mediaId), [progress, status, __]) as {
-        toWatch: Array<PrimitiveAtom<LocalFile>>,
-        toWatchSlider: Array<PrimitiveAtom<LocalFile>>
-        watched: Array<PrimitiveAtom<LocalFile>>
-        allMain: Array<PrimitiveAtom<LocalFile>>
-        mediaIncludesSpecial: boolean
-    }
+    return useMemo(() => get(mediaId), [progress, status, __])
 }
 
 export const useSpecialsLocalFileAtomsByMediaId = (mediaId: number) => {
@@ -208,8 +204,8 @@ export const useSpecialsLocalFileAtomsByMediaId = (mediaId: number) => {
     const status = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.status) ?? ""
     const __ = __useListenToLocalFiles()
 
-    const [, get] = useAtom(get_OVA_LocalFileAtomsByMediaIdAtom)
-    return useMemo(() => get(mediaId), [progress, status, __]) as Array<PrimitiveAtom<LocalFile>>
+    const [, get] = useAtom(get_Special_LocalFileAtomsByMediaIdAtom)
+    return useMemo(() => get(mediaId), [progress, status, __])
 }
 
 export const useNCLocalFileAtomsByMediaId = (mediaId: number) => {
@@ -219,51 +215,57 @@ export const useNCLocalFileAtomsByMediaId = (mediaId: number) => {
     const __ = __useListenToLocalFiles()
 
     const [, get] = useAtom(get_NC_LocalFileAtomsByMediaIdAtom)
-    return useMemo(() => get(mediaId), [progress, status, __]) as Array<PrimitiveAtom<LocalFile>>
+    return useMemo(() => get(mediaId), [progress, status, __])
 }
 
 /**
- * /!\ Unstable - Re-renders component when `localFilesAtom` is updated
- *
+ * @description Purpose
+ * - Get all [LocalFile]s associated with a specific media
+ * @description Caveats
+ * - /!\ Unstable - Re-renders component when `localFilesAtom` is updated for that specific media
+ * - Prefer atoms for mapping
  * @example
- * const files = useLocalFilesByMediaId(props.mediaId)
+ * const files = useLocalFilesByMediaId_UNSTABLE(props.mediaId)
  * const allFilesLocked = files.every(file => file.locked)
  *
  * @param mediaId
  */
 export const useLocalFilesByMediaId_UNSTABLE = (mediaId: Nullish<number>) => {
-    const __ = __useListenToLocalFiles()
     return useAtomValue(
         selectAtom(
             localFilesAtom,
-            useCallback(files => files.filter(file => file.mediaId === mediaId), [__]),
+            useCallback(files => files.filter(file => file.mediaId === mediaId), []),
             deepEquals, // Equality check
         ),
-    )
-}
-export const useMainLocalFilesByMediaId_UNSTABLE = (mediaId: Nullish<number>) => {
-    const __ = __useListenToLocalFiles()
-    return useAtomValue(
-        selectAtom(
-            localFilesAtom,
-            useCallback(files => files.filter(file => localFile_isMain(file)
-                && file.mediaId === mediaId,
-            ).sort((a, b) => a.metadata.episode! - b.metadata.episode!), [__]),
-            deepEquals, // Equality check
-        ),
-    )
+    ) as LocalFile[]
 }
 
-export const useLocalFileAtomByPath = (path: string) => {
+/**
+ * @description Purpose
+ * - Get all **main** [LocalFile]s associated with a specific media
+ * @param mediaId
+ */
+export const useMainLocalFilesByMediaId_UNSTABLE = (mediaId: Nullish<number>) => {
+    return useAtomValue(
+        selectAtom(
+            localFilesAtom,
+            useCallback(files => files.filter(file => localFile_isMain(file) && file.mediaId === mediaId,
+            ).sort((a, b) => a.metadata.episode! - b.metadata.episode!), []),
+            deepEquals, // Equality check
+        ),
+    ) as LocalFile[]
+}
+
+export const useLocalFileAtomByPath_UNSTABLE = (path: string) => {
     const __ = __useListenToLocalFiles()
     const [, get] = useAtom(getLocalFileAtomByPathAtom)
-    return useMemo(() => get(path), [__]) as (PrimitiveAtom<LocalFile> | undefined)
+    return useMemo(() => get(path), [__])
 }
 
-export const useLatestMainLocalFileByMediaId = (mediaId: number) => {
-    const getLastFile = useSetAtom(getLatestMainLocalFileByMediaIdAtom)
+export const useLatestMainLocalFileByMediaId_UNSTABLE = (mediaId: number) => {
     const __ = __useListenToLocalFiles()
-    return useMemo(() => getLastFile(mediaId), [__])
+    const get = useSetAtom(getLatestMainLocalFileByMediaIdAtom)
+    return useMemo(() => get(mediaId), [__])
 }
 
 
@@ -289,6 +291,13 @@ export const useSetLocalFiles = () => {
     return useSetAtom(localFilesAtomWithImmer)
 }
 
+/* -------------------------------------------------------------------------------------------------
+ * Re-rendering
+ * -----------------------------------------------------------------------------------------------*/
+
+/**
+ * - Tell components that read local fil`s by way of `atoms` to re-render when local files are updated
+ */
 export const __useRerenderLocalFiles = () => {
     const emit = useSetAtom(__localFiles_globalUpdateAtom)
     return useCallback(() => {
@@ -297,7 +306,10 @@ export const __useRerenderLocalFiles = () => {
 }
 
 /**
- * @description Re-render on demand
+ * @description
+ * - Emits a global update when local files are updated
+ * - Force re-render of components that read local file atoms using getters
+ * - /!\ Hoist only where you display local files for a specific media
  * @example
  * const __ = __useListenToLocalFiles()
  *

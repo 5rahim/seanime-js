@@ -1,7 +1,7 @@
 "use client"
 
 import {
-    useLocalFileAtomByPath,
+    useLocalFileAtomByPath_UNSTABLE,
     useLocalFileAtomsByMediaId,
     useLocalFilesByMediaId_UNSTABLE,
     useSetLocalFiles,
@@ -71,7 +71,7 @@ const ActionSection = ({ fileAtom }: { fileAtom: PrimitiveAtom<LocalFile> }) => 
 }
 
 const LockStatus = ({ path }: { path: string }) => {
-    const fileAtom = useLocalFileAtomByPath(path)
+    const fileAtom = useLocalFileAtomByPath_UNSTABLE(path)
     const locked = useStableSelectAtom(fileAtom, file => file.locked) || false
     useEffect(() => {
         console.log("locked status re-rendered")
@@ -84,7 +84,7 @@ const LockStatus = ({ path }: { path: string }) => {
 }
 
 const IgnoredStatus = ({ path }: { path: string }) => {
-    const fileAtom = useLocalFileAtomByPath(path)
+    const fileAtom = useLocalFileAtomByPath_UNSTABLE(path)
     const ignored = useStableSelectAtom(fileAtom, file => file.ignored) || false
 
     useEffect(() => {

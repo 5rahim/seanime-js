@@ -26,7 +26,7 @@ import {
     ProgressTrackingButton,
     ProgressTrackingModal,
 } from "@/app/(main)/view/_containers/episode-section/_components/progress-tracking"
-import { useAnifyEpisodeCovers } from "@/lib/anify/client"
+import { useAnifyAnimeMetadata } from "@/lib/anify/helpers"
 import { PlayNextFile } from "@/app/(main)/view/_containers/episode-section/_components/play-next-file"
 import { EpisodeSectionSlider } from "@/app/(main)/view/_containers/episode-section/_components/episode-section-slider"
 import { AppLayoutStack } from "@/components/ui/app-layout"
@@ -63,12 +63,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
 
     const canTrackProgress = anilist_canTrackProgress(detailedMedia, progress)
     const nextUpFilePath = useStableSelectAtom(canTrackProgress ? toWatch[0] : toWatch[toWatch.length - 1], file => file?.path)
-    const { anifyEpisodeCovers } = useAnifyEpisodeCovers(detailedMedia.id)
-
-
-    useEffect(() => {
-        console.log(anifyEpisodeCovers)
-    }, [anifyEpisodeCovers])
+    const { anifyEpisodeData } = useAnifyAnimeMetadata(detailedMedia.id)
 
     const setProgressTracking = useSetAtom(__progressTrackingAtom)
 
@@ -107,7 +102,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
                 <UndownloadedEpisodeList
                     media={detailedMedia}
                     aniZipData={aniZipData}
-                    anifyEpisodeCovers={anifyEpisodeCovers}
+                    anifyEpisodeData={anifyEpisodeData}
                 />
             </div>
         </div>
@@ -177,7 +172,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
                             onPlayFile={playFile}
                             media={detailedMedia}
                             aniZipData={aniZipData}
-                            anifyEpisodeCovers={anifyEpisodeCovers}
+                            anifyEpisodeData={anifyEpisodeData}
                         />
                         <Divider/>
                     </>
@@ -190,7 +185,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
                         onPlayFile={playFile}
                         media={detailedMedia}
                         aniZipData={aniZipData}
-                        anifyEpisodeCovers={anifyEpisodeCovers}
+                        anifyEpisodeData={anifyEpisodeData}
                     />}
 
                     {/*{watched.length > 0 && <>*/}
@@ -201,14 +196,14 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
                     {/*        onPlayFile={playFile}*/}
                     {/*        media={detailedMedia}*/}
                     {/*        aniZipData={aniZipData}*/}
-                    {/*        anifyEpisodeCovers={anifyEpisodeCovers}*/}
+                    {/*        anifyEpisodeData={anifyEpisodeData}*/}
                     {/*    />*/}
                     {/*</>}*/}
 
                     <UndownloadedEpisodeList
                         media={detailedMedia}
                         aniZipData={aniZipData}
-                        anifyEpisodeCovers={anifyEpisodeCovers}
+                        anifyEpisodeData={anifyEpisodeData}
                     />
 
                     {ovaFileAtoms.length > 0 && <>
@@ -220,7 +215,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
                             onPlayFile={playFile}
                             media={detailedMedia}
                             aniZipData={aniZipData}
-                            anifyEpisodeCovers={anifyEpisodeCovers}
+                            anifyEpisodeData={anifyEpisodeData}
                         />
                     </>}
 
@@ -233,7 +228,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
                             onPlayFile={playFile}
                             media={detailedMedia}
                             aniZipData={aniZipData}
-                            anifyEpisodeCovers={anifyEpisodeCovers}
+                            anifyEpisodeData={anifyEpisodeData}
                         />
                     </>}
 

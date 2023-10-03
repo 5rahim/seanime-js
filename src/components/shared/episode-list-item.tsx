@@ -2,6 +2,7 @@ import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
 import React from "react"
 import { cn } from "@/components/ui/core"
 import Image from "next/image"
+import { imageShimmer } from "@/components/shared/image-helpers"
 
 interface EpisodeListItemProps {
     media: AnilistDetailedMedia,
@@ -67,7 +68,7 @@ export const EpisodeListItem: React.FC<EpisodeListItemProps & React.ComponentPro
                         alt={"episode image"}
                         fill
                         quality={60}
-                        priority
+                        placeholder={imageShimmer(700, 475)}
                         sizes="10rem"
                         className={cn("object-cover object-center transition", {
                             "opacity-30 group-hover/episode-list-item:opacity-100": isWatched,
