@@ -15,7 +15,6 @@ import sortBy from "lodash/sortBy"
 
 const CONSUMET_API_URL = process.env.CONSUMET_API_URL
 
-
 /**
  * Get metadata of all episodes from all providers
  * @param mediaId

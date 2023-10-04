@@ -29,6 +29,7 @@ import { useEpisodeStreamingData, useProviderEpisodes, useSkipData } from "@/app
 
 import { EpisodeListItem } from "@/components/shared/episode-list-item"
 import { LuffyError } from "@/components/shared/luffy-error"
+import { AniZipData } from "@/lib/anizip/types"
 
 interface WatchPageProps {
     children?: React.ReactNode

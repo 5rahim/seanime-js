@@ -2,12 +2,10 @@ import { useEffect } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import { useSearchParam } from "react-use"
 
-type Props = {
+export function PlayNextFile({ path, playFile }: {
     path: string | undefined
     playFile: (value: string) => Promise<void>
-}
-
-export function PlayNextFile({ path, playFile }: Props) {
+}) {
 
     const router = useRouter()
     const pathname = usePathname()

@@ -8,7 +8,7 @@ import { VscVerified } from "@react-icons/all-files/vsc/VscVerified"
 import { BiLockOpenAlt } from "@react-icons/all-files/bi/BiLockOpenAlt"
 import React, { startTransition } from "react"
 
-export const ToggleLockStatusButton = (props: { entryAtom: Atom<LibraryEntry> }) => {
+export function ToggleLockStatusButton(props: { entryAtom: Atom<LibraryEntry> }) {
 
     const files = useSelectAtom(props.entryAtom, entry => entry.files)
     const mediaId = useSelectAtom(props.entryAtom, entry => entry.media.id)

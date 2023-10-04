@@ -14,16 +14,13 @@ export async function authenticateUser(token: string) {
 }
 
 export async function userIsAuthenticated() {
-    // Cookie will last one week
     return cookies().has("anilistToken")
 }
 
 export async function logoutUser() {
-    // Cookie will last one week
     cookies().delete("anilistToken")
 }
 
 export async function getAniListUserToken() {
-    // Cookie will last one week
     return cookies().get("anilistToken")?.value
 }

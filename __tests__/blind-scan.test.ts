@@ -1,10 +1,11 @@
 import { describe, expect, it, vi } from "vitest"
 
 import { initialSettings } from "@/atoms/settings"
-import { getMediaTitlesFromLocalDirectory } from "@/lib/local-library/repository"
 import { scanLibraryMedia } from "@/lib/local-library/blind-scan"
-import { ScanLogging } from "@/lib/local-library/logs"
+import { ScanLogging } from "@/lib/local-library/helpers/logs"
 import { AnilistShortMedia } from "@/lib/anilist/fragment"
+import { retrieveMediaTitlesFromLocalDirectory } from "@/lib/local-library/repository"
+import { AniZipData } from "@/lib/anizip/types"
 
 vi.mock("react", async () => {
     const actual = (await vi.importActual("react")) as any
@@ -24,7 +25,7 @@ const settings = {
 describe.skip("Media titles", () => {
 
     it("should retrieve all media titles from a local directory", async () => {
-        const result = await getMediaTitlesFromLocalDirectory({ directoryPath: "E:/ANIME" })
+        const result = await retrieveMediaTitlesFromLocalDirectory({ directoryPath: "E:/ANIME" })
         console.log(result)
         expect(result).toBeDefined()
     })

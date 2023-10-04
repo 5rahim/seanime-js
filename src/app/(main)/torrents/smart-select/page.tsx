@@ -3,20 +3,20 @@
 import React, { useRef } from "react"
 import { useMount, useToggle, useUpdateEffect } from "react-use"
 import { useSettings } from "@/atoms/settings"
-import { TorrentManager } from "@/lib/download"
+import { TorrentRepository } from "@/lib/download"
 import { useQuery } from "@tanstack/react-query"
 import { useAtom } from "jotai/react"
 import {
     torrentSmartSelectQueueAtom,
     useTorrentSmartSelectQueue,
 } from "@/atoms/torrent/torrent-smart-select-queue.atoms"
-import { isTorrentReady } from "@/lib/download/torrent-helpers"
 import rakun from "@/lib/rakun"
 import { LoadingOverlay } from "@/components/ui/loading-spinner"
 import { useRouter } from "next/navigation"
 import { path_getBasename } from "@/lib/helpers/path"
 import { valueContainsNC, valueContainsSpecials } from "@/lib/local-library/utils/filtering.utils"
 import { anilist_getEpisodeCeilingFromMedia } from "@/lib/anilist/utils"
+import { qBit_isTorrentReady } from "@/lib/download/qbittorrent/utils"
 
 export default function Page() {
 
@@ -28,7 +28,7 @@ export default function Page() {
     const [torrentQueue, setTorrentQueue] = useAtom(torrentSmartSelectQueueAtom)
     const { emptyQueue, updateTorrentStatus, deleteTorrentFromQueue } = useTorrentSmartSelectQueue()
 
-    const torrentManager = useRef(TorrentManager(settings))
+    const torrentManager = useRef(TorrentRepository(settings))
 
     // "9db6955fc09c1a79d6fbfa822894cc528b0c1e25"
 
@@ -158,7 +158,7 @@ export default function Page() {
         console.log("torrentsInQueue", torrentsInQueue)
         if (torrentsInQueue) {
             for (const torrent of torrentsInQueue) {
-                if (isTorrentReady(torrent)) {
+                if (qBit_isTorrentReady(torrent)) {
                     updateTorrentStatus(torrent.raw.hash, "ready")
                 }
             }

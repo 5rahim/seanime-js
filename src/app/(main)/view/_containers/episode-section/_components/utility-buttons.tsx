@@ -16,7 +16,7 @@ import {
     __useEpisodeOffsetAction,
 } from "@/app/(main)/view/_containers/episode-section/_components/bulk-actions/episode-offset-action"
 
-export const UtilityButtons = (props: { entryAtom: Atom<LibraryEntry> }) => {
+export function UtilityButtons(props: { entryAtom: Atom<LibraryEntry> }) {
 
     const { settings } = useSettings()
 
@@ -78,7 +78,6 @@ export const UtilityButtons = (props: { entryAtom: Atom<LibraryEntry> }) => {
                     Offset episode numbers
                 </DropdownMenu.Item>
             </DropdownMenu>
-
 
             <ConfirmationDialog {...confirmUnmatch} />
         </>

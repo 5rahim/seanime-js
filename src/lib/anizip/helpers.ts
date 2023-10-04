@@ -1,5 +1,6 @@
 import axios from "axios"
 import { logger } from "@/lib/helpers/debug"
+import { AniZipData } from "@/lib/anizip/types"
 
 /**
  * - Fetched AniZip data for a specific media

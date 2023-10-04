@@ -3,10 +3,10 @@
 import fs from "fs/promises"
 import { Settings } from "@/atoms/settings"
 import { runCommand } from "@/lib/helpers/child-process"
-import { directoryExists, fileOrDirectoryExists } from "@/lib/helpers/file"
 import path from "path"
 import { path_getDirectoryName } from "@/lib/helpers/path"
 import { logger } from "@/lib/helpers/debug"
+import { PathLike } from "fs"
 
 export async function getSafeFoldersFromDirectory(_path: string): Promise<{ data: { name: string, path: string }[], error: string | null, parentFolder: string | null }> {
     if (_path && path.isAbsolute(_path)) {
@@ -35,8 +35,6 @@ export async function getSafeFoldersFromDirectory(_path: string): Promise<{ data
     }
 }
 
-
-
 export async function openLocalDirectoryInExplorer(settings: Settings) {
     const path = settings.library.localDirectory
     const osType = process.platform
@@ -59,7 +57,6 @@ export async function openLocalDirectoryInExplorer(settings: Settings) {
     }
 }
 
-
 export async function openDirectoryInExplorer(path: string) {
 
     let explorer
@@ -79,5 +76,26 @@ export async function openDirectoryInExplorer(path: string) {
     if (path && await fileOrDirectoryExists(path)) {
         logger("helpers/directory").info("Opening directory in explorer", path)
         await runCommand(`${explorer} "${path}"`)
+    }
+}
+
+
+export async function directoryExists(path: PathLike) {
+    try {
+        const stat = await fs.stat(path)
+        return stat.isDirectory()
+
+    } catch (e) {
+        return false
+    }
+}
+
+
+export async function fileOrDirectoryExists(path: PathLike) {
+    try {
+        await fs.stat(path)
+        return true
+    } catch (e) {
+        return false
     }
 }

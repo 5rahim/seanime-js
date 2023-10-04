@@ -2,7 +2,7 @@ import { atomWithStorage } from "jotai/utils"
 import { withImmer } from "jotai-immer"
 import { useSetAtom } from "jotai/react"
 import { SearchTorrentData } from "@/lib/download/types"
-import { MediaDownloadInfo } from "@/lib/download/helpers"
+import { MediaDownloadInfo } from "@/lib/download/media-download-info"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
 
 /* -------------------------------------------------------------------------------------------------

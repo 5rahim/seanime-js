@@ -1,6 +1,6 @@
 import { atom } from "jotai"
 import { AnilistShowcaseMedia } from "@/lib/anilist/fragment"
-import { getMediaDownloadInfo, MediaDownloadInfo } from "@/lib/download/helpers"
+import { getMediaDownloadInfo, MediaDownloadInfo } from "@/lib/download/media-download-info"
 import { libraryEntriesAtom } from "@/atoms/library/library-entry.atoms"
 import { localFilesAtom } from "@/atoms/library/local-file.atoms"
 import { userAtom } from "@/atoms/user"

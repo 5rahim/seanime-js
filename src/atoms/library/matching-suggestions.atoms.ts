@@ -12,6 +12,7 @@ import axios from "axios"
 import { path_getDirectoryName } from "@/lib/helpers/path"
 import { LocalFile } from "@/lib/local-library/types"
 import groupBy from "lodash/groupBy"
+import { AniZipData } from "@/lib/anizip/types"
 
 export type MatchingSuggestionGroups = {
     files: LocalFile[],

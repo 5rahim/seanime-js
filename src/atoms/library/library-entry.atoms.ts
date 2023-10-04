@@ -5,17 +5,12 @@ import { splitAtom } from "jotai/utils"
 import { localFilesAtom } from "@/atoms/library/local-file.atoms"
 import { Atom, atom } from "jotai"
 import { AnilistShowcaseMedia } from "@/lib/anilist/fragment"
-import { useSelectAtom } from "@/atoms/helpers"
+import { useSelectAtom, useStableSelectAtom } from "@/atoms/helpers"
 import { allUserMediaAtom } from "@/atoms/anilist/media.atoms"
 import orderBy from "lodash/orderBy"
 import { anilistCollectionEntriesAtom, AnilistCollectionEntry } from "@/atoms/anilist/entries.atoms"
 import { path_getDirectoryName } from "@/lib/helpers/path"
 import { LocalFile } from "@/lib/local-library/types"
-
-/* -------------------------------------------------------------------------------------------------
- * LibraryEntry
- * - Derived from `allUserMediaAtom` and `localFilesAtom`
- * -----------------------------------------------------------------------------------------------*/
 
 export type LibraryEntry = {
     id: number // Media ID
@@ -24,6 +19,11 @@ export type LibraryEntry = {
     collectionEntry: AnilistCollectionEntry
     sharedPath: string
 }
+
+/**
+ * @description
+ * - Derived from `allUserMediaAtom` and `localFilesAtom`
+ */
 export const libraryEntriesAtom = atom(get => {
     logger("atom/libraryEntriesAtom").warning("Derived")
     // Get all `mediaId`s
@@ -56,8 +56,15 @@ const sortedLibraryEntriesAtom = atom(get => {
         n => n.media.title?.userPreferred,
     ], ["desc", "desc", "desc", "asc"])
 })
+
+/**
+ * Split main atom into [LibraryEntry] atoms by media ID
+ */
 export const libraryEntryAtoms = splitAtom(sortedLibraryEntriesAtom, entry => entry.id)
 
+/**
+ * Derived filtered atoms
+ */
 export const currentlyWatching_libraryEntryAtoms = splitAtom(atom(get => {
     return orderBy(get(libraryEntriesAtom).filter(n => n.collectionEntry?.status === "CURRENT"), [
             n => n.collectionEntry?.startedAt,
@@ -66,11 +73,17 @@ export const currentlyWatching_libraryEntryAtoms = splitAtom(atom(get => {
 ), entry => entry.id)
 
 
+/**
+ * Derived filtered atoms
+ */
 export const completed_libraryEntryAtoms = splitAtom(atom(get => {
         return get(sortedLibraryEntriesAtom).filter(n => n.collectionEntry?.status === "COMPLETED")
     },
 ), entry => entry.id)
 
+/**
+ * Derived filtered atoms
+ */
 export const rest_libraryEntryAtoms = splitAtom(atom(get => {
         return get(sortedLibraryEntriesAtom).filter(n => n.collectionEntry?.status !== "CURRENT" && n.collectionEntry?.status !== "COMPLETED")
     },
@@ -78,20 +91,20 @@ export const rest_libraryEntryAtoms = splitAtom(atom(get => {
 
 
 /**
+ * @description
+ * - Get [LibraryEntry] atom by media ID
  * @example
- * const getLastFile = useSetAtom(getLibraryEntryAtomsByMediaIdAtom)
- * const latestFile = getLastFile(21)
+ * const getLibraryEntry = useSetAtom(getLibraryEntryAtomsByMediaIdAtom)
+ * const latestFile = getLibraryEntry(21)
  */
-export const getLibraryEntryAtomsByMediaIdAtom = atom(null,
+export const getLibraryEntryAtomByMediaIdAtom = atom(null,
     (get, set, mediaId: number) => get(libraryEntryAtoms).find((fileAtom) => get(fileAtom).id === mediaId),
 )
 
 /**
  * @description
- * Useful for mapping over [LibraryEntry]s
- * /!\ Do not use to get nested information like `media`
- * /!\ Only re-renders when file count changes
- *      Why? Because a [LibraryEntry] depends only on available files
+ * - Useful to get the state of a [LibraryEntry]
+ * - /!\ Do not use to get nested information like `media`, use `allUserMediaAtom` instead
  *
  * @example Parent
  * const libraryEntryAtoms = useLocalFileAtomsByMediaId(21)
@@ -103,13 +116,14 @@ export const getLibraryEntryAtomsByMediaIdAtom = atom(null,
  */
 export const useLibraryEntryAtomByMediaId = (mediaId: number) => {
     // Refresh atom when its file count changes
-    const fileCount = useSelectAtom(localFilesAtom, files => files.filter(file => file.mediaId === mediaId).filter(Boolean).map(file => file.path).length)
-    const [, get] = useAtom(getLibraryEntryAtomsByMediaIdAtom)
-    return useMemo(() => get(mediaId), [fileCount]) as Atom<LibraryEntry> | undefined
+    const fileCount = useStableSelectAtom(libraryEntriesAtom, entries => entries.find(entry => entry.media.id === mediaId)?.files.length)
+    const [, get] = useAtom(getLibraryEntryAtomByMediaIdAtom)
+    return useMemo(() => get(mediaId), [(fileCount || 0)]) as Atom<LibraryEntry> | undefined
 }
 
 /**
- * @description Used in local library to display anime list
+ * @description
+ * - Useful to display a list of [LibraryEntry]s
  */
 export const useLibraryEntryAtoms = () => {
     // Refresh entry atom list when number of entries changes

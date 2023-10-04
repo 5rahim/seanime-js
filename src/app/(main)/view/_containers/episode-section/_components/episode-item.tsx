@@ -8,7 +8,7 @@ import { BiDotsHorizontal } from "@react-icons/all-files/bi/BiDotsHorizontal"
 import { VscVerified } from "@react-icons/all-files/vsc/VscVerified"
 import { BiLockOpenAlt } from "@react-icons/all-files/bi/BiLockOpenAlt"
 import { EpisodeListItem } from "@/components/shared/episode-list-item"
-import { AnifyAnimeEpisodeData } from "@/lib/anify/types"
+import { AnifyAnimeEpisode } from "@/lib/anify/types"
 import { Modal } from "@/components/ui/modal"
 import { createIsolation } from "jotai-scope"
 import { createTypesafeFormSchema, Field, TypesafeForm } from "@/components/ui/typesafe-form"
@@ -22,6 +22,7 @@ import {
 } from "@/lib/local-library/utils/episode.utils"
 import { anizip_getEpisodeFromMetadata } from "@/lib/anizip/utils"
 import { useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist/entries.atoms"
+import { AniZipData } from "@/lib/anizip/types"
 
 const { Provider: ScopedProvider, useAtom: useScopedAtom } = createIsolation()
 
@@ -32,7 +33,7 @@ export const EpisodeItem = React.memo((props: {
     aniZipData?: AniZipData,
     onPlayFile: (path: string) => void
     media: AnilistDetailedMedia
-    anifyEpisodeData?: AnifyAnimeEpisodeData[]
+    anifyEpisodeData?: AnifyAnimeEpisode[]
 }) => {
 
     const { fileAtom, aniZipData, onPlayFile, media, anifyEpisodeData } = props

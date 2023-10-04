@@ -11,7 +11,6 @@ import { LocalFile } from "@/lib/local-library/types"
 import { anilist_getEpisodeCeilingFromMedia } from "@/lib/anilist/utils"
 
 interface ProgressTrackingModalProps {
-    children?: React.ReactNode
     media: AnilistDetailedMedia
     mediaIncludesSpecial: boolean
     progress?: number | null
@@ -22,9 +21,9 @@ export const __progressTrackingAtom = atomWithImmer<{ open: boolean, filesWatche
     filesWatched: [],
 })
 
-export const ProgressTrackingModal: React.FC<ProgressTrackingModalProps> = (props) => {
+export function ProgressTrackingModal(props: ProgressTrackingModalProps) {
 
-    const { children, media, progress, mediaIncludesSpecial, ...rest } = props
+    const { media, progress, mediaIncludesSpecial } = props
 
     const [state, setState] = useAtom(__progressTrackingAtom)
 

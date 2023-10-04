@@ -21,6 +21,7 @@ import { matching_compareTitleVariationsToMedia } from "@/lib/local-library/util
 import { fetchAniZipData } from "@/lib/anizip/helpers"
 import Bottleneck from "bottleneck"
 import { fetchAnilistShortMedia } from "@/lib/anilist/helpers"
+import { AniZipData } from "@/lib/anizip/types"
 
 /* -------------------------------------------------------------------------------------------------
  * General

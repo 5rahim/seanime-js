@@ -1,9 +1,14 @@
+/* -------------------------------------------------------------------------------------------------
+ * Analyze local library blindly
+ * - scanLibraryMedia
+ * - getMediaTitlesFromLocalDirectory
+ * -----------------------------------------------------------------------------------------------*/
+"use server"
 import { Settings } from "@/atoms/settings"
-import { ScanLogging } from "@/lib/local-library/logs"
+import { ScanLogging } from "@/lib/local-library/helpers/logs"
 import { AnilistShortMedia } from "@/lib/anilist/fragment"
 import _fs from "fs"
 import { logger } from "@/lib/helpers/debug"
-import { getMediaTitlesFromLocalDirectory } from "@/lib/local-library/repository"
 import { getFulfilledValues, PromiseAllSettledBatch } from "@/lib/helpers/batch"
 import { advancedSearchWithMAL } from "@/lib/mal/actions"
 import { fetchAniZipData } from "@/lib/anizip/helpers"
@@ -14,6 +19,8 @@ import Bottleneck from "bottleneck"
 import uniqBy from "lodash/uniqBy"
 import { fetchMediaTree } from "@/lib/anilist/actions"
 import { ANILIST_BOTTLENECK_OPTIONS } from "@/lib/anilist/config"
+import { retrieveMediaTitlesFromLocalDirectory } from "@/lib/local-library/repository"
+import { AniZipData } from "@/lib/anizip/types"
 
 export async function scanLibraryMedia(props: {
     settings: Settings,
@@ -45,7 +52,7 @@ export async function scanLibraryMedia(props: {
     // Get the user anime list data
     _scanLogging.add("local-library/scanLibraryMedia", "Fetching media from local directory")
 
-    const prospectiveMediaTitles = await getMediaTitlesFromLocalDirectory({ directoryPath: settings.library.localDirectory })
+    const prospectiveMediaTitles = await retrieveMediaTitlesFromLocalDirectory({ directoryPath: settings.library.localDirectory })
 
     if (!prospectiveMediaTitles) {
         return { error: "Couldn't find any media in the local directory." }

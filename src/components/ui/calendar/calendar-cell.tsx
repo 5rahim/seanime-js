@@ -1,6 +1,6 @@
 "use client"
 
-import { CalendarDate, DateValue, getDayOfWeek, isSameDay, isSameMonth } from "@internationalized/date"
+import { DateValue, getDayOfWeek, isSameDay, isSameMonth } from "@internationalized/date"
 import { cn, defineStyleAnatomy, useUILocaleConfig } from "../core"
 import { cva } from "class-variance-authority"
 import { useRef } from "react"
@@ -52,7 +52,7 @@ export const CalendarCellAnatomy = defineStyleAnatomy({
 
 interface CalendarCellProps {
     state: CalendarState | RangeCalendarState
-    date: CalendarDate
+    date: any
     currentMonth: DateValue
     locale?: string
 }

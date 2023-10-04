@@ -1,16 +1,16 @@
 "use server"
 import axios from "axios"
 import { logger } from "@/lib/helpers/debug"
-import { AnifyAnimeEpisodeData } from "@/lib/anify/types"
+import { AnifyAnimeEpisode } from "@/lib/anify/types"
 
-export async function getAnifyAnimeMetadata(mediaId: number): Promise<AnifyAnimeEpisodeData[] | undefined> {
+export async function getAnifyAnimeMetadata(mediaId: number): Promise<AnifyAnimeEpisode[] | undefined> {
 
     try {
         const key = `${mediaId}`
         logger("lib/anify/getAnifyAnimeMetadata").info("Fetching metadata for", mediaId)
         const { data: res } = await axios.get<{
             providerId: string,
-            data: AnifyAnimeEpisodeData[]
+            data: AnifyAnimeEpisode[]
         }[]>(`https://api.anify.tv/content-metadata?id=${mediaId}`)
 
         // Get metadata from TVDB

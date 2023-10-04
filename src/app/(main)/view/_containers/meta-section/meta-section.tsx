@@ -22,14 +22,9 @@ import { useSettings } from "@/atoms/settings"
 import capitalize from "lodash/capitalize"
 import { anilist_getNextEpisodeToWatch } from "@/lib/anilist/utils"
 
-interface MetaSectionProps {
-    children?: React.ReactNode
-    detailedMedia: AnilistDetailedMedia
-}
+export function MetaSection(props: { detailedMedia: AnilistDetailedMedia }) {
 
-export const MetaSection: React.FC<MetaSectionProps> = (props) => {
-
-    const { children, detailedMedia, ...rest } = props
+    const { detailedMedia } = props
 
     const { settings } = useSettings()
 

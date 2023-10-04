@@ -3,6 +3,7 @@
  * -----------------------------------------------------------------------------------------------*/
 import { LocalFileAniDBInfo } from "@/lib/local-library/types"
 import { Nullish } from "@/types/common"
+import { AniZipData } from "@/lib/anizip/types"
 
 export type StoredAniDBData = {
     mediaId: number

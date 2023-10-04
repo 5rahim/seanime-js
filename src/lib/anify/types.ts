@@ -1,9 +1,9 @@
 export type AnifyAnimeContentMetadata = {
     providerId: string
-    episodes: Episode[]
+    episodes: AnifyAnimeEpisode[]
 }[]
 
-export type AnifyAnimeEpisodeData = {
+export type AnifyAnimeEpisode = {
     id: string
     number: number
     title: string

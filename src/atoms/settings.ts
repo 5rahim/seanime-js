@@ -6,10 +6,11 @@ import { createTypesafeFormSchema, InferType } from "@/components/ui/typesafe-fo
 import { atomWithStorage } from "jotai/utils"
 import { useImmerAtom, withImmer } from "jotai-immer"
 import { useCallback } from "react"
-import { fileOrDirectoryExists } from "@/lib/helpers/file"
 import { useSetAtom } from "jotai/react"
 import path from "path"
 import * as upath from "upath"
+
+import { fileOrDirectoryExists } from "@/lib/helpers/directory"
 
 export const settingsSchema = createTypesafeFormSchema(({ z }) => z.object({
     library: z.object({

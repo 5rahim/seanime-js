@@ -1,9 +1,15 @@
+/* -------------------------------------------------------------------------------------------------
+ * Manage [LocalFile]
+ * - createLocalFile
+ * - createLocalFileWithMedia
+ * - hydrateLocalFileWithInitialMetadata
+ * -----------------------------------------------------------------------------------------------*/
 "use server"
 import rakun from "@/lib/rakun"
 import { Settings } from "@/atoms/settings"
 import { AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import { findBestCorrespondingMedia } from "@/lib/local-library/media-matching"
-import { ScanLogging } from "@/lib/local-library/logs"
+import { ScanLogging } from "@/lib/local-library/helpers/logs"
 import { path_getDirectoryName, path_removeTopPath, path_splitPath } from "@/lib/helpers/path"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
 import { AnimeShortMediaByIdDocument } from "@/gql/graphql"
@@ -12,6 +18,7 @@ import { LocalFile, LocalFileMetadata, LocalFileWithMedia } from "@/lib/local-li
 import { localFile_getParsedEpisode } from "@/lib/local-library/utils/parsed-info.utils"
 import { valueContainsNC, valueContainsSpecials } from "@/lib/local-library/utils/filtering.utils"
 import Bottleneck from "bottleneck"
+import { AniZipData } from "@/lib/anizip/types"
 
 /**
  * @description

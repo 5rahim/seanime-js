@@ -1,7 +1,7 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
-import { SkipTime } from "@/lib/aniskip/types"
+import { AniSkipTime } from "@/lib/aniskip/types"
 import { ConsumetAnimeEpisode, ConsumetProvider } from "@/lib/consumet/types"
 import { getConsumetEpisodes, getConsumetEpisodeStreamingData } from "@/lib/consumet/actions"
 import { logger } from "@/lib/helpers/debug"
@@ -55,7 +55,7 @@ export function useSkipData(mediaMalId: number | null | undefined, episodeNumber
             const result = await fetch(
                 `https://api.aniskip.com/v2/skip-times/${mediaMalId}/${episodeNumber}?types[]=ed&types[]=mixed-ed&types[]=mixed-op&types[]=op&types[]=recap&episodeLength=`,
             )
-            const skip = (await result.json()) as { found: boolean, results: SkipTime[] }
+            const skip = (await result.json()) as { found: boolean, results: AniSkipTime[] }
             if (!!skip.results && skip.found) return {
                 op: skip.results?.find((item) => item.skipType === "op") || null,
                 ed: skip.results?.find((item) => item.skipType === "ed") || null,

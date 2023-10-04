@@ -41,7 +41,6 @@ export const anilistCollectionEntriesAtom = atom<AnilistCollectionEntry[]>((get)
     return arr !== undefined ? arr : []
 })
 
-// export const anilist
 /**
  * Split collection entries by media ID
  */

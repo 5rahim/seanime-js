@@ -1,7 +1,7 @@
 "use server"
 import { Settings } from "@/atoms/settings"
 import { Nullish } from "@/types/common"
-import { _dumpToFile, ScanLogging } from "@/lib/local-library/logs"
+import { _dumpToFile, ScanLogging } from "@/lib/local-library/helpers/logs"
 import { logger } from "@/lib/helpers/debug"
 import _fs from "fs"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
@@ -15,8 +15,10 @@ import omit from "lodash/omit"
 import groupBy from "lodash/groupBy"
 import Bottleneck from "bottleneck"
 import { ANILIST_BOTTLENECK_OPTIONS } from "@/lib/anilist/config"
+import { AniZipData } from "@/lib/anizip/types"
 
 /**
+ * @description
  * Goes through non-locked and non-ignored [LocalFile]s and returns hydrated [LocalFile]s
  */
 export async function scanLocalFiles(props: {

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest"
 import { createLocalFile, hydrateLocalFileWithInitialMetadata } from "@/lib/local-library/local-file"
 import { initialSettings } from "@/atoms/settings"
-import { ScanLogging } from "@/lib/local-library/logs"
+import { ScanLogging } from "@/lib/local-library/helpers/logs"
 import cases from "./cases/local-file.cases"
 import parsingCases from "./cases/parsing.cases"
 import { AnilistShortMedia } from "@/lib/anilist/fragment"
@@ -10,6 +10,7 @@ import { analyzeMediaTree, fetchMediaTree } from "@/lib/anilist/actions"
 import { __SampleMedia } from "./samples/media.sample"
 import { valueContainsNC, valueContainsSpecials } from "@/lib/local-library/utils/filtering.utils"
 import { fetchAnilistShortMedia } from "@/lib/anilist/helpers"
+import { AniZipData } from "@/lib/anizip/types"
 
 
 vi.mock("react", async () => {

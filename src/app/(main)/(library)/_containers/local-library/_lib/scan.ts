@@ -1,5 +1,5 @@
 import toast from "react-hot-toast"
-import { checkLocalFiles } from "@/lib/local-library/repository"
+import { retrieveRemovedLocalFiles } from "@/lib/local-library/repository"
 import { logger } from "@/lib/helpers/debug"
 import { useCallback, useState } from "react"
 import { useAuthed } from "@/atoms/auth"
@@ -141,7 +141,7 @@ export function useManageLibraryEntries(opts: UseManageEntriesOptions) {
     const handleCheckRepository = useCallback(async () => {
 
         if (user && token) {
-            const { pathsToClean } = await checkLocalFiles(settings, {
+            const { pathsToClean } = await retrieveRemovedLocalFiles(settings, {
                 ignored: lockedPaths,
                 locked: ignoredPaths,
             })

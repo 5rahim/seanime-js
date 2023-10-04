@@ -12,6 +12,7 @@ import { AppLayoutStack } from "@/components/ui/app-layout"
 import { useAtomValue } from "jotai/react"
 import { Slider } from "@/components/shared/slider"
 import { missingEpisodesAtom } from "@/atoms/anilist/missing-episodes.atoms"
+import { AniZipData } from "@/lib/anizip/types"
 
 export function MissingEpisodes() {
 

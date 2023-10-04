@@ -18,7 +18,7 @@ import { useMount, useSearchParam } from "react-use"
 import { Drawer, Modal } from "@/components/ui/modal"
 import { useDisclosure } from "@/hooks/use-disclosure"
 import { BiLinkExternal } from "@react-icons/all-files/bi/BiLinkExternal"
-import { useMediaDownloadInfo } from "@/lib/download/helpers"
+import { useMediaDownloadInfo } from "@/lib/download/media-download-info"
 import {
     TorrentSearchTorrentList,
 } from "@/app/(main)/view/_containers/torrent-search/_components/torrent-search-torrent-list"
@@ -27,7 +27,7 @@ import rakun from "@/lib/rakun"
 import { atomWithImmer } from "jotai-immer"
 import { SearchTorrentData } from "@/lib/download/types"
 import { Tooltip } from "@/components/ui/tooltip"
-import { extractHashFromMagnetLink } from "@/lib/download/torrent-helpers"
+import { extractHashFromMagnetLink } from "@/lib/download/helpers"
 import { usePathname, useRouter } from "next/navigation"
 import { useSettings } from "@/atoms/settings"
 import Image from "next/image"
@@ -35,6 +35,7 @@ import { Slider } from "@/components/shared/slider"
 import { similarity } from "@/lib/string-similarity"
 import { FcLineChart } from "@react-icons/all-files/fc/FcLineChart"
 import { useLibraryEntryAtomByMediaId } from "@/atoms/library/library-entry.atoms"
+import { AniZipData } from "@/lib/anizip/types"
 
 interface Props {
     media: AnilistDetailedMedia,

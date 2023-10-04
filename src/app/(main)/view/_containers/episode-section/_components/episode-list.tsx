@@ -2,15 +2,16 @@ import React from "react"
 import { PrimitiveAtom } from "jotai"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
 import { EpisodeItem } from "@/app/(main)/view/_containers/episode-section/_components/episode-item"
-import { AnifyAnimeEpisodeData } from "@/lib/anify/types"
+import { AnifyAnimeEpisode } from "@/lib/anify/types"
 import { LocalFile } from "@/lib/local-library/types"
+import { AniZipData } from "@/lib/anizip/types"
 
 export const EpisodeList = React.memo((props: {
     fileAtoms: PrimitiveAtom<LocalFile>[],
     aniZipData?: AniZipData,
     onPlayFile: (path: string) => void
     media: AnilistDetailedMedia
-    anifyEpisodeData?: AnifyAnimeEpisodeData[]
+    anifyEpisodeData?: AnifyAnimeEpisode[]
 }) => {
 
     const { fileAtoms, ...rest } = props

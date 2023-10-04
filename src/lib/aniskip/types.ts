@@ -2,7 +2,7 @@
  * @link https://github.com/lexesjan/typescript-aniskip-extension/blob/main/src/api/aniskip-http-client/aniskip-http-client.types.ts
  * -----------------------------------------------------------------------------------------------*/
 
-export const SKIP_TYPE_NAMES: Record<SkipType, string> = {
+export const SKIP_TYPE_NAMES: Record<AniSkipType, string> = {
     op: "Opening",
     ed: "Ending",
     "mixed-op": "Mixed opening",
@@ -18,14 +18,14 @@ export const SKIP_TYPES = [
     "recap",
 ] as const
 
-export type SkipType = (typeof SKIP_TYPES)[number]
+export type AniSkipType = (typeof SKIP_TYPES)[number]
 
-export type SkipTime = {
+export type AniSkipTime = {
     interval: {
         startTime: number
         endTime: number
     }
-    skipType: SkipType
+    skipType: AniSkipType
     skipId: string
     episodeLength: number
 }

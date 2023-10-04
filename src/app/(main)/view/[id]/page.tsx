@@ -6,7 +6,6 @@ import { MetaSection } from "@/app/(main)/view/_containers/meta-section/meta-sec
 import { TorrentSearchModal } from "@/app/(main)/view/_containers/torrent-search/torrent-search-modal"
 import { getAnimeInfo } from "@/lib/anilist/actions"
 
-
 export default async function Page({ params }: { params: { id: string } }) {
 
     const { media, aniZipData } = await getAnimeInfo(params)

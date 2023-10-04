@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation"
 import { useAtomValue, useSetAtom } from "jotai/react"
 import { useStableSelectAtom } from "@/atoms/helpers"
 import { useMount } from "react-use"
-import { TorrentManager } from "@/lib/download"
+import { TorrentRepository } from "@/lib/download"
 import { FcFolder } from "@react-icons/all-files/fc/FcFolder"
 import { Tooltip } from "@/components/ui/tooltip"
 import { Button, IconButton } from "@/components/ui/button"
@@ -23,7 +23,7 @@ import {
 } from "@/app/(main)/view/_containers/torrent-search/torrent-search-modal"
 import { useTorrentSmartSelectQueue } from "@/atoms/torrent/torrent-smart-select-queue.atoms"
 import { SearchTorrentData } from "@/lib/download/types"
-import { MediaDownloadInfo } from "@/lib/download/helpers"
+import { MediaDownloadInfo } from "@/lib/download/media-download-info"
 import { BiCollection } from "@react-icons/all-files/bi/BiCollection"
 import { FcFilmReel } from "@react-icons/all-files/fc/FcFilmReel"
 import { BiX } from "@react-icons/all-files/bi/BiX"
@@ -46,7 +46,7 @@ export const TorrentSearchTorrentList: React.FC<TorrentListProps> = (props) => {
 
     const router = useRouter()
     const { settings } = useSettings()
-    const torrentManager = useRef(TorrentManager(settings))
+    const torrentManager = useRef(TorrentRepository(settings))
 
     const [isLoading, setIsLoading] = useState(false)
 

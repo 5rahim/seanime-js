@@ -1,3 +1,10 @@
+/* -------------------------------------------------------------------------------------------------
+ * Top-level repository functions
+ * - retrieveLocalFilesWithMedia
+ * - retrieveLocalFiles
+ * - retrieveRemovedLocalFiles
+ * - retrieveMediaTitlesFromLocalDirectory
+ * -----------------------------------------------------------------------------------------------*/
 "use server"
 import { Settings } from "@/atoms/settings"
 import path from "path"
@@ -8,18 +15,18 @@ import { AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import { Nullish } from "@/types/common"
 import { AnimeCollectionQuery } from "@/gql/graphql"
 import { logger } from "@/lib/helpers/debug"
-import { _dumpToFile, ScanLogging } from "@/lib/local-library/logs"
+import { _dumpToFile, ScanLogging } from "@/lib/local-library/helpers/logs"
 import { anilist_shortMediaToShowcaseMedia } from "@/lib/anilist/utils"
 import { LocalFile, LocalFileWithMedia } from "@/lib/local-library/types"
-import rakun from "@/lib/rakun"
-import orderBy from "lodash/orderBy"
 import { valueContainsSeason } from "@/lib/local-library/utils/filtering.utils"
 import { scanLibraryMedia } from "@/lib/local-library/blind-scan"
 import Bottleneck from "bottleneck"
 import uniqBy from "lodash/uniqBy"
+import rakun from "@/lib/rakun"
+import orderBy from "lodash/orderBy"
+import { AniZipData } from "@/lib/anizip/types"
 
 /**
- * @internal Used on the server
  * @description Purpose
  * - Get all the local files from the local directory using {retrieveLocalFiles}
  * - Match them with their associated [AnilistShowcaseMedia] using {createLocalFileWithMedia}
@@ -57,9 +64,10 @@ export async function retrieveLocalFilesWithMedia(props: {
 
     if (currentPath && userName) {
 
+        _scanLogging.add("repository/scanLocalFiles", ">>> [repository/retrieveLocalFiles]")
         // Populate [localFiles] with all files recursively
         const localFiles: LocalFile[] = []
-        await _retrieveLocalFiles({
+        await retrieveLocalFiles({
             settings,
             directoryPath: currentPath,
             files: localFiles,
@@ -71,7 +79,6 @@ export async function retrieveLocalFilesWithMedia(props: {
 
         // If there are files, hydrate them with their associated [AnilistShowcaseMedia]
         if (localFiles.length > 0) {
-            _scanLogging.add("repository/scanLocalFiles", ">>> [repository/retrieveHydratedLocalFiles]")
 
             // let allUserMedia: AnilistShortMedia[] = []
             let allUserMedia = anilistCollection.MediaListCollection?.lists?.map(n => n?.entries).flat().filter(Boolean).map(entry => entry.media) ?? [] satisfies AnilistShortMedia[]
@@ -97,6 +104,7 @@ export async function retrieveLocalFilesWithMedia(props: {
             _scanLogging.add("repository/scanLocalFiles", "Getting related media")
 
             // Get sequels, prequels... from each media as [AnilistShowcaseMedia]
+            // When enhanced is enabled, only get the related media that are not prequels and sequels
             const relatedMedia = allUserMedia.filter(Boolean)
                 .flatMap(media => {
                     return enhanced === "none" ? media.relations?.edges?.filter(edge => (edge?.relationType === "PREQUEL"
@@ -156,13 +164,12 @@ export async function retrieveLocalFilesWithMedia(props: {
 }
 
 /**
- * @internal Used on the server
  * @description Purpose
  * - Recursively get the files as [LocalFile] from the local directory
  * - Populates `files`
  * - Ignores `markedPaths`
  */
-export async function _retrieveLocalFiles(props: {
+export async function retrieveLocalFiles(props: {
     settings: Settings
     directoryPath: string
     files: LocalFile[]
@@ -207,7 +214,7 @@ export async function _retrieveLocalFiles(props: {
                 const dirents = await fs.readdir(itemPath, { withFileTypes: true })
                 const fileNames = dirents.filter(dirent => dirent.isFile()).map(dirent => dirent.name)
                 if (!fileNames.find(name => name === ".unsea" || name === ".seaignore")) {
-                    await _retrieveLocalFiles({
+                    await retrieveLocalFiles({
                         settings,
                         directoryPath: itemPath,
                         files,
@@ -227,7 +234,7 @@ export async function _retrieveLocalFiles(props: {
  * @description Purpose
  * - Get the paths that need to be cleaned from [sea-local-files]
  */
-export async function checkLocalFiles(settings: Settings, { ignored, locked }: {
+export async function retrieveRemovedLocalFiles(settings: Settings, { ignored, locked }: {
     ignored: string[],
     locked: string[]
 }) {
@@ -260,7 +267,7 @@ export async function checkLocalFiles(settings: Settings, { ignored, locked }: {
  * @description Purpose
  * - Get all the media titles from the local directory (shallow)
  */
-export async function getMediaTitlesFromLocalDirectory(props: {
+export async function retrieveMediaTitlesFromLocalDirectory(props: {
     directoryPath: string,
     mode?: "shallow" | "smart" // TODO "smart" mode will exclude locked files or folders whose files are locked
 }) {

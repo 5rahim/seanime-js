@@ -1,12 +1,12 @@
 "use client"
 import { useSettings } from "@/atoms/settings"
 import { useEffect, useRef } from "react"
-import { TorrentManager } from "@/lib/download"
+import { TorrentRepository } from "@/lib/download"
 
 export default function Page() {
 
     const { settings } = useSettings()
-    const torrentManager = useRef(TorrentManager(settings))
+    const torrentManager = useRef(TorrentRepository(settings))
 
     useEffect(() => {
         torrentManager.current.kickstart()

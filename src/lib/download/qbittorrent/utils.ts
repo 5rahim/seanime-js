@@ -104,3 +104,10 @@ export function _normalizeTorrentData(torrent: Torrent): NormalizedTorrent {
     }
     return result
 }
+
+export function qBit_isTorrentReady(torrent: NormalizedTorrent | undefined) {
+    if (!torrent) return false
+
+    return !(torrent.raw.state === "metaDL" || torrent.totalSize < 0)
+
+}

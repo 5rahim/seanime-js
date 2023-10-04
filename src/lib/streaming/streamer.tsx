@@ -9,7 +9,7 @@ import { ConsumetProvider, ConsumetStreamingProviderData } from "@/lib/consumet/
 import Artplayer from "artplayer"
 import { useAtom } from "jotai/react"
 import { streamingAutoplayAtom, streamingResolutionAtom } from "@/atoms/streaming/streaming.atoms"
-import { SkipTime } from "@/lib/aniskip/types"
+import { AniSkipTime } from "@/lib/aniskip/types"
 
 const fontSizes = [
     { html: "Small", size: "16px" },
@@ -19,12 +19,12 @@ const fontSizes = [
 
 type VideoStreamerProps = {
     data: ConsumetStreamingProviderData,
-    id: string, // Check
-    skip?: { op: SkipTime | null, ed: SkipTime | null }, // Check
-    title?: string, // Check
-    poster?: string | null, // Check
-    proxy?: string // Check
-    provider?: ConsumetProvider, // Check
+    id: string,
+    skip?: { op: AniSkipTime | null, ed: AniSkipTime | null },
+    title?: string,
+    poster?: string | null,
+    proxy?: string
+    provider?: ConsumetProvider,
     timeWatched?: any,
     onVideoComplete?: () => void
     onVideoEnd?: () => void

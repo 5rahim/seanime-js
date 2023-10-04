@@ -3,7 +3,7 @@ import { AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import { ordinalize } from "inflection"
 import { similarity } from "@/lib/string-similarity"
 import { logger } from "@/lib/helpers/debug"
-import { ScanLogging } from "@/lib/local-library/logs"
+import { ScanLogging } from "@/lib/local-library/helpers/logs"
 import isNumber from "lodash/isNumber"
 import sortBy from "lodash/sortBy"
 import { advancedSearchWithMAL } from "@/lib/mal/actions"
@@ -13,7 +13,8 @@ import { matching_compareTitleVariationsToMedia } from "@/lib/local-library/util
 import { toRomanNumber } from "@/lib/local-library/utils/common.utils"
 
 /**
- * This method employs 3 comparison algorithms: Dice's coefficient (string-similarity), Levenshtein's algorithm, and MAL's elastic search algorithm
+ * @description
+ * Find the best corresponding media for a specific [LocalFile]
  */
 export async function findBestCorrespondingMedia(
     {
@@ -35,10 +36,6 @@ export async function findBestCorrespondingMedia(
         _scanLogging: ScanLogging
     },
 ) {
-
-    // function debug(...value: any[]) {
-    //     // if (parsed.original.toLowerCase().includes("(not)")) console.log(...value)
-    // }
 
     _scanLogging.add(file.path, ">>> [media-matching/findBestCorrespondingMedia]")
     _scanLogging.add(file.path, "Creating title variations")
@@ -62,9 +59,6 @@ export async function findBestCorrespondingMedia(
     const mediaPreferredTitles = mediaTitles.preferred.map(value => value.toLowerCase())
     const mediaSynonymsWithSeason = mediaTitles.synonymsWithSeason.map(value => value.toLowerCase())
 
-    const episodeAsNumber = (parsed.episode && isNumber(parseInt(parsed.episode)))
-        ? parseInt(parsed.episode)
-        : undefined
     const folderSeasonAsNumber = (folderParsed?.season && isNumber(parseInt(folderParsed.season)))
         ? parseInt(folderParsed.season)
         : undefined
@@ -239,13 +233,6 @@ export async function findBestCorrespondingMedia(
 
     // Create an array of different media sources for comparison
     let differentFoundMedia = [correspondingMediaFromMAL, correspondingMediaUsingSimilarity, correspondingMediaFromDistance].filter(Boolean)
-
-    // debug("------------------------------------------------------")
-    // debug(titleVariations)
-    // debug(differentFoundMedia.map(n => n.title?.userPreferred?.toLowerCase()).filter(Boolean))
-    // debug(differentFoundMedia.map(n => n.title?.english?.toLowerCase()).filter(Boolean))
-    // debug(differentFoundMedia.map(n => n.title?.romaji?.toLowerCase()).filter(Boolean))
-    // debug("------------------------------------------------------")
 
     _scanLogging.add(file.path, "Eliminating the least similar candidate title using string-similarity")
 

@@ -1,7 +1,7 @@
 "use client"
 import { useSettings } from "@/atoms/settings"
 import React, { useEffect, useRef } from "react"
-import { TorrentManager, TorrentManagerObject } from "@/lib/download"
+import { TorrentRepository, TorrentRepositoryObject } from "@/lib/download"
 import { useQuery } from "@tanstack/react-query"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { TorrentManager_Torrent } from "@/lib/download/qbittorrent/api"
@@ -42,12 +42,10 @@ export default function Page() {
     )
 }
 
-type Props = {}
-
-function Content(props: Props) {
+function Content() {
     const { settings } = useSettings()
 
-    const torrentManager = useRef(TorrentManager(settings))
+    const torrentManager = useRef(TorrentRepository(settings))
 
     const { data, isLoading, refetch } = useQuery({
         queryKey: ["torrents"],
@@ -87,7 +85,7 @@ function Content(props: Props) {
 type TorrentItemProps = {
     torrent: TorrentManager_Torrent
     readableState: (value: any) => string
-    torrentManager: React.MutableRefObject<TorrentManagerObject>
+    torrentManager: React.MutableRefObject<TorrentRepositoryObject>
     refetch: () => void
 }
 

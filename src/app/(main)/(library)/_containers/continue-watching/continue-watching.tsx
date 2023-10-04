@@ -1,5 +1,5 @@
 import { useSelectAtom } from "@/atoms/helpers"
-import { useMediaDownloadInfo } from "@/lib/download/helpers"
+import { useMediaDownloadInfo } from "@/lib/download/media-download-info"
 import { useLatestMainLocalFileByMediaId_UNSTABLE } from "@/atoms/library/local-file.atoms"
 import React, { memo, useMemo } from "react"
 import { useQuery } from "@tanstack/react-query"
@@ -13,6 +13,7 @@ import { formatDistanceToNow, isBefore, subYears } from "date-fns"
 import { anilist_getEpisodeCeilingFromMedia } from "@/lib/anilist/utils"
 import { anizip_getEpisode } from "@/lib/anizip/utils"
 import { fetchAniZipData } from "@/lib/anizip/helpers"
+import { AniZipData } from "@/lib/anizip/types"
 
 export function ContinueWatching(props: { entryAtom: Atom<LibraryEntry> }) {
 

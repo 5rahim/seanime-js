@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
 import { AnimeByIdDocument } from "@/gql/graphql"
 import axios from "axios"
+import { AniZipData } from "@/lib/anizip/types"
 
 export function useGetTorrentSearchAnimeInfo(mediaId: number) {
 

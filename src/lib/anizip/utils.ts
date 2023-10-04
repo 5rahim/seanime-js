@@ -1,4 +1,5 @@
 import { LocalFileMetadata } from "@/lib/local-library/types"
+import { AniZipData } from "@/lib/anizip/types"
 
 export function anizip_getEpisode(data: AniZipData | null | undefined, episode: number | string) {
     return data?.episodes?.[String(episode)]

@@ -2,7 +2,7 @@
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
 import React from "react"
 import { Button } from "@/components/ui/button"
-import { useMediaDownloadInfo } from "@/lib/download/helpers"
+import { useMediaDownloadInfo } from "@/lib/download/media-download-info"
 import { BiDownload } from "@react-icons/all-files/bi/BiDownload"
 import { useSetAtom } from "jotai/react"
 import { __torrentSearch_isOpenAtom } from "@/app/(main)/view/_containers/torrent-search/torrent-search-modal"

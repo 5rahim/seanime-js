@@ -8,6 +8,7 @@ import { Nyaa } from "@/lib/download/nyaa/api"
 import { LocalFile } from "@/lib/local-library/types"
 import { valueContainsSeason } from "@/lib/local-library/utils/filtering.utils"
 import { anilist_findMediaEdge, anilist_findMediaSeasonFromTitles } from "@/lib/anilist/utils"
+import { AniZipData } from "@/lib/anizip/types"
 
 
 export async function findNyaaTorrents(props: {

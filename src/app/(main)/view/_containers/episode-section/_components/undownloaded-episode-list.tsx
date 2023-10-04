@@ -6,19 +6,20 @@ import { BiCalendarAlt } from "@react-icons/all-files/bi/BiCalendarAlt"
 import { BiDownload } from "@react-icons/all-files/bi/BiDownload"
 import Link from "next/link"
 import { BiPlayCircle } from "@react-icons/all-files/bi/BiPlayCircle"
-import { useMediaDownloadInfo } from "@/lib/download/helpers"
+import { useMediaDownloadInfo } from "@/lib/download/media-download-info"
 import { EpisodeListItem } from "@/components/shared/episode-list-item"
 import { useSetAtom } from "jotai"
 import { __torrentSearch_isOpenAtom } from "@/app/(main)/view/_containers/torrent-search/torrent-search-modal"
-import { AnifyAnimeEpisodeData } from "@/lib/anify/types"
+import { AnifyAnimeEpisode } from "@/lib/anify/types"
 import { anizip_getEpisode } from "@/lib/anizip/utils"
 import { anify_getEpisodeCover } from "@/lib/anify/utils"
+import { AniZipData } from "@/lib/anizip/types"
 
 interface UndownloadedEpisodeListProps {
     children?: React.ReactNode
     media: AnilistDetailedMedia
     aniZipData?: AniZipData
-    anifyEpisodeData?: AnifyAnimeEpisodeData[]
+    anifyEpisodeData?: AnifyAnimeEpisode[]
 }
 
 /**

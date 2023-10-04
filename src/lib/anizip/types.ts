@@ -1,14 +1,14 @@
-type TitleTranslations = {
+type AniZipTitleTranslations = {
     [key: string]: string
 }
 
-type Episode = {
+type AniZipEpisode = {
     tvdbEid: number
     airdate: string
     seasonNumber: number
     episodeNumber: number
     absoluteEpisodeNumber: number
-    title: TitleTranslations
+    title: AniZipTitleTranslations
     image: string
     length: number
     episode: string
@@ -16,11 +16,11 @@ type Episode = {
     rating: string
 }
 
-type Episodes = {
-    [episodeNumber: string]: Episode
+type AniZipEpisodes = {
+    [episodeNumber: string]: AniZipEpisode
 }
 
-type Types = {
+type AniZipMappings = {
     animeplanet_id: string
     kitsu_id: number
     mal_id: number
@@ -35,10 +35,10 @@ type Types = {
     themoviedb_id: string | null
 }
 
-type AniZipData = {
-    titles: TitleTranslations
-    episodes: Episodes
+export type AniZipData = {
+    titles: AniZipTitleTranslations
+    episodes: AniZipEpisodes
     episodeCount: number
     specialCount: number
-    mappings: Types
+    mappings: AniZipMappings
 }

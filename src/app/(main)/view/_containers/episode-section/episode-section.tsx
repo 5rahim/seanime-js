@@ -34,6 +34,7 @@ import dynamic from "next/dynamic"
 import { Alert } from "@/components/ui/alert"
 import { anilist_canTrackProgress } from "@/lib/anilist/utils"
 import { localFile_isMain } from "@/lib/local-library/utils/episode.utils"
+import { AniZipData } from "@/lib/anizip/types"
 
 const EpisodeOffsetAction = dynamic(() => import("@/app/(main)/view/_containers/episode-section/_components/bulk-actions/episode-offset-action"), { ssr: false })
 

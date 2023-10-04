@@ -1,121 +1,14 @@
-import { AnilistShowcaseMedia } from "@/lib/anilist/fragment"
-import { MediaListStatus } from "@/gql/graphql"
-import { useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist/entries.atoms"
-import { useStableSelectAtom } from "@/atoms/helpers"
-import {
-    useLatestMainLocalFileByMediaId_UNSTABLE,
-    useLocalFilesByMediaId_UNSTABLE,
-} from "@/atoms/library/local-file.atoms"
-import { useMemo } from "react"
-import { LocalFile } from "@/lib/local-library/types"
-import sortBy from "lodash/sortBy"
-import { localFile_isMain } from "@/lib/local-library/utils/episode.utils"
-import { anilist_getEpisodeCeilingFromMedia } from "@/lib/anilist/utils"
+import { Nullish } from "@/types/common"
 
 /**
- * @description Purpose
- * - Get various information related to downloading a media
- * @description Use
- * - `toDownload` = number of episodes to download
- * - `originalEpisodeCount` = number of episodes in the media
- * - `isMovie` = whether the media is a movie
- * - `episodeNumbers` = array of episode numbers to download
- * - `rewatch` = whether the user has completed the media
- * - `batch` = whether the **entire** batch should be downloaded (progress = 0, no files downloaded)
- * - `schedulingIssues` = whether the media is still airing but media.nextAiringEpisode is null due to scheduling issues
- * - `canBatch` = whether the media can be batch downloaded
- * @param props
+ * Get torrent hash string from magnet link
+ * @param magnetLink
  */
-export const getMediaDownloadInfo = (props: {
-    media: AnilistShowcaseMedia,
-    files: LocalFile[],
-    progress: number | null | undefined,
-    status: MediaListStatus | null | undefined,
-}) => {
-
-    const { media, files, progress, status } = props
-
-    const lastProgress = progress ?? 0
-    // e.g., 12
-    const maxEp = anilist_getEpisodeCeilingFromMedia(media)
-    // e.g., [1,2,3,…,12]
-    let mediaEpisodeArr = [...Array(maxEp).keys()].map((_, idx) => idx + 1)
-
-    // Sometimes AniList includes Episode 0, AniDB does not
-    // Detect if the special episode is included in the local files
-    const specialIsIncluded = files.filter(file => localFile_isMain(file)).some(file => file.metadata.episode === 0)
-    // If the special episode is included and none of the files have an episode number that is equal to the AniList ceiling
-    // e.g, AniList ceiling = 12, files = [0,1,2,3,4,5,6,7,8,9,10,11]
-    // Then we can assume that the special episode is the first episode
-    // Readjust the episode array to reflect this
-    if (specialIsIncluded && files.findIndex(file => file.metadata.episode === maxEp) === -1) {
-        mediaEpisodeArr = [0, ...mediaEpisodeArr.slice(0, -1)]
-    }
-
-    // Media episode array starting from the last progress
-    // e.g., progress = 9 => [10,11,12] | completed => [1,2,3,…,12]
-    const actualEpisodeArr = status !== "COMPLETED" ? [...mediaEpisodeArr.slice(lastProgress)] : mediaEpisodeArr
-
-    // e.g., [1,2]
-    let downloadedEpisodeArr = files.filter(file => localFile_isMain(file)).map(file => file.metadata.episode)
-
-    // Make sure that we handle movies correctly since they don't have episode numbers
-    // No files with episode number, but we know that the media is a movie, and there is at least a file associated with that media
-    if (
-        (media.format === "MOVIE" || media.episodes === 1)
-        && downloadedEpisodeArr.length === 0
-        && files.filter(file => !file.metadata.isNC).length > 0 // there is at least a file associated with that media that is not NC
-    ) {
-        downloadedEpisodeArr = [1]
-    }
-
-    // Array of missing episodes
-    let missingArr = sortBy(actualEpisodeArr.filter(num => !downloadedEpisodeArr.includes(num)))
-
-    const canBatch = (media.status === "FINISHED" || media.status === "CANCELLED") && !!media.episodes && media.episodes > 1
-
-    // /!\ This is a hacky fix for the case where the media is still airing but media.nextAiringEpisode is null due to scheduling issues
-    const schedulingIssues = media.status === "RELEASING" && !media.nextAiringEpisode && !!media.episodes
-    if (schedulingIssues) {
-        missingArr = []
-    }
-
-    return {
-        toDownload: missingArr.length,
-        originalEpisodeCount: media.episodes,
-        isMovie: media.format === "MOVIE",
-        episodeNumbers: missingArr,
-        rewatch: status === "COMPLETED",
-        batch: canBatch && downloadedEpisodeArr.length === 0 && lastProgress === 0, // Media finished airing and user has no episodes downloaded/watched
-        schedulingIssues,
-        canBatch,
-    }
-
-
-}
-
-export type MediaDownloadInfo = ReturnType<typeof getMediaDownloadInfo>
-
-export function useMediaDownloadInfo(media: AnilistShowcaseMedia) {
-
-    // Get the AniList collection entry to retrieve progress and status
-    const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(media.id)
-    const progress = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress)
-    const status = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.status)
-    // Get the library entry to retrieve the latest file
-    const latestFile = useLatestMainLocalFileByMediaId_UNSTABLE(media.id)
-    // Get all local files associated with the media
-    const files = useLocalFilesByMediaId_UNSTABLE(media.id)
-
-    const downloadInfo = useMemo(() => getMediaDownloadInfo({
-        media: media,
-        files: files,
-        progress: progress,
-        status: status,
-    }), [files.length])
-
-    return {
-        latestFile,
-        downloadInfo,
+export function extractHashFromMagnetLink(magnetLink: Nullish<string>) {
+    const match = magnetLink?.match(/magnet:\?xt=urn:btih:([^&]+)/)
+    if (match && match[1]) {
+        return match[1]
+    } else {
+        return null // Magnet link format not recognized or no hash found
     }
 }

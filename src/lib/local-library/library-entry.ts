@@ -1,3 +1,8 @@
+/* -------------------------------------------------------------------------------------------------
+ * Manage groups of [LocalFile]s that are associated with a same media
+ * - inspectProspectiveLibraryEntry
+ * - manuallyMatchFiles
+ * -----------------------------------------------------------------------------------------------*/
 "use server"
 import { AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 import { similarity } from "@/lib/string-similarity"
@@ -5,11 +10,12 @@ import { logger } from "@/lib/helpers/debug"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
 import { AnimeByIdDocument, AnimeCollectionDocument, UpdateEntryDocument } from "@/gql/graphql"
 import fs from "fs"
-import { ScanLogging } from "@/lib/local-library/logs"
+import { ScanLogging } from "@/lib/local-library/helpers/logs"
 import { LocalFile, LocalFileWithMedia } from "@/lib/local-library/types"
 import { hydrateLocalFileWithInitialMetadata } from "@/lib/local-library/local-file"
 import { valueContainsNC, valueContainsSeason, valueContainsSpecials } from "@/lib/local-library/utils/filtering.utils"
 import Bottleneck from "bottleneck"
+import { AniZipData } from "@/lib/anizip/types"
 
 type ProspectiveLibraryEntry = {
     media: AnilistShowcaseMedia

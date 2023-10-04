@@ -1,7 +1,7 @@
 import { Slider } from "@/components/shared/slider"
 import { PrimitiveAtom } from "jotai"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
-import { AnifyAnimeEpisodeData } from "@/lib/anify/types"
+import { AnifyAnimeEpisode } from "@/lib/anify/types"
 import React, { useMemo } from "react"
 import { useSelectAtom } from "@/atoms/helpers"
 import { formatDistanceToNow, isBefore, subYears } from "date-fns"
@@ -9,13 +9,14 @@ import { LargeEpisodeListItem } from "@/components/shared/large-episode-list-ite
 import { LocalFile } from "@/lib/local-library/types"
 import { anizip_getEpisodeFromMetadata } from "@/lib/anizip/utils"
 import { localFile_episodeExists, localFile_getEpisodeCover } from "@/lib/local-library/utils/episode.utils"
+import { AniZipData } from "@/lib/anizip/types"
 
 type Props = {
     fileAtoms: PrimitiveAtom<LocalFile>[],
     aniZipData?: AniZipData,
     onPlayFile: (path: string) => void
     media: AnilistDetailedMedia
-    anifyEpisodeData?: AnifyAnimeEpisodeData[]
+    anifyEpisodeData?: AnifyAnimeEpisode[]
 }
 
 export function EpisodeSectionSlider({ fileAtoms, ...rest }: Props) {

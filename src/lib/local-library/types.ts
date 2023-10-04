@@ -1,4 +1,6 @@
-// Parsed anime info
+/**
+ * Types related to the local library
+ */
 import { AnilistShowcaseMedia } from "@/lib/anilist/fragment"
 
 // Hydrated before a file is matched
@@ -26,7 +28,6 @@ export type LocalFileMetadata = {
     aniDBEpisodeNumber?: string
     // OPs, EDs, Bonus content...
     isNC?: boolean
-    // aniDBMediaInfo?: LocalFileAniDBInfo // TODO Remove
 }
 
 export type LocalFileAniDBInfo = {

@@ -16,7 +16,7 @@ import toast from "react-hot-toast"
 import { Nullish } from "@/types/common"
 import { openDirectoryInExplorer } from "@/lib/helpers/directory"
 
-export const TorrentManager = (settings: Settings) => {
+export const TorrentRepository = (settings: Settings) => {
 
     return {
         async kickstart() {
@@ -139,4 +139,4 @@ export const TorrentManager = (settings: Settings) => {
 
 }
 
-export type TorrentManagerObject = ReturnType<typeof TorrentManager>
+export type TorrentRepositoryObject = ReturnType<typeof TorrentRepository>

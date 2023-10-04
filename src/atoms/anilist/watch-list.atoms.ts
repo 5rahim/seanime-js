@@ -13,6 +13,7 @@ export const anilistCompletedListAtom = atom((get) => {
     arr = sortBy(arr, entry => entry?.score).reverse()
     return anilist_filterEntriesByTitle(arr, get(watchListSearchInputAtom))
 })
+
 export const anilistCurrentlyWatchingListAtom = atom((get) => {
     let arr = get(anilistCollectionEntriesAtom).filter(n => !!n && n.status === "CURRENT")
     // Sort by name
@@ -21,6 +22,7 @@ export const anilistCurrentlyWatchingListAtom = atom((get) => {
     arr = sortBy(arr, entry => entry?.score).reverse()
     return anilist_filterEntriesByTitle(arr, get(watchListSearchInputAtom))
 })
+
 export const anilistPlanningListAtom = atom((get) => {
     let arr = get(anilistCollectionEntriesAtom).filter(n => !!n && n.status === "PLANNING")
     // Sort by name
@@ -29,6 +31,7 @@ export const anilistPlanningListAtom = atom((get) => {
     arr = sortBy(arr, entry => entry?.media?.status !== "RELEASING")
     return anilist_filterEntriesByTitle(arr, get(watchListSearchInputAtom))
 })
+
 export const anilistPausedListAtom = atom((get) => {
     let arr = get(anilistCollectionEntriesAtom).filter(n => !!n && n.status === "PAUSED")
     // Sort by name

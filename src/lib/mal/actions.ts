@@ -1,7 +1,6 @@
 "use server"
 import { logger } from "@/lib/helpers/debug"
 import { MALSearchResultAnime } from "@/lib/mal/types"
-
 import { matching_getBestMatchFromTitleComparison } from "@/lib/local-library/utils/matching.utils"
 
 export async function searchWithMAL(title: string, slice: number | null | undefined = 4) {
