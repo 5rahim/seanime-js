@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.3.1
+
+- Optimized "Resolve unmatched" feature
+- Fixed detection of "Episode 0" being included by AniList
+- Added image shimmer effect
+- Remove React devtool script
+- Bump Next.js to 13.5.4
+- Update dependencies
+
 ## 0.3.0
 
 - Support for *Enhanced scanning* (without AniList anime list data)
