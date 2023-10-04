@@ -7,6 +7,7 @@ import omit from "lodash/omit"
 import { logger } from "@/lib/helpers/debug"
 import { Nullish } from "@/types/common"
 import { valueContainsSeason } from "@/lib/local-library/utils/filtering.utils"
+import { AniZipData } from "@/lib/anizip/types"
 
 type _AnilistRelationEdge = { relationType: MediaRelation, node: AnilistShowcaseMedia | null | undefined }
 
@@ -116,4 +117,14 @@ export function anilist_getNextEpisodeToWatch<T extends AnilistShowcaseMedia>(me
     const maxEp = anilist_getEpisodeCeilingFromMedia(media)
     const fallback = media.status === "RELEASING" ? maxEp : 1
     return ((_currentProgress + 1) <= maxEp ? _currentProgress + 1 : fallback)
+}
+
+/**
+ * @description
+ * - Detect whether AniList includes Episode 0 in the episode count
+ */
+export function anilist_hasEpisodeZero<T extends AnilistShowcaseMedia>(media: T, aniZipData: Nullish<AniZipData>) {
+    if (!media.episodes || !aniZipData?.episodeCount) return false
+    const diff = media.episodes - aniZipData.episodeCount
+    return diff === 1 && aniZipData.specialCount > 0
 }

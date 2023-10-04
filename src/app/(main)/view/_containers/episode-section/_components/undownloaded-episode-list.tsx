@@ -14,9 +14,9 @@ import { AnifyAnimeEpisode } from "@/lib/anify/types"
 import { anizip_getEpisode } from "@/lib/anizip/utils"
 import { anify_getEpisodeCover } from "@/lib/anify/utils"
 import { AniZipData } from "@/lib/anizip/types"
+import { anilist_hasEpisodeZero } from "@/lib/anilist/utils"
 
 interface UndownloadedEpisodeListProps {
-    children?: React.ReactNode
     media: AnilistDetailedMedia
     aniZipData?: AniZipData
     anifyEpisodeData?: AnifyAnimeEpisode[]
@@ -27,9 +27,9 @@ interface UndownloadedEpisodeListProps {
  * - Display a list of episodes that are not downloaded yet
  * - It will not display episodes that were watched
  */
-export const UndownloadedEpisodeList: React.FC<UndownloadedEpisodeListProps> = React.memo((props) => {
+export const UndownloadedEpisodeList = React.memo(function (props: UndownloadedEpisodeListProps) {
 
-    const { children, media, aniZipData, anifyEpisodeData, ...rest } = props
+    const { media, aniZipData, anifyEpisodeData } = props
 
     const setTorrentSearchIsOpen = useSetAtom(__torrentSearch_isOpenAtom)
 
@@ -39,14 +39,13 @@ export const UndownloadedEpisodeList: React.FC<UndownloadedEpisodeListProps> = R
 
     const episodeNumberArr = useMemo(() => {
         if (!aniZipData) return []
-        if (!!media.episodes && aniZipData.episodeCount < media.episodes) {
+        if (anilist_hasEpisodeZero(media, aniZipData)) {
             return [0, ...downloadInfo.episodeNumbers.slice(0, -1)]
         }
         return downloadInfo.episodeNumbers
-    }, [downloadInfo.episodeNumbers, aniZipData, media.episodes])
+    }, [downloadInfo.episodeNumbers, aniZipData, media])
 
     if (!aniZipData || Object.keys(aniZipData?.episodes).length === 0 || (downloadInfo.toDownload === 0)) return null
-
 
     return (
         <>

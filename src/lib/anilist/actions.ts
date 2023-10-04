@@ -43,7 +43,7 @@ export const getAnimeInfo = cache(async (params: { id: string }) => {
         redirect("/")
     }
 
-    logger("view/id").info("Fetched media data for " + animeRes.value.Media.title?.english)
+    logger("view/id").info("Fetched media data for " + animeRes.value.Media.title?.english || animeRes.value.Media.title?.romaji)
 
     return {
         media: animeRes.value.Media,
