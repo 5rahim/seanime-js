@@ -13,19 +13,21 @@ import toast from "react-hot-toast"
 import { useCurrentUser } from "@/atoms/user"
 import { useAuthed } from "@/atoms/auth"
 import { TextInput } from "@/components/ui/text-input"
-import { Switch } from "@/components/ui/switch"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { libraryMatchingSuggestionGroupsAtom, useMatchingSuggestions } from "@/atoms/library/matching-suggestions.atoms"
 import { libraryEntriesAtom } from "@/atoms/library/library-entry.atoms"
 import { useSetLocalFiles } from "@/atoms/library/local-file.atoms"
 import { useSelectAtom } from "@/atoms/helpers"
-import { useAtomValue } from "jotai/react"
+import { useAtom, useAtomValue } from "jotai/react"
 import { useRefreshAnilistCollection } from "@/atoms/anilist/collection.atoms"
 import { BetaBadge } from "@/components/application/beta-badge"
+import { atom } from "jotai"
 
 /* -------------------------------------------------------------------------------------------------
  * ResolveUnmatched
  * -----------------------------------------------------------------------------------------------*/
+
+export const _resolveUnmatchedIndex = atom(0)
 
 export const ResolveUnmatched = memo((props: { isOpen: boolean, close: () => void }) => {
     const { user } = useCurrentUser()
@@ -37,7 +39,7 @@ export const ResolveUnmatched = memo((props: { isOpen: boolean, close: () => voi
     const [isLoading, setIsLoading] = useState(false)
     const [groupBy, setGroupBy] = useState<"file" | "folder">("folder")
 
-    const [index, setIndex] = useState(0)
+    const [index, setIndex] = useAtom(_resolveUnmatchedIndex)
     const [selectedAnimeId, setSelectedAnimeId] = useState<string | undefined>("0")
 
     const entriesMediaIds = useSelectAtom(libraryEntriesAtom, entries => entries.map(entry => entry.id))
@@ -92,7 +94,7 @@ export const ResolveUnmatched = memo((props: { isOpen: boolean, close: () => voi
             }
             setIsLoading(false)
         }
-    }, [token, currentGroup, selectedAnimeId])
+    }, [token, selectedAnimeId, user?.name, entriesMediaIds, groupBy])
 
     const handleIgnore = async () => {
         if (user?.name) {
@@ -116,21 +118,21 @@ export const ResolveUnmatched = memo((props: { isOpen: boolean, close: () => voi
             isClosable
             title={<p>Resolve unmatched files <BetaBadge/></p>}
         >
-            {(isFetchingSuggestion || groups.length > 0) && <Switch
-                label={"Group by folders"}
-                checked={groupBy === "folder"}
-                containerClassName={"mb-4"}
-                onChange={value => {
-                    if (value) {
-                        getMatchingSuggestions("folder")
-                        setGroupBy("folder")
-                    } else {
-                        getMatchingSuggestions("file")
-                        setGroupBy("file")
-                    }
-                    setIndex(0)
-                }}
-            />}
+            {/*{(isFetchingSuggestion || groups.length > 0) && <Switch*/}
+            {/*    label={"Group by folders"}*/}
+            {/*    checked={groupBy === "folder"}*/}
+            {/*    containerClassName={"mb-4"}*/}
+            {/*    onChange={value => {*/}
+            {/*        if (value) {*/}
+            {/*            getMatchingSuggestions("folder")*/}
+            {/*            setGroupBy("folder")*/}
+            {/*        } else {*/}
+            {/*            getMatchingSuggestions("file")*/}
+            {/*            setGroupBy("file")*/}
+            {/*        }*/}
+            {/*        setIndex(0)*/}
+            {/*    }}*/}
+            {/*/>}*/}
 
             {isFetchingSuggestion && <LoadingSpinner/>}
 
@@ -154,7 +156,7 @@ export const ResolveUnmatched = memo((props: { isOpen: boolean, close: () => voi
 
                 <div className={"flex items-center gap-2"}>
                     <span className={"text-xl"}><FcOpenedFolder/></span>
-                    {currentGroup.folderPath}
+                    {currentGroup.commonPath}
                 </div>
 
                 <div className={"max-h-72 overflow-y-auto border border-[--border] rounded-md p-4"}>
@@ -176,7 +178,7 @@ export const ResolveUnmatched = memo((props: { isOpen: boolean, close: () => voi
                         onChange={handleSelectAnime}
                         options={currentGroup.recommendations.map((media) => (
                             {
-                                label: media.title?.userPreferred,
+                                label: media.title?.userPreferred || media.title?.english || media.title?.romaji || "",
                                 value: String(media.id) || "",
                                 help: <div className={"mt-2 flex w-full gap-4"}>
                                     {media.coverImage?.medium && <div
@@ -192,7 +194,7 @@ export const ResolveUnmatched = memo((props: { isOpen: boolean, close: () => voi
                                         />
                                     </div>}
                                     <div className={"text-[--muted]"}>
-                                        <p className={"line-clamp-1"}>{media.title?.english}</p>
+                                        <p className={"line-clamp-1"}>{media.title?.userPreferred || media.title?.english || media.title?.romaji}</p>
                                         <p>Type: <span
                                             className={"text-gray-200 font-semibold"}>{media.format}</span>
                                         </p>
@@ -213,7 +215,7 @@ export const ResolveUnmatched = memo((props: { isOpen: boolean, close: () => voi
                         radioContainerClassName="block w-full p-4 cursor-pointer dark:bg-gray-900 transition border border-[--border] rounded-[--radius] data-[checked=true]:ring-2 ring-[--ring]"
                         radioControlClassName="absolute right-2 top-2 h-5 w-5 text-xs"
                         radioHelpClassName="text-sm"
-                        radioLabelClassName="font-semibold flex-none flex"
+                        radioLabelClassName="font-semibold flex-none w-[90%] line-clamp-1"
                         stackClassName="grid grid-cols-2 gap-2 space-y-0"
                     />
 

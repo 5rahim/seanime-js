@@ -62,6 +62,26 @@ export async function PromiseAllSettledBatch<T, R>(
     return results
 }
 
+export async function PromiseAllSettledBatchWithCache<T, R, K, L>(
+    task: (item: T, cache: Map<K, L>) => Promise<R>,
+    items: T[],
+    batchSize: number,
+    cache: Map<K, L>,
+): Promise<PromiseSettledResult<R>[]> {
+    let position = 0
+    let results: PromiseSettledResult<R>[] = []
+
+    while (position < items.length) {
+        const itemsForBatch = items.slice(position, position + batchSize)
+        const batchPromises = itemsForBatch.map((item) => task(item, cache))
+        const batchResults = await Promise.allSettled(batchPromises)
+        results = [...results, ...batchResults]
+        position += batchSize
+    }
+
+    return results
+}
+
 export async function PromiseAllSettledBatchWithDelay<T, R>(
     task: (item: T) => Promise<R>,
     items: T[],
