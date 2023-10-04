@@ -118,21 +118,6 @@ export const ResolveUnmatched = memo((props: { isOpen: boolean, close: () => voi
             isClosable
             title={<p>Resolve unmatched files <BetaBadge/></p>}
         >
-            {/*{(isFetchingSuggestion || groups.length > 0) && <Switch*/}
-            {/*    label={"Group by folders"}*/}
-            {/*    checked={groupBy === "folder"}*/}
-            {/*    containerClassName={"mb-4"}*/}
-            {/*    onChange={value => {*/}
-            {/*        if (value) {*/}
-            {/*            getMatchingSuggestions("folder")*/}
-            {/*            setGroupBy("folder")*/}
-            {/*        } else {*/}
-            {/*            getMatchingSuggestions("file")*/}
-            {/*            setGroupBy("file")*/}
-            {/*        }*/}
-            {/*        setIndex(0)*/}
-            {/*    }}*/}
-            {/*/>}*/}
 
             {isFetchingSuggestion && <LoadingSpinner/>}
 
