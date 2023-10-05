@@ -1,7 +1,7 @@
 import React, { startTransition, useMemo } from "react"
 import { atom, PrimitiveAtom } from "jotai"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
-import { useFocusSetAtom, useSelectAtom, useStableSelectAtom } from "@/atoms/helpers"
+import { useFocusSetAtom, useSelectAtom } from "@/atoms/helpers"
 import { DropdownMenu } from "@/components/ui/dropdown-menu"
 import { IconButton } from "@/components/ui/button"
 import { BiDotsHorizontal } from "@react-icons/all-files/bi/BiDotsHorizontal"
@@ -13,16 +13,21 @@ import { Modal } from "@/components/ui/modal"
 import { createIsolation } from "jotai-scope"
 import { createTypesafeFormSchema, Field, TypesafeForm } from "@/components/ui/typesafe-form"
 import toast from "react-hot-toast"
-import { __useRerenderLocalFiles } from "@/atoms/library/local-file.atoms"
+import {
+    __useRerenderLocalFiles,
+    useLibraryEntryDynamicDetails,
+    useSpecialEpisodeIncludedInLibrary,
+} from "@/atoms/library/local-file.atoms"
 import { LocalFile } from "@/lib/local-library/types"
 import {
+    localFile_episodeExists,
     localFile_getDisplayTitle,
     localFile_getEpisodeCover,
     localFile_isMain,
 } from "@/lib/local-library/utils/episode.utils"
 import { anizip_getEpisodeFromMetadata } from "@/lib/anizip/utils"
-import { useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist/entries.atoms"
 import { AniZipData } from "@/lib/anizip/types"
+import { anify_getEpisodeCover } from "@/lib/anify/utils"
 
 const { Provider: ScopedProvider, useAtom: useScopedAtom } = createIsolation()
 
@@ -45,21 +50,27 @@ export const EpisodeItem = React.memo((props: {
     const setFileLocked = useFocusSetAtom(fileAtom, "locked")
     const setFileMediaId = useFocusSetAtom(fileAtom, "mediaId")
 
-    const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(media?.id)
-    const progress = useStableSelectAtom(collectionEntryAtom, entry => entry?.progress)
+    const { episodeProgress, progress } = useLibraryEntryDynamicDetails(media.id)
+
+    const specialIsIncluded = useSpecialEpisodeIncludedInLibrary(media?.id)
 
     const aniZipEpisode = anizip_getEpisodeFromMetadata(aniZipData, { metadata })
-    const anifyEpisodeCover = anifyEpisodeData?.find(n => n.number === metadata.episode)?.img
+    const anifyEpisodeCover = anify_getEpisodeCover(anifyEpisodeData, metadata.episode)
     const fileTitle = useMemo(() => parsedInfo?.original?.replace(/.(mkv|mp4)/, "")?.replaceAll(/(\[)[a-zA-Z0-9 ._~-]+(\])/ig, "")?.replaceAll(/[_,-]/g, " "), [parsedInfo])
 
-    const image = useMemo(() => localFile_getEpisodeCover({ metadata }, aniZipEpisode?.image, anifyEpisodeCover, media?.coverImage?.medium), [metadata, anifyEpisodeCover, aniZipEpisode?.image])
+    const image = useMemo(() => {
+        return localFile_getEpisodeCover({ metadata }, aniZipEpisode?.image, anifyEpisodeCover, media?.coverImage?.medium)
+    }, [metadata, anifyEpisodeCover, aniZipEpisode?.image])
 
-    const isWatched = useMemo(() => (localFile_isMain({ metadata }) && !!progress && progress >= metadata.episode!), [progress, metadata])
+    const isWatched = useMemo(() => {
+        if (!localFile_isMain({ metadata }) || !localFile_episodeExists({ metadata })) return false
+        // [EPISODE-ZERO-SUPPORT]
+        return episodeProgress >= metadata.episode!
+    }, [episodeProgress, metadata])
 
-    const displayedTitle = useMemo(() => localFile_getDisplayTitle({
-        metadata,
-        parsedInfo,
-    }, media), [parsedInfo, metadata])
+    const displayedTitle = useMemo(() => {
+        return localFile_getDisplayTitle({ metadata, parsedInfo }, media)
+    }, [parsedInfo, metadata])
 
     if (mediaID !== media.id) return null
 

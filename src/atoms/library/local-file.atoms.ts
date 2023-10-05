@@ -11,7 +11,14 @@ import { LocalFile } from "@/lib/local-library/types"
 import sortBy from "lodash/sortBy"
 import { Nullish } from "@/types/common"
 import { localFile_isMain } from "@/lib/local-library/utils/episode.utils"
-import { anilist_getEpisodeCeilingFromMedia } from "@/lib/anilist/utils"
+import {
+    anilist_canTrackProgress,
+    anilist_getCurrentEpisodeCeilingFromMedia,
+    anilist_uniquelyIncludesEpisodeZero,
+} from "@/lib/anilist/utils"
+import { allUserMediaAtom } from "@/atoms/anilist/media.atoms"
+import { AniZipData } from "@/lib/anizip/types"
+import { MediaDownloadInfo } from "@/lib/download/media-download-info"
 
 /* -------------------------------------------------------------------------------------------------
  * [LocalFile] atoms
@@ -56,6 +63,112 @@ export const getLocalFileAtomsByMediaIdAtom = atom(null,
 //     (get, set, mediaId: number) => get(localFileAtoms).filter((fileAtom) => get(atom((get) => get(fileAtom).mediaId === mediaId)))
 // )
 
+/* -------------------------------------------------------------------------------------------------
+ * Details
+ * - Get details and utils about a specific entry
+ * -----------------------------------------------------------------------------------------------*/
+
+export const getLibraryEntryDynamicDetailsAtom = atom(null,
+    (get, set, payload: { mediaId: number, aniZipData?: AniZipData }) => {
+        const { mediaId, aniZipData } = payload
+        // Get file atoms
+        const fileAtoms = get(localFileAtoms).filter((fileAtom) => get(fileAtom).mediaId === mediaId)
+        // Get AniList collection entry
+        const collectionEntryAtom = get(anilistCollectionEntryAtoms).find((collectionEntryAtom) => get(collectionEntryAtom)?.media?.id === mediaId)
+        // Get the AniList Collection Entry
+        const collectionEntry = !!collectionEntryAtom ? get(collectionEntryAtom) : undefined
+        // Get media
+        const media = get(allUserMediaAtom).find(media => media.id === mediaId)
+        // Get max episode, whether
+        const epCeiling = anilist_getCurrentEpisodeCeilingFromMedia(media)
+        // Get main episodes (episode files that are not specials or NCs or movie files)
+        const mainFileAtoms = sortBy(fileAtoms, fileAtom => Number(get(fileAtom).parsedInfo?.episode)).filter(fileAtom => localFile_isMain(get(fileAtom))) ?? []
+
+        if (!collectionEntry || !media) return {
+            canTrackProgress: false, progress: 0, specialIsIncluded: false, episodeProgress: 0, latestFile: undefined,
+        }
+
+        /* Details */
+
+        /**
+         * [EPISODE-ZERO-SUPPORT]
+         * - Whether downloaded episodes include a special episode "0" and no episode number is equal to the max episode number
+         * - This treats AniDB as the source of truth when it comes to episode numbers
+         *      - If in turn AniDB also includes Episode 0, then we need to alert the user to offset their episode numbers by 1
+         * - e.g., epCeiling = 13 AND downloaded episodes = [0,...,12] //=> true
+         * -      epCeiling = 13 AND downloaded episodes = [1,...,13] //=> false
+         */
+        const specialIsIncluded = mainFileAtoms.findIndex(fileAtom => get(fileAtom).metadata.episode === 0) !== -1
+            && mainFileAtoms.every(fileAtom => get(fileAtom).metadata.episode !== epCeiling)
+            && !(media?.episodes === 1 || media?.format === "MOVIE")
+
+        // There are some episodes that have not been watched
+        const canTrackProgress = mainFileAtoms.length > 0 && anilist_canTrackProgress(media, collectionEntry.progress)
+
+        // AniList progress
+        const progress = collectionEntry.progress ?? 0
+        /**
+         * - Offset the progress by 1 IF the library includes a special episode "0" as a main episode.
+         * - e,g., anilist progress = 1 AND specialIsIncluded = true //=> episodeProgress = 0
+         * - e,g., anilist progress = 2 AND specialIsIncluded = true //=> episodeProgress = 1
+         * @description Purpose
+         * - Use this to get the next episode number to watch
+         * - Use this to filter out the episodes that have been watched
+         */
+        const episodeProgress = (specialIsIncluded && progress !== 0) ? progress - 1 : progress
+
+        /**
+         * Get the latest downloaded file
+         * - Downloaded file with the highest episode number
+         */
+        const latestFileAtom = sortBy(mainFileAtoms, fileAtom => get(fileAtom).metadata.episode)[mainFileAtoms.length - 1]
+        const latestFile = !!latestFileAtom ? get(latestFileAtom) : undefined
+
+        /**
+         * Re-adjust download info to account for mismatched based on AniDB
+         * - This is meant as correction for those library entries that have episode 0
+         */
+        const getCorrectedDownloadInfo = (downloadInfo: MediaDownloadInfo, aniZipData?: AniZipData) => {
+            if (!aniZipData) return downloadInfo
+            let episodeNumbers = downloadInfo.episodeNumbers
+            /**
+             * [EPISODE-ZERO-SUPPORT] FIX MAPPING MISMATCH
+             * - Check if the mapping is different between AniList and AniZip (AniList includes episode 0)
+             * - If it is AND downloadInfo hasn't detected it, then we need to include episode 0 in the list
+             * - If it is not AND downloadInfo has detected Episode 0, then we need to offset the list by 1
+             */
+            if (anilist_uniquelyIncludesEpisodeZero(media, aniZipData) && !specialIsIncluded) {
+                episodeNumbers = [0, ...downloadInfo.episodeNumbers.slice(0, -1)]
+            } else if (anilist_uniquelyIncludesEpisodeZero(media, aniZipData) && specialIsIncluded) {
+                episodeNumbers = downloadInfo.episodeNumbers.map(num => num + 1)
+            }
+            return { ...downloadInfo, episodeNumbers }
+        }
+
+        return {
+            specialIsIncluded: specialIsIncluded,
+            progress: progress,
+            episodeProgress: episodeProgress,
+            canTrackProgress: canTrackProgress,
+            latestFile: latestFile,
+            getCorrectedDownloadInfo,
+        }
+    },
+)
+
+
+export function useLibraryEntryDynamicDetails(mediaId: number, aniZipData?: AniZipData) {
+    const __ = __useListenToLocalFiles()
+    const get = useSetAtom(getLibraryEntryDynamicDetailsAtom)
+    return useMemo(() => get({ mediaId, aniZipData }), [__])
+}
+
+export type LibraryEntryDynamicDetails = ReturnType<typeof useLibraryEntryDynamicDetails>
+
+/* -------------------------------------------------------------------------------------------------
+ * Lists
+ * -----------------------------------------------------------------------------------------------*/
+
 /**
  * @description
  * Get **main** [LocalFile] atoms by `mediaId` for `view` page
@@ -63,40 +176,41 @@ export const getLocalFileAtomsByMediaIdAtom = atom(null,
 const get_Display_LocalFileAtomsByMediaIdAtom = atom(null,
     // Get the local files from a specific media, split the `watched` and `to watch` files by listening to a specific `anilistCollectionEntryAtom`
     (get, set, mediaId: number) => {
-        // Get the AniList Collection Entry Atom by media ID
-        const collectionEntryAtom = get(anilistCollectionEntryAtoms).find((collectionEntryAtom) => get(collectionEntryAtom)?.media?.id === mediaId)
-        // Get the AniList Collection Entry
-        const collectionEntry = !!collectionEntryAtom ? get(collectionEntryAtom) : undefined
-        // Get the local file atoms by media ID
+
         const fileAtoms = get(localFileAtoms).filter((fileAtom) => get(fileAtom).mediaId === mediaId)
-        // Sort the local files atoms by parsed episode number
         const mainFileAtoms = sortBy(fileAtoms, fileAtom => Number(get(fileAtom).parsedInfo?.episode)).filter(fileAtom => localFile_isMain(get(fileAtom))) ?? []
 
-        const maxEp = anilist_getEpisodeCeilingFromMedia(collectionEntry?.media)
+        /**
+         * [EPISODE-ZERO-SUPPORT]
+         * - Here we use `episodeProgress` instead of `progress` because it is 0-indexed
+         */
+        const { canTrackProgress, episodeProgress, progress, specialIsIncluded } = set(getLibraryEntryDynamicDetailsAtom, { mediaId })
 
-        // There are some episodes that have not been watched
-        const canTrackProgress = mainFileAtoms.length > 0 && !!maxEp && (!!collectionEntry?.progress && collectionEntry.progress < Number(maxEp) || !collectionEntry?.progress)
-
-        const toWatch = canTrackProgress ? (mainFileAtoms?.filter(atom => get(atom).metadata.episode! > collectionEntry?.progress! || get(atom).metadata.episode === 0 && (collectionEntry?.progress || 0) === 0) ?? []) : []
-        const watched = mainFileAtoms?.filter(atom => get(atom).metadata.episode! <= collectionEntry?.progress!) ?? []
-
-        const mediaIncludesSpecial =
-            mainFileAtoms.findIndex(fileAtom => get(fileAtom).metadata.episode === 0) !== -1
-            && mainFileAtoms.every(fileAtom => get(fileAtom).metadata.episode !== maxEp)
+        /**
+         * Get episodes to watch based on 0-indexed progress
+         */
+        const toWatch = canTrackProgress ? (mainFileAtoms?.filter(atom =>
+            // [EPISODE-ZERO-SUPPORT] Will display all main files that have not been watched
+            get(atom).metadata.episode! > episodeProgress
+            // [EPISODE-ZERO-SUPPORT] Also display Episode 0 if it has not been watched
+            || (get(atom).metadata.episode! === 0 && episodeProgress === 0 && progress === 0),
+        ) ?? []) : []
+        const watched = mainFileAtoms?.filter(atom => get(atom).metadata.episode! <= episodeProgress) ?? []
 
         return {
             toWatch: toWatch.length === 0 && watched.length === 0 ? mainFileAtoms || [] : toWatch,
-            // Can't track progress -> show all main files
-            // Can track progress -> show episode user needs to watch OR show all main files
+            /**
+             * - Can't track progress -> show all main files
+             * - Can track progress -> show episode user needs to watch OR show all main files
+             */
             toWatchSlider: (!canTrackProgress) ? [...mainFileAtoms].reverse() : (toWatch.length > 0 ? toWatch : [...mainFileAtoms].reverse()),
             allMain: mainFileAtoms,
             watched,
-            mediaIncludesSpecial,
+            specialIsIncluded,
         }
 
     },
 )
-
 
 const get_Special_LocalFileAtomsByMediaIdAtom = atom(null,
     (get, set, mediaId: number) => {
@@ -107,6 +221,7 @@ const get_Special_LocalFileAtomsByMediaIdAtom = atom(null,
         }) ?? []
     },
 )
+
 
 const get_NC_LocalFileAtomsByMediaIdAtom = atom(null,
     (get, set, mediaId: number) => {
@@ -123,7 +238,6 @@ const get_NC_LocalFileAtomsByMediaIdAtom = atom(null,
  */
 export const ignoredLocalFileAtomsAtom = atom((get) => get(localFileAtoms).filter((itemAtom) => get(itemAtom).ignored === true))
 
-
 export const getLocalFileAtomByPathAtom = atom(null,
     (get, set, path: string) => get(localFileAtoms).find((itemAtom) => get(itemAtom).path === path),
 )
@@ -138,6 +252,7 @@ export const getLocalFileByNameAtom = atom(null, // Writable too
     (get, set, name: string) => get(focusAtom(localFilesAtom, optic => optic.find(file => file.name === name))),
 )
 
+
 /**
  * Get [LocalFile] by `path`
  * @example
@@ -146,7 +261,6 @@ export const getLocalFileByNameAtom = atom(null, // Writable too
 export const getLocalFileByPathAtom = atom(null, // Writable too
     (get, set, path: string) => get(focusAtom(localFilesAtom, optic => optic.find(file => file.path === path))),
 )
-
 
 /**
  * Get [LocalFile] with the highest episode number by `mediaId`
@@ -160,12 +274,34 @@ export const getLatestMainLocalFileByMediaIdAtom = atom(null,
     },
 )
 
+
 /**
  * @return LocalFile[]
  */
 export const getLocalFilesByMediaIdAtom = atom(null,
     (get, set, mediaId: number) => get(focusAtom(localFilesAtom, optic => optic.filter(file => file.mediaId === mediaId))),
 )
+
+
+const getSpecialEpisodeIncludedByMediaIdAtom = atom(null,
+    (get, set, mediaId: number) => {
+        const fileAtoms = get(localFileAtoms).filter((fileAtom) => get(fileAtom).mediaId === mediaId)
+        const media = get(allUserMediaAtom).find(media => media.id === mediaId)
+        const maxEp = anilist_getCurrentEpisodeCeilingFromMedia(media)
+        if (maxEp === 0) return false
+        if (media?.episodes === 1 || media?.format === "MOVIE") return false
+        return fileAtoms.findIndex(fileAtom => get(fileAtom).metadata.episode === 0) !== -1
+            && fileAtoms.every(fileAtom => get(fileAtom).metadata.episode !== maxEp)
+    },
+)
+
+
+export function useSpecialEpisodeIncludedInLibrary(mediaId: number) {
+    const __ = __useListenToLocalFiles()
+    const get = useSetAtom(getSpecialEpisodeIncludedByMediaIdAtom)
+    return useMemo(() => get(mediaId), [__])
+}
+
 
 
 /**

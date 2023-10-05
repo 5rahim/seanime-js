@@ -1,6 +1,6 @@
 import { useSelectAtom } from "@/atoms/helpers"
 import { useMediaDownloadInfo } from "@/lib/download/media-download-info"
-import { useLatestMainLocalFileByMediaId_UNSTABLE } from "@/atoms/library/local-file.atoms"
+import { useLibraryEntryDynamicDetails } from "@/atoms/library/local-file.atoms"
 import React, { memo, useMemo } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -10,7 +10,7 @@ import { LargeEpisodeListItem } from "@/components/shared/large-episode-list-ite
 import { Atom } from "jotai"
 import { LibraryEntry } from "@/atoms/library/library-entry.atoms"
 import { formatDistanceToNow, isBefore, subYears } from "date-fns"
-import { anilist_getEpisodeCeilingFromMedia } from "@/lib/anilist/utils"
+import { anilist_getCurrentEpisodeCeilingFromMedia } from "@/lib/anilist/utils"
 import { anizip_getEpisode } from "@/lib/anizip/utils"
 import { fetchAniZipData } from "@/lib/anizip/helpers"
 import { AniZipData } from "@/lib/anizip/types"
@@ -19,49 +19,58 @@ export function ContinueWatching(props: { entryAtom: Atom<LibraryEntry> }) {
 
     const media = useSelectAtom(props.entryAtom, entry => entry.media)
     const currentlyWatching = useSelectAtom(props.entryAtom, entry => entry.collectionEntry?.status === "CURRENT")
-    const progress = useSelectAtom(props.entryAtom, entry => entry.collectionEntry?.progress)
 
     const { downloadInfo } = useMediaDownloadInfo(media)
-    const latestFile = useLatestMainLocalFileByMediaId_UNSTABLE(media.id)
+    /**
+     * [EPISODE-ZERO-SUPPORT]
+     * - Here we will use `episodeProgress` instead of `progress` because we want the file's next episode number
+     * - Since `progress` is 1-indexed it would give us the wrong episode number if the special is included
+     */
+    const { latestFile, episodeProgress, progress } = useLibraryEntryDynamicDetails(media.id)
 
-    const nextEpisode = useMemo(() => {
+    const nextMetadataEpisodeNumber = useMemo(() => {
         if (currentlyWatching) {
-            const availableEp = anilist_getEpisodeCeilingFromMedia(media)
-            // Next episode has not been watched
-            // Latest sorted file has an episode
-            // The episode has been downloaded
+            const availableProgress = anilist_getCurrentEpisodeCeilingFromMedia(media)
             if (!downloadInfo.schedulingIssues) {
-                if (availableEp > (progress || 0) && !!latestFile?.metadata?.episode && !downloadInfo.episodeNumbers.includes((progress || 0) + 1)) {
-                    return (progress || 0) + 1
+                if (
+                    // Next episode has not been watched
+                    progress < availableProgress
+                    // Latest sorted file has an episode
+                    && !!latestFile?.metadata?.episode
+                    // Next episode has been downloaded
+                    && !downloadInfo.episodeNumbers.includes(episodeProgress + 1) // [EPISODE-ZERO-SUPPORT]
+                ) {
+                    return episodeProgress + 1
                 }
                 // FIXME Hacky way to check if the next episode is downloaded when we don't have accurate scheduling information
-            } else if (latestFile?.metadata?.episode === ((progress || 0) + 1)) {
-                return (progress || 0) + 1
+            } else if (latestFile?.metadata?.episode === (episodeProgress + 1)) { // [EPISODE-ZERO-SUPPORT]
+                return episodeProgress + 1
             }
         }
         return undefined
-    }, [currentlyWatching, progress, downloadInfo.schedulingIssues, latestFile?.metadata?.episode, downloadInfo.episodeNumbers, media])
+    }, [currentlyWatching, progress, downloadInfo.schedulingIssues, latestFile?.metadata?.episode, downloadInfo.episodeNumbers, media, episodeProgress])
 
 
     const { data, isLoading } = useQuery({
-        queryKey: ["continue-watching-anizip", media.id, nextEpisode, progress, currentlyWatching],
+        queryKey: ["continue-watching-anizip", media.id, nextMetadataEpisodeNumber, progress, currentlyWatching],
         queryFn: async () => {
             return await fetchAniZipData(media.id)
         },
         keepPreviousData: false,
-        enabled: !!nextEpisode,
+        enabled: !!nextMetadataEpisodeNumber,
         cacheTime: 1000 * 60 * 60,
     })
 
-    if (!nextEpisode) return null
+    if (!nextMetadataEpisodeNumber) return null
 
 
     return !isLoading ? (
         <>
             <EpisodeItem
-                key={`${media.id}${nextEpisode}`}
+                key={`${media.id}${nextMetadataEpisodeNumber}`}
                 media={media}
-                episodeNumber={nextEpisode!}
+                nextEpisodeProgress={progress + 1}
+                nextEpisodeNumber={nextMetadataEpisodeNumber!}
                 aniZipData={data}
             />
         </>
@@ -77,13 +86,18 @@ export function ContinueWatching(props: { entryAtom: Atom<LibraryEntry> }) {
 
 type EpisodeItemProps = {
     media: AnilistShowcaseMedia
-    episodeNumber: number
+    nextEpisodeNumber: number
+    nextEpisodeProgress: number
     aniZipData?: AniZipData
 }
 
-const EpisodeItem = memo(({ media, episodeNumber, aniZipData }: EpisodeItemProps) => {
+const EpisodeItem = memo(({ media, nextEpisodeProgress, nextEpisodeNumber, aniZipData }: EpisodeItemProps) => {
 
-    const episodeData = anizip_getEpisode(aniZipData, episodeNumber)
+    /**
+     * Here `nextEpisodeNumber` is 0-indexed IF the special is included
+     * `nextEpisodeProgress` is 1-indexed
+     */
+    const episodeData = anizip_getEpisode(aniZipData, nextEpisodeProgress)
 
     const router = useRouter()
 
@@ -94,7 +108,7 @@ const EpisodeItem = memo(({ media, episodeNumber, aniZipData }: EpisodeItemProps
         <>
             <LargeEpisodeListItem
                 image={episodeData?.image || media.bannerImage}
-                title={`Episode ${episodeNumber}`}
+                title={`Episode ${nextEpisodeNumber}`}
                 topTitle={media.title?.userPreferred}
                 actionIcon={undefined}
                 meta={(date) ? (!mediaIsOlder ? `${formatDistanceToNow(date, { addSuffix: true })}` : new Intl.DateTimeFormat("en-US", {

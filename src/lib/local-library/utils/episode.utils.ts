@@ -77,6 +77,7 @@ export function localFile_aniDBEpisodeIsSpecial<T extends {
  * - Is not a special
  * - Is not an NC
  * - This includes files with 0 as an episode number
+ * - This includes movie files (episode = 1)
  * @param props
  */
 export function localFile_isMain<T extends { metadata: LocalFileMetadata }>(props: T | null | undefined) {

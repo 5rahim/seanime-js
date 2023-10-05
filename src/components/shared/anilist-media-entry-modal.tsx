@@ -18,7 +18,7 @@ import { BiTrash } from "@react-icons/all-files/bi/BiTrash"
 import { Disclosure } from "@headlessui/react"
 import { userAtom } from "@/atoms/user"
 import { useAtomValue } from "jotai/react"
-import { anilist_getEpisodeCeilingFromMedia } from "@/lib/anilist/utils"
+import { anilist_getCurrentEpisodeCeilingFromMedia } from "@/lib/anilist/utils"
 
 interface AnilistMediaEntryModalProps {
     children?: React.ReactNode
@@ -168,7 +168,7 @@ export const AnilistMediaEntryModal: React.FC<AnilistMediaEntryModalProps> = (pr
                                 name={"progress"}
                                 discrete
                                 min={0}
-                                max={anilist_getEpisodeCeilingFromMedia(media)}
+                                max={anilist_getCurrentEpisodeCeilingFromMedia(media)}
                                 maxFractionDigits={0}
                                 minFractionDigits={0}
                                 precision={1}

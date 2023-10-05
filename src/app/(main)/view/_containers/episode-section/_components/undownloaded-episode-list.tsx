@@ -14,7 +14,7 @@ import { AnifyAnimeEpisode } from "@/lib/anify/types"
 import { anizip_getEpisode } from "@/lib/anizip/utils"
 import { anify_getEpisodeCover } from "@/lib/anify/utils"
 import { AniZipData } from "@/lib/anizip/types"
-import { anilist_hasEpisodeZero } from "@/lib/anilist/utils"
+import { useLibraryEntryDynamicDetails } from "@/atoms/library/local-file.atoms"
 
 interface UndownloadedEpisodeListProps {
     media: AnilistDetailedMedia
@@ -33,17 +33,14 @@ export const UndownloadedEpisodeList = React.memo(function (props: UndownloadedE
 
     const setTorrentSearchIsOpen = useSetAtom(__torrentSearch_isOpenAtom)
 
-    const {
-        downloadInfo,
-    } = useMediaDownloadInfo(media)
+    const { downloadInfo: _downloadInfo } = useMediaDownloadInfo(media)
 
-    const episodeNumberArr = useMemo(() => {
-        if (!aniZipData) return []
-        if (anilist_hasEpisodeZero(media, aniZipData)) {
-            return [0, ...downloadInfo.episodeNumbers.slice(0, -1)]
-        }
-        return downloadInfo.episodeNumbers
-    }, [downloadInfo.episodeNumbers, aniZipData, media])
+    const { getCorrectedDownloadInfo } = useLibraryEntryDynamicDetails(media.id, aniZipData)
+
+    const downloadInfo = useMemo(() => {
+        if (!getCorrectedDownloadInfo) return _downloadInfo
+        return getCorrectedDownloadInfo(_downloadInfo, aniZipData)
+    }, [_downloadInfo, getCorrectedDownloadInfo, aniZipData])
 
     if (!aniZipData || Object.keys(aniZipData?.episodes).length === 0 || (downloadInfo.toDownload === 0)) return null
 
@@ -57,7 +54,7 @@ export const UndownloadedEpisodeList = React.memo(function (props: UndownloadedE
                 </p>
             </div>
             <div className={"grid grid-cols-1 md:grid-cols-2 gap-4 opacity-60"}>
-                {episodeNumberArr.map((epNumber, index) => {
+                {downloadInfo.episodeNumbers.map((epNumber, index) => {
                     const episodeData = anizip_getEpisode(aniZipData, epNumber === 0 ? "S1" : epNumber)
                     const airDate = episodeData?.airdate
                     const anifyEpisodeCover = anify_getEpisodeCover(anifyEpisodeData, epNumber)

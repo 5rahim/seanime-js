@@ -25,6 +25,8 @@ export const anilistCollectionAtom = atomWithStorage<AnilistCollection>("sea-ani
 
 export const __refreshTimestampAtom = atomWithStorage("sea-anilist-refresh-timestamp", 0, undefined, { unstable_getOnInit: true })
 
+export const anilistCollectionIsDefinedAtom = atom(get => get(anilistCollectionAtom) !== undefined)
+
 export const getAnilistCollectionAtom = atom(null, async (get, set, options: { muteAlert: boolean }) => {
     try {
         const token = get(anilistClientTokenAtom)

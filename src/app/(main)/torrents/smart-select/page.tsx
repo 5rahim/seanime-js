@@ -15,7 +15,7 @@ import { LoadingOverlay } from "@/components/ui/loading-spinner"
 import { useRouter } from "next/navigation"
 import { path_getBasename } from "@/lib/helpers/path"
 import { valueContainsNC, valueContainsSpecials } from "@/lib/local-library/utils/filtering.utils"
-import { anilist_getEpisodeCeilingFromMedia } from "@/lib/anilist/utils"
+import { anilist_getCurrentEpisodeCeilingFromMedia } from "@/lib/anilist/utils"
 import { qBit_isTorrentReady } from "@/lib/download/qbittorrent/utils"
 
 export default function Page() {
@@ -111,7 +111,7 @@ export default function Page() {
                 // Apply episode offset when:
                 const shouldApplyEpisodeOffset =
                     // Absolute episode detected
-                    filesWithEpisodes.some(content => (Number(content.parsed.episode) > anilist_getEpisodeCeilingFromMedia(media)))
+                    filesWithEpisodes.some(content => (Number(content.parsed.episode) > anilist_getCurrentEpisodeCeilingFromMedia(media)))
                     // Not every episode number with offset is negative
                     && filesWithEpisodes.some(content => (Number(content.parsed.episode) - episodeOffset) > 0)
 

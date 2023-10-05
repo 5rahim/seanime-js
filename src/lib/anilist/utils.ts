@@ -87,21 +87,34 @@ export function anilist_filterEntriesByTitle<T extends AnilistCollectionEntry[] 
 
 /**
  * @description
- * - Returns the total episode count or current ceiling if media is releasing
+ * - Returns the current ceiling if media is releasing **first**
+ * - Returns the total episode count if media is not releasing
  * - Returns 0 if nothing is defined
  * @param media
  */
-export function anilist_getEpisodeCeilingFromMedia<T extends AnilistShowcaseMedia>(media: T | null | undefined) {
+export function anilist_getCurrentEpisodeCeilingFromMedia<T extends AnilistShowcaseMedia>(media: T | null | undefined) {
     if (!media) return 0
     return !!media.nextAiringEpisode?.episode ? media.nextAiringEpisode?.episode - 1 : (media.episodes || 0)
 }
 
 /**
  * @description
- * - Returns `true` if user has not watched all episodes
+ * - Returns the total episode count **first**, even if media is releasing
+ * - Returns the current ceiling if total episode count is not defined
+ * - Returns 0 if nothing is defined
+ * @param media
+ */
+export function anilist_getEpisodeCeilingFromMedia<T extends AnilistShowcaseMedia>(media: T | null | undefined) {
+    if (!media) return 0
+    return !!media.episodes ? media.episodes : (!!media.nextAiringEpisode?.episode ? media.nextAiringEpisode?.episode - 1 : undefined) || 0
+}
+
+/**
+ * @description
+ * - Returns `true` if user has not watched all **aired** episodes
  */
 export function anilist_canTrackProgress<T extends AnilistShowcaseMedia>(media: T, progress: Nullish<number>) {
-    const maxEp = anilist_getEpisodeCeilingFromMedia(media)
+    const maxEp = anilist_getCurrentEpisodeCeilingFromMedia(media)
     return maxEp > 0 && (!progress || progress < maxEp)
 }
 
@@ -114,16 +127,18 @@ export function anilist_canTrackProgress<T extends AnilistShowcaseMedia>(media: 
  */
 export function anilist_getNextEpisodeToWatch<T extends AnilistShowcaseMedia>(media: T, currentProgress: Nullish<number>) {
     const _currentProgress = currentProgress ?? 0
-    const maxEp = anilist_getEpisodeCeilingFromMedia(media)
+    const maxEp = anilist_getCurrentEpisodeCeilingFromMedia(media)
     const fallback = media.status === "RELEASING" ? maxEp : 1
     return ((_currentProgress + 1) <= maxEp ? _currentProgress + 1 : fallback)
 }
 
 /**
  * @description
- * - Detect whether AniList includes Episode 0 in the episode count
+ * Detect whether:
+ * - AniList includes Episode 0 in the episode count
+ * - AniZip doesn't include it
  */
-export function anilist_hasEpisodeZero<T extends AnilistShowcaseMedia>(media: T, aniZipData: Nullish<AniZipData>) {
+export function anilist_uniquelyIncludesEpisodeZero<T extends AnilistShowcaseMedia>(media: T, aniZipData: Nullish<AniZipData>) {
     if (!media.episodes || !aniZipData?.episodeCount) return false
     const diff = media.episodes - aniZipData.episodeCount
     return diff === 1 && aniZipData.specialCount > 0

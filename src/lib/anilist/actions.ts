@@ -13,7 +13,7 @@ import {
 } from "@/gql/graphql"
 import { logger } from "@/lib/helpers/debug"
 import { AnilistShortMedia, AnilistShowcaseMedia } from "@/lib/anilist/fragment"
-import { anilist_findMediaEdge, anilist_getEpisodeCeilingFromMedia } from "@/lib/anilist/utils"
+import { anilist_findMediaEdge, anilist_getCurrentEpisodeCeilingFromMedia } from "@/lib/anilist/utils"
 import { cache } from "react"
 import { redirect } from "next/navigation"
 import axios from "axios"
@@ -143,7 +143,7 @@ export async function analyzeMediaTree(props: {
 
         const aniZipData = await fetchAniZipData(medium.id, _aniZipCache)
 
-        const maxEpisode = anilist_getEpisodeCeilingFromMedia(medium)
+        const maxEpisode = anilist_getCurrentEpisodeCeilingFromMedia(medium)
         listWithInfo.push({
             media: medium,
             aniZipData: aniZipData,

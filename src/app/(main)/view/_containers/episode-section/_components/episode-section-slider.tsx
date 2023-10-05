@@ -8,8 +8,9 @@ import { formatDistanceToNow, isBefore, subYears } from "date-fns"
 import { LargeEpisodeListItem } from "@/components/shared/large-episode-list-item"
 import { LocalFile } from "@/lib/local-library/types"
 import { anizip_getEpisodeFromMetadata } from "@/lib/anizip/utils"
-import { localFile_episodeExists, localFile_getEpisodeCover } from "@/lib/local-library/utils/episode.utils"
+import { localFile_getDisplayTitle, localFile_getEpisodeCover } from "@/lib/local-library/utils/episode.utils"
 import { AniZipData } from "@/lib/anizip/types"
+import { anify_getEpisodeCover } from "@/lib/anify/utils"
 
 type Props = {
     fileAtoms: PrimitiveAtom<LocalFile>[],
@@ -20,11 +21,16 @@ type Props = {
 }
 
 export function EpisodeSectionSlider({ fileAtoms, ...rest }: Props) {
+
     return (
         <>
             <Slider>
                 {fileAtoms.map(fileAtom => (
-                    <Item key={`${fileAtom}`} fileAtom={fileAtom} {...rest} />
+                    <Item
+                        key={`${fileAtom}`}
+                        fileAtom={fileAtom}
+                        {...rest}
+                    />
                 ))}
             </Slider>
         </>
@@ -38,19 +44,27 @@ function Item({ fileAtom, aniZipData, anifyEpisodeData, onPlayFile, media }: Ite
 
     const metadata = useSelectAtom(fileAtom, file => file.metadata)
     const path = useSelectAtom(fileAtom, file => file.path)
+    const parsedInfo = useSelectAtom(fileAtom, file => file.parsedInfo)
+
     const aniZipEpisode = anizip_getEpisodeFromMetadata(aniZipData, { metadata })
-    const anifyEpisodeCover = anifyEpisodeData?.find(n => n.number === metadata.episode)?.img
+    const anifyEpisodeCover = anify_getEpisodeCover(anifyEpisodeData, metadata.episode)
 
     const date = aniZipEpisode?.airdate ? new Date(aniZipEpisode?.airdate) : undefined
 
-    const image = useMemo(() => localFile_getEpisodeCover({ metadata }, aniZipEpisode?.image, anifyEpisodeCover, media.bannerImage || media.coverImage?.large), [metadata, anifyEpisodeCover, aniZipEpisode?.image])
+    const image = useMemo(() => {
+        return localFile_getEpisodeCover({ metadata }, aniZipEpisode?.image, anifyEpisodeCover, media.bannerImage || media.coverImage?.large)
+    }, [metadata, anifyEpisodeCover, aniZipEpisode?.image])
 
     const mediaIsOlder = useMemo(() => date ? isBefore(date, subYears(new Date(), 2)) : undefined, [])
+
+    const displayedTitle = useMemo(() => {
+        return localFile_getDisplayTitle({ metadata, parsedInfo }, media)
+    }, [parsedInfo, metadata])
 
     return (
         <LargeEpisodeListItem
             image={image}
-            title={(media.format === "MOVIE" && metadata.episode === 1) ? "Complete movie" : (localFile_episodeExists({ metadata }) ? `Episode ${metadata.episode}` : media.title?.userPreferred || "")}
+            title={displayedTitle}
             topTitle={!((media.format === "MOVIE" && metadata.episode === 1)) ? aniZipEpisode?.title?.en : ``}
             meta={(date) ? (!mediaIsOlder ? `${formatDistanceToNow(date, { addSuffix: true })}` : new Intl.DateTimeFormat("en-US", {
                 day: "2-digit",

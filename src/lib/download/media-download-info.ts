@@ -3,6 +3,7 @@ import { MediaListStatus } from "@/gql/graphql"
 import { useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist/entries.atoms"
 import { useStableSelectAtom } from "@/atoms/helpers"
 import {
+    __useListenToLocalFiles,
     useLatestMainLocalFileByMediaId_UNSTABLE,
     useLocalFilesByMediaId_UNSTABLE,
 } from "@/atoms/library/local-file.atoms"
@@ -10,7 +11,7 @@ import { useMemo } from "react"
 import { LocalFile } from "@/lib/local-library/types"
 import sortBy from "lodash/sortBy"
 import { localFile_isMain } from "@/lib/local-library/utils/episode.utils"
-import { anilist_getEpisodeCeilingFromMedia } from "@/lib/anilist/utils"
+import { anilist_getCurrentEpisodeCeilingFromMedia } from "@/lib/anilist/utils"
 
 /**
  * @description Purpose
@@ -37,18 +38,22 @@ export const getMediaDownloadInfo = (props: {
 
     const lastProgress = progress ?? 0
     // e.g., 12
-    const maxEp = anilist_getEpisodeCeilingFromMedia(media)
+    const maxEp = anilist_getCurrentEpisodeCeilingFromMedia(media)
     // e.g., [1,2,3,…,12]
     let mediaEpisodeArr = [...Array(maxEp).keys()].map((_, idx) => idx + 1)
 
-    // Sometimes AniList includes Episode 0, AniDB does not
-    // Detect if the special episode is included in the local files
+    /**
+     * [EPISODE-ZERO-SUPPORT]
+     * - Sometimes AniList includes Episode 0, AniDB does not, so we detect if the special episode is included in the local files
+     * - This treats AniDB as the source of truth when it comes to episode numbers
+     *      - If in turn AniDB also includes Episode 0, then we need to alert the user to offset their episode numbers by 1
+     * - `specialIsIncluded` is implemented as defined in [libraryEntryDynamicDetailsAtom]
+     */
     const specialIsIncluded = files.filter(file => localFile_isMain(file)).some(file => file.metadata.episode === 0)
-    // If the special episode is included and none of the files have an episode number that is equal to the AniList ceiling
-    // e.g, AniList ceiling = 12, files = [0,1,2,3,4,5,6,7,8,9,10,11]
-    // Then we can assume that the special episode is the first episode
-    // Readjust the episode array to reflect this
-    if (specialIsIncluded && files.findIndex(file => file.metadata.episode === maxEp) === -1) {
+        && files.findIndex(file => file.metadata.episode === maxEp) === -1
+        && !(media.episodes === 1 || media.format === "MOVIE")
+    // e.g, If specialIsIncluded = true -> AniList ceiling = 12, files = [0,1,2,3,4,5,6,7,8,9,10,11]
+    if (specialIsIncluded) {
         mediaEpisodeArr = [0, ...mediaEpisodeArr.slice(0, -1)]
     }
 
@@ -89,6 +94,7 @@ export const getMediaDownloadInfo = (props: {
         batch: canBatch && downloadedEpisodeArr.length === 0 && lastProgress === 0, // Media finished airing and user has no episodes downloaded/watched
         schedulingIssues,
         canBatch,
+        specialIsIncluded,
     }
 
 
@@ -96,6 +102,10 @@ export const getMediaDownloadInfo = (props: {
 
 export type MediaDownloadInfo = ReturnType<typeof getMediaDownloadInfo>
 
+/**
+ * Invoke [getMediaDownloadInfo] with the appropriate parameters
+ * @param media
+ */
 export function useMediaDownloadInfo(media: AnilistShowcaseMedia) {
 
     // Get the AniList collection entry to retrieve progress and status
@@ -107,12 +117,14 @@ export function useMediaDownloadInfo(media: AnilistShowcaseMedia) {
     // Get all local files associated with the media
     const files = useLocalFilesByMediaId_UNSTABLE(media.id)
 
+    const __ = __useListenToLocalFiles()
+
     const downloadInfo = useMemo(() => getMediaDownloadInfo({
         media: media,
         files: files,
         progress: progress,
         status: status,
-    }), [files.length])
+    }), [__])
 
     return {
         latestFile,

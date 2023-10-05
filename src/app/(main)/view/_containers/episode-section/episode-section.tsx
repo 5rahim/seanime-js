@@ -32,7 +32,7 @@ import { EpisodeSectionSlider } from "@/app/(main)/view/_containers/episode-sect
 import { AppLayoutStack } from "@/components/ui/app-layout"
 import dynamic from "next/dynamic"
 import { Alert } from "@/components/ui/alert"
-import { anilist_canTrackProgress } from "@/lib/anilist/utils"
+import { anilist_canTrackProgress, anilist_uniquelyIncludesEpisodeZero } from "@/lib/anilist/utils"
 import { localFile_isMain } from "@/lib/local-library/utils/episode.utils"
 import { AniZipData } from "@/lib/anizip/types"
 
@@ -54,7 +54,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
         toWatchSlider,
         watched,
         allMain,
-        mediaIncludesSpecial,
+        specialIsIncluded,
     } = useDisplayLocalFileAtomsByMediaId(detailedMedia.id)
     const ovaFileAtoms = useSpecialsLocalFileAtomsByMediaId(detailedMedia.id)
     const ncFileAtoms = useNCLocalFileAtomsByMediaId(detailedMedia.id)
@@ -141,28 +141,37 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
                 </div>
 
                 {(
-                    !!aniZipData?.episodeCount && !!detailedMedia.episodes
-                    && aniZipData?.episodeCount !== detailedMedia.episodes
+                    anilist_uniquelyIncludesEpisodeZero(detailedMedia, aniZipData)
+                    && aniZipData
                     && detailedMedia.status !== "RELEASING"
                     && detailedMedia.status !== "NOT_YET_RELEASED"
                     && allMain.length !== detailedMedia.episodes // AniList is the single source of truth for episode numbers
-                    && aniZipData?.episodeCount < detailedMedia.episodes
                 ) && <Alert
                     title={"Episode count mismatch"}
                     intent={"warning-basic"}
                     description={<div className={"space-y-1.5 mt-1"}>
                         <p>The number of episodes on AniDB ({aniZipData?.episodeCount}) does not match the number of
-                            episodes on AniList ({detailedMedia.episodes}). In order to accurately track your progress
-                            you should download that episode</p>
-                        {!!aniZipData.episodes["S1"] && <>
-                            <p className={"text-[1.1rem]"}>{`->`} <strong>Seanime detected that AniList might be
-                                counting a "Special" episode as a main one.</strong></p>
-                            <p>&nbsp;e.g., You might be missing Episode 0.</p>
-                        </>}
+                            episodes on AniList ({detailedMedia.episodes}). Seanime detected that AniList might be
+                            counting Episode 0 as part of the main episodes.
+                            In order to accurately track your progress you should download that episode or missing
+                            ones.</p>
                         <p>
                             <a href={"https://anidb.net/anime/" + aniZipData.mappings.anidb_id} target={"_blank"}
                                className={"text-brand-200 underline underline-offset-1"}>Open on AniDB</a>
                         </p>
+                    </div>}
+                />}
+
+                {(
+                    !anilist_uniquelyIncludesEpisodeZero(detailedMedia, aniZipData)
+                    && specialIsIncluded
+                ) && <Alert
+                    title={"Mapping mismatch"}
+                    intent={"warning-basic"}
+                    description={<div className={"space-y-1.5 mt-1"}>
+                        <p>Both AniDB and AniList include episode 0 as part of the main episodes.</p>
+                        <p>In order to avoid issues, please offset all metadata episode numbers by 1.</p>
+                        <p>e,g., Episode 0 {`->`} 1, Episode 1 {`->`} 2, etc...</p>
                     </div>}
                 />}
 
@@ -236,8 +245,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
                 </div>
             </AppLayoutStack>
 
-            {canTrackProgress && <ProgressTrackingModal media={detailedMedia} progress={progress}
-                                                        mediaIncludesSpecial={mediaIncludesSpecial}/>}
+            {canTrackProgress && <ProgressTrackingModal media={detailedMedia}/>}
             {<EpisodeOffsetAction/>}
         </>
     )

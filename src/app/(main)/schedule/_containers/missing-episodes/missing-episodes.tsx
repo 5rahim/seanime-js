@@ -73,7 +73,6 @@ const EpisodeItem = memo(({ media, episodeNumber, aniZipData }: EpisodeItemProps
 
     const router = useRouter()
 
-
     return (
         <>
             <LargeEpisodeListItem
