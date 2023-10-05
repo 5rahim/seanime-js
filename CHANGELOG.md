@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.3.2
+
+- Refactored how episode numbers are handled
+- Better handling of mismatched episode count between AniList and AniDB
+- Fixed handling of "Episode 0" across the app
+
 ## 0.3.1
 
 - Optimized "Resolve unmatched" feature

@@ -22,6 +22,7 @@ export type MatchingSuggestionGroups = {
 }
 export const libraryMatchingSuggestionGroupsAtom = atom<MatchingSuggestionGroups[]>([])
 
+// TODO: Implement system to delete after a certain time
 const matchingSuggestionGroupsCache = atomWithStorage<{ key: string, data: MatchingSuggestionGroups[] } | undefined>("sea-matching-cache", undefined, undefined, { unstable_getOnInit: true })
 
 const isFetchingSuggestionsAtom = atom(false)

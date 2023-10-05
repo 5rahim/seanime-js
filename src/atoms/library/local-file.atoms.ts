@@ -94,9 +94,14 @@ export const getLibraryEntryDynamicDetailsAtom = atom(null,
          * [EPISODE-ZERO-SUPPORT]
          * - Whether downloaded episodes include a special episode "0" and no episode number is equal to the max episode number
          * - This treats AniDB as the source of truth when it comes to episode numbers
-         *      - If in turn AniDB also includes Episode 0, then we need to alert the user to offset their episode numbers by 1
+         *      - If in turn AniDB also includes Episode 0, then we need to alert the user to offset their episode numbers by +1
          * - e.g., epCeiling = 13 AND downloaded episodes = [0,...,12] //=> true
          * -      epCeiling = 13 AND downloaded episodes = [1,...,13] //=> false
+         * @description
+         * - If this is TRUE, then we treat episode numbers as 0-indexed. We need to offset the episode numbers by -1
+         * - Since updating progress is based on episode numbers, we offset anilist progress by +1
+         *
+         * Areas affected: "missing-episodes.tsx", "undownloaded-episodes.tsx", "episode-item.tsx", "episode-section-slider.tsx", "continue-watching.tsx", "media-download-info.ts", "progress-tracking.tsx"
          */
         const specialIsIncluded = mainFileAtoms.findIndex(fileAtom => get(fileAtom).metadata.episode === 0) !== -1
             && mainFileAtoms.every(fileAtom => get(fileAtom).metadata.episode !== epCeiling)
