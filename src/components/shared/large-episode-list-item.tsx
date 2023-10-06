@@ -4,8 +4,8 @@ import Image from "next/image"
 import { AiFillPlayCircle } from "@react-icons/all-files/ai/AiFillPlayCircle"
 import { imageShimmer } from "@/components/shared/image-helpers"
 
-interface EpisodeListItemProps {
-    title: string,
+type LargeEpisodeListItemProps = {
+    title: React.ReactElement
     actionIcon?: React.ReactElement
     image?: string | null
     onClick?: () => void
@@ -13,7 +13,7 @@ interface EpisodeListItemProps {
     meta?: string | null
 }
 
-export const LargeEpisodeListItem: React.FC<EpisodeListItemProps & React.ComponentPropsWithoutRef<"div">> = (props) => {
+export const LargeEpisodeListItem: React.FC<LargeEpisodeListItemProps & Omit<React.ComponentPropsWithoutRef<"div">, "title">> = (props) => {
 
     const {
         children,

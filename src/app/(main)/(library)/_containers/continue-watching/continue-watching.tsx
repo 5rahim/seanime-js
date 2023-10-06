@@ -108,7 +108,8 @@ const EpisodeItem = memo(({ media, nextEpisodeProgress, nextEpisodeNumber, aniZi
         <>
             <LargeEpisodeListItem
                 image={episodeData?.image || media.bannerImage}
-                title={`Episode ${nextEpisodeNumber}`}
+                title={<span>{`Episode ${nextEpisodeNumber}`} {!!media.episodes &&
+                    <span className={"opacity-40"}>/{` `}{media.episodes}</span>}</span>}
                 topTitle={media.title?.userPreferred}
                 actionIcon={undefined}
                 meta={(date) ? (!mediaIsOlder ? `${formatDistanceToNow(date, { addSuffix: true })}` : new Intl.DateTimeFormat("en-US", {

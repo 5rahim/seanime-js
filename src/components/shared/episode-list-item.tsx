@@ -4,7 +4,7 @@ import { cn } from "@/components/ui/core"
 import Image from "next/image"
 import { imageShimmer } from "@/components/shared/image-helpers"
 
-interface EpisodeListItemProps {
+type EpisodeListItemProps = {
     media: AnilistDetailedMedia,
     children?: React.ReactNode
     action?: React.ReactNode

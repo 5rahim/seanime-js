@@ -30,7 +30,7 @@ const _dummy = atom(null)
  * @param anAtom
  * @param keyFn
  */
-export function useStableSelectAtom<T, R>(anAtom: PrimitiveAtom<T> | Atom<T> | undefined, keyFn: (v: T) => R | undefined) {
+export function useStableSelectAtom<T, R>(anAtom: PrimitiveAtom<T> | Atom<T> | undefined, keyFn: (v: T) => R | null) {
     return (anAtom ? useAtomValue(
         selectAtom(
             anAtom,
@@ -40,10 +40,10 @@ export function useStableSelectAtom<T, R>(anAtom: PrimitiveAtom<T> | Atom<T> | u
     ) : useAtomValue(
         selectAtom(
             _dummy,
-            useCallback(() => undefined, []),
+            useCallback(() => null, []),
             deepEquals,
         ),
-    )) as R | undefined
+    )) as R | null
 }
 
 export const useFocusSetAtom = <T>(anAtom: PrimitiveAtom<T>, prop: keyof T) => {

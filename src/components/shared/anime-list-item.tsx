@@ -35,13 +35,14 @@ export const AnimeListItem = ((props: AnimeListItemProps) => {
     const entryAtom = useLibraryEntryAtomByMediaId(mediaId)
     const media = !props.media ? useAnilistUserMediaId_UNSTABLE(mediaId) : props.media
 
-
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(mediaId)
     const status = useStableSelectAtom(collectionEntryAtom, entry => entry?.status)
+    const progress = useStableSelectAtom(collectionEntryAtom, entry => entry?.progress)
 
     const showLibraryBadge = !!entryAtom && !!props.showLibraryBadge
+    const showProgressBar = (!!progress && progress > 0 && media?.episodes && status !== "COMPLETED")
 
-    if (!media) return <></>
+    if (!media) return null
 
     return (
         <div
@@ -133,14 +134,25 @@ export const AnimeListItem = ((props: AnimeListItemProps) => {
                     className={"z-[5] absolute bottom-0 w-full h-[50%] bg-gradient-to-t from-black to-transparent"}
                 />
 
+                {showProgressBar && <div className={"absolute top-0 w-full h-1 z-[2] bg-gray-700 left-0"}>
+                    <div className={cn(
+                        "h-1 absolute z-[2] left-0 bg-gray-200 transition-all",
+                        {
+                            "bg-brand-400": status === "CURRENT",
+                            "bg-gray-400": status !== "CURRENT",
+                        },
+                    )}
+                         style={{ width: `${String(Math.ceil((progress! / media.episodes!) * 100))}%` }}></div>
+                </div>}
+
                 {(showLibraryBadge) &&
-                    <div className={"absolute z-10 left-0 top-0"}>
+                    <div className={"absolute z-[1] left-0 top-0"}>
                         <Badge size={"xl"} intent={"warning-solid"}
                                className={"rounded-md rounded-bl-none rounded-tr-none text-orange-900"}><IoLibrarySharp/></Badge>
                     </div>}
 
                 {/*RELEASING BADGE*/}
-                {media.status === "RELEASING" && <div className={"absolute z-10 right-1 top-1"}>
+                {media.status === "RELEASING" && <div className={"absolute z-10 right-1 top-2"}>
                     <Tooltip
                         trigger={<Badge intent={"primary-solid"} size={"lg"}><RiSignalTowerLine/></Badge>}>
                         Airing

@@ -164,8 +164,10 @@ export const getLibraryEntryDynamicDetailsAtom = atom(null,
 
 export function useLibraryEntryDynamicDetails(mediaId: number, aniZipData?: AniZipData) {
     const __ = __useListenToLocalFiles()
+    const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(mediaId)
+    const collectionEntry = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry)
     const get = useSetAtom(getLibraryEntryDynamicDetailsAtom)
-    return useMemo(() => get({ mediaId, aniZipData }), [__])
+    return useMemo(() => get({ mediaId, aniZipData }), [__, collectionEntry])
 }
 
 export type LibraryEntryDynamicDetails = ReturnType<typeof useLibraryEntryDynamicDetails>

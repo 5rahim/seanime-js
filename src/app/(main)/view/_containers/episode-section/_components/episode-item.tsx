@@ -13,11 +13,7 @@ import { Modal } from "@/components/ui/modal"
 import { createIsolation } from "jotai-scope"
 import { createTypesafeFormSchema, Field, TypesafeForm } from "@/components/ui/typesafe-form"
 import toast from "react-hot-toast"
-import {
-    __useRerenderLocalFiles,
-    useLibraryEntryDynamicDetails,
-    useSpecialEpisodeIncludedInLibrary,
-} from "@/atoms/library/local-file.atoms"
+import { __useRerenderLocalFiles, useLibraryEntryDynamicDetails } from "@/atoms/library/local-file.atoms"
 import { LocalFile } from "@/lib/local-library/types"
 import {
     localFile_episodeExists,
@@ -50,9 +46,7 @@ export const EpisodeItem = React.memo((props: {
     const setFileLocked = useFocusSetAtom(fileAtom, "locked")
     const setFileMediaId = useFocusSetAtom(fileAtom, "mediaId")
 
-    const { episodeProgress, progress } = useLibraryEntryDynamicDetails(media.id)
-
-    const specialIsIncluded = useSpecialEpisodeIncludedInLibrary(media?.id)
+    const { episodeProgress } = useLibraryEntryDynamicDetails(media.id)
 
     const aniZipEpisode = anizip_getEpisodeFromMetadata(aniZipData, { metadata })
     const anifyEpisodeCover = anify_getEpisodeCover(anifyEpisodeData, metadata.episode)
