@@ -63,9 +63,8 @@ export const UndownloadedEpisodeList = React.memo(function (props: UndownloadedE
                             media={media}
                             key={epNumber + "-" + index}
                             title={media.format !== "MOVIE" ? `Episode ${epNumber}` : media.title?.userPreferred || ""}
-                            showImagePlaceholder
                             episodeTitle={episodeData?.title?.en}
-                            image={anifyEpisodeCover || episodeData?.image}
+                            image={anifyEpisodeCover || episodeData?.image || media.coverImage?.medium}
                             action={
                                 <div className={""}>
                                     <a

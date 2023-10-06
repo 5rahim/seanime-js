@@ -14,7 +14,6 @@ type EpisodeListItemProps = {
     episodeTitle?: string | null
     description?: string | null
     fileName?: string
-    showImagePlaceholder?: boolean
     isSelected?: boolean
     isWatched?: boolean
     unoptimizedImage?: boolean
@@ -33,7 +32,6 @@ export const EpisodeListItem: React.FC<EpisodeListItemProps & React.ComponentPro
         fileName,
         isSelected,
         media,
-        showImagePlaceholder,
         isWatched,
         unoptimizedImage,
         ...rest
@@ -61,10 +59,10 @@ export const EpisodeListItem: React.FC<EpisodeListItemProps & React.ComponentPro
                 )}
                 onClick={onClick}
             >
-                {(image && !unoptimizedImage) && <div
+                {(image || media.coverImage?.medium) && <div
                     className="h-24 w-24 flex-none rounded-md object-cover object-center relative overflow-hidden">
                     <Image
-                        src={image}
+                        src={image || media.coverImage?.medium || ""}
                         alt={"episode image"}
                         fill
                         quality={60}
@@ -85,20 +83,6 @@ export const EpisodeListItem: React.FC<EpisodeListItemProps & React.ComponentPro
                         data-src={image}
                     />
                 </div>}
-
-                {(showImagePlaceholder && !image) && (
-                    <div className={"h-24 w-24 rounded-md flex-none bg-gray-800 relative overflow-hidden"}>
-                        {props.media.coverImage?.medium && <Image
-                            src={props.media.coverImage?.medium}
-                            alt={"episode image"}
-                            fill
-                            quality={60}
-                            priority
-                            sizes="10rem"
-                            className="object-cover object-center"
-                        />}
-                    </div>
-                )}
 
                 <div className={"relative overflow-hidden"}>
                     <h4 className={cn("font-medium transition", { "opacity-50 group-hover/episode-list-item:opacity-100": isWatched })}>{title}</h4>

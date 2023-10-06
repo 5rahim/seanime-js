@@ -315,7 +315,6 @@ export function WatchPage(props: WatchPageProps) {
                                 image={episode.image}
                                 media={media}
                                 isSelected={episode.number === episodeNumber}
-                                unoptimizedImage={episodes.length > 200}
                                 isWatched={progress ? episode.number <= progress : undefined}
                             />
                         </div>

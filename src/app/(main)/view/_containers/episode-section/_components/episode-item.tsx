@@ -75,7 +75,6 @@ export const EpisodeItem = React.memo((props: {
                 image={image}
                 onClick={async () => onPlayFile(path)}
                 title={displayedTitle}
-                showImagePlaceholder={!metadata.isNC}
                 episodeTitle={aniZipEpisode?.title?.en}
                 fileName={fileTitle}
                 isWatched={isWatched}
