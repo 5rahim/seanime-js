@@ -12,6 +12,7 @@ import { LocalFile } from "@/lib/local-library/types"
 import sortBy from "lodash/sortBy"
 import { localFile_isMain } from "@/lib/local-library/utils/episode.utils"
 import { anilist_getCurrentEpisodeCeilingFromMedia } from "@/lib/anilist/utils"
+import { useAnilistUserMediaAtomById } from "@/atoms/anilist/media.atoms"
 
 /**
  * @description Purpose
@@ -110,8 +111,10 @@ export function useMediaDownloadInfo(media: AnilistShowcaseMedia) {
 
     // Get the AniList collection entry to retrieve progress and status
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(media.id)
+    const mediaAtom = useAnilistUserMediaAtomById(media.id)
     const progress = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress)
     const status = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.status)
+    const nextAiringEpisode = useStableSelectAtom(mediaAtom, media => media?.nextAiringEpisode?.episode || null)
     // Get the library entry to retrieve the latest file
     const latestFile = useLatestMainLocalFileByMediaId_UNSTABLE(media.id)
     // Get all local files associated with the media
@@ -124,7 +127,7 @@ export function useMediaDownloadInfo(media: AnilistShowcaseMedia) {
         files: files,
         progress: progress,
         status: status,
-    }), [__])
+    }), [__, nextAiringEpisode])
 
     return {
         latestFile,

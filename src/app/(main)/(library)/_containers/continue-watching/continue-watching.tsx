@@ -30,25 +30,31 @@ export function ContinueWatching(props: { entryAtom: Atom<LibraryEntry> }) {
 
     const nextMetadataEpisodeNumber = useMemo(() => {
         if (currentlyWatching) {
-            const availableProgress = anilist_getCurrentEpisodeCeilingFromMedia(media)
-            if (!downloadInfo.schedulingIssues) {
-                if (
-                    // Next episode has not been watched
-                    progress < availableProgress
-                    // Latest sorted file has an episode
-                    && !!latestFile?.metadata?.episode
-                    // Next episode has been downloaded
-                    && !downloadInfo.episodeNumbers.includes(episodeProgress + 1) // [EPISODE-ZERO-SUPPORT]
-                ) {
-                    return episodeProgress + 1
-                }
-                // FIXME Hacky way to check if the next episode is downloaded when we don't have accurate scheduling information
-            } else if (latestFile?.metadata?.episode === (episodeProgress + 1)) { // [EPISODE-ZERO-SUPPORT]
-                return episodeProgress + 1
+            if (!latestFile) return undefined
+
+            const maxEp = anilist_getCurrentEpisodeCeilingFromMedia(media)
+            // Here we use `episodeProgress` instead of `progress` because we compare it to the file's episode number
+            const nextEpisodeNumber = episodeProgress + 1
+
+            // [SCHEDULING-ISSUE]
+            // Hacky way to check if the next episode is downloaded when we don't have accurate scheduling information
+            if (downloadInfo.schedulingIssues && latestFile.metadata.episode === (nextEpisodeNumber)) {
+                return nextEpisodeNumber
+            }
+
+            if (
+                maxEp > 0
+                // Next episode has not been watched
+                // Here we compare the actual (anilist) progress to the ceiling
+                && progress < maxEp
+                // Next episode has been downloaded
+                && !downloadInfo.episodeNumbers.includes(nextEpisodeNumber) // [EPISODE-ZERO-SUPPORT]
+            ) {
+                return nextEpisodeNumber
             }
         }
         return undefined
-    }, [currentlyWatching, progress, downloadInfo.schedulingIssues, latestFile?.metadata?.episode, downloadInfo.episodeNumbers, media, episodeProgress])
+    }, [currentlyWatching, progress, downloadInfo.schedulingIssues, downloadInfo.episodeNumbers, media, episodeProgress, latestFile])
 
 
     const { data, isLoading } = useQuery({
