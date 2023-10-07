@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+# 0.3.3
+
+- Added progress bar to anime list
+- Fixed minor episode list image appearance inconsistencies
+- Fixed *Continue watching* section showing undownloaded episode when refreshing AniList
+
 ## 0.3.2
 
 - Refactored how episode numbers are handled
