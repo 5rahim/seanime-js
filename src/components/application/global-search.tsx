@@ -118,7 +118,10 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = (props) => {
                                                                     as="div"
                                                                     key={item.id}
                                                                     value={item}
-                                                                    onClick={() => router.push(`/view/${item.id}`)}
+                                                                    onClick={() => {
+                                                                        router.push(`/view/${item.id}`)
+                                                                        setOpen(false)
+                                                                    }}
                                                                     className={({ active }) =>
                                                                         cn(
                                                                             "flex select-none items-center rounded-md p-2 text-[--muted] cursor-pointer",
@@ -179,7 +182,8 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = (props) => {
                                                                     : "-"}
                                                                 </p>
                                                             </div>
-                                                            <Link href={`/view/${activeOption.id}`}>
+                                                            <Link href={`/view/${activeOption.id}`}
+                                                                  onClick={() => setOpen(false)}>
                                                                 <Button
                                                                     type="button"
                                                                     className={"w-full"}

@@ -29,7 +29,7 @@ export default function Page() {
                     help={"Where your anime files are located/will be downloaded."}
                     name={"localDirectory"}
                     directoryShouldExist={true}
-                    showFolderOptions={false}
+                    showSubfolders={false}
                 />
                 <Field.Submit role={"save"}/>
             </TypesafeForm>

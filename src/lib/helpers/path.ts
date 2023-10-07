@@ -93,6 +93,14 @@ export function path_getBasename(input: string) {
     return upath.basename(normalized)
 }
 
+export function path_normalize(input: string) {
+    return upath.normalize(input)
+}
+
+export function path_join(...input: string[]) {
+    return upath.joinSafe(...input)
+}
+
 /**
  * /!\ Doesn't work in browser
  * @param input

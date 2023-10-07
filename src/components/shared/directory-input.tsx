@@ -2,61 +2,84 @@
 import React, { startTransition, useCallback, useEffect, useRef, useState } from "react"
 import { TextInput, TextInputProps } from "@/components/ui/text-input"
 import { useDebounce } from "@/hooks/use-debounce"
-import { useAsync } from "react-use"
+import { useAsync, useUpdateEffect } from "react-use"
 import { getSafeFoldersFromDirectory } from "@/lib/helpers/directory"
 import { FcOpenedFolder } from "@react-icons/all-files/fc/FcOpenedFolder"
 import { BiCheck } from "@react-icons/all-files/bi/BiCheck"
 import { BiFolderPlus } from "@react-icons/all-files/bi/BiFolderPlus"
 import { BiX } from "@react-icons/all-files/bi/BiX"
-import path from "path"
-import { path_removeTopPath } from "@/lib/helpers/path"
+import { path_join, path_removeTopPath } from "@/lib/helpers/path"
 
 export interface DirectoryInputProps {
     children?: React.ReactNode
     value: string | undefined
     onSelect: (value: string) => void
+    // Path that will be added before the input value
     prefix?: string
+    // Only allow existing directories
     directoryShouldExist?: boolean
-    showFolderOptions?: boolean
+    // Show sub-folders
+    showSubfolders?: boolean
 }
 
 export const DirectoryInput: React.FC<DirectoryInputProps & Omit<TextInputProps, "value" | "onChange" | "onSelect">> = React.forwardRef((props, ref) => {
 
-    const { children, value, prefix, directoryShouldExist, onSelect, showFolderOptions = true, ...rest } = props
+    const { children, value, prefix, directoryShouldExist, onSelect, showSubfolders = true, ...rest } = props
 
-    const [inputValue, setInputValue] = useState((prefix && value) ? path_removeTopPath(value, prefix) || "" : (value || ""))
-    const debouncedValue = useDebounce(inputValue, 1000)
+    // track input path
+    const [inputValue, setInputValue] = useState(
+        // default path is the value prop without the prefix
+        (prefix && value) ? path_removeTopPath(value, prefix) || "" : (value || ""),
+    )
+
+    // debounced value that will be used to fetch folders from server
+    const debouncedPath = useDebounce(inputValue, 1000)
+    // keep track of the last valid value
     const valueRef = useRef(inputValue)
 
+    function formatAbsolutePath(path: string) {
+        return prefix ? path_join(prefix, path) : path
+    }
+
+    useUpdateEffect(() => {
+        if (!!value && inputValue === "") { // watch for external value changes when input is empty
+            setInputValue((prefix && value) ? path_removeTopPath(value, prefix) || "" : (value || ""))
+        }
+    }, [value])
+
+    // fetched folders
     const folders = useAsync(async () => {
-        const val = prefix ? (path.join(prefix, debouncedValue)) : debouncedValue
-        if (val.length > 0) {
-            const res = await getSafeFoldersFromDirectory(val)
-            return res
+        // format path that will be used to fetch folders
+        const _path = formatAbsolutePath(debouncedPath) // add prefix if needed
+        if (_path.length > 0) {
+            return await getSafeFoldersFromDirectory(_path)
         } else {
             return { data: [], error: null }
         }
-    }, [debouncedValue])
+    }, [debouncedPath])
 
+    // handle selection of a sub-folder
     const handleSelectDir = useCallback((input: string) => {
-        let _path = prefix ? path_removeTopPath(input, prefix) : input
-        _path = _path.startsWith(path.sep) ? _path.substring(1) : _path
-        _path = _path.replaceAll(path.sep + path.sep, path.sep)
+        // format the new input value (without prefix)
+        let _inputPath = prefix ? path_removeTopPath(input, prefix) : input
+        // format the returned path (with prefix if needed)
+        let _path = path_join(inputValue, input)
         // actions
-        setInputValue(_path)
-        onSelect(_path)
-        valueRef.current = _path
-    }, [prefix])
+        setInputValue(_inputPath) // change input value
+        valueRef.current = _inputPath // update last valid value
+        onSelect(_path) // emit update
+    }, [prefix, inputValue])
 
     useEffect(() => {
+        const _path = formatAbsolutePath(debouncedPath)
         if (folders.value) {
             if (directoryShouldExist && !folders.value.error) {
-                onSelect(debouncedValue)
+                onSelect(_path)
             } else if (!directoryShouldExist) {
-                onSelect(debouncedValue)
+                onSelect(_path)
             }
         }
-    }, [debouncedValue, folders])
+    }, [debouncedPath, folders])
 
     async function checkDirectory() {
         const res = await getSafeFoldersFromDirectory(inputValue)
@@ -78,11 +101,11 @@ export const DirectoryInput: React.FC<DirectoryInputProps & Omit<TextInputProps,
                 }}
                 onBlur={() => {
                     startTransition(() => {
-                        if (inputValue.length === 0) {
-                            setTimeout(() => {
-                                setInputValue(valueRef.current)
-                            }, 500)
-                        }
+                        // if (inputValue.length === 0) {
+                        //     setTimeout(() => {
+                        //         setInputValue(valueRef.current)
+                        //     }, 500)
+                        // }
                         if (directoryShouldExist) {
                             setTimeout(() => {
                                 checkDirectory()
@@ -91,10 +114,10 @@ export const DirectoryInput: React.FC<DirectoryInputProps & Omit<TextInputProps,
                     })
                 }}
             />
-            {!!(folders.value?.data.length && folders.value?.data.length > 0 && showFolderOptions) &&
+            {!!(folders.value?.data.length && folders.value?.data.length > 0 && showSubfolders) &&
                 <div
                     className={"w-full flex flex-none flex-nowrap overflow-x-auto gap-2 items-center bg-gray-800 rounded-md p-1 px-4"}>
-                    <div>Sub-folders:</div>
+                    <div className={"flex-none"}>Sub-folders:</div>
                     {folders.value?.data.map(folder => (
                         <div
                             key={folder.name}

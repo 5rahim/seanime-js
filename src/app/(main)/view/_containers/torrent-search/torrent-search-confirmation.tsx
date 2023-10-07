@@ -1,9 +1,10 @@
 /* -------------------------------------------------------------------------------------------------
  * - List torrents that are about to be downloaded
+ * - Choose destination folder
  * - Add torrent magnets
  * - Redirect to download page
  * -----------------------------------------------------------------------------------------------*/
-import React, { useCallback, useMemo, useRef, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Atom } from "jotai"
 import { LibraryEntry } from "@/atoms/library/library-entry.atoms"
 import { AnilistDetailedMedia } from "@/lib/anilist/fragment"
@@ -11,7 +12,6 @@ import { useSettings } from "@/atoms/settings"
 import { useRouter } from "next/navigation"
 import { useAtomValue, useSetAtom } from "jotai/react"
 import { useStableSelectAtom } from "@/atoms/helpers"
-import { useMount } from "react-use"
 import { TorrentRepository } from "@/lib/download"
 import { FcFolder } from "@react-icons/all-files/fc/FcFolder"
 import { Tooltip } from "@/components/ui/tooltip"
@@ -29,10 +29,9 @@ import { FcFilmReel } from "@react-icons/all-files/fc/FcFilmReel"
 import { BiX } from "@react-icons/all-files/bi/BiX"
 import { AppLayoutStack } from "@/components/ui/app-layout"
 import { DirectoryInput } from "@/components/shared/directory-input"
-import path from "path"
+import { path_join } from "@/lib/helpers/path"
 
-interface TorrentListProps {
-    children?: React.ReactNode
+type Props = {
     entryAtom: Atom<LibraryEntry> | undefined
     media: AnilistDetailedMedia,
     onClose: () => void
@@ -40,9 +39,9 @@ interface TorrentListProps {
     episodeOffset: number
 }
 
-export const TorrentSearchTorrentList: React.FC<TorrentListProps> = (props) => {
+export function TorrentSearchConfirmation(props: Props) {
 
-    const { children, entryAtom, media, downloadInfo, episodeOffset, ...rest } = props
+    const { entryAtom, media, downloadInfo, episodeOffset } = props
 
     const router = useRouter()
     const { settings } = useSettings()
@@ -54,7 +53,10 @@ export const TorrentSearchTorrentList: React.FC<TorrentListProps> = (props) => {
     const selectedTorrents = useAtomValue(__torrentSearch_sortedSelectedTorrentsAtom)
     const sharedPath = useStableSelectAtom(entryAtom, entry => entry.sharedPath)
 
-    const [selectedDir, setSelectedDir] = useState<string | undefined>(sharedPath || (settings.library.localDirectory ? path.join(settings.library.localDirectory, sanitizeDirectoryName(media.title?.romaji || "")) : ""))
+    const [selectedDir, setSelectedDir] = useState<string | undefined>(
+        // set default selected directory as the common path if some torrents of the same media are already in the library
+        sharedPath || "",
+    )
 
     const { addTorrentToQueue } = useTorrentSmartSelectQueue()
 
@@ -81,21 +83,26 @@ export const TorrentSearchTorrentList: React.FC<TorrentListProps> = (props) => {
         return trimmed || "Untitled"
     }
 
-    // If all selected torrents are batches, set destination to root folder
-    useMount(() => {
-        if (selectedTorrents?.every(torrent => !torrent.parsed.episode) && !sharedPath) {
-            setSelectedDir(prev => settings.library.localDirectory)
+    useEffect(() => {
+        if (!sharedPath) {
+            // If all selected torrents are batches, set destination to root folder
+            if (selectedTorrents?.every(torrent => !torrent.parsed.episode)) {
+                setSelectedDir(prev => settings.library.localDirectory)
+            } else {
+                // else, set destination to new folder with media title
+                setSelectedDir(prev => path_join(settings.library.localDirectory!, sanitizeDirectoryName(media.title?.romaji || media.title?.english || "")))
+            }
         }
-    })
+    }, [])
 
     async function kickstartTorrentManager() {
         setIsLoading(true)
         await torrentManager.current.kickstart()
-        await new Promise(acc => setTimeout(() => acc(""), 2000))
+        await new Promise(resolve => setTimeout(resolve, 2000))
         setIsLoading(false)
     }
 
-    const handleAddTorrents = useCallback(async (smartSelect: boolean = false) => {
+    async function handleAddTorrents(smartSelect: boolean = false) {
         await kickstartTorrentManager()
 
         if (selectedDir && selectedTorrents) {
@@ -142,10 +149,11 @@ export const TorrentSearchTorrentList: React.FC<TorrentListProps> = (props) => {
                 }
             }
         }
-    }, [selectedDir, selectedTorrents, episodeOffset])
+    }
 
     return <>
         <AppLayoutStack>
+            <p className={"text-[--muted]"}>Choose the destination</p>
             <DirectoryInput
                 value={selectedDir}
                 onSelect={(dir) => setSelectedDir(dir)}
