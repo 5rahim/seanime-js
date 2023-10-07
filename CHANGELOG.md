@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.3.5
+
+- 🚨 Fixed failing build
+
 ## 0.3.4
 
 - 🦺 Fixed directory selector returning only relative path

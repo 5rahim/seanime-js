@@ -46,7 +46,7 @@ export function TorrentDownloadButton(
                     {(detailedMedia.format !== "MOVIE") && `Download ${downloadInfo.batch ? "batch /" : "next"} ${downloadInfo.toDownload > 1 ? `${downloadInfo.toDownload} episodes` : "episode"}`}
                     {(detailedMedia.format === "MOVIE") && `Download movie`}
                 </> : <>
-                    Search for torrents
+                    Search torrents
                 </>}
             </Button>
         </div>

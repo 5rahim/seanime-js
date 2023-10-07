@@ -3,7 +3,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { useSearchParam } from "react-use"
 
 export function PlayNextFile({ path, playFile }: {
-    path: string | undefined
+    path: string | null
     playFile: (value: string) => Promise<void>
 }) {
 

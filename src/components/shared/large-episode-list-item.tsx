@@ -5,7 +5,7 @@ import { AiFillPlayCircle } from "@react-icons/all-files/ai/AiFillPlayCircle"
 import { imageShimmer } from "@/components/shared/image-helpers"
 
 type LargeEpisodeListItemProps = {
-    title: React.ReactElement
+    title: React.ReactNode
     actionIcon?: React.ReactElement
     image?: string | null
     onClick?: () => void
