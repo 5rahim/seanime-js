@@ -13,7 +13,7 @@ might not work as intended. Feel free to fork the project, contribute or ask que
 
 # Setup
 
-[How to use Seanime.](https://github.com/5rahim/seanime/blob/main/docs/set-up.md)
+[How to use Seanime.](https://seanime.rahim.app/getting-started)
 
 # Features
 
@@ -22,14 +22,14 @@ might not work as intended. Feel free to fork the project, contribute or ask que
 - [x] Scan local library and automatically match local files with corresponding
   anime.
   - [x] Scan with or without AniList anime list
-    data. [Learn more](https://github.com/5rahim/seanime/blob/main/docs/guide.md#scanning-your-library).
+    data.
   - [x] Support for various naming/folder
-    structures. [Learn more](https://github.com/5rahim/seanime/blob/main/docs/guide.md#tldr).
+    structures.
   - [x] Support for absolute episode
     numbers.
   - [x] Support for movies.
   - [x] *Refresh entries*
-    feature. [Learn more](https://github.com/5rahim/seanime/blob/main/docs/guide.md#locking-files).
+    feature.
   - [x] Ignore files or folders
   - [x] Resolve unmatched files
   - [x] Update file metadata
@@ -40,8 +40,6 @@ might not work as intended. Feel free to fork the project, contribute or ask que
   - [x] Option to match files using AniList ID
 - [x] Detect episodes missing from your local library
 - [ ] Delete files
-
-[How scanning works under the hood.](https://github.com/5rahim/seanime/blob/main/docs/guide.md#how-it-works)
 
 ## Download
 
