@@ -15,7 +15,7 @@ export function DynamicHeaderBackground() {
                     alt={"tenki no ko"}
                     fill
                     priority
-                    className={"object-cover object-top"}
+                    className={"object-cover object-center"}
                 />}
                 {pathname.startsWith("/anilist") && <Image
                     src={"/landscape-tenki-no-ko.jpg"}

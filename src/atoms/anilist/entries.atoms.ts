@@ -46,7 +46,7 @@ export const anilistCollectionEntriesAtom = atom<AnilistCollectionEntry[]>((get)
  */
 export const anilistCollectionEntryAtoms = splitAtom(anilistCollectionEntriesAtom, collectionEntry => collectionEntry?.media?.id)
 // Read
-const getAnilist_CollectionEntry_Atoms_ByMediaIdAtom = atom(get => get(anilistCollectionEntryAtoms).length,
+const getAnilistCollectionEntryAtomByMediaId_Atom = atom(get => get(anilistCollectionEntryAtoms).length,
     (get, set, mediaId: number) => get(anilistCollectionEntryAtoms).find((entryAtom) => get(entryAtom)?.media?.id === mediaId),
 )
 
@@ -56,7 +56,7 @@ const getAnilist_CollectionEntry_Atoms_ByMediaIdAtom = atom(get => get(anilistCo
  * @param mediaId
  */
 export const useAnilistCollectionEntryAtomByMediaId = (mediaId: number) => {
-    const [value, get] = useAtom(getAnilist_CollectionEntry_Atoms_ByMediaIdAtom)
+    const [value, get] = useAtom(getAnilistCollectionEntryAtomByMediaId_Atom)
     return useMemo(() => get(mediaId), [value]) as PrimitiveAtom<AnilistCollectionEntry> | undefined
 }
 

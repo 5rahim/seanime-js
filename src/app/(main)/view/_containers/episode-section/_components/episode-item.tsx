@@ -46,7 +46,7 @@ export const EpisodeItem = React.memo((props: {
     const setFileLocked = useFocusSetAtom(fileAtom, "locked")
     const setFileMediaId = useFocusSetAtom(fileAtom, "mediaId")
 
-    const { episodeProgress } = useLibraryEntryDynamicDetails(media.id)
+    const { episodeProgress, progress } = useLibraryEntryDynamicDetails(media.id)
 
     const aniZipEpisode = anizip_getEpisodeFromMetadata(aniZipData, { metadata })
     const anifyEpisodeCover = anify_getEpisodeCover(anifyEpisodeData, metadata.episode)
@@ -58,6 +58,7 @@ export const EpisodeItem = React.memo((props: {
 
     const isWatched = useMemo(() => {
         if (!localFile_isMain({ metadata }) || !localFile_episodeExists({ metadata })) return false
+        if (metadata.episode === 0 && (episodeProgress === 0 || progress === 0 || !progress)) return false
         // [EPISODE-ZERO-SUPPORT]
         return episodeProgress >= metadata.episode!
     }, [episodeProgress, metadata])

@@ -169,9 +169,13 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
                     title={"Mapping mismatch"}
                     intent={"warning-basic"}
                     description={<div className={"space-y-1.5 mt-1"}>
-                        <p>Both AniDB and AniList include episode 0 as part of the main episodes.</p>
+                        <p>Both AniDB and AniList have the same number of episodes.</p>
                         <p>In order to avoid issues, please offset all metadata episode numbers by 1.</p>
                         <p>e,g., Episode 0 {`->`} 1, Episode 1 {`->`} 2, etc...</p>
+                        <p>
+                        <a href="https://seanime.rahim.app/metadata#manage-specials" target={"_blank"}><Button
+                            intent={"primary-link"} size={"sm"} className={"px-0"}>Documentation</Button></a>
+                        </p>
                     </div>}
                 />}
 
