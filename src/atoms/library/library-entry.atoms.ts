@@ -67,8 +67,8 @@ export const libraryEntryAtoms = splitAtom(sortedLibraryEntriesAtom, entry => en
  */
 export const currentlyWatching_libraryEntryAtoms = splitAtom(atom(get => {
     return orderBy(get(libraryEntriesAtom).filter(n => n.collectionEntry?.status === "CURRENT"), [
-            n => n.collectionEntry?.startedAt,
-        ], ["asc"])
+        n => n.collectionEntry?.progress,
+    ], ["desc"])
     },
 ), entry => entry.id)
 
@@ -84,8 +84,28 @@ export const completed_libraryEntryAtoms = splitAtom(atom(get => {
 /**
  * Derived filtered atoms
  */
+export const paused_libraryEntryAtoms = splitAtom(atom(get => {
+    return get(sortedLibraryEntriesAtom).filter(n => n.collectionEntry?.status === "PAUSED")
+    },
+), entry => entry.id)
+/**
+ * Derived filtered atoms
+ */
+export const planning_libraryEntryAtoms = splitAtom(atom(get => {
+        return get(sortedLibraryEntriesAtom).filter(n => n.collectionEntry?.status === "PLANNING")
+    },
+), entry => entry.id)
+
+/**
+ * Derived filtered atoms
+ */
 export const rest_libraryEntryAtoms = splitAtom(atom(get => {
-        return get(sortedLibraryEntriesAtom).filter(n => n.collectionEntry?.status !== "CURRENT" && n.collectionEntry?.status !== "COMPLETED")
+        return get(sortedLibraryEntriesAtom).filter(n =>
+            n.collectionEntry?.status !== "CURRENT"
+            && n.collectionEntry?.status !== "COMPLETED"
+            && n.collectionEntry?.status !== "PLANNING"
+            && n.collectionEntry?.status !== "PAUSED",
+        )
     },
 ), entry => entry.id)
 

@@ -1,7 +1,7 @@
 import { useSelectAtom } from "@/atoms/helpers"
 import { useMediaDownloadInfo } from "@/lib/download/media-download-info"
 import { useLibraryEntryDynamicDetails } from "@/atoms/library/local-file.atoms"
-import React, { memo, useMemo } from "react"
+import React, { memo, startTransition, useEffect, useMemo } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { Skeleton } from "@/components/ui/skeleton"
 import { AnilistShowcaseMedia } from "@/lib/anilist/fragment"
@@ -14,6 +14,8 @@ import { anilist_getCurrentEpisodeCeilingFromMedia } from "@/lib/anilist/utils"
 import { anizip_getEpisode } from "@/lib/anizip/utils"
 import { fetchAniZipData } from "@/lib/anizip/helpers"
 import { AniZipData } from "@/lib/anizip/types"
+import { useSetAtom } from "jotai/react"
+import { __libraryHeaderImageAtom } from "@/app/(main)/(library)/_containers/local-library/_components/library-header"
 
 export function ContinueWatching(props: { entryAtom: Atom<LibraryEntry> }) {
 
@@ -110,6 +112,17 @@ const EpisodeItem = memo(({ media, nextEpisodeProgress, nextEpisodeNumber, aniZi
     const date = episodeData?.airdate ? new Date(episodeData?.airdate) : undefined
     const mediaIsOlder = useMemo(() => date ? isBefore(date, subYears(new Date(), 2)) : undefined, [])
 
+    const setHeaderImage = useSetAtom(__libraryHeaderImageAtom)
+
+    useEffect(() => {
+        setHeaderImage(prev => {
+            if (prev === null) {
+                return media.bannerImage || media.coverImage?.large || null
+            }
+            return prev
+        })
+    }, [])
+
     return (
         <>
             <LargeEpisodeListItem
@@ -126,6 +139,12 @@ const EpisodeItem = memo(({ media, nextEpisodeProgress, nextEpisodeNumber, aniZi
                 onClick={() => {
                     router.push(`/view/${media.id}?playNext=true`)
                 }}
+                onMouseEnter={() => {
+                    startTransition(() => {
+                        setHeaderImage(media.bannerImage || media.coverImage?.large || null)
+                    })
+                }}
+                larger
             />
         </>
     )

@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.3.7
+
+- 💄 New Home Page design
+- 🔄 Added loading overlay while scanning
+- ⏪️ Disabled Anify as source for episode covers
+
 ## 0.3.6
 
 - 🦺 Fixed incorrect completion status in episode list

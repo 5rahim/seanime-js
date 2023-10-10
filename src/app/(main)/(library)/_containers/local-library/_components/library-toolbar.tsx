@@ -31,6 +31,7 @@ import { Divider } from "@/components/ui/divider"
 import { BetaBadge } from "@/components/application/beta-badge"
 import { FiSearch } from "@react-icons/all-files/fi/FiSearch"
 import { HiOutlineSparkles } from "@react-icons/all-files/hi/HiOutlineSparkles"
+import { LoadingOverlay } from "@/components/ui/loading-spinner"
 
 export function LibraryToolbar() {
 
@@ -111,7 +112,11 @@ export function LibraryToolbar() {
 
     return (
         <>
-            <div className={"p-4"}>
+            {isScanning && <LoadingOverlay className={"fixed w-full h-full z-[80]"}>
+                <h3 className={"mt-2"}>Scanning...</h3>
+                <h4 className={"mt-2"}>Do not leave this page</h4>
+            </LoadingOverlay>}
+            <div className={"p-4 relative z-[8]"}>
                 <div className={"flex w-full justify-between gap-2"}>
 
                     <div className={"inline-flex gap-2 items-center"}>

@@ -13,6 +13,7 @@ import { ANILIST_OAUTH_URL } from "@/lib/anilist/config"
 import { BiCog } from "@react-icons/all-files/bi/BiCog"
 import { FirstScanScreen } from "@/app/(main)/(library)/_containers/local-library/first-scan-screen"
 import dynamic from "next/dynamic"
+import { LibraryHeader } from "@/app/(main)/(library)/_containers/local-library/_components/library-header"
 
 const IgnoredFilesDrawer = dynamic(() => import("@/app/(main)/(library)/_containers/ignored-files/ignored-files-drawer").then((mod) => mod.IgnoredFilesDrawer), { ssr: false })
 
@@ -67,6 +68,7 @@ export default function Home() {
 
     return (
         <div>
+            <LibraryHeader/>
             <LibraryToolbar/>
             <LocalLibrary/>
             <FirstScanScreen/>

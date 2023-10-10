@@ -6,7 +6,6 @@ import React from "react"
 import { Slider } from "@/components/shared/slider"
 import { LargeEpisodeListItem } from "@/components/shared/large-episode-list-item"
 import { useRouter } from "next/navigation"
-import { BiLinkExternal } from "@react-icons/all-files/bi/BiLinkExternal"
 import { AppLayoutStack } from "@/components/ui/app-layout"
 
 export function RecentReleases() {
@@ -44,7 +43,7 @@ export function RecentReleases() {
                             topTitle={item.media?.title?.userPreferred}
                             meta={item.airingAt ? formatDistanceToNow(addSeconds(new Date(), item.timeUntilAiring), { addSuffix: true }) : undefined}
                             onClick={() => router.push(`/view/${item.media?.id}`)}
-                            actionIcon={<BiLinkExternal/>}
+                            actionIcon={null}
                         />
                     )
                 })}

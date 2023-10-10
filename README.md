@@ -6,10 +6,10 @@
 
 <h4 align="center">User-friendly, self-hosted web app for managing your local library with AniList integration</h4>
 
-<img src="docs/images/main_5.png" alt="preview" width="100%"/>
+<img src="docs/images/main_6.png" alt="preview" width="100%"/>
 
 🚨 This project is a hobby, it's not meant to fix every shortcoming or include every requested feature. Some features
-might not work as intended. Feel free to fork the project, contribute or ask questions.
+might not work as intended. Feel free to fork the project, contribute or open issues.
 
 # Setup
 
@@ -113,43 +113,43 @@ npm run build
 
 ## Known issues
 
-- Loading toast may persist after scan is complete
-- Streaming only works intermittently
+- Loading overlay may persist after scan is complete
 - :shrug:
 
 ## Not planned
 
 - Watch together feature / social features
-- Torrent streaming (use [Miru](https://github.com/ThaUnknown/miru/))
+- Torrent streaming
 - MAL support
 - Mobile app
 
 ## Future plans
 
 - Manga support
-- Desktop app
+- Desktop client
 - Theming
 - Plugins
+
+## Contributing
+
+Contributions are welcome, feel free to open issues or pull requests.
 
 ## Resources
 
 Resources used to build Seanime.
 
 - [React](https://react.dev/)
-- [Next.js 13](https://nextjs.org/) - React framework + Server actions
-- [AniList](https://github.com/AniList/ApiV2-GraphQL-Docs) - API upon which Seanime is built
+- [Next.js 13](https://nextjs.org/)
+- [AniList](https://github.com/AniList/ApiV2-GraphQL-Docs)
 - [Jotai](https://jotai.org/docs/recipes/large-objects) - State management library
-- [Tailwind](https://tailwindcss.com/) - CSS framework built for scale
-- [5rahim/chalk-ui](https://chalk.rahim.app/) - UI Components (shameless plug)
-- [Consumet](https://github.com/consumet/api.consumet.org) - API for streaming sources
-- [rakun](https://github.com/lowlighter/rakun/) - JS Parser for folder and file names
+- [Tailwind](https://tailwindcss.com/) - CSS framework
+- [5rahim/chalk-ui](https://chalk.rahim.app/) - UI Components
+- [rakun](https://github.com/lowlighter/rakun/) - Parser
 - [nyaasi-api](https://github.com/ejnshtein/nyaasi-api) - Nyaa search API
-- [@robertklep/qbittorrent](https://github.com/robertklep/qbittorrent) Original qBittorent API code
-- [MPC-HC API](https://github.com/rzcoder/mpc-hc-control) - Original MPC-HC API code
-- [VLC API](https://github.com/alexandrucancescu/node-vlc-client) - Original VLC API code
-- [GraphQL Codegen](https://the-guild.dev/graphql/codegen) - GraphQL code generation
-- [M3U8Proxy](https://github.com/chaycee/M3U8Proxy) - Video streaming proxy
-- [Anify](https://github.com/Eltik/Anify/tree/main) - Covers for episodes
+- [@robertklep/qbittorrent](https://github.com/robertklep/qbittorrent) qBittorent API
+- [MPC-HC API](https://github.com/rzcoder/mpc-hc-control) - MPC-HC API
+- [VLC API](https://github.com/alexandrucancescu/node-vlc-client) - VLC API
+- [GraphQL Codegen](https://the-guild.dev/graphql/codegen)
 
 ## Acknowledgements
 

@@ -36,7 +36,7 @@ export function useManageLibraryEntries(opts: UseManageEntriesOptions) {
 
     const handleRefreshEntries = useCallback(async () => {
         if (user && token) {
-            const tID = toast.loading("Loading")
+            // const tID = toast.loading("Loading")
             setIsLoading(true)
 
             const result = await scanLocalFiles({
@@ -74,7 +74,7 @@ export function useManageLibraryEntries(opts: UseManageEntriesOptions) {
             }
 
             opts.onComplete()
-            toast.remove(tID)
+            // toast.remove(tID)
             setIsLoading(false)
         } else {
             unauthenticatedAlert()
@@ -84,7 +84,7 @@ export function useManageLibraryEntries(opts: UseManageEntriesOptions) {
 
     const handleRescanEntries = useCallback(async () => {
         if (user && token) {
-            const tID = toast.loading("Loading")
+            // const tID = toast.loading("Loading")
             setIsLoading(true)
 
             const result = await scanLocalFiles({
@@ -129,8 +129,8 @@ export function useManageLibraryEntries(opts: UseManageEntriesOptions) {
             } else if (result.error) {
                 toast.error(result.error)
             }
-            opts.onComplete
-            toast.remove(tID)
+            opts.onComplete()
+            // toast.remove(tID)
             setIsLoading(false)
         } else {
             unauthenticatedAlert()
