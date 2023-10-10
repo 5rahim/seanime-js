@@ -161,7 +161,7 @@ Resources used to build Seanime.
 
 ## Library
 
-<img src="docs/images/img_17.png" alt="preview" width="100%"/>
+<img src="docs/images/img.png" alt="preview" width="100%"/>
 
 ## View
 
