@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.3.6
+
+- 🦺 Fixed incorrect completion status in episode list
+- 🔄 Modified some aspects in logs
+  - Directory path is now hidden
+  - Dumped info logs are now in separate folder
+  - Added more stats
+
 ## 0.3.5
 
 - 🚨 Fixed failing build
