@@ -46,7 +46,7 @@ export class ScanLogging {
         return _output
     }
 
-    outputWithTime() {
+    outputWithTime(mask?: string) {
         let _output = ""
         for (const [key, value] of this._scanLogs) {
             let previousTimestamp = (new Date()).getTime()
@@ -60,10 +60,18 @@ export class ScanLogging {
                 previousTimestamp = obj.timestamp
             })
         }
+        if (!!mask) {
+            try {
+                const _mask = mask.endsWith("\\") || mask.endsWith("/") ? mask.slice(0, -1) : mask
+                return _output.replace(new RegExp(_mask.replace(/\//g, "\\\\") + "+", "gi"), "{{ Library }}").replace(new RegExp(_mask.replace(/\\/g, "/"), "gi"), "{{ Library }}")
+            } catch (e) {
+                return _output
+            }
+        }
         return _output
     }
 
-    async writeSnapshot() {
+    async writeSnapshot(mask?: string) {
         const snapshotDir = path.resolve("logs")
         if (!existsSync(snapshotDir)) {
             await fs.mkdir(snapshotDir)
@@ -73,7 +81,7 @@ export class ScanLogging {
         const snapshotFilename = `${timestamp.replaceAll(".", "_")}-scan.txt`
         const snapshotPath = path.join(snapshotDir, snapshotFilename)
 
-        await fs.writeFile(snapshotPath, this.outputWithTime(), { encoding: "utf-8" })
+        await fs.writeFile(snapshotPath, this.outputWithTime(mask), { encoding: "utf-8" })
     }
 
 }
@@ -83,7 +91,7 @@ export class ScanLogging {
  * -----------------------------------------------------------------------------------------------*/
 
 export async function _dumpToFile(key: string, content: any) {
-    const snapshotDir = path.resolve("logs")
+    const snapshotDir = path.resolve("logs/dumps")
     if (!existsSync(snapshotDir)) {
         await fs.mkdir(snapshotDir)
     }

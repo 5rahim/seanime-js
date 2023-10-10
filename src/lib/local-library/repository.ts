@@ -75,8 +75,6 @@ export async function retrieveLocalFilesWithMedia(props: {
             _scanLogging,
         })
 
-        await _dumpToFile("local-files", localFiles) /* DUMP */
-
         // If there are files, hydrate them with their associated [AnilistShowcaseMedia]
         if (localFiles.length > 0) {
 
@@ -193,7 +191,7 @@ export async function retrieveLocalFiles(props: {
     try {
         const items: Dirent[] = await fs.readdir(directoryPath, { withFileTypes: true })
 
-        logger("repository/retrieveLocalFiles").info("Getting all files recursively")
+        logger("repository/retrieveLocalFiles").info("Creating [LocalFile] objects")
         for (const item of items) {
             const itemPath = path.join(directoryPath, item.name)
             const stats = await fs.stat(itemPath)

@@ -167,13 +167,24 @@ export async function scanLocalFiles(props: {
 
     const end = performance.now()
 
+    const jobCount = await anilistLimiter.done()
+    const unresolvedCount = scannedFiles.filter(n => !n.mediaId).length
+
     _scanLogging.add("repository/scanLocalFiles", "Finished")
     _scanLogging.add("repository/scanLocalFiles", `The scan was completed in ${((end - start) / 1000).toFixed(2)} seconds`)
-    logger("repository/scanLocalFiles").success("Library scanned successfully", scannedFiles.length)
+    _scanLogging.add("repository/scanLocalFiles", `${unknownButAddedMediaIds.size} unknown media were found`)
+    _scanLogging.add("repository/scanLocalFiles", `${jobCount + 1} AniList API calls were completed`)
+    _scanLogging.add("repository/scanLocalFiles", `${scannedFiles.length} files were scanned`)
+    _scanLogging.add("repository/scanLocalFiles", `${unresolvedCount} files are unresolved`)
+    _scanLogging.add("repository/scanLocalFiles", `${matchedMedia.length} media were matched`)
 
-    await _scanLogging.writeSnapshot()
+    logger("repository/scanLocalFiles").success(`${scannedFiles.length} files were scanned`)
+
+    // await _scanLogging.writeSnapshot()
+    await _scanLogging.writeSnapshot(settings.library.localDirectory)
     _scanLogging.clear()
 
+    await anilistLimiter.stop()
     await _dumpToFile("scanned-files", scannedFiles)
 
     return {
