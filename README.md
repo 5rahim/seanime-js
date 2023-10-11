@@ -84,30 +84,6 @@ Powered by qBittorrent and Nyaa
 
 [Read the disclaimer.](https://github.com/5rahim/seanime/blob/main/DISCLAIMER.md)
 
-# Development
-
-## Local development
-
-1. Update `.env` file
-
-2. Install packages
-
-```shell
-npm install
-```
-
-3. Run
-
-```shell
-npm run dev
-```
-
-## Build
-
-```shell
-npm run build
-```
-
 - Copy `.next/static` to `.next/standalone/.next/static`
 - Copy `public` to `.next/standalone/public`
 
@@ -132,7 +108,7 @@ npm run build
 
 ## Contributing
 
-Contributions are welcome, feel free to open issues or pull requests.
+[Contributions are welcome.](https://github.com/5rahim/seanime/blob/main/CONTRIBUTING.md)
 
 ## Resources
 
