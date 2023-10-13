@@ -119,13 +119,16 @@ export const inspectProspectiveLibraryEntry = async (props: {
             // Keep files with a rating greater than 0.3 - This might be meaningless
             .filter(item => item.rating >= 0.3 || containsSpecialsOrNC(item.file))
             // If a file has a lower rating than the highest, filter it out
-            .filter(item => item.rating.toFixed(3) === highestRating.toFixed(3) || containsSpecialsOrNC(item.file))
+            .filter(item =>
+                item.rating.toFixed(3) === highestRating.toFixed(3)
+                || Math.abs(+item.rating.toFixed(3) - +highestRating.toFixed(3)) < 0.4
+                || containsSpecialsOrNC(item.file))
             //
             .filter(item =>
                 // Keep files with the highest folder rating
                 (item.ratingByFolderName.toFixed(3) === highestRatingByFolderName.toFixed(3))
                 // OR files with folder rating deviation from the highest that is lower than 0.1
-                || Math.abs(+item.ratingByFolderName.toFixed(3) - +highestRatingByFolderName.toFixed(3)) < 0.1 // deviation is lower than 0.1
+                || Math.abs(+item.ratingByFolderName.toFixed(3) - +highestRatingByFolderName.toFixed(3)) < 0.5 // deviation is lower than 0.1
                 // OR files that are specials, ova...
                 || containsSpecialsOrNC(item.file),
             )
