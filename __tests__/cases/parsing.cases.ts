@@ -46,6 +46,7 @@ export default {
             { filename: "[ASW] Yami Shibai 11 - 12 [1080p HEVC x265 10Bit][AAC].mkv", expected: { episode: "12" } },
             { filename: "[Judas] Mob Psycho 100 - 05.mkv", expected: { episode: "5" } },
             { filename: "[Judas] Mob Psycho 100 05.mkv", expected: { episode: "5" } },
+            { filename: "[Judas] Mob Psycho 100.mkv", expected: { episode: "100" } }, // FIXME
             { filename: "[Judas] Mob Psycho 100 - 10.mkv", expected: { episode: "10" } },
             { filename: "[Judas] Zom 100: Zombie ni Naru Made ni Shitai 100 no Koto - 05.mkv", expected: { episode: "5" } },
             { filename: "[Judas] Zom 100: Zombie ni Naru Made ni Shitai 100 no Koto 05.mkv", expected: { episode: "5" } },

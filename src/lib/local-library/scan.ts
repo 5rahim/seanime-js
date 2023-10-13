@@ -118,7 +118,7 @@ export async function scanLocalFiles(props: {
             const currentMedia = matchedMedia.find(media => media?.id === mediaIdAsNumber)
             const filesToBeInspected = localFilesWithMedia.filter(f => f.media?.id === mediaIdAsNumber)
 
-            // TODO Check if filesToBeInspected has duplicated episode numbers, this would indicate mis-match and missing season
+            // TODO Check if filesToBeInspected has duplicated episode numbers
 
             if (currentMedia) {
                 // Inspect the files grouped under same media

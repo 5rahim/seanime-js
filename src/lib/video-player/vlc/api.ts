@@ -235,11 +235,7 @@ function get<T = any>(options: http.RequestOptions): Promise<T> {
 }
 
 function isObject(obj: any) {
-    if (typeof obj === "object" && obj != null) {
-        return true
-    } else {
-        return false
-    }
+    return typeof obj === "object" && obj != null
 }
 
 function equal(a: any, b: any) {
@@ -250,7 +246,7 @@ function equal(a: any, b: any) {
             return false
         }
 
-        for (var prop in a) {
+        for (let prop in a) {
             if (!equal(a[prop], b[prop])) {
                 return false
             }

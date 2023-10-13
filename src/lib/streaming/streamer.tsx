@@ -253,7 +253,7 @@ export function VideoStreamer(
                         })
 
                         art.on("video:timeupdate", async () => {
-                            var currentTime = art.currentTime
+                            let currentTime = art.currentTime
                             const duration = art.duration
                             const percentage = currentTime / duration
 
@@ -273,7 +273,7 @@ export function VideoStreamer(
 
                         /** Skip OP/ED **/
                         art.on("video:timeupdate", () => {
-                            var currentTime = art.currentTime
+                            let currentTime = art.currentTime
                             // console.log(art.currentTime);
 
                             if (
