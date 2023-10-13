@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.3.9
+
+- ✨ Added ability to view episode info, including runtime, description...
+- 🏗️ Refactored rejection logic to avoid unintentional rejections during scanning
+- 🦺 Fixed Special episode detection in cases where episode number is higher than total episode count
+- 🦺 Fixed matched files not being displayed in episode list when metadata is undefined
+- 🩹 Updated M3U8 proxy
+
 ## 0.3.8
 
 - 🚨 Fixed failing scan
