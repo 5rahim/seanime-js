@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.3.8
+
+- 🚨 Fixed failing scan
+
 ## 0.3.7
 
 - 💄 New Home Page design
@@ -12,9 +16,9 @@ All notable changes to this project will be documented in this file.
 
 - 🦺 Fixed incorrect completion status in episode list
 - 🔄 Modified some aspects in logs
-  - Directory path is now hidden
-  - Dumped info logs are now in separate folder
-  - Added more stats
+    - Directory path is now hidden
+    - Dumped info logs are now in separate folder
+    - Added more stats
 
 ## 0.3.5
 
@@ -23,7 +27,7 @@ All notable changes to this project will be documented in this file.
 ## 0.3.4
 
 - 🦺 Fixed directory selector returning only relative path
-  - This caused issues when default save path on qBittorrent was not the same as local directory
+    - This caused issues when default save path on qBittorrent was not the same as local directory
 - ✨ Ability to deselect torrents from episode list preview
 - 🔄 Changed default download directory to be the same as local directory when downloading batches
 
