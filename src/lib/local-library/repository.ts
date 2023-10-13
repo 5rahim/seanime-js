@@ -46,7 +46,7 @@ export async function retrieveLocalFilesWithMedia(props: {
     _scanLogging: ScanLogging
     _aniZipCache: Map<number, AniZipData>
     _mediaCache: Map<number, AnilistShortMedia>
-    enhanced?: "full" | "partial" | "none"
+    enhanced?: "full" | "partial" | "none" // FIXME
 }, limiter?: Bottleneck) {
 
     const {
@@ -119,7 +119,7 @@ export async function retrieveLocalFilesWithMedia(props: {
                 }).flatMap(edge => edge?.node).filter(Boolean) as AnilistShowcaseMedia[]
 
 
-            const allMedia = [...allUserMedia, ...relatedMedia].filter(Boolean).filter(media => media?.status === "RELEASING" || media?.status === "FINISHED")
+            const allMedia = [...allUserMedia, ...relatedMedia].filter(Boolean).filter(media => media?.status !== "NOT_YET_RELEASED")
             const mediaEngTitles = allMedia.map(media => media.title?.english).filter(Boolean)
             const mediaRomTitles = allMedia.map(media => media.title?.romaji).filter(Boolean)
             const mediaPreferredTitles = allMedia.map(media => media.title?.userPreferred).filter(Boolean)

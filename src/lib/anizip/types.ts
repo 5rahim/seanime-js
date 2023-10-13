@@ -10,7 +10,10 @@ type AniZipEpisode = {
     absoluteEpisodeNumber: number
     title: AniZipTitleTranslations
     image: string
-    length: number
+    summary?: string
+    overview?: string
+    runtime?: number
+    length?: number
     episode: string
     anidbEid: number
     rating: string

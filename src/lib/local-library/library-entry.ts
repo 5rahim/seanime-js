@@ -115,7 +115,7 @@ export const inspectProspectiveLibraryEntry = async (props: {
 
         // This is meant to filter out files that differ too much from the best matches
         // For example this can help avoid having different season episodes under the same Anime
-        let mostAccurateFiles = lFilesWithRating
+        const _mostAccurateFiles = lFilesWithRating
             // Keep files with a rating greater than 0.3 - This might be meaningless
             .filter(item => item.rating >= 0.3 || containsSpecialsOrNC(item.file))
             // If a file has a lower rating than the highest, filter it out
@@ -126,7 +126,7 @@ export const inspectProspectiveLibraryEntry = async (props: {
             //
             .filter(item =>
                 // Keep files with the highest folder rating
-                (item.ratingByFolderName.toFixed(3) === highestRatingByFolderName.toFixed(3))
+                item.ratingByFolderName.toFixed(3) === highestRatingByFolderName.toFixed(3)
                 // OR files with folder rating deviation from the highest that is lower than 0.1
                 || Math.abs(+item.ratingByFolderName.toFixed(3) - +highestRatingByFolderName.toFixed(3)) < 0.5 // deviation is lower than 0.1
                 // OR files that are specials, ova...
@@ -134,26 +134,22 @@ export const inspectProspectiveLibraryEntry = async (props: {
             )
             .map(item => item.file)
 
-        for (let i = 0; i < mostAccurateFiles.length; i++) {
+        let mostAccurateFiles: LocalFileWithMedia[] = []
 
-            const hydratedFileData = await hydrateLocalFileWithInitialMetadata({
-                file: mostAccurateFiles[i],
+        for (const file of _mostAccurateFiles) {
+            const hydratedFileData = await hydrateLocalFileWithInitialMetadata<LocalFileWithMedia>({
+                file: file,
                 media: currentMedia,
                 _mediaCache: _mediaCache,
                 _aniZipCache: _aniZipCache,
                 forceHydrate: true,
                 _scanLogging,
             }, limiter)
-            if (!hydratedFileData.error) {
-                mostAccurateFiles[i] = hydratedFileData.file as LocalFileWithMedia
-            } else {
-                // If we can't hydrate the file, we'll just unmatch it
-                // @ts-ignore
-                mostAccurateFiles[i] = undefined
+            if (!hydratedFileData.error && Object.keys(hydratedFileData.file.metadata).length > 0) {
+                // File was accepted
+                mostAccurateFiles = [...mostAccurateFiles, hydratedFileData.file]
             }
         }
-
-        mostAccurateFiles = mostAccurateFiles.filter(Boolean)
 
         const rejectedFiles = files.filter(n => !mostAccurateFiles.find(f => f.path === n.path))
 

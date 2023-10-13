@@ -13,7 +13,7 @@ export function anizip_getEpisode(data: AniZipData | null | undefined, episode: 
  * @param props
  */
 export function anizip_getEpisodeFromMetadata<T extends {
-    metadata: LocalFileMetadata
+    metadata: LocalFileMetadata | null | undefined
 }>(data: AniZipData | null | undefined, props: T | null | undefined) {
     const metadata = props?.metadata
     if (!metadata)

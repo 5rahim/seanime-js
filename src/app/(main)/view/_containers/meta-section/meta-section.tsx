@@ -201,7 +201,7 @@ export function MetaSection(props: { detailedMedia: AnilistDetailedMedia }) {
                                             />
                                             <Badge
                                                 className={"absolute left-2 top-2 font-semibold rounded-md text-[.95rem]"}
-                                                intent={"white-solid"}>{edge.node?.format === "MOVIE" ? "Movie" : capitalize(edge.relationType || "").replace("_", " ")}</Badge>
+                                                intent={"white-solid"}>{edge.node?.format === "MOVIE" ? capitalize(edge.relationType || "").replace("_", " ") + " (Movie)" : capitalize(edge.relationType || "").replace("_", " ")}</Badge>
                                             <div className={"p-2 z-[5] absolute bottom-0 w-full "}>
                                                 <p className={"font-semibold line-clamp-2 overflow-hidden"}>{edge.node?.title?.userPreferred}</p>
                                             </div>

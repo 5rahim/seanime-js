@@ -240,6 +240,14 @@ const get_NC_LocalFileAtomsByMediaIdAtom = atom(null,
     },
 )
 
+
+const get_Unknown_LocalFileAtomsByMediaIdAtom = atom(null,
+    (get, set, mediaId: number) => {
+        const fileAtoms = get(localFileAtoms).filter((fileAtom) => get(fileAtom).mediaId === mediaId)
+        return fileAtoms.filter(fileAtom => Object.keys(get(fileAtom).metadata).length === 0)
+    },
+)
+
 /**
  * Get ignored [LocalFile] atoms
  */
@@ -358,6 +366,16 @@ export const useNCLocalFileAtomsByMediaId = (mediaId: number) => {
     const __ = __useListenToLocalFiles()
 
     const [, get] = useAtom(get_NC_LocalFileAtomsByMediaIdAtom)
+    return useMemo(() => get(mediaId), [progress, status, __])
+}
+
+export const useUnknownLocalFileAtomsByMediaId = (mediaId: number) => {
+    const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(mediaId)
+    const progress = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress) ?? 0
+    const status = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.status) ?? ""
+    const __ = __useListenToLocalFiles()
+
+    const [, get] = useAtom(get_Unknown_LocalFileAtomsByMediaIdAtom)
     return useMemo(() => get(mediaId), [progress, status, __])
 }
 

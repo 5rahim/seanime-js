@@ -153,7 +153,7 @@ export function localFile_getDisplayTitle<T extends Pick<LocalFile, "metadata" |
     const { metadata, parsedInfo } = props
 
     if (metadata.isSpecial)
-        return `Special ${metadata.episode ?? localFile_getAniDBEpisodeInteger(props)}`
+        return `Special ${localFile_getAniDBEpisodeInteger(props) ?? metadata.episode}`
     else if (metadata.isNC)
         return parsedInfo?.title || localFile_getCleanedFileTitle(parsedInfo?.original)
 

@@ -67,16 +67,21 @@ export function UtilityButtons(props: { entryAtom: Atom<LibraryEntry> }) {
                 >
                     Start video player
                 </DropdownMenu.Item>
-                <DropdownMenu.Item
-                    onClick={confirmUnmatch.open}
-                >
-                    Unmatch all files
-                </DropdownMenu.Item>
-                <DropdownMenu.Item
-                    onClick={() => openEpisodeOffsetActionModal({ mediaId })}
-                >
-                    Offset episode numbers
-                </DropdownMenu.Item>
+                <DropdownMenu.Divider/>
+                <DropdownMenu.Group title="Bulk actions">
+
+                    <DropdownMenu.Item
+                        onClick={() => openEpisodeOffsetActionModal({ mediaId })}
+                    >
+                        Offset episode numbers
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Item
+                        className="text-red-500 dark:text-red-200"
+                        onClick={confirmUnmatch.open}
+                    >
+                        Unmatch all files
+                    </DropdownMenu.Item>
+                </DropdownMenu.Group>
             </DropdownMenu>
 
             <ConfirmationDialog {...confirmUnmatch} />

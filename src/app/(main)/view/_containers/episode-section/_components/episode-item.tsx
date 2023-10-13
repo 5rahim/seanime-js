@@ -24,10 +24,13 @@ import {
 import { anizip_getEpisodeFromMetadata } from "@/lib/anizip/utils"
 import { AniZipData } from "@/lib/anizip/types"
 import { anify_getEpisodeCover } from "@/lib/anify/utils"
+import { RiEyeCloseLine } from "@react-icons/all-files/ri/RiEyeCloseLine"
+import { EpisodeItemInfoModal, EpisodeItemInfoModalProps } from "@/components/shared/episode-item-info-modal"
 
-const { Provider: ScopedProvider, useAtom: useScopedAtom } = createIsolation()
+export const EpisodeItemIsolation = createIsolation()
 
 const __metadataModalIsOpenAtom = atom(false)
+export const __episodeItem_infoModalIsOpenAtom = atom(false)
 
 export const EpisodeItem = React.memo((props: {
     fileAtom: PrimitiveAtom<LocalFile>,
@@ -70,7 +73,7 @@ export const EpisodeItem = React.memo((props: {
     if (mediaID !== media.id) return null
 
     return (
-        <ScopedProvider>
+        <EpisodeItemIsolation.Provider>
             <EpisodeListItem
                 media={media}
                 image={image}
@@ -89,7 +92,10 @@ export const EpisodeItem = React.memo((props: {
                             size={"xs"}
                         />
                     }>
+                        <MetadataModalButton/>
+                        <DropdownMenu.Divider/>
                         <DropdownMenu.Item
+                            className="!text-red-300 !dark:text-red-200"
                             onClick={() => {
                                 startTransition(() => {
                                     setFileMediaId(null)
@@ -97,8 +103,9 @@ export const EpisodeItem = React.memo((props: {
                                 })
                             }}
                         >Unmatch</DropdownMenu.Item>
-                        <MetadataModalButton/>
                     </DropdownMenu>
+
+                    {!!aniZipEpisode && <InfoModalButton/>}
                 </>}
             />
             <MetadataModal
@@ -106,7 +113,13 @@ export const EpisodeItem = React.memo((props: {
                 metadata={metadata}
                 fileAtom={fileAtom}
             />
-        </ScopedProvider>
+            <InfoModal
+                title={displayedTitle}
+                media={media}
+                fileAtom={fileAtom}
+                aniZipData={aniZipData}
+            />
+        </EpisodeItemIsolation.Provider>
     )
 })
 
@@ -127,10 +140,11 @@ const metadataSchema = createTypesafeFormSchema(({ z }) => z.object({
 
 export function MetadataModal({ title, metadata, fileAtom }: MetadataModalProps) {
 
-    const [isOpen, setIsOpen] = useScopedAtom(__metadataModalIsOpenAtom)
+    const [isOpen, setIsOpen] = EpisodeItemIsolation.useAtom(__metadataModalIsOpenAtom)
     const setFileMetadata = useFocusSetAtom(fileAtom, "metadata")
     const mediaId = useSelectAtom(fileAtom, file => file.mediaId)
     const rerenderFiles = __useRerenderLocalFiles()
+    const name = useSelectAtom(fileAtom, file => file.name)
     // const anilistUserMedia = useAnilistUserMediaAndSimilarById(mediaId)
 
     return (
@@ -142,6 +156,7 @@ export function MetadataModal({ title, metadata, fileAtom }: MetadataModalProps)
             titleClassName={"text-center"}
             size={"lg"}
         >
+            <p className="w-full line-clamp-2 text-sm text-[--muted] px-4 text-center py-2 flex-none">{name}</p>
             <TypesafeForm
                 schema={metadataSchema}
                 onSubmit={({ mediaId, ...data }) => {
@@ -169,7 +184,7 @@ export function MetadataModal({ title, metadata, fileAtom }: MetadataModalProps)
                 <Field.Number label={"Episode number"} name={"episode"}
                               help={"Relative episode number. If movie, episode number = 1"} discrete isRequired/>
                 <Field.Text
-                    label={"AniDB episode number"}
+                    label={"AniDB episode"}
                     name={"aniDBEpisodeNumber"}
                     help={"Specials typically contain the letter S"}
                 />
@@ -194,9 +209,28 @@ export function MetadataModal({ title, metadata, fileAtom }: MetadataModalProps)
     )
 }
 
-export function MetadataModalButton() {
-    const [, setIsOpen] = useScopedAtom(__metadataModalIsOpenAtom)
+function MetadataModalButton() {
+    const [, setIsOpen] = EpisodeItemIsolation.useAtom(__metadataModalIsOpenAtom)
     return <DropdownMenu.Item onClick={() => setIsOpen(true)}>Update metadata</DropdownMenu.Item>
+}
+
+function InfoModalButton() {
+    const [, setIsOpen] = EpisodeItemIsolation.useAtom(__episodeItem_infoModalIsOpenAtom)
+    return <IconButton
+        icon={<RiEyeCloseLine/>}
+        intent={"gray-basic"}
+        size={"xs"}
+        onClick={() => setIsOpen(true)}
+    />
+}
+
+function InfoModal(props: Omit<EpisodeItemInfoModalProps, "isOpen" | "onClose">) {
+    const [isOpen, setIsOpen] = EpisodeItemIsolation.useAtom(__episodeItem_infoModalIsOpenAtom)
+    return <EpisodeItemInfoModal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        {...props}
+    />
 }
 
 const EpisodeItemLockButton = (props: { fileAtom: PrimitiveAtom<LocalFile> }) => {

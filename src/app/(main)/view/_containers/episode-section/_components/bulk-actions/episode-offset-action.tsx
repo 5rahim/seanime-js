@@ -19,7 +19,6 @@ import { Button } from "@/components/ui/button"
 import toast from "react-hot-toast"
 import { Select } from "@/components/ui/select"
 import { localFile_getAniDBEpisodeInteger } from "@/lib/local-library/utils/episode.utils"
-import { BetaBadge } from "@/components/application/beta-badge"
 
 const __episodeOffsetActionModalAtom = atomWithImmer<{ open: boolean, mediaId: number | null }>({
     open: false,
@@ -41,7 +40,7 @@ export function EpisodeOffsetAction() {
                     return
                 })}
                 size={"xl"}
-                title={<span>Offset episode numbers <BetaBadge/></span>}
+                title={<span>Offset episode numbers</span>}
                 titleClassName={"text-center"}
                 isClosable
             >
@@ -143,8 +142,8 @@ function Content() {
                     label={"Target"}
                     value={area}
                     options={[
-                        { label: "Episode", value: "episode" },
-                        { label: "AniDB episode number", value: "aniDBEpisodeNumber" },
+                        { label: "Episode number", value: "episode" },
+                        { label: "AniDB episode", value: "aniDBEpisodeNumber" },
                     ]}
                     onChange={e => {
                         setArea(e.target.value as any)

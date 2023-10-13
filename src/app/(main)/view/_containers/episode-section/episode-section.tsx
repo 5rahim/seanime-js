@@ -16,6 +16,7 @@ import {
     useDisplayLocalFileAtomsByMediaId,
     useNCLocalFileAtomsByMediaId,
     useSpecialsLocalFileAtomsByMediaId,
+    useUnknownLocalFileAtomsByMediaId,
 } from "@/atoms/library/local-file.atoms"
 import { useStableSelectAtom } from "@/atoms/helpers"
 import { useAnilistCollectionEntryAtomByMediaId } from "@/atoms/anilist/entries.atoms"
@@ -58,6 +59,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
     } = useDisplayLocalFileAtomsByMediaId(detailedMedia.id)
     const ovaFileAtoms = useSpecialsLocalFileAtomsByMediaId(detailedMedia.id)
     const ncFileAtoms = useNCLocalFileAtomsByMediaId(detailedMedia.id)
+    const unknownFileAtoms = useUnknownLocalFileAtomsByMediaId(detailedMedia.id)
     const collectionEntryAtom = useAnilistCollectionEntryAtomByMediaId(detailedMedia.id)
     const mediaStatus = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.media?.status)
     const progress = useStableSelectAtom(collectionEntryAtom, collectionEntry => collectionEntry?.progress)
@@ -235,7 +237,7 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
 
                     {ncFileAtoms.length > 0 && <>
                         <Divider/>
-                        <h3>Others</h3>
+                        <h3>NC</h3>
 
                         <EpisodeList
                             fileAtoms={ncFileAtoms}
@@ -243,6 +245,17 @@ export const EpisodeSection: React.FC<EpisodeSectionProps> = (props) => {
                             media={detailedMedia}
                             aniZipData={aniZipData}
                             anifyEpisodeData={anifyEpisodeData}
+                        />
+                    </>}
+
+                    {unknownFileAtoms.length > 0 && <>
+                        <Divider/>
+                        <h3>Unknown</h3>
+
+                        <EpisodeList
+                            fileAtoms={unknownFileAtoms}
+                            onPlayFile={playFile}
+                            media={detailedMedia}
                         />
                     </>}
 

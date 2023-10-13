@@ -70,7 +70,7 @@ export const createLocalFile = async (
                     part: obj.part,
                     cour: obj.cour,
                     episode: obj.episode,
-                    episodeTitle: parsed.episodeTitle,
+                    episodeTitle: obj.episodeTitle,
                 })
             }
         }).filter(Boolean)
@@ -171,8 +171,8 @@ export const createLocalFileWithMedia = async (props: {
  * @description Use
  * - Send the hydrated [LocalFile] to the client if there's no `error`
  */
-export async function hydrateLocalFileWithInitialMetadata(props: {
-    file: LocalFile,
+export async function hydrateLocalFileWithInitialMetadata<T extends LocalFile>(props: {
+    file: T,
     media: AnilistShowcaseMedia
     forceHydrate?: boolean
     hydrationFallback?: Partial<LocalFileMetadata>
@@ -255,9 +255,9 @@ export async function hydrateLocalFileWithInitialMetadata(props: {
                 if (episode !== undefined) { // If an episode was parsed
 
                     if (episode === 0) { // Might be a special
-                        _scanLogging.add(file.path, `   -> warning - Episode number is 0, mapping might be incorrect`)
-                        _scanLogging.add(file.path, `   -> episode = ${episode}`)
-                        _scanLogging.add(file.path, `   -> aniDBEpisodeNumber = S1`)
+                        _scanLogging.add(file.path, `   -> warning - Episode number is 0, mapping with AniList and AniDB might be incorrect`)
+                        _scanLogging.add(file.path, `   -> episode = ${episode} (VERIFICATION REQUIRED)`)
+                        _scanLogging.add(file.path, `   -> aniDBEpisodeNumber = S1 (VERIFICATION REQUIRED)`)
                         file.metadata.episode = 0
                         file.metadata.aniDBEpisodeNumber = "S1"
                     } else {
@@ -274,7 +274,9 @@ export async function hydrateLocalFileWithInitialMetadata(props: {
                     _scanLogging.add(file.path, `   -> Ceiling is 1, setting episode number 1`)
                     file.metadata.episode = 1
                     file.metadata.aniDBEpisodeNumber = "1"
-                } else { // If no episode was parsed and the media has more than one episode
+                } else {
+                    // If no episode was parsed and the media has multiple
+                    // And it's not a Special nor a NC
                     error = true
                     _scanLogging.add(file.path, `   -> error - Could not hydrate metadata`)
                 }
@@ -301,41 +303,40 @@ export async function hydrateLocalFileWithInitialMetadata(props: {
         _scanLogging.add(file.path, `   -> isNC = true`)
     }
 
-    if (error && !forceHydrate) {
-        error = true
-        _scanLogging.add(file.path, `   -> error - File will be unmatched`)
-
-    } else if (error) { // Error but we need to force hydration
+    // Couldn't hydrate the metadata, but we have an episode number, we will force the hydration to Special
+    // This might happen to Specials with episode number N+1, where N is the number of episodes of the parent anime
+    if (error && forceHydrate && !!file.parsedInfo?.episode) {
         error = false
-        if (hydrationFallback) {
-            file.metadata = hydrationFallback ?? {
-                episode: 1,
-                aniDBEpisodeNumber: "S1",
-                isSpecial: true,
-            }
+
+        const highestEp = media?.nextAiringEpisode?.episode ?? media?.episodes
+        const episode = localFile_getParsedEpisode(file.parsedInfo)
+
+        let aniDBEpisode = episode
+
+        if (highestEp && episode !== undefined) {
+            // Re-adjust AniDB episode number, S1, S2, etc...
+            aniDBEpisode = episode > highestEp ? episode - highestEp : episode
+        }
+        _scanLogging.add(file.path, `   -> warning - Forced hydration to Special`)
+        _scanLogging.add(file.path, `   -> isSpecial = true`)
+        _scanLogging.add(file.path, `   -> episode = ${episode}`)
+        _scanLogging.add(file.path, `   -> aniDBEpisodeNumber = S${aniDBEpisode}`)
+        file.metadata = hydrationFallback || {
+            episode: episode,
+            aniDBEpisodeNumber: `S${aniDBEpisode}`,
+            isSpecial: true,
         }
 
+    } else if (error) {
+        error = true
+        _scanLogging.add(file.path, `   -> error - File will be unmatched`)
     }
 
-    if (!error) { // No errors, add supplementary AniDB metadata
+    if (!error) {
         // Finally, set media id
         if (!file.mediaId) {
             file.mediaId = media.id
         }
-
-        // const aniZipData = await fetchAniZipData(file.mediaId, _aniZipCache)
-        // _scanLogging.add(file.path, "Hydrating supplementary AniDB metadata")
-        // if (aniZipData) {
-        //     _scanLogging.add(file.path, `   -> aniDBEpisodeCount = ${aniZipData.episodeCount}`)
-        //     _scanLogging.add(file.path, `   -> aniDBSpecialCount = ${aniZipData.specialCount}`)
-        //     file.metadata.aniDBMediaInfo = {
-        //         episodeCount: aniZipData.episodeCount,
-        //         specialCount: aniZipData.specialCount,
-        //     }
-        // } else {
-        //     _scanLogging.add(file.path, "-> error - Could not retrieve AniDB metadata")
-        // }
-
     }
 
 

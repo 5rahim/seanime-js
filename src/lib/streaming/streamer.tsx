@@ -100,12 +100,7 @@ export function VideoStreamer(
                         ...src,
                         ...(isDefault && { default: true }),
                         html: src.quality === "default" ? "adaptive" : src.quality,
-                        url:
-                            provider === "gogoanime"
-                                ? `https://cors.moopa.workers.dev/?url=${encodeURIComponent(
-                                    src.url,
-                                )}${referer ? `&referer=${encodeURIComponent(referer)}` : ""}`
-                                : `${proxy}${src.url}`,
+                        url: `${proxy}${src.url}`,
                     }
                 })
 
