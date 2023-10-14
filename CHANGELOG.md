@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.3.10
+
+- ⬆️ Update dependencies
+- 🦺 Fixed bug reintroduction caused by logging
+
 ## 0.3.9
 
 - ✨ Added ability to view episode info, including runtime, description...
