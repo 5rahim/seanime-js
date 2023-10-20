@@ -26,7 +26,6 @@ export function MissingEpisodes() {
             )
             return result.filter(n => n.status === "fulfilled").map(n => (n as any).value.data as AniZipData)
         },
-        keepPreviousData: false,
         enabled: missing.length > 0,
         refetchInterval: 1000 * 60,
     })

@@ -15,13 +15,16 @@ import { logger } from "@/lib/helpers/debug"
  */
 export function useEpisodeStreamingData(episodes: ConsumetAnimeEpisode[], episodeNumber: number, provider: ConsumetProvider, server: any | undefined) {
     const episodeId = episodes.find(episode => episode.number === episodeNumber)?.id
-    const res = useQuery(
-        ["episode-streaming-data", episodes, episodeNumber, server || "-"],
-        async () => {
-            logger("watch/lib/useEpisodeStreamingData").info(`Fetching episode ${episodeNumber} streaming data (${provider}, ${server})`)
-            return await getConsumetEpisodeStreamingData(episodeId!, provider, server, true)
+    const res = useQuery({
+            queryKey: ["episode-streaming-data", episodes, episodeNumber, server || "-"],
+            queryFn: async () => {
+                logger("watch/lib/useEpisodeStreamingData").info(`Fetching episode ${episodeNumber} streaming data (${provider}, ${server})`)
+                return await getConsumetEpisodeStreamingData(episodeId!, provider, server, true)
+            },
+            enabled: !!episodeId,
+            retry: false,
+            refetchOnWindowFocus: false,
         },
-        { enabled: !!episodeId, retry: false, keepPreviousData: false, refetchOnWindowFocus: false },
     )
     return { data: res.data, isLoading: res.isLoading || res.isFetching, isError: res.isError }
 }
@@ -32,14 +35,14 @@ export function useEpisodeStreamingData(episodes: ConsumetAnimeEpisode[], episod
  * @param server
  */
 export function useProviderEpisodes(mediaId: number, server: any) {
-    const res = useQuery(
-        ["episode-data", mediaId, server],
-        async () => {
+    const res = useQuery({
+        queryKey: ["episode-data", mediaId, server],
+        queryFn: async () => {
             logger("watch/lib/useProviderEpisodes").info("Fetching episodes from all providers", mediaId)
             return await getConsumetEpisodes(mediaId, server, true)
         },
-        { keepPreviousData: false, refetchOnWindowFocus: false },
-    )
+        refetchOnWindowFocus: false,
+    })
     return { data: res.data, isLoading: res.isLoading || res.isFetching, isError: res.isError, error: res.error }
 }
 
@@ -49,20 +52,24 @@ export function useProviderEpisodes(mediaId: number, server: any) {
  * @param episodeNumber
  */
 export function useSkipData(mediaMalId: number | null | undefined, episodeNumber: number) {
-    const res = useQuery(
-        ["skip-data", mediaMalId, episodeNumber],
-        async () => {
+    const res = useQuery({
+        queryKey: ["skip-data", mediaMalId, episodeNumber],
+        queryFn: async () => {
             const result = await fetch(
                 `https://api.aniskip.com/v2/skip-times/${mediaMalId}/${episodeNumber}?types[]=ed&types[]=mixed-ed&types[]=mixed-op&types[]=op&types[]=recap&episodeLength=`,
             )
-            const skip = (await result.json()) as { found: boolean, results: AniSkipTime[] }
+            const skip = (await result.json()) as {
+                found: boolean,
+                results: AniSkipTime[]
+            }
             if (!!skip.results && skip.found) return {
                 op: skip.results?.find((item) => item.skipType === "op") || null,
                 ed: skip.results?.find((item) => item.skipType === "ed") || null,
             }
             return { op: null, ed: null }
         },
-        { keepPreviousData: false, refetchOnWindowFocus: false, enabled: !!mediaMalId },
-    )
+        refetchOnWindowFocus: false,
+        enabled: !!mediaMalId,
+    })
     return { data: res.data, isLoading: res.isLoading || res.isFetching, isError: res.isError }
 }

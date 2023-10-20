@@ -7,7 +7,8 @@ export function useDiscoverTrendingAnime() {
 
     return useInfiniteQuery({
         queryKey: ["projects"],
-        queryFn: async ({ pageParam = 1 }) => {
+        initialPageParam: 1,
+        queryFn: async ({ pageParam }) => {
             return useAniListAsyncQuery(ListAnimeDocument, {
                 page: pageParam,
                 perPage: 20,

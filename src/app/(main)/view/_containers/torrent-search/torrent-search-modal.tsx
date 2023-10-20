@@ -41,7 +41,10 @@ interface Props {
 
 export const __torrentSearch_selectedTorrentsAtom = atom<SearchTorrentData[]>([])
 
-export const __torrentSearch_isOpenAtom = atomWithImmer<{ isOpen: boolean, episode: number | undefined }>({
+export const __torrentSearch_isOpenAtom = atomWithImmer<{
+    isOpen: boolean,
+    episode: number | undefined
+}>({
     isOpen: false,
     episode: undefined,
 })
@@ -94,7 +97,10 @@ export function TorrentSearchModal(props: Props) {
 
 }
 
-export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, aniZipData?: AniZipData }) => {
+export const Content = ({ media, aniZipData }: {
+    media: AnilistDetailedMedia,
+    aniZipData?: AniZipData
+}) => {
 
     const entryAtom = useLibraryEntryAtomByMediaId(media.id)
 
@@ -121,9 +127,9 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
 
     const queryIsEnabled = !!aniZipData && !(quickSearchEpisode === undefined && globalFilter.length === 0)
 
-    const { data: torrents, isLoading, isFetching } = useQuery<SearchTorrentData[]>(
-        ["fetching-torrents", media.id, debouncedEpisode, globalFilter, quickSearchIsBatch, episodeOffset],
-        async () => {
+    const { data: torrents, isLoading, isFetching } = useQuery<SearchTorrentData[]>({
+        queryKey: ["fetching-torrents", media.id, debouncedEpisode, globalFilter, quickSearchIsBatch, episodeOffset],
+        queryFn: async () => {
             let res: SearchTorrent[] | undefined = undefined
             if (globalFilter.length === 0) {
                 res = await findNyaaTorrents({
@@ -149,13 +155,12 @@ export const Content = ({ media, aniZipData }: { media: AnilistDetailedMedia, an
                 if (quickSearchIsBatch && !!torrent.parsed.episode) return false
                 return true
             }) as SearchTorrentData[]
-        }, {
-            keepPreviousData: false,
-            refetchOnWindowFocus: false,
-            retry: 2,
-            retryDelay: 1000,
-            enabled: queryIsEnabled,
-        })
+        },
+        refetchOnWindowFocus: false,
+        retry: 2,
+        retryDelay: 1000,
+        enabled: queryIsEnabled,
+    })
 
 
     const columns = useMemo(() => createDataGridColumns<SearchTorrentData>(() => [

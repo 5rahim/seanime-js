@@ -13,7 +13,8 @@ export function useAnilistAdvancedSearch() {
 
     return useInfiniteQuery({
         queryKey: ["projects", params],
-        queryFn: async ({ pageParam = 1 }) => {
+        initialPageParam: 1,
+        queryFn: async ({ pageParam }) => {
             const variables = {
                 page: pageParam,
                 perPage: 48,
@@ -34,7 +35,6 @@ export function useAnilistAdvancedSearch() {
             // console.log("lastPage", lastPage, "pages", pages, "curr", curr, "hasNext", hasNext, "nextPage", (!!curr && hasNext) ? pages.length + 1 : undefined)
             return (!!curr && hasNext) ? pages.length + 1 : undefined
         },
-        keepPreviousData: false,
         enabled: params.active,
         refetchOnMount: true,
     })

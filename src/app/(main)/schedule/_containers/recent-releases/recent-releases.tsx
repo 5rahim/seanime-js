@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query"
+import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { useAniListAsyncQuery } from "@/hooks/graphql-server-helpers"
 import { ListRecentAiringsDocument } from "@/gql/graphql"
 import { addSeconds, formatDistanceToNow, subDays } from "date-fns"
@@ -22,8 +22,8 @@ export function RecentReleases() {
                 airingAt_greater: Math.floor(subDays(new Date(), 14).getTime() / 1000),
             })
         },
-        keepPreviousData: true,
-        cacheTime: 1000 * 60 * 10,
+        placeholderData: keepPreviousData,
+        gcTime: 1000 * 60 * 10,
     })
 
     return (

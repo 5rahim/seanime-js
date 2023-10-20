@@ -36,9 +36,9 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = (props) => {
 
     const [open, setOpen] = useAtom(__globalSearch_isOpenAtom)
 
-    const { data: media, isLoading, isFetching, fetchStatus } = useQuery(
-        ["global-search", query, query.length],
-        async () => {
+    const { data: media, isLoading, isFetching, fetchStatus } = useQuery({
+        queryKey: ["global-search", query, query.length],
+        queryFn: async () => {
             const res = await useAniListAsyncQuery(SearchAnimeShortMediaDocument, {
                 search: query,
                 page: 1,
@@ -48,8 +48,10 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = (props) => {
             }, token || "")
             return res.Page?.media?.filter(Boolean) ?? []
         },
-        { enabled: query.length > 0, keepPreviousData: false, refetchOnWindowFocus: false, retry: 0 },
-    )
+        enabled: query.length > 0,
+        refetchOnWindowFocus: false,
+        retry: 0,
+    })
 
     return (
         <>

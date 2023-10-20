@@ -64,9 +64,8 @@ export function ContinueWatching(props: { entryAtom: Atom<LibraryEntry> }) {
         queryFn: async () => {
             return await fetchAniZipData(media.id)
         },
-        keepPreviousData: false,
         enabled: !!nextMetadataEpisodeNumber,
-        cacheTime: 1000 * 60 * 60,
+        gcTime: 1000 * 60 * 60,
     })
 
     if (!nextMetadataEpisodeNumber) return null

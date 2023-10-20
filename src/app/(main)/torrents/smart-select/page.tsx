@@ -52,7 +52,6 @@ export default function Page() {
         },
         refetchInterval: 1000,
         enabled: fetchTorrent && torrentQueue?.filter(item => item?.status === "awaiting_meta").length > 0,
-        keepPreviousData: false,
     })
 
     // Query torrents present in the queue whose status is "ready"
@@ -149,7 +148,6 @@ export default function Page() {
         },
         refetchInterval: 1000,
         enabled: fetchTorrent && torrentsInQueue?.some(n => n.totalSize > 0) && torrentQueue?.filter(item => item?.status === "ready").length > 0,
-        keepPreviousData: false,
     })
 
     // Look through fetched torrent info

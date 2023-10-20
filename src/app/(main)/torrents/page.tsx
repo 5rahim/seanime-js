@@ -53,10 +53,8 @@ function Content() {
             return await torrentManager.current.getDownloadingTorrents()
         },
         refetchInterval: 2500,
-        cacheTime: 0,
+        gcTime: 0,
         refetchOnWindowFocus: true,
-        keepPreviousData: false,
-        suspense: false,
         retry: 2,
     })
 

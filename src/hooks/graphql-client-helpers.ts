@@ -28,14 +28,15 @@ export function useAniListClientQuery<TResult, TVariables extends Variables>(
     document: TypedDocumentNode<TResult, TVariables>,
     variables?: TVariables,
     options?: UseQueryOptions<TResult, unknown, TResult, any[]>,
-): UseQueryResult<TResult> {
+): UseQueryResult<TResult, unknown> {
     const client = useAniListGraphQLClient()
-    const res = useQuery([(document.definitions[0] as any).name.value, variables],
-        async () => {
+    const res = useQuery({
+        queryKey: [(document.definitions[0] as any).name.value, variables],
+        queryFn: async () => {
             return client.request(print(document), variables) as TResult
         },
-        options,
-    )
+        ...options,
+    })
 
     useEffect(() => {
         if (res.failureCount === 1 || res.isError) {
@@ -51,12 +52,13 @@ export function useAniListClientMutation<TResult, TVariables extends Variables>(
     options?: UseMutationOptions<TResult, unknown, TVariables, any[]>,
 ): UseMutationResult<TResult, unknown, TVariables> {
     const client = useAniListGraphQLClient()
-    const res = useMutation([(document.definitions[0] as any).name.value],
-        async (variables?: TVariables) => {
+    const res = useMutation({
+        mutationKey: [(document.definitions[0] as any).name.value],
+        mutationFn: async (variables?: TVariables) => {
             return client.request(print(document), variables) as TResult
         },
-        options,
-    )
+        ...options,
+    })
 
     useEffect(() => {
         if (res.failureCount === 1 || res.isError) {
