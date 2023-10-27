@@ -26,7 +26,6 @@ export function LibraryHeader() {
         }, 500)
 
         return () => {
-            // @ts-ignore
             clearTimeout(t)
         }
     }, [image])
@@ -39,7 +38,6 @@ export function LibraryHeader() {
     const { y } = useWindowScroll()
 
     useEffect(() => {
-        console.log(y)
         if (y > 100)
             setDimmed(true)
         else

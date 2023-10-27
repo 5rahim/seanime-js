@@ -60,7 +60,6 @@ export const TorrentRepository = (settings: Settings) => {
             try {
                 return { hash, content: await _qBit_getTorrentContent(settings, hash) }
             } catch (e) {
-                console.log(e)
                 this._error("Unable to get torrent files")
             }
         },
@@ -72,7 +71,6 @@ export const TorrentRepository = (settings: Settings) => {
             try {
                 return await _qBit_getTorrent(settings, hash)
             } catch (e) {
-                console.log(e)
                 this._error("Unable to get torrent")
             }
         },
@@ -84,7 +82,6 @@ export const TorrentRepository = (settings: Settings) => {
             try {
                 return await _qBit_pauseTorrent(settings, hash)
             } catch (e) {
-                console.log(e)
                 this._error("Unable to get pause torrent")
                 return false
             }
@@ -97,7 +94,6 @@ export const TorrentRepository = (settings: Settings) => {
             try {
                 return await _qBit_startTorrent(settings, hash)
             } catch (e) {
-                console.log(e)
                 this._error("Unable to get start torrent")
                 return false
             }
@@ -110,7 +106,6 @@ export const TorrentRepository = (settings: Settings) => {
             try {
                 return await _qBit_setFilePriority(settings, hash, options)
             } catch (e) {
-                console.log(e)
                 this._error("Unable to change file priority")
                 return false
             }

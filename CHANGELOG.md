@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.4.0
+
+- ⬆️ Migrate to Next.js 14
+    - Server actions are now stable
+- 🏗️ Migrate to React Query v5
+- ⬆️ Bump dependencies
+
 ## 0.3.10
 
 - ⬆️ Update dependencies

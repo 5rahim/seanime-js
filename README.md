@@ -84,28 +84,6 @@ Powered by qBittorrent and Nyaa
 
 [Read the disclaimer.](https://github.com/5rahim/seanime/blob/main/DISCLAIMER.md)
 
-- Copy `.next/static` to `.next/standalone/.next/static`
-- Copy `public` to `.next/standalone/public`
-
-## Known issues
-
-- Loading overlay may persist after scan is complete
-- :shrug:
-
-## Not planned
-
-- Watch together feature / social features
-- Torrent streaming
-- MAL support
-- Mobile app
-
-## Future plans
-
-- Manga support
-- Desktop client
-- Theming
-- Plugins
-
 ## Contributing
 
 [Contributions are welcome.](https://github.com/5rahim/seanime/blob/main/CONTRIBUTING.md)
@@ -115,7 +93,7 @@ Powered by qBittorrent and Nyaa
 Resources used to build Seanime.
 
 - [React](https://react.dev/)
-- [Next.js 13](https://nextjs.org/)
+- [Next.js 14](https://nextjs.org/)
 - [AniList](https://github.com/AniList/ApiV2-GraphQL-Docs)
 - [Jotai](https://jotai.org/docs/recipes/large-objects) - State management library
 - [Tailwind](https://tailwindcss.com/) - CSS framework

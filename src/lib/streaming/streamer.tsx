@@ -212,7 +212,6 @@ export function VideoStreamer(
                             if (percentage >= 0.9 || percentagedb >= 0.9) {
                                 art.currentTime = 0
                                 onCleanPlaybackPosition && onCleanPlaybackPosition()
-                                console.log("Video started from the beginning")
                             } else if (timeWatched) {
                                 art.currentTime = timeWatched
                             } else {
