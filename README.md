@@ -1,3 +1,13 @@
+# 🚨 DEPRECATED
+
+**The project has been migrated!**
+
+The Seanime project has been moved to [Seanime Server](https://github.com/5rahim/seanime-server/). This migration was
+prompted by a shift in architecture and technologies used. The project now leverages Golang, with the same Web UI,
+enhancing overall performance, ease of use, and enabling additional features in the long run.
+
+
+
 <p align="center">
 <img src="public/icons/android-chrome-512x512.png" alt="preview" width="75px"/>
 </p>
@@ -8,85 +18,6 @@
 
 <img src="docs/images/main_6.png" alt="preview" width="100%"/>
 
-🚨 This project is a hobby, it's not meant to fix every shortcoming or include every requested feature. Some features
-might not work as intended. Feel free to fork the project, contribute or open issues.
-
-# Setup
-
-[How to use Seanime.](https://seanime.rahim.app/getting-started)
-
-# Features
-
-## Local library
-
-- [x] Scan local library and automatically match local files with corresponding
-  anime.
-  - [x] Scan with or without AniList anime list
-    data.
-  - [x] Support for various naming/folder
-    structures.
-  - [x] Support for absolute episode
-    numbers.
-  - [x] Support for movies.
-  - [x] *Refresh entries*
-    feature.
-  - [x] Ignore files or folders
-  - [x] Resolve unmatched files
-  - [x] Update file metadata
-    - [x] Episode number, AniDB episode number, Special/OVA or NC status
-  - [x] Detailed logs for each scan
-- [x] Resolve unmatched files
-  - [x] Option to match single files or single folders to a suggested media
-  - [x] Option to match files using AniList ID
-- [x] Detect episodes missing from your local library
-- [ ] Delete files
-
-## Download
-
-Powered by qBittorrent and Nyaa
-
-- [x] qBittorrent support via Web API
-- [x] In-app basic active torrent list
-- [x] In-app embedded qBittorrent client
-- [x] In-app torrent search via NYAA
-  - [x] Automatic smart filters for search
-- [x] Option to automatically select needed files in
-  batches. [Learn more](https://github.com/5rahim/seanime/blob/main/docs/torrents.md#batches).
-
-## Progress tracking
-
-- [x] Open files with favorite player (VLC or MPC-HC)
-- [x] Automatically track progress while watching with VLC or MPC-HC
-- [x] Sync progress with AniList
-- [ ] Sync progress with MAL
-
-## AniList
-
-- [x] Browse and manage your AniList anime list
-  - [x] Browse your anime lists
-  - [x] Add, edit AniList entries (status, score, progress…)
-  - [x] Delete AniList entries (Planning list only)
-- [x] See trending, popular shows, recent releases
-- [x] Search and filter
-  - [x] Advanced search (multiple filters)
-
-## Streaming
-
-- [x] Stream episodes from web sources
-  - [x] Support for GogoAnime
-  - [x] Support for Zoro (AniWatch)
-- [x] Progress tracking
-  - [x] Sync progress with AniList
-  - [ ] Sync progress with MAL
-
-
-## Disclaimer
-
-[Read the disclaimer.](https://github.com/5rahim/seanime/blob/main/DISCLAIMER.md)
-
-## Contributing
-
-[Contributions are welcome.](https://github.com/5rahim/seanime/blob/main/CONTRIBUTING.md)
 
 ## Resources
 
