@@ -1,8 +1,8 @@
 # 🚨 DEPRECATED
 
-**The project has been migrated!**
+**[The project has been migrated!](https://github.com/5rahim/seanime/)**
 
-The Seanime project has been moved to [Seanime Server](https://github.com/5rahim/seanime-server/). This migration was
+The Seanime project has been moved to [Seanime](https://github.com/5rahim/seanime/). This migration was
 prompted by a shift in architecture and technologies used. The project now leverages Golang, with the same Web UI,
 enhancing overall performance, ease of use, and enabling additional features in the long run.
 
@@ -12,7 +12,7 @@ enhancing overall performance, ease of use, and enabling additional features in 
 <img src="public/icons/android-chrome-512x512.png" alt="preview" width="75px"/>
 </p>
 
-<h2 align="center"><b>Seanime</b></h2>
+<h2 align="center"><b>Seanime (NodeJS)</b></h2>
 
 <h4 align="center">User-friendly, self-hosted web app for managing your local library with AniList integration</h4>
 
